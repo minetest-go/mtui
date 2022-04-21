@@ -1,0 +1,25 @@
+version: "3.6"
+
+services:
+ minetest:
+  image: registry.gitlab.com/minetest/minetest/server:5.5.0
+  volumes:
+    - "minetest_home:/var/lib/minetest"
+  ports:
+    - "30000:30000/udp"
+
+ admin:
+  image: golang:1.18.0
+  environment:
+   WORLD_DIR: /minetest_home/.minetest/worlds/world
+  volumes:
+   - "minetest_home:/minetest_home"
+   - "./:/app"
+   - "go_cache:/root/go"
+  working_dir: /app
+  command: ["go", "run", "."]
+  
+
+volumes:
+  minetest_home: {}
+  go_cache: {}
