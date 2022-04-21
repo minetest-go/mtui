@@ -7,14 +7,17 @@ import (
 )
 
 const (
-	BACKEND_SQLITE3  string = "sqlite3"
-	BACKEND_FILES    string = "files"
-	BACKEND_POSTGRES string = "postgresql"
+	BACKEND_SQLITE3  = "sqlite3"
+	BACKEND_FILES    = "files"
+	BACKEND_POSTGRES = "postgresql"
 )
 
 const (
-	CONFIG_AUTH_BACKEND         string = "auth_backend"
-	CONFIG_PSQL_AUTH_CONNECTION string = "pgsql_auth_connection"
+	CONFIG_PSQL_AUTH_CONNECTION = "pgsql_auth_connection"
+	CONFIG_AUTH_BACKEND         = "auth_backend"
+	CONFIG_STORAGE_BACKEND      = "mod_storage_backend"
+	CONFIG_PLAYER_BACKEND       = "player_backend"
+	CONFIG_MAP_BACKEND          = "backend"
 )
 
 func Parse(filename string) (map[string]string, error) {
