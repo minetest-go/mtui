@@ -6,6 +6,7 @@ services:
   user: root
   volumes:
     - "minetest_home:/root/.minetest"
+    - "./minetest.conf:/etc/minetest/minetest.conf"
   ports:
     - "30000:30000/udp"
 
