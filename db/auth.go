@@ -10,18 +10,13 @@ CREATE TABLE if not exists user_privileges (id INTEGER,privilege VARCHAR(32),PRI
 commit;
 `
 
-func NewAuthRepository(filename string) (*AuthRepository, error) {
-	db_, err := sql.Open("sqlite", filename)
-	if err != nil {
-		return nil, err
-	}
+func MigrateAuth(db_ *sql.DB) error {
+	_, err := db_.Exec(AUTH_MIGRATE)
+	return err
+}
 
-	_, err = db_.Exec(AUTH_MIGRATE)
-	if err != nil {
-		return nil, err
-	}
-
-	return &AuthRepository{db: db_}, nil
+func NewAuthRepository(db_ *sql.DB) *AuthRepository {
+	return &AuthRepository{db: db_}
 }
 
 type AuthEntry struct {
@@ -29,11 +24,6 @@ type AuthEntry struct {
 	Name      string `json:"name"`
 	Password  string `json:"password"`
 	LastLogin int    `json:"last_login"`
-}
-
-type PrivilegeEntry struct {
-	ID        int64  `json:"id"`
-	Privilege string `json:"privilege"`
 }
 
 type AuthRepository struct {

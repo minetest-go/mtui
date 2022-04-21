@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	"os"
 	"testing"
 
@@ -8,14 +9,22 @@ import (
 )
 
 func TestAuthRepo(t *testing.T) {
-	// init stuff
+	// temp files
 	dbfile, err := os.CreateTemp(os.TempDir(), "auth.sqlite")
 	assert.NoError(t, err)
 	assert.NotNil(t, dbfile)
 
 	// open db
-	repo, err := NewAuthRepository(dbfile.Name())
+	auth_db, err := sql.Open("sqlite", dbfile.Name())
 	assert.NoError(t, err)
+	assert.NotNil(t, auth_db)
+
+	// migrate
+	err = MigrateAuth(auth_db)
+	assert.NoError(t, err)
+
+	// create repo
+	repo := NewAuthRepository(auth_db)
 	assert.NotNil(t, repo)
 
 	// non-existing entry
