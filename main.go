@@ -1,31 +1,28 @@
 package main
 
 import (
+	"fmt"
 	"mtadmin/db"
+	"mtadmin/web"
+	"net/http"
 	"os"
-
-	_ "modernc.org/sqlite"
 )
 
 func main() {
 	world_dir := os.Getenv("WORLD_DIR")
 
-	_, err := db.NewAuthRepository(world_dir + "/auth.sqlite")
+	repos, err := db.CreateRepositories(world_dir)
 	if err != nil {
 		panic(err)
 	}
 
-	_, err = db.NewMapRepository(world_dir + "/map.sqlite")
+	err = web.Setup(repos)
 	if err != nil {
 		panic(err)
 	}
 
-	_, err = db.NewModStorageRepository(world_dir + "/mod_storage.sqlite")
-	if err != nil {
-		panic(err)
-	}
-
-	_, err = db.NewPlayerRepository(world_dir + "/players.sqlite")
+	fmt.Printf("Listening on port %d\n", 8080)
+	err = http.ListenAndServe(":8080", nil)
 	if err != nil {
 		panic(err)
 	}

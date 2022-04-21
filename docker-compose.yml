@@ -17,6 +17,7 @@ services:
    - "minetest_home:/minetest_home"
    - "./:/app"
    - "go_cache:/root/.cache"
+   - "go_dir:/root/go"
   working_dir: /app
   command: ["sh", "-c", "go run ."]
   
@@ -24,3 +25,4 @@ services:
 volumes:
   minetest_home: {}
   go_cache: {}
+  go_dir: {}

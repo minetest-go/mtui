@@ -4,10 +4,12 @@ import "database/sql"
 
 const MAP_MIGRATE = `
 pragma journal_mode = wal;
+begin;
 CREATE TABLE if not exists blocks (
 	pos INT PRIMARY KEY,
 	data BLOB
 );
+commit;
 `
 
 func NewMapRepository(filename string) (*MapRepository, error) {
