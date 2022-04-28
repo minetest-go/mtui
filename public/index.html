@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html style="height: 100%">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<meta name="theme-color" content="#000">
+
+		<!-- styles -->
+		<link rel="stylesheet" href="node_modules/bootswatch/dist/cyborg/bootstrap.min.css"/>
+		<link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/all.min.css"/>
+
+		<title>MT-Admin</title>
+	</head>
+	<body>
+		<!-- app root -->
+		<app id="app"></app>
+
+		<!-- libraries -->
+		<script src="node_modules/vue/dist/vue.global.prod.js"></script>
+		<script src="node_modules/vue-router/dist/vue-router.global.prod.js"></script>
+		<script src="node_modules/vue-i18n/dist/vue-i18n.global.prod.js"></script>
+
+		<!-- app bootstrap -->
+		<script src="js/bundle.js" onerror="import('./js/main.js')"></script>
+	</body>
+</html>

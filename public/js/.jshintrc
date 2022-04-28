@@ -1,0 +1,12 @@
+{
+  "undef": true,
+  "unused": true,
+  "esversion": 6,
+  "browser": true,
+  "globals": {
+    "Vue": true,
+    "VueRouter": true,
+		"VueI18n": true,
+    "console": true
+  }
+}

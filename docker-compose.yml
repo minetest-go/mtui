@@ -10,10 +10,20 @@ services:
   ports:
     - "30000:30000/udp"
 
+ admin_webapp:
+  image: node:16.15.0-alpine3.15
+  volumes:
+   - "./:/app"
+  working_dir: /app/public
+  command: ["npm", "ci"]
+
  admin:
   image: golang:1.18.0
   environment:
-   WORLD_DIR: /minetest_home/worlds/world
+   WORLD_DIR: "/minetest_home/worlds/world"
+   WEBDEV: "true"
+  ports:
+    - 8080:8080
   volumes:
    - "minetest_home:/minetest_home"
    - "./:/app"
