@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"mtadmin/db"
+	"mtadmin/mod"
 	"mtadmin/web"
 	"net/http"
 	"os"
@@ -17,6 +18,11 @@ func main() {
 	}
 
 	err = web.Setup(repos)
+	if err != nil {
+		panic(err)
+	}
+
+	err = mod.Install(world_dir + "/worldmods/mtadmin")
 	if err != nil {
 		panic(err)
 	}
