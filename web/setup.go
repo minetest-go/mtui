@@ -2,7 +2,7 @@ package web
 
 import (
 	"fmt"
-	"mtadmin/db"
+	"mtadmin/app"
 	"mtadmin/public"
 	"net/http"
 	"os"
@@ -12,8 +12,11 @@ import (
 	"github.com/vearutop/statigz/brotli"
 )
 
-func Setup(repos *db.Repositories) error {
+func Setup(a *app.App) error {
 	r := mux.NewRouter()
+
+	// rest api
+	SetupBrowse(r, a)
 
 	// static files
 	if os.Getenv("WEBDEV") == "true" {
@@ -27,6 +30,5 @@ func Setup(repos *db.Repositories) error {
 	}
 
 	http.Handle("/", r)
-
 	return nil
 }

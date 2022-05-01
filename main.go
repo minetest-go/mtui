@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"mtadmin/db"
+	"mtadmin/app"
 	"mtadmin/mod"
 	"mtadmin/web"
 	"net/http"
@@ -12,12 +12,12 @@ import (
 func main() {
 	world_dir := os.Getenv("WORLD_DIR")
 
-	repos, err := db.CreateRepositories(world_dir)
+	a, err := app.Create(world_dir)
 	if err != nil {
 		panic(err)
 	}
 
-	err = web.Setup(repos)
+	err = web.Setup(a)
 	if err != nil {
 		panic(err)
 	}
