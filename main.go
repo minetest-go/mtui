@@ -9,7 +9,15 @@ import (
 )
 
 func main() {
+	var err error
 	world_dir := os.Getenv("WORLD_DIR")
+	if world_dir == "" {
+		// fall back to current directory
+		world_dir, err = os.Getwd()
+		if err != nil {
+			panic(err)
+		}
+	}
 
 	a, err := app.Create(world_dir)
 	if err != nil {
