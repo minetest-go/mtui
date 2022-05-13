@@ -29,6 +29,10 @@ func Setup(a *app.App) error {
 		r.PathPrefix("/").Handler(statigz.FileServer(public.Webapp, brotli.AddEncoding))
 	}
 
+	api := NewApi(a)
+	r.HandleFunc("/api/bridge", api.BridgeRx).Methods(http.MethodPost)
+	r.HandleFunc("/api/bridge", api.BridgeTx).Methods(http.MethodGet)
+
 	http.Handle("/", r)
 	return nil
 }
