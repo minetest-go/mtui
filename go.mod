@@ -11,6 +11,7 @@ require (
 
 require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
+	github.com/golang-jwt/jwt/v4 v4.4.1 // indirect
 	github.com/lib/pq v1.10.6 // indirect
 	github.com/minetest-go/mtdb v1.1.18 // indirect
 )

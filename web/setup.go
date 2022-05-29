@@ -18,6 +18,11 @@ func Setup(a *app.App) error {
 	// rest api
 	SetupBrowse(r, a)
 
+	api := NewApi(a)
+	r.HandleFunc("/api/login", api.Login).Methods(http.MethodPost)
+	r.HandleFunc("/api/bridge", api.BridgeRx).Methods(http.MethodPost)
+	r.HandleFunc("/api/bridge", api.BridgeTx).Methods(http.MethodGet)
+
 	// static files
 	if os.Getenv("WEBDEV") == "true" {
 		fmt.Println("using live mode")
@@ -28,10 +33,6 @@ func Setup(a *app.App) error {
 		fmt.Println("using embed mode")
 		r.PathPrefix("/").Handler(statigz.FileServer(public.Webapp, brotli.AddEncoding))
 	}
-
-	api := NewApi(a)
-	r.HandleFunc("/api/bridge", api.BridgeRx).Methods(http.MethodPost)
-	r.HandleFunc("/api/bridge", api.BridgeTx).Methods(http.MethodGet)
 
 	http.Handle("/", r)
 	return nil
