@@ -3,15 +3,13 @@ package db
 import (
 	"database/sql"
 
+	"github.com/minetest-go/mtdb"
 	_ "modernc.org/sqlite"
 )
 
 type Repositories struct {
-	Auth       *AuthRepository
-	Privs      *UserPrivilegeRepository
-	Map        *MapRepository
-	ModStorage *ModStorageRepository
-	Players    *PlayerRepository
+	Auth  mtdb.AuthRepository
+	Privs *mtdb.PrivRepository
 }
 
 func CreateRepositories(world_dir string) (*Repositories, error) {
@@ -23,23 +21,8 @@ func CreateRepositories(world_dir string) (*Repositories, error) {
 		return nil, err
 	}
 
-	repos.Auth = NewAuthRepository(auth_db)
-	repos.Privs = NewUserPrivilegeRepository(auth_db)
-
-	repos.Map, err = NewMapRepository(world_dir + "/map.sqlite")
-	if err != nil {
-		return nil, err
-	}
-
-	repos.ModStorage, err = NewModStorageRepository(world_dir + "/mod_storage.sqlite")
-	if err != nil {
-		return nil, err
-	}
-
-	repos.Players, err = NewPlayerRepository(world_dir + "/players.sqlite")
-	if err != nil {
-		return nil, err
-	}
+	repos.Auth = mtdb.NewAuthRepository(auth_db, mtdb.DATABASE_SQLITE)
+	repos.Privs = mtdb.NewPrivilegeRepository(auth_db, mtdb.DATABASE_SQLITE)
 
 	return repos, nil
 }
