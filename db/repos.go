@@ -21,6 +21,9 @@ func CreateRepositories(world_dir string) (*Repositories, error) {
 		return nil, err
 	}
 
+	mtdb.EnableWAL(auth_db)
+	mtdb.MigrateAuthDB(auth_db, mtdb.DATABASE_SQLITE)
+
 	repos.Auth = mtdb.NewAuthRepository(auth_db, mtdb.DATABASE_SQLITE)
 	repos.Privs = mtdb.NewPrivilegeRepository(auth_db, mtdb.DATABASE_SQLITE)
 
