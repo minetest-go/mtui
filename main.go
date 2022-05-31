@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"mtadmin/app"
 	"mtadmin/web"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 )
 
 func main() {
@@ -29,10 +32,18 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Printf("Listening on port %d\n", 8080)
-	err = http.ListenAndServe(":8080", nil)
-	if err != nil {
-		panic(err)
-	}
+	server := &http.Server{Addr: ":3333", Handler: nil}
 
+	go func() {
+		fmt.Printf("Listening on port %d\n", 8080)
+		err = server.ListenAndServe()
+		if err != nil {
+			panic(err)
+		}
+	}()
+
+	var captureSignal = make(chan os.Signal, 1)
+	signal.Notify(captureSignal, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+	<-captureSignal
+	server.Shutdown(context.Background())
 }

@@ -12,8 +12,12 @@ require (
 require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/golang-jwt/jwt/v4 v4.4.1 // indirect
+	github.com/golang-migrate/migrate/v4 v4.15.2 // indirect
+	github.com/hashicorp/errwrap v1.1.0 // indirect
+	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/lib/pq v1.10.6 // indirect
 	github.com/minetest-go/mtdb v1.1.20 // indirect
+	go.uber.org/atomic v1.7.0 // indirect
 )
 
 require (
