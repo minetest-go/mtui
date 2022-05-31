@@ -1,6 +1,9 @@
 package web
 
-import "net/http"
+import (
+	"mtadmin/types"
+	"net/http"
+)
 
 func CheckApiKey(key string, fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -14,11 +17,19 @@ func CheckApiKey(key string, fn http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func Secure(fn http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+type SecureHandlerFunc func(http.ResponseWriter, *http.Request, *types.Claims)
 
-		//TODO: parse and check jwt
-		//TODO: SecureContext
-		fn(w, r)
+func Secure(fn SecureHandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		claims, err := GetClaims(r)
+		if err == err_unauthorized {
+			SendError(w, 401, "unauthorized")
+			return
+		}
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+		fn(w, r, claims)
 	}
 }

@@ -63,6 +63,24 @@ func TestTokenOK(t *testing.T) {
 
 	assert.NotNil(t, claims)
 	assert.Equal(t, "singleplayer", claims.Username)
+
+	// DELETE login
+
+	r = httptest.NewRequest("DELETE", "http://", nil)
+	w = httptest.NewRecorder()
+
+	api.DoLogout(w, r)
+
+	assert.Equal(t, 200, w.Result().StatusCode)
+
+	// Get invalid login
+
+	r = httptest.NewRequest("GET", "http://", nil)
+	w = httptest.NewRecorder()
+
+	api.GetLogin(w, r)
+
+	assert.Equal(t, 401, w.Result().StatusCode)
 }
 
 func TestTokenFailed(t *testing.T) {
