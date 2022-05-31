@@ -68,15 +68,7 @@ func (a *Api) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{
-		Name:     "mtadmin",
-		Value:    token,
-		Path:     "/", //TODO: configure
-		Expires:  time.Now().Add(7 * 24 * time.Hour),
-		Domain:   "127.0.0.1", //TODO
-		HttpOnly: true,
-		Secure:   true, //TODO
-	})
+	SetToken(w, token)
 
 	w.WriteHeader(http.StatusOK)
 }
