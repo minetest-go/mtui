@@ -14,16 +14,20 @@ const TOKEN_COOKIE_NAME = "mtadmin"
 
 var err_unauthorized = errors.New("unauthorized")
 
-func SetToken(w http.ResponseWriter, token string) {
-	http.SetCookie(w, &http.Cookie{
+func createCookie(value string) *http.Cookie {
+	return &http.Cookie{
 		Name:     TOKEN_COOKIE_NAME,
-		Value:    token,
-		Path:     "/", //TODO: configure
+		Value:    value,
+		Path:     os.Getenv("COOKIE_PATH"),
 		Expires:  time.Now().Add(7 * 24 * time.Hour),
-		Domain:   "127.0.0.1", //TODO
+		Domain:   os.Getenv("COOKIE_DOMAIN"),
 		HttpOnly: true,
-		Secure:   true, //TODO
-	})
+		Secure:   os.Getenv("COOKIE_SECURE") == "true",
+	}
+}
+
+func SetToken(w http.ResponseWriter, token string) {
+	http.SetCookie(w, createCookie(token))
 }
 
 func GetToken(r *http.Request) (string, error) {
@@ -39,15 +43,7 @@ func GetToken(r *http.Request) (string, error) {
 }
 
 func RemoveClaims(w http.ResponseWriter) {
-	http.SetCookie(w, &http.Cookie{
-		Name:     TOKEN_COOKIE_NAME,
-		Value:    "",
-		Path:     "/", //TODO: configure
-		Expires:  time.Now().Add(7 * 24 * time.Hour),
-		Domain:   "127.0.0.1", //TODO
-		HttpOnly: true,
-		Secure:   true, //TODO
-	})
+	http.SetCookie(w, createCookie(""))
 }
 
 func SetClaims(w http.ResponseWriter, claims *types.Claims) error {

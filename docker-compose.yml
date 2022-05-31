@@ -25,6 +25,9 @@ services:
    WEBDEV: "true"
    JWTKEY: "mysecretjwtkey"
    APIKEY: "mykey"
+   COOKIE_DOMAIN: "127.0.0.1"
+   COOKIE_SECURE: "false"
+   COOKIE_PATH: "/"
   ports:
     - 8080:8080
   volumes:

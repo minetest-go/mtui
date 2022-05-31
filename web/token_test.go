@@ -25,10 +25,19 @@ func TestTokenOK(t *testing.T) {
 
 	// create user
 
-	assert.NoError(t, app.DBContext.Auth.Create(&mtdb.AuthEntry{
+	auth_entry := &mtdb.AuthEntry{
 		Name:      "singleplayer",
 		Password:  dbpass,
 		LastLogin: 123,
+	}
+	assert.NoError(t, app.DBContext.Auth.Create(auth_entry))
+	assert.NotNil(t, auth_entry.ID)
+
+	// create privs
+
+	assert.NoError(t, app.DBContext.Privs.Create(&mtdb.PrivilegeEntry{
+		ID:        *auth_entry.ID,
+		Privilege: "interact",
 	}))
 
 	// POST login
@@ -63,6 +72,9 @@ func TestTokenOK(t *testing.T) {
 
 	assert.NotNil(t, claims)
 	assert.Equal(t, "singleplayer", claims.Username)
+	assert.NotNil(t, claims.Privileges)
+	assert.Equal(t, 1, len(claims.Privileges))
+	assert.Equal(t, "interact", claims.Privileges[0])
 
 	// DELETE login
 
