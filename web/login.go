@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"mtadmin/auth"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -62,7 +63,7 @@ func (a *Api) Login(w http.ResponseWriter, r *http.Request) {
 		},
 	})
 
-	token, err := t.SignedString([]byte("mykey"))
+	token, err := t.SignedString([]byte(os.Getenv("JWTKEY")))
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
