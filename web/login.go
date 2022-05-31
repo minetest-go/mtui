@@ -19,7 +19,7 @@ type LoginResponse struct {
 }
 
 type Claims struct {
-	*jwt.StandardClaims
+	*jwt.RegisteredClaims
 }
 
 func (a *Api) Login(w http.ResponseWriter, r *http.Request) {
@@ -30,7 +30,7 @@ func (a *Api) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	auth_entry, err := a.app.Repos.Auth.GetByUsername(req.Username)
+	auth_entry, err := a.app.DBContext.Auth.GetByUsername(req.Username)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -57,12 +57,16 @@ func (a *Api) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, &Claims{
-		&jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * 12).Unix(),
+		&jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 12)),
 		},
 	})
 
 	token, err := t.SignedString([]byte("mykey"))
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "mtadmin",

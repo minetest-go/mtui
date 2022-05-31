@@ -20,8 +20,8 @@ func Setup(a *app.App) error {
 
 	api := NewApi(a)
 	r.HandleFunc("/api/login", api.Login).Methods(http.MethodPost)
-	r.HandleFunc("/api/bridge", api.BridgeRx).Methods(http.MethodPost)
-	r.HandleFunc("/api/bridge", api.BridgeTx).Methods(http.MethodGet)
+	r.HandleFunc("/api/bridge", CheckApiKey(os.Getenv("APIKEY"), api.BridgeRx)).Methods(http.MethodPost)
+	r.HandleFunc("/api/bridge", CheckApiKey(os.Getenv("APIKEY"), api.BridgeTx)).Methods(http.MethodGet)
 
 	// static files
 	if os.Getenv("WEBDEV") == "true" {

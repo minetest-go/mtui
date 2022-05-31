@@ -28,6 +28,8 @@ github.com/mattn/go-sqlite3 v1.14.12 h1:TJ1bhYJPV44phC+IMu1u2K/i5RriLTPe+yc68XDJ
 github.com/mattn/go-sqlite3 v1.14.12/go.mod h1:NyWgC/yNuGj7Q9rpYnZvas74GogHl5/Z4A/KQRfk6bU=
 github.com/minetest-go/mtdb v1.1.18 h1:y7FWUjjkE4SFEiTxHJ03OJfWE57OJrPzXAKqDv4IJVo=
 github.com/minetest-go/mtdb v1.1.18/go.mod h1:92EX/ktFTxjP+gw9ROH3Cqm4OXfOxz7xpebKt7iA47Q=
+github.com/minetest-go/mtdb v1.1.20 h1:dklpR1zGbeIJHdsm/FtZG+0/ytDsb2dhsajMBuHET80=
+github.com/minetest-go/mtdb v1.1.20/go.mod h1:92EX/ktFTxjP+gw9ROH3Cqm4OXfOxz7xpebKt7iA47Q=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 h1:OdAsTTz6OkFY5QxjkYwrChwuRruF69c169dPK26NUlk=
