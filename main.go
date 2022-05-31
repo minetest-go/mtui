@@ -32,7 +32,7 @@ func main() {
 		panic(err)
 	}
 
-	server := &http.Server{Addr: ":3333", Handler: nil}
+	server := &http.Server{Addr: ":8080", Handler: nil}
 
 	go func() {
 		fmt.Printf("Listening on port %d\n", 8080)
