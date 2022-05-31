@@ -15,9 +15,6 @@ import (
 func Setup(a *app.App) error {
 	r := mux.NewRouter()
 
-	// rest api
-	SetupBrowse(r, a)
-
 	api := NewApi(a)
 	r.HandleFunc("/api/login", api.DoLogout).Methods(http.MethodDelete)
 	r.HandleFunc("/api/login", api.DoLogin).Methods(http.MethodPost)
