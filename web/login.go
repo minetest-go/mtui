@@ -15,6 +15,10 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
+func (a *Api) DoLogout(w http.ResponseWriter, r *http.Request) {
+	RemoveClaims(w)
+}
+
 func (a *Api) GetLogin(w http.ResponseWriter, r *http.Request) {
 	claims, err := GetClaims(r)
 	if err == err_unauthorized {

@@ -19,6 +19,7 @@ func Setup(a *app.App) error {
 	SetupBrowse(r, a)
 
 	api := NewApi(a)
+	r.HandleFunc("/api/login", api.DoLogout).Methods(http.MethodDelete)
 	r.HandleFunc("/api/login", api.DoLogin).Methods(http.MethodPost)
 	r.HandleFunc("/api/login", api.GetLogin).Methods(http.MethodGet)
 	r.HandleFunc("/api/bridge", CheckApiKey(os.Getenv("APIKEY"), api.BridgeRx)).Methods(http.MethodPost)

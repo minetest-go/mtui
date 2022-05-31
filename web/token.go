@@ -16,7 +16,7 @@ var err_unauthorized = errors.New("unauthorized")
 
 func SetToken(w http.ResponseWriter, token string) {
 	http.SetCookie(w, &http.Cookie{
-		Name:     "mtadmin",
+		Name:     TOKEN_COOKIE_NAME,
 		Value:    token,
 		Path:     "/", //TODO: configure
 		Expires:  time.Now().Add(7 * 24 * time.Hour),
@@ -38,6 +38,18 @@ func GetToken(r *http.Request) (string, error) {
 	return c.Value, nil
 }
 
+func RemoveClaims(w http.ResponseWriter) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     TOKEN_COOKIE_NAME,
+		Value:    "",
+		Path:     "/", //TODO: configure
+		Expires:  time.Now().Add(7 * 24 * time.Hour),
+		Domain:   "127.0.0.1", //TODO
+		HttpOnly: true,
+		Secure:   true, //TODO
+	})
+}
+
 func SetClaims(w http.ResponseWriter, claims *types.Claims) error {
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
@@ -54,6 +66,10 @@ func GetClaims(r *http.Request) (*types.Claims, error) {
 	t, err := GetToken(r)
 	if err != nil {
 		return nil, err
+	}
+
+	if t == "" {
+		return nil, err_unauthorized
 	}
 
 	token, err := jwt.ParseWithClaims(t, &types.Claims{}, func(token *jwt.Token) (interface{}, error) {
