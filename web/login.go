@@ -3,8 +3,8 @@ package web
 import (
 	"encoding/json"
 	"mtadmin/auth"
+	"mtadmin/types"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -15,15 +15,16 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
-type LoginResponse struct {
-	Token string `json:"token"`
+func (a *Api) GetLogin(w http.ResponseWriter, r *http.Request) {
+	claims, err := GetClaims(r)
+	if err == err_unauthorized {
+		SendError(w, 401, "unauthorized")
+	} else {
+		Send(w, claims, err)
+	}
 }
 
-type Claims struct {
-	*jwt.RegisteredClaims
-}
-
-func (a *Api) Login(w http.ResponseWriter, r *http.Request) {
+func (a *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 	req := &LoginRequest{}
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
@@ -57,19 +58,16 @@ func (a *Api) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t := jwt.NewWithClaims(jwt.SigningMethodHS256, &Claims{
-		&jwt.RegisteredClaims{
+	err = SetClaims(w, &types.Claims{
+		RegisteredClaims: &jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 12)),
 		},
+		Username: req.Username,
 	})
-
-	token, err := t.SignedString([]byte(os.Getenv("JWTKEY")))
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
-
-	SetToken(w, token)
 
 	w.WriteHeader(http.StatusOK)
 }
