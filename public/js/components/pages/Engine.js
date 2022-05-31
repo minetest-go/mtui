@@ -1,4 +1,4 @@
-import LiveLogs from './LiveLogs.js';
+import LiveLogs from '../LiveLogs.js';
 
 export default {
 	components: {
