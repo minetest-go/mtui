@@ -5,3 +5,5 @@ const store = Vue.reactive({
 });
 
 export default store;
+
+export const has_priv = priv => store.claims && store.claims.privileges.find(e => e == priv);
