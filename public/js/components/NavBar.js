@@ -18,6 +18,11 @@ export default {
 							<i class="fa fa-home"></i> Home
 						</router-link>
 					</li>
+					<li class="nav-item" v-if="has_priv('interact')">
+						<router-link to="/profile" class="nav-link">
+							<i class="fa fa-user"></i> Profile
+						</router-link>
+					</li>
 					<li class="nav-item" v-if="has_priv('server')">
 						<router-link to="/mods" class="nav-link">
 							<i class="fa fa-bell" style="color: yellow;"></i>
