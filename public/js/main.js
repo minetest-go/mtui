@@ -1,6 +1,7 @@
 import App from './app.js';
 import routes from './routes.js';
 import messages from './messages.js';
+import { check_login } from './service/login.js';
 
 function start(){
 	// create router instance
@@ -21,4 +22,4 @@ function start(){
 	app.mount("#app");
 }
 
-start();
+check_login().then(start);

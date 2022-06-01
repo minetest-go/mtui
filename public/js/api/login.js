@@ -5,7 +5,8 @@ export const login = (username, password) => fetch("api/login", {
         username: username,
         password: password
     })
-});
+})
+.then(r => r.status == 200);
 
 export const logout = () => fetch("api/login", {
     method: "DELETE"
