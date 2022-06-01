@@ -4,11 +4,14 @@ import Engine from './components/pages/Engine.js';
 import Login from './components/pages/login.js';
 
 export default [{
-	path: "/", component: Start
+	path: "/", component: Start,
+	meta: { requiredPriv: "interact" }
 }, {
 	path: "/login", component: Login
 }, {
-	path: "/mods", component: Mods
+	path: "/mods", component: Mods,
+	meta: { requiredPriv: "server" }
 }, {
-	path: "/engine", component: Engine
+	path: "/engine", component: Engine,
+	meta: { requiredPriv: "server" }
 }];

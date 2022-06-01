@@ -2,6 +2,7 @@ import App from './app.js';
 import routes from './routes.js';
 import messages from './messages.js';
 import { check_login } from './service/login.js';
+import router_guards from './util/router_guards.js';
 
 function start(){
 	// create router instance
@@ -9,6 +10,9 @@ function start(){
 		history: VueRouter.createWebHashHistory(),
 		routes: routes
 	});
+
+	// set up router guards
+	router_guards(router);
 
 	const i18n = VueI18n.createI18n({
 		fallbackLocale: 'en',

@@ -1,8 +1,12 @@
 import { has_priv } from "../store/login.js";
+import { logout } from '../service/login.js';
 
 export default {
 	methods: {
-		has_priv: has_priv
+		has_priv: has_priv,
+		logout: function(){
+			logout().then(() => this.$router.push("/login"));
+		}
 	},
 	template: /*html*/`
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -30,6 +34,12 @@ export default {
 						</router-link>
 					</li>
 				</ul>
+				<div class="d-flex">
+					<button class="btn btn-secondary" v-on:click="logout">
+						<i class="fa-solid fa-right-from-bracket"></i>
+						Logout
+					</button>
+				<div>
 			</div>
 		</nav>
 	`

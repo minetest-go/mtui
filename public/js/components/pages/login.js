@@ -25,6 +25,8 @@ export default {
                 this.busy = false;
                 if (!success) {
                     this.error_message = "Login failed!";
+                } else {
+                    this.$router.push("/");
                 }
             });
         },
