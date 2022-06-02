@@ -17,6 +17,7 @@ func Setup(a *app.App) error {
 	r := mux.NewRouter()
 
 	api := NewApi(a)
+	r.HandleFunc("/api/ws", api.Websocket)
 	r.HandleFunc("/api/login", api.DoLogout).Methods(http.MethodDelete)
 	r.HandleFunc("/api/login", api.DoLogin).Methods(http.MethodPost)
 	r.HandleFunc("/api/login", api.GetLogin).Methods(http.MethodGet)
