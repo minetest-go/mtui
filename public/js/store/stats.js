@@ -8,7 +8,6 @@ const store = Vue.reactive({
 });
 
 events.on("stats", function(stats) {
-    console.log(stats);
     Object
     .keys(stats)
     .forEach(k => {
