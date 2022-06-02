@@ -52,7 +52,7 @@ export default {
                         placeholder="Password"
                         :disabled="login_store.loggedIn"
                         v-model="password"/>
-                    <button class="btn btn-primary w-100" v-if="!login_store.loggedIn" v-on:click="login" :disabled="!validInput">
+                    <button class="btn btn-primary w-100" v-if="!login_store.loggedIn" type="submit" :disabled="!validInput">
                         <i class="fa-solid fa-right-to-bracket"></i>
                         Login
                         <i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>

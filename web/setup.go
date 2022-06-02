@@ -20,6 +20,7 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/login", api.DoLogout).Methods(http.MethodDelete)
 	r.HandleFunc("/api/login", api.DoLogin).Methods(http.MethodPost)
 	r.HandleFunc("/api/login", api.GetLogin).Methods(http.MethodGet)
+	r.HandleFunc("/api/changepw", Secure(api.ChangePassword)).Methods(http.MethodPost)
 	r.HandleFunc("/api/bridge/execute_chatcommand", Secure(api.ExecuteChatcommand)).Methods(http.MethodPost)
 	r.HandleFunc("/api/bridge", CheckApiKey(os.Getenv("APIKEY"), a.Bridge.HandlePost)).Methods(http.MethodPost)
 	r.HandleFunc("/api/bridge", CheckApiKey(os.Getenv("APIKEY"), a.Bridge.HandleGet)).Methods(http.MethodGet)

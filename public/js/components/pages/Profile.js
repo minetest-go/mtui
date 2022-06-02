@@ -1,7 +1,11 @@
 import login_store from '../../store/login.js';
+import ChangePassword from '../ChangePassword.js';
 
 export default {
     data: () => login_store,
+    components: {
+        "change-password": ChangePassword
+    },
     methods: {
         getPrivBadgeClass: function(priv) {
             if (priv == "server" || priv == "privs") {
@@ -51,12 +55,7 @@ export default {
                             Password
                         </div>
                         <div class="card-body">
-                            <input type="password" class="form-control" placeholder="Old password"/>
-                            <input type="password" class="form-control" placeholder="New password"/>
-                            <input type="password" class="form-control" placeholder="New password (again)"/>
-                            <a class="btn btn-primary w-100">
-                                Change password
-                            </a>
+                            <change-password/>
                         </div>
                     </div>
                 </div>
