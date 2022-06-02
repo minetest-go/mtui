@@ -1,24 +1,24 @@
 import { execute_chatcommand } from "../../api/chatcommand.js";
 import login_store from '../../store/login.js';
 
+const store = Vue.reactive({
+    login_store: login_store,
+    command: "",
+    success: false,
+    error: false,
+    busy: false,
+    message: ""
+});
+
 export default {
-    data: function() {
-        return {
-            claims: login_store.claims,
-            command: "",
-            success: false,
-            error: false,
-            busy: false,
-            message: ""
-        };
-    },
+    data: () => store,
     methods: {
         execute: function() {
             this.busy = true;
             this.error = false;
             this.success = false;
 
-            execute_chatcommand(this.claims.username, this.command)
+            execute_chatcommand(this.login_store.claims.username, this.command)
             .then(result => {
                 this.busy = false;
                 this.success = result.success;

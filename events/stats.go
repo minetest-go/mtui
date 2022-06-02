@@ -21,7 +21,11 @@ func statsLoop(e *eventbus.EventBus, ch chan *bridge.Command) {
 		case *types.StatsCommand:
 			e.Emit(&eventbus.Event{
 				Type: StatsEvent,
-				Data: data,
+				Data: map[string]float64{
+					"max_lag":      data.MaxLag,
+					"player_count": data.PlayerCount,
+					"time_of_day":  data.TimeOfDay,
+				},
 			})
 		}
 	}

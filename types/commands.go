@@ -21,11 +21,26 @@ type TanCommand struct {
 	TAN        string `json:"tan"`
 }
 
+type PlayerStats struct {
+	Address              string  `json:"address"`
+	IPVersion            float64 `json:"ip_version"`
+	ConnectionUptime     float64 `json:"connection_uptime"`
+	ProtocolVersion      float64 `json:"protocol_version"`
+	FormspecVersion      float64 `json:"formspec_version"`
+	LangCode             string  `json:"lang_code"`
+	MinRTT               float64 `json:"min_rtt"`
+	MaxRTT               float64 `json:"max_rtt"`
+	AvgRTT               float64 `json:"avg_rtt"`
+	SerializationVersion float64 `json:"ser_vers"`
+	VersionString        string  `json:"vers_string"`
+}
+
 type StatsCommand struct {
 	Uptime      float64 `json:"uptime"`
 	MaxLag      float64 `json:"max_lag"`
 	TimeOfDay   float64 `json:"time_of_day"`
 	PlayerCount float64 `json:"player_count"`
+	Players     map[string]*PlayerStats
 }
 
 type ExecuteChatCommandRequest struct {
