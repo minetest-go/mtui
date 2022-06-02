@@ -53,11 +53,13 @@ export default {
                         :disabled="login_store.loggedIn"
                         v-model="password"/>
                     <button class="btn btn-primary w-100" v-if="!login_store.loggedIn" v-on:click="login" :disabled="!validInput">
+                        <i class="fa-solid fa-right-to-bracket"></i>
                         Login
                         <i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>
                         <span class="badge bg-danger">{{error_message}}</span>
                     </button>
                     <a class="btn btn-secondary w-100" v-if="login_store.loggedIn" v-on:click="logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
                         Logout
                         <i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>
                     </a>

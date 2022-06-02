@@ -1,7 +1,9 @@
 import { has_priv } from "../store/login.js";
 import { logout } from '../service/login.js';
+import login_store from '../store/login.js';
 
 export default {
+	data: () => login_store,
 	methods: {
 		has_priv: has_priv,
 		logout: function(){
@@ -11,8 +13,8 @@ export default {
 	template: /*html*/`
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 			<div class="container-fluid">
-				<router-link to="/" class="navbar-brand">MT UI</router-link>
-				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+				<router-link to="/" class="navbar-brand">Minetest Web UI</router-link>
+				<ul class="navbar-nav me-auto mb-2 mb-lg-0" v-if="loggedIn">
 					<li class="nav-item" v-if="has_priv('interact')">
 						<router-link to="/" class="nav-link">
 							<i class="fa fa-home"></i> Home
@@ -39,7 +41,7 @@ export default {
 						</router-link>
 					</li>
 				</ul>
-				<div class="d-flex">
+				<div class="d-flex" v-if="loggedIn">
 					<button class="btn btn-secondary" v-on:click="logout">
 						<i class="fa-solid fa-right-from-bracket"></i>
 						Logout
