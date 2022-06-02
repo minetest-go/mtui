@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"mtui/app"
+	"mtui/events"
 	"mtui/web"
 	"net/http"
 	"os"
@@ -28,6 +29,11 @@ func main() {
 	}
 
 	err = web.Setup(a)
+	if err != nil {
+		panic(err)
+	}
+
+	err = events.Setup(a)
 	if err != nil {
 		panic(err)
 	}
