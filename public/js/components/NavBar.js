@@ -1,6 +1,7 @@
 import { has_priv } from "../store/login.js";
 import { logout } from '../service/login.js';
 import login_store from '../store/login.js';
+import StatsDisplay from './StatsDisplay.js';
 
 export default {
 	data: () => login_store,
@@ -9,6 +10,9 @@ export default {
 		logout: function(){
 			logout().then(() => this.$router.push("/login"));
 		}
+	},
+	components: {
+		"stats-display": StatsDisplay
 	},
 	template: /*html*/`
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -41,8 +45,9 @@ export default {
 						</router-link>
 					</li>
 				</ul>
-				<div class="d-flex" v-if="loggedIn">
-					<button class="btn btn-secondary" v-on:click="logout">
+				<div class="d-flex">
+					<stats-display class="navbar-text" style="padding-right: 10px;"/>
+					<button class="btn btn-secondary" v-on:click="logout" v-if="loggedIn">
 						<i class="fa-solid fa-right-from-bracket"></i>
 						Logout
 					</button>

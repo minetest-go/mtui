@@ -15,9 +15,10 @@ type PingCommand struct {
 }
 
 type StatsCommand struct {
-	Uptime    float64 `json:"uptime"`
-	MaxLag    float64 `json:"max_lag"`
-	TimeOfDay float64 `json:"time_of_day"`
+	Uptime      float64 `json:"uptime"`
+	MaxLag      float64 `json:"max_lag"`
+	TimeOfDay   float64 `json:"time_of_day"`
+	PlayerCount float64 `json:"player_count"`
 }
 
 type ExecuteChatCommandRequest struct {
