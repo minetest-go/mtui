@@ -23,7 +23,6 @@ func statsLoop(e *eventbus.EventBus, ch chan *bridge.Command) {
 				Type: StatsEvent,
 				Data: data,
 			})
-			fmt.Printf("Stats: uptime=%f, max_lag=%f, tod=%f\n", data.Uptime, data.MaxLag, data.TimeOfDay)
 		}
 	}
 }
