@@ -2,6 +2,9 @@ package bridge
 
 import (
 	"encoding/json"
+	"errors"
+	"math"
+	"math/rand"
 	"sync"
 	"time"
 )
@@ -20,6 +23,8 @@ func New() *Bridge {
 	}
 }
 
+var ErrTimeout = errors.New("timeout")
+
 // one-way command, no response
 func (b *Bridge) SendCommand(t CommandType, obj interface{}) error {
 	data, err := json.Marshal(obj)
@@ -32,8 +37,41 @@ func (b *Bridge) SendCommand(t CommandType, obj interface{}) error {
 
 // execute a command on the remote side and wait for the response
 func (b *Bridge) ExecuteCommand(t CommandType, obj interface{}, timeout time.Duration) (*Command, error) {
-	b.SendCommand(t, obj)
-	return nil, nil //TODO
+	var rx_cmd *Command
+	var err error
+	id := math.Floor(rand.Float64() * 64000)
+
+	data, err := json.Marshal(obj)
+	if err != nil {
+		return nil, err
+	}
+	b.tx_cmds <- &Command{Type: t, Data: data, ID: &id}
+
+	c := b.AddHandler()
+	then := time.Now().Add(timeout)
+
+	for {
+		select {
+		case cmd := <-c:
+			if cmd.ID != nil && *cmd.ID == id {
+				rx_cmd = cmd
+				break
+			}
+		case <-time.After(100 * time.Millisecond):
+		}
+		if rx_cmd != nil {
+			// result received
+			break
+		}
+		if time.Now().After(then) {
+			// request timed out
+			err = ErrTimeout
+			break
+		}
+	}
+
+	b.RemoveHandler(c)
+	return rx_cmd, err
 }
 
 type CommandHandler func(*Command)
