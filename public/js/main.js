@@ -3,6 +3,7 @@ import routes from './routes.js';
 import messages from './messages.js';
 import { check_login } from './service/login.js';
 import router_guards from './util/router_guards.js';
+import setup_ws from './ws.js';
 
 function start(){
 	// create router instance
@@ -18,6 +19,9 @@ function start(){
 		fallbackLocale: 'en',
 		messages: messages
 	});
+
+	// set up websocket events
+	setup_ws();
 
 	// start vue
 	const app = Vue.createApp(App);
