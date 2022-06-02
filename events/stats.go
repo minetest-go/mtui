@@ -7,7 +7,10 @@ import (
 	"mtui/types"
 )
 
-const StatsEvent eventbus.EventType = "stats"
+const (
+	StatsEvent       eventbus.EventType = "stats"
+	PlayerStatsEvent eventbus.EventType = "player_stats"
+)
 
 func statsLoop(e *eventbus.EventBus, ch chan *bridge.Command) {
 	for {
@@ -26,6 +29,12 @@ func statsLoop(e *eventbus.EventBus, ch chan *bridge.Command) {
 					"player_count": data.PlayerCount,
 					"time_of_day":  data.TimeOfDay,
 				},
+			})
+
+			e.Emit(&eventbus.Event{
+				Type:         PlayerStatsEvent,
+				Data:         data.Players,
+				RequiredPriv: "interact",
 			})
 		}
 	}

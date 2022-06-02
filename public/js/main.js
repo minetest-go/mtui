@@ -3,7 +3,7 @@ import routes from './routes.js';
 import messages from './messages.js';
 import { check_login } from './service/login.js';
 import router_guards from './util/router_guards.js';
-import setup_ws from './ws.js';
+import { connect } from './ws.js';
 
 function start(){
 	// create router instance
@@ -21,7 +21,7 @@ function start(){
 	});
 
 	// set up websocket events
-	setup_ws();
+	connect();
 
 	// start vue
 	const app = Vue.createApp(App);

@@ -7,8 +7,9 @@ import (
 type EventType string
 
 type Event struct {
-	Type EventType   `json:"type"`
-	Data interface{} `json:"data"`
+	Type         EventType   `json:"type"`
+	RequiredPriv string      `json:"required_priv"`
+	Data         interface{} `json:"data"`
 }
 
 type EventBus struct {
