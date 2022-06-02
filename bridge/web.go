@@ -1,4 +1,4 @@
-package web
+package bridge
 
 import (
 	"encoding/json"
@@ -7,18 +7,21 @@ import (
 	"time"
 )
 
-func (api *Api) BridgeRx(w http.ResponseWriter, r *http.Request) {
+func (b *Bridge) HandlePost(w http.ResponseWriter, r *http.Request) {
 	cmd := &types.Command{}
 	err := json.NewDecoder(r.Body).Decode(cmd)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		w.Header().Set("Content-Type", "text/plain; charset=UTF-8")
+		w.WriteHeader(500)
+		w.Write([]byte(err.Error()))
 		return
 	}
 
-	select {
-	case api.rx_cmds <- cmd:
-	default:
+	b.handlers_lock.RLock()
+	for _, handler := range b.handlers {
+		handler(cmd)
 	}
+	b.handlers_lock.RUnlock()
 }
 
 // collects commands for a certain amount of time
@@ -43,12 +46,12 @@ func collectCommands(ch chan *types.Command, delay time.Duration) []*types.Comma
 	}
 }
 
-func (api *Api) BridgeTx(w http.ResponseWriter, r *http.Request) {
+func (b *Bridge) HandleGet(w http.ResponseWriter, r *http.Request) {
 	then := time.Now().Add(20 * time.Second)
 	cmds := make([]*types.Command, 0)
 	for {
 		// collect commands for at least 100ms
-		cmds = collectCommands(api.tx_cmds, 100*time.Millisecond)
+		cmds = collectCommands(b.tx_cmds, 100*time.Millisecond)
 
 		if len(cmds) > 0 {
 			// commands received, return them
@@ -61,5 +64,7 @@ func (api *Api) BridgeTx(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	Send(w, cmds, nil)
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(cmds)
 }

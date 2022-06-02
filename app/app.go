@@ -1,6 +1,7 @@
 package app
 
 import (
+	"mtui/bridge"
 	"mtui/db"
 
 	"github.com/minetest-go/mtdb"
@@ -10,6 +11,7 @@ type App struct {
 	DBContext *mtdb.Context
 	WorldDir  string
 	Repos     *db.Repositories
+	Bridge    *bridge.Bridge
 }
 
 func Create(world_dir string) (*App, error) {
@@ -34,6 +36,7 @@ func Create(world_dir string) (*App, error) {
 		WorldDir:  world_dir,
 		DBContext: dbctx,
 		Repos:     repos,
+		Bridge:    bridge.New(),
 	}
 
 	return app, nil

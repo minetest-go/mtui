@@ -23,32 +23,29 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/login", api.DoLogout).Methods(http.MethodDelete)
 	r.HandleFunc("/api/login", api.DoLogin).Methods(http.MethodPost)
 	r.HandleFunc("/api/login", api.GetLogin).Methods(http.MethodGet)
-	r.HandleFunc("/api/bridge", CheckApiKey(os.Getenv("APIKEY"), api.BridgeRx)).Methods(http.MethodPost)
-	r.HandleFunc("/api/bridge", CheckApiKey(os.Getenv("APIKEY"), api.BridgeTx)).Methods(http.MethodGet)
+	r.HandleFunc("/api/bridge", CheckApiKey(os.Getenv("APIKEY"), a.Bridge.HandlePost)).Methods(http.MethodPost)
+	r.HandleFunc("/api/bridge", CheckApiKey(os.Getenv("APIKEY"), a.Bridge.HandleGet)).Methods(http.MethodGet)
 
 	go func() {
 		time.Sleep(2 * time.Second)
 		id := math.Floor(rand.Float64() * 64000)
-		api.tx_cmds <- &types.Command{
+		a.Bridge.SendCommand(&types.Command{
 			Type: types.COMMAND_PING,
 			ID:   &id,
-		}
+		})
 	}()
 
-	go func() {
-		for {
-			cmd := <-api.rx_cmds
-			payload, err := types.ParseCommand(cmd)
-			if err != nil {
-				fmt.Printf("Payload error: %s\n", err.Error())
-				continue
-			}
-			switch data := payload.(type) {
-			case *types.StatsCommand:
-				fmt.Printf("Stats: uptime=%f, max_lag=%f, tod=%f\n", data.Uptime, data.MaxLag, data.TimeOfDay)
-			}
+	a.Bridge.RegisterCommandHandler(func(cmd *types.Command) {
+		payload, err := types.ParseCommand(cmd)
+		if err != nil {
+			fmt.Printf("Payload error: %s\n", err.Error())
+			return
 		}
-	}()
+		switch data := payload.(type) {
+		case *types.StatsCommand:
+			fmt.Printf("Stats: uptime=%f, max_lag=%f, tod=%f\n", data.Uptime, data.MaxLag, data.TimeOfDay)
+		}
+	})
 
 	// static files
 	if os.Getenv("WEBDEV") == "true" {
