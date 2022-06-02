@@ -6,12 +6,19 @@ import (
 )
 
 const (
-	COMMAND_PING    bridge.CommandType = "ping"
-	COMMAND_STATS   bridge.CommandType = "stats"
-	COMMAND_CHATCMD bridge.CommandType = "execute_command"
+	COMMAND_PING       bridge.CommandType = "ping"
+	COMMAND_STATS      bridge.CommandType = "stats"
+	COMMAND_CHATCMD    bridge.CommandType = "execute_command"
+	COMMAND_TAN_SET    bridge.CommandType = "tan_set"
+	COMMAND_TAN_REMOVE bridge.CommandType = "tan_remove"
 )
 
 type PingCommand struct {
+}
+
+type TanCommand struct {
+	Playername string `json:"playername"`
+	TAN        string `json:"tan"`
 }
 
 type StatsCommand struct {
@@ -43,6 +50,10 @@ func ParseCommand(cmd *bridge.Command) (interface{}, error) {
 		payload = &StatsCommand{}
 	case COMMAND_CHATCMD:
 		payload = &ExecuteChatCommandResponse{}
+	case COMMAND_TAN_SET:
+		payload = &TanCommand{}
+	case COMMAND_TAN_REMOVE:
+		payload = &TanCommand{}
 	}
 
 	if payload != nil {

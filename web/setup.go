@@ -24,6 +24,9 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/bridge", CheckApiKey(os.Getenv("APIKEY"), a.Bridge.HandlePost)).Methods(http.MethodPost)
 	r.HandleFunc("/api/bridge", CheckApiKey(os.Getenv("APIKEY"), a.Bridge.HandleGet)).Methods(http.MethodGet)
 
+	// start tan login listener
+	go api.TanSetListener(a.Bridge.AddHandler())
+
 	// static files
 	if os.Getenv("WEBDEV") == "true" {
 		fmt.Println("using live mode")

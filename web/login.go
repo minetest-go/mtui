@@ -2,7 +2,9 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"mtui/auth"
+	"mtui/bridge"
 	"mtui/types"
 	"net/http"
 	"time"
@@ -13,6 +15,28 @@ import (
 type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+}
+
+var tan_map = make(map[string]string)
+
+func (a Api) TanSetListener(c chan *bridge.Command) {
+	for {
+		cmd := <-c
+		o, err := types.ParseCommand(cmd)
+		if err != nil {
+			fmt.Printf("Tan-listener-error: %s\n", err.Error())
+			continue
+		}
+
+		switch payload := o.(type) {
+		case *types.TanCommand:
+			if payload.TAN == "" {
+				delete(tan_map, payload.Playername)
+			} else {
+				tan_map[payload.Playername] = payload.TAN
+			}
+		}
+	}
 }
 
 func (a *Api) DoLogout(w http.ResponseWriter, r *http.Request) {
@@ -46,20 +70,34 @@ func (a *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	salt, verifier, err := auth.ParseDBPassword(auth_entry.Password)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
+	tan := tan_map[req.Username]
 
-	ok, err := auth.VerifyAuth(req.Username, req.Password, salt, verifier)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-	if !ok {
-		SendError(w, 401, "unauthorized")
-		return
+	if tan == "" {
+		// login against the database password
+		salt, verifier, err := auth.ParseDBPassword(auth_entry.Password)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+
+		ok, err := auth.VerifyAuth(req.Username, req.Password, salt, verifier)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+		if !ok {
+			SendError(w, 401, "unauthorized")
+			return
+		}
+	} else {
+		// login with tan
+		if tan != req.Password {
+			SendError(w, 401, "unauthorized")
+			return
+		}
+
+		// remove tan (single-use)
+		delete(tan_map, req.Username)
 	}
 
 	privs, err := a.app.DBContext.Privs.GetByID(*auth_entry.ID)
