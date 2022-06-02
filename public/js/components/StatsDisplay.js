@@ -12,7 +12,7 @@ export default {
             return Math.floor(this.time_of_day * 24);
         },
         minute: function() {
-            const min = Math.floor((this.time_of_day % 1000) / 1000 * 60);
+            const min = Math.floor(((this.time_of_day * 24) - this.hour) * 60);
             return min >= 10 ? min : "0" + min;
         }
     },
