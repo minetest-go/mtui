@@ -56,6 +56,16 @@ func TestBridgeReceiveCommand(t *testing.T) {
 	assert.Equal(t, TestCommand, cmd.Type)
 }
 
+func TestBridgeReceiveInvalidCommand(t *testing.T) {
+	b := bridge.New()
+
+	r := httptest.NewRequest("POST", "http://", bytes.NewBuffer([]byte("blah")))
+	w := httptest.NewRecorder()
+
+	b.HandlePost(w, r)
+	assert.Equal(t, 500, w.Result().StatusCode)
+}
+
 func TestBridgeExecuteCommandTimeout(t *testing.T) {
 	b := bridge.New()
 	cmd, err := b.ExecuteCommand(TestCommand, nil, 100*time.Millisecond)
