@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
-	"mtadmin/app"
-	"mtadmin/web"
+	"mtui/app"
+	"mtui/web"
 	"net/http"
 	"os"
 	"os/signal"

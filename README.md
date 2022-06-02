@@ -1,4 +1,4 @@
-# mtadmin
+# mtui
 
 Minetest administration web UI
 
@@ -8,7 +8,7 @@ Minetest administration web UI
 
 * docker
 * docker-compose
-* `mtadmin_mod` in relative `../mtadmin_mod` folder
+* `mtui_mod` in relative `../mtui_mod` folder
 
 # License
 

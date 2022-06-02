@@ -9,7 +9,7 @@ import (
 )
 
 func setupDB(t *testing.T) (*sql.DB, *Repositories) {
-	tmpdir, err := os.MkdirTemp(os.TempDir(), "mtadmin")
+	tmpdir, err := os.MkdirTemp(os.TempDir(), "mtui")
 	assert.NoError(t, err)
 
 	db_, err := Init(tmpdir)

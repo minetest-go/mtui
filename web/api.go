@@ -1,8 +1,8 @@
 package web
 
 import (
-	"mtadmin/app"
-	"mtadmin/types"
+	"mtui/app"
+	"mtui/types"
 )
 
 type Api struct {

@@ -2,7 +2,7 @@ package web
 
 import (
 	"errors"
-	"mtadmin/types"
+	"mtui/types"
 	"net/http"
 	"os"
 	"time"
@@ -10,7 +10,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-const TOKEN_COOKIE_NAME = "mtadmin"
+const TOKEN_COOKIE_NAME = "mtui"
 
 var err_unauthorized = errors.New("unauthorized")
 

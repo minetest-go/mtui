@@ -1,4 +1,4 @@
-module mtadmin
+module mtui
 
 go 1.18
 

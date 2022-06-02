@@ -1,7 +1,7 @@
 package web
 
 import (
-	"mtadmin/types"
+	"mtui/types"
 	"net/http"
 )
 

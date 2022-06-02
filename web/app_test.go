@@ -1,8 +1,8 @@
 package web_test
 
 import (
-	"mtadmin/app"
-	"mtadmin/web"
+	"mtui/app"
+	"mtui/web"
 	"os"
 	"path"
 	"testing"
@@ -11,7 +11,7 @@ import (
 )
 
 func CreateTestApp(t *testing.T) *app.App {
-	tmpdir, err := os.MkdirTemp(os.TempDir(), "mtadmin_app")
+	tmpdir, err := os.MkdirTemp(os.TempDir(), "mtui_app")
 	assert.NoError(t, err)
 
 	contents := `

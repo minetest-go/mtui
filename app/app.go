@@ -1,7 +1,7 @@
 package app
 
 import (
-	"mtadmin/db"
+	"mtui/db"
 
 	"github.com/minetest-go/mtdb"
 )

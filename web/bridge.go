@@ -2,7 +2,7 @@ package web
 
 import (
 	"encoding/json"
-	"mtadmin/types"
+	"mtui/types"
 	"net/http"
 	"time"
 )

@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"mtadmin/auth"
-	"mtadmin/types"
-	"mtadmin/web"
+	"mtui/auth"
+	"mtui/types"
+	"mtui/web"
 	"net/http/httptest"
 	"testing"
 

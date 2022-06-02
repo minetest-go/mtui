@@ -9,7 +9,7 @@ import (
 
 func Init(world_dir string) (*sql.DB, error) {
 	var err error
-	db, err := sql.Open("sqlite", path.Join(world_dir, "mtadmin.sqlite"))
+	db, err := sql.Open("sqlite", path.Join(world_dir, "mtui.sqlite"))
 	if err != nil {
 		return nil, err
 	}

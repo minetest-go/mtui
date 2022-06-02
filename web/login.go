@@ -2,8 +2,8 @@ package web
 
 import (
 	"encoding/json"
-	"mtadmin/auth"
-	"mtadmin/types"
+	"mtui/auth"
+	"mtui/types"
 	"net/http"
 	"time"
 
