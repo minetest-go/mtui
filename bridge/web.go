@@ -2,13 +2,12 @@ package bridge
 
 import (
 	"encoding/json"
-	"mtui/types"
 	"net/http"
 	"time"
 )
 
 func (b *Bridge) HandlePost(w http.ResponseWriter, r *http.Request) {
-	cmd := &types.Command{}
+	cmd := &Command{}
 	err := json.NewDecoder(r.Body).Decode(cmd)
 	if err != nil {
 		w.Header().Set("Content-Type", "text/plain; charset=UTF-8")
@@ -19,14 +18,17 @@ func (b *Bridge) HandlePost(w http.ResponseWriter, r *http.Request) {
 
 	b.handlers_lock.RLock()
 	for _, handler := range b.handlers {
-		handler(cmd)
+		select {
+		case handler <- cmd:
+		case <-time.After(10 * time.Millisecond):
+		}
 	}
 	b.handlers_lock.RUnlock()
 }
 
 // collects commands for a certain amount of time
-func collectCommands(ch chan *types.Command, delay time.Duration) []*types.Command {
-	cmd_list := make([]*types.Command, 0)
+func collectCommands(ch chan *Command, delay time.Duration) []*Command {
+	cmd_list := make([]*Command, 0)
 	then := time.Now().Add(delay)
 	t := time.NewTimer(delay)
 
@@ -48,7 +50,7 @@ func collectCommands(ch chan *types.Command, delay time.Duration) []*types.Comma
 
 func (b *Bridge) HandleGet(w http.ResponseWriter, r *http.Request) {
 	then := time.Now().Add(20 * time.Second)
-	cmds := make([]*types.Command, 0)
+	cmds := make([]*Command, 0)
 	for {
 		// collect commands for at least 100ms
 		cmds = collectCommands(b.tx_cmds, 100*time.Millisecond)
@@ -59,7 +61,7 @@ func (b *Bridge) HandleGet(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if time.Now().After(then) {
-			// time is up and not commands received
+			// time is up and no commands received
 			break
 		}
 	}

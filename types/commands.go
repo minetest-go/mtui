@@ -1,19 +1,14 @@
 package types
 
-import "encoding/json"
-
-type CommandType string
-
-const (
-	COMMAND_PING  CommandType = "ping"
-	COMMAND_STATS CommandType = "stats"
+import (
+	"encoding/json"
+	"mtui/bridge"
 )
 
-type Command struct {
-	Type CommandType     `json:"type"`
-	ID   *float64        `json:"id"`
-	Data json.RawMessage `json:"data"`
-}
+const (
+	COMMAND_PING  bridge.CommandType = "ping"
+	COMMAND_STATS bridge.CommandType = "stats"
+)
 
 type PingCommand struct {
 }
@@ -25,7 +20,7 @@ type StatsCommand struct {
 }
 
 // Parse an incoming command
-func ParseCommand(cmd *Command) (interface{}, error) {
+func ParseCommand(cmd *bridge.Command) (interface{}, error) {
 	var err error
 	var payload interface{}
 
