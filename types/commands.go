@@ -22,6 +22,7 @@ type TanCommand struct {
 }
 
 type PlayerStats struct {
+	Name                 string  `json:"name"`
 	Address              string  `json:"address"`
 	IPVersion            float64 `json:"ip_version"`
 	ConnectionUptime     float64 `json:"connection_uptime"`
@@ -40,7 +41,7 @@ type StatsCommand struct {
 	MaxLag      float64 `json:"max_lag"`
 	TimeOfDay   float64 `json:"time_of_day"`
 	PlayerCount float64 `json:"player_count"`
-	Players     map[string]*PlayerStats
+	Players     []*PlayerStats
 }
 
 type ExecuteChatCommandRequest struct {

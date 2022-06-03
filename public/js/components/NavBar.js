@@ -1,10 +1,16 @@
 import { has_priv } from "../store/login.js";
 import { logout } from '../service/login.js';
 import login_store from '../store/login.js';
+import stats_store from '../store/stats.js';
 import StatsDisplay from './StatsDisplay.js';
 
 export default {
-	data: () => login_store,
+	data: function() {
+		return {
+			login: login_store,
+			stats: stats_store
+		};
+	},
 	methods: {
 		has_priv: has_priv,
 		logout: function(){
@@ -18,7 +24,7 @@ export default {
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 			<div class="container-fluid">
 				<router-link to="/" class="navbar-brand">Minetest Web UI</router-link>
-				<ul class="navbar-nav me-auto mb-2 mb-lg-0" v-if="loggedIn">
+				<ul class="navbar-nav me-auto mb-2 mb-lg-0" v-if="login.loggedIn">
 					<li class="nav-item" v-if="has_priv('interact')">
 						<router-link to="/" class="nav-link">
 							<i class="fa fa-home"></i> Home
@@ -34,25 +40,16 @@ export default {
 							<i class="fa-solid fa-terminal"></i> Shell
 						</router-link>
 					</li>
-					<li class="nav-item" v-if="has_priv('server')">
-						<router-link to="/mods" class="nav-link">
-							<i class="fa fa-bell" style="color: yellow;"></i>
-							<i class="fa fa-puzzle-piece"></i>
-							Mods
-						</router-link>
-					</li>
-					<li class="nav-item" v-if="has_priv('server')">
-						<router-link to="/engine" class="nav-link">
-							<i class="fa fa-gears"></i>
-							<i class="fa fa-bell" style="color: yellow;"></i>
-							<i class="fa fa-play" style="color: green;"></i>
-							Minetest engine
+					<li class="nav-item" v-if="has_priv('ban')">
+						<router-link to="/online-players" class="nav-link">
+							<i class="fa fa-users"></i> Online players
+							<span class="badge rounded-pill bg-info">{{stats.player_count}}</span>
 						</router-link>
 					</li>
 				</ul>
 				<div class="d-flex">
 					<stats-display class="navbar-text" style="padding-right: 10px;"/>
-					<button class="btn btn-secondary" v-on:click="logout" v-if="loggedIn">
+					<button class="btn btn-secondary" v-on:click="logout" v-if="login.loggedIn">
 						<i class="fa-solid fa-right-from-bracket"></i>
 						Logout
 					</button>

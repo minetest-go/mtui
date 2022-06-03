@@ -34,7 +34,7 @@ func statsLoop(e *eventbus.EventBus, ch chan *bridge.Command) {
 			e.Emit(&eventbus.Event{
 				Type:         PlayerStatsEvent,
 				Data:         data.Players,
-				RequiredPriv: "interact",
+				RequiredPriv: "ban",
 			})
 		}
 	}

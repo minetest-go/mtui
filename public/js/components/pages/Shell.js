@@ -1,5 +1,5 @@
 import { execute_chatcommand } from "../../api/chatcommand.js";
-import login_store from '../../store/login.js';
+import login_store, { has_priv } from '../../store/login.js';
 
 const store = Vue.reactive({
     login_store: login_store,
@@ -13,6 +13,11 @@ const store = Vue.reactive({
 export default {
     data: () => store,
     methods: {
+        has_priv: has_priv,
+        predefined: function(cmd) {
+            this.command = cmd;
+            this.execute();
+        },
         execute: function() {
             this.busy = true;
             this.error = false;
@@ -42,6 +47,15 @@ export default {
                 </button>
             </div>
         </form>
+        <div class="row">
+            <div class="col-md-12">
+            <a class="btn btn-secondary" v-on:click="predefined('status')" v-if="has_priv('interact')">status</a>
+            <a class="btn btn-secondary" v-on:click="predefined('privs')" v-if="has_priv('interact')">privs</a>
+            <a class="btn btn-secondary" v-on:click="predefined('days')" v-if="has_priv('interact')">days</a>
+            <a class="btn btn-secondary" v-on:click="predefined('time 6000')" v-if="has_priv('settime')">time 6000</a>
+            <a class="btn btn-secondary" v-on:click="predefined('shutdown 120 -r')" v-if="has_priv('server')">shutdown 120 -r</a>
+            </div>
+        </div>
         <hr>
         <div class="row">
             <div class="col-md-12">

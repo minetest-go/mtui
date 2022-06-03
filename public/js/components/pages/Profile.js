@@ -32,8 +32,8 @@ export default {
                             Privileges
                         </div>
                         <div class="card-body">
-                            <ul v-for="priv in claims.privileges">
-                                <li>
+                            <ul>
+                                <li v-for="priv in claims.privileges">
                                     <span v-bind:class="getPrivBadgeClass(priv)">{{ priv }}</span>
                                 </li>
                             </ul>
