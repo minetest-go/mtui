@@ -3,12 +3,12 @@ package web_test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"mtui/bridge"
 	"mtui/types"
 	"mtui/web"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -43,7 +43,6 @@ func TestTokenOK(t *testing.T) {
 
 	// GET login
 
-	fmt.Printf("%s\n", w.Header().Get("Set-Cookie"))
 	r = httptest.NewRequest("POST", "http://", nil)
 	r.Header.Add("Cookie", w.Header().Get("Set-Cookie"))
 	w = httptest.NewRecorder()
@@ -104,6 +103,8 @@ func TestTokenTanOK(t *testing.T) {
 
 	app.Bridge.HandlePost(w, r)
 	assert.Equal(t, 200, w.Result().StatusCode)
+
+	time.Sleep(time.Millisecond * 20)
 
 	// POST login
 
