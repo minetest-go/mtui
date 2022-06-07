@@ -7,6 +7,7 @@ const (
 	ModTypeGame         ModType    = 0
 	ModTypeRegular      ModType    = 1
 	ModTypeTexturepack  ModType    = 2
+	ModTypeWorldmods    ModType    = 3 // all mods in a submodule repo
 	SourceTypeContentDB SourceType = 0
 	SourceTypeGit       SourceType = 1
 )
