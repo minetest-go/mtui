@@ -1,7 +1,7 @@
 package db_test
 
 import (
-	"mtui/db"
+	"mtui/types"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -17,10 +17,10 @@ func TestModRepository(t *testing.T) {
 	assert.Equal(t, 0, len(list))
 
 	// create entry
-	mod := &db.Mod{
+	mod := &types.Mod{
 		Name:       "mymod",
-		ModType:    db.ModTypeRegular,
-		SourceType: db.SourceTypeGit,
+		ModType:    types.ModTypeRegular,
+		SourceType: types.SourceTypeGit,
 		URL:        "xyz",
 		Version:    "123",
 		AutoUpdate: true,

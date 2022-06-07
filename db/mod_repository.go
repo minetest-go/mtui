@@ -2,30 +2,10 @@ package db
 
 import (
 	"database/sql"
+	"mtui/types"
 
 	"github.com/google/uuid"
 )
-
-type ModType int
-type SourceType int
-
-const (
-	ModTypeGame         ModType    = 0
-	ModTypeRegular      ModType    = 1
-	ModTypeTexturepack  ModType    = 2
-	SourceTypeContentDB SourceType = 0
-	SourceTypeGit       SourceType = 1
-)
-
-type Mod struct {
-	ID         string     `json:"id"`
-	Name       string     `json:"name"`
-	ModType    ModType    `json:"mod_type"`
-	SourceType SourceType `json:"source_type"`
-	URL        string     `json:"url"`
-	Version    string     `json:"version"`
-	AutoUpdate bool       `json:"auto_update"`
-}
 
 type ModRepository struct {
 	db *sql.DB
@@ -35,8 +15,8 @@ func (r *ModRepository) columns() string {
 	return "id,name,mod_type,source_type,url,version,auto_update"
 }
 
-func (r *ModRepository) scan(rows *sql.Rows) (*Mod, error) {
-	entry := &Mod{}
+func (r *ModRepository) scan(rows *sql.Rows) (*types.Mod, error) {
+	entry := &types.Mod{}
 	return entry, rows.Scan(
 		&entry.ID,
 		&entry.Name,
@@ -48,7 +28,7 @@ func (r *ModRepository) scan(rows *sql.Rows) (*Mod, error) {
 	)
 }
 
-func (r *ModRepository) GetAll() ([]*Mod, error) {
+func (r *ModRepository) GetAll() ([]*types.Mod, error) {
 	rows, err := r.db.Query("select " + r.columns() + " from mod")
 	if err == sql.ErrNoRows {
 		return nil, nil
@@ -56,7 +36,7 @@ func (r *ModRepository) GetAll() ([]*Mod, error) {
 		return nil, err
 	}
 
-	list := make([]*Mod, 0)
+	list := make([]*types.Mod, 0)
 	for rows.Next() {
 		m, err := r.scan(rows)
 		if err != nil {
@@ -72,7 +52,7 @@ func (r *ModRepository) Delete(id string) error {
 	return err
 }
 
-func (r *ModRepository) Save(mod *Mod) error {
+func (r *ModRepository) Save(mod *types.Mod) error {
 	if mod.ID == "" {
 		mod.ID = uuid.NewString()
 	}
