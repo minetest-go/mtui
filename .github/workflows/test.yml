@@ -13,6 +13,9 @@ jobs:
         go-version: 1.18.x
     - name: Checkout code
       uses: actions/checkout@v3
+    - name: Install npm modules
+      run: |
+        cd public && npm ci && npm run jshint && npm run bundle
     - name: Calc coverage
       run: |
         go test ./... -v -covermode=count -coverprofile=coverage.out
