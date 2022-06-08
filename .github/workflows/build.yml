@@ -21,7 +21,7 @@ jobs:
 
       - name: Install npm modules
         run: |
-          cd public && npm ci && npm run jshint
+          cd public && npm ci && npm run jshint && npm run bundle
 
       - name: Set up Go
         uses: actions/setup-go@v3.0.0
