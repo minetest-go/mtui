@@ -1,5 +1,11 @@
 package mail
 
+import (
+	"encoding/json"
+	"os"
+	"path"
+)
+
 type Mail struct {
 	world_dir string
 }
@@ -22,11 +28,23 @@ type Contact struct {
 }
 
 func (m *Mail) List(playername string) ([]*Message, error) {
-	//TODO
-	return nil, nil
+	f, err := os.Open(path.Join(m.world_dir, "mails", playername+".json"))
+	if err != nil {
+		return nil, err
+	}
+
+	list := make([]*Message, 0)
+	err = json.NewDecoder(f).Decode(&list)
+	return list, nil
 }
 
 func (m *Mail) Contacts(playername string) (map[string]*Contact, error) {
-	//TODO
-	return nil, nil
+	f, err := os.Open(path.Join(m.world_dir, "mails", "contacts", playername+".json"))
+	if err != nil {
+		return nil, err
+	}
+
+	c := make(map[string]*Contact)
+	err = json.NewDecoder(f).Decode(&c)
+	return c, nil
 }

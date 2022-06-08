@@ -4,6 +4,7 @@ import (
 	"mtui/bridge"
 	"mtui/db"
 	"mtui/eventbus"
+	"mtui/mail"
 
 	"github.com/minetest-go/mtdb"
 )
@@ -14,6 +15,7 @@ type App struct {
 	Repos     *db.Repositories
 	Bridge    *bridge.Bridge
 	WSEvents  *eventbus.EventBus
+	Mail      *mail.Mail
 }
 
 func Create(world_dir string) (*App, error) {
@@ -40,6 +42,7 @@ func Create(world_dir string) (*App, error) {
 		Repos:     repos,
 		Bridge:    bridge.New(),
 		WSEvents:  eventbus.NewEventBus(),
+		Mail:      mail.New(world_dir),
 	}
 
 	return app, nil
