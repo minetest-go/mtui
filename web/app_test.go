@@ -2,11 +2,13 @@ package web_test
 
 import (
 	"mtui/app"
+	"mtui/auth"
 	"mtui/web"
 	"os"
 	"path"
 	"testing"
 
+	"github.com/minetest-go/mtdb"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -33,6 +35,33 @@ func CreateTestApi(t *testing.T) (*web.Api, *app.App) {
 
 	api := web.NewApi(app)
 	assert.NotNil(t, api)
+
+	// start tan login listener
+	go api.TanSetListener(app.Bridge.AddHandler())
+
+	// create test data
+
+	salt, verifier, err := auth.CreateAuth("singleplayer", "mypass")
+	assert.NoError(t, err)
+
+	dbpass := auth.CreateDBPassword(salt, verifier)
+
+	// create user
+
+	auth_entry := &mtdb.AuthEntry{
+		Name:      "singleplayer",
+		Password:  dbpass,
+		LastLogin: 123,
+	}
+	assert.NoError(t, app.DBContext.Auth.Create(auth_entry))
+	assert.NotNil(t, auth_entry.ID)
+
+	// create privs
+
+	assert.NoError(t, app.DBContext.Privs.Create(&mtdb.PrivilegeEntry{
+		ID:        *auth_entry.ID,
+		Privilege: "interact",
+	}))
 
 	return api, app
 }

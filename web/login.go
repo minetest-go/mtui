@@ -111,17 +111,18 @@ func (a *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 		priv_arr[i] = p.Privilege
 	}
 
-	err = SetClaims(w, &types.Claims{
+	claims := &types.Claims{
 		RegisteredClaims: &jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 12)),
 		},
 		Username:   req.Username,
 		Privileges: priv_arr,
-	})
+	}
+	err = SetClaims(w, claims)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	SendJson(w, claims)
 }

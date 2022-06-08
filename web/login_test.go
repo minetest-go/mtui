@@ -3,42 +3,19 @@ package web_test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
-	"mtui/auth"
+	"mtui/bridge"
 	"mtui/types"
 	"mtui/web"
 	"net/http/httptest"
 	"testing"
+	"time"
 
-	"github.com/minetest-go/mtdb"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestTokenOK(t *testing.T) {
 	// setup
-	api, app := CreateTestApi(t)
-
-	salt, verifier, err := auth.CreateAuth("singleplayer", "mypass")
-	assert.NoError(t, err)
-
-	dbpass := auth.CreateDBPassword(salt, verifier)
-
-	// create user
-
-	auth_entry := &mtdb.AuthEntry{
-		Name:      "singleplayer",
-		Password:  dbpass,
-		LastLogin: 123,
-	}
-	assert.NoError(t, app.DBContext.Auth.Create(auth_entry))
-	assert.NotNil(t, auth_entry.ID)
-
-	// create privs
-
-	assert.NoError(t, app.DBContext.Privs.Create(&mtdb.PrivilegeEntry{
-		ID:        *auth_entry.ID,
-		Privilege: "interact",
-	}))
+	api, _ := CreateTestApi(t)
 
 	// POST login
 
@@ -55,10 +32,17 @@ func TestTokenOK(t *testing.T) {
 	api.DoLogin(w, r)
 
 	assert.Equal(t, 200, w.Result().StatusCode)
+	claims := &types.Claims{}
+	assert.NoError(t, json.Unmarshal(w.Body.Bytes(), claims))
+
+	assert.NotNil(t, claims)
+	assert.Equal(t, "singleplayer", claims.Username)
+	assert.NotNil(t, claims.Privileges)
+	assert.Equal(t, 1, len(claims.Privileges))
+	assert.Equal(t, "interact", claims.Privileges[0])
 
 	// GET login
 
-	fmt.Printf("%s\n", w.Header().Get("Set-Cookie"))
 	r = httptest.NewRequest("POST", "http://", nil)
 	r.Header.Add("Cookie", w.Header().Get("Set-Cookie"))
 	w = httptest.NewRecorder()
@@ -67,7 +51,7 @@ func TestTokenOK(t *testing.T) {
 
 	assert.Equal(t, 200, w.Result().StatusCode)
 
-	claims := &types.Claims{}
+	claims = &types.Claims{}
 	assert.NoError(t, json.Unmarshal(w.Body.Bytes(), claims))
 
 	assert.NotNil(t, claims)
@@ -93,6 +77,52 @@ func TestTokenOK(t *testing.T) {
 	api.GetLogin(w, r)
 
 	assert.Equal(t, 401, w.Result().StatusCode)
+}
+
+func TestTokenTanOK(t *testing.T) {
+	// setup
+	api, app := CreateTestApi(t)
+
+	// tan set
+	tanset := &types.TanCommand{
+		Playername: "singleplayer",
+		TAN:        "1234",
+	}
+	tanpayload, err := json.Marshal(tanset)
+	assert.NoError(t, err)
+	cmd := &bridge.Command{
+		Type: types.COMMAND_TAN_SET,
+		Data: tanpayload,
+	}
+
+	buf, err := json.Marshal(cmd)
+	assert.NoError(t, err)
+
+	r := httptest.NewRequest("POST", "http://", bytes.NewBuffer(buf))
+	w := httptest.NewRecorder()
+
+	app.Bridge.HandlePost(w, r)
+	assert.Equal(t, 200, w.Result().StatusCode)
+
+	time.Sleep(time.Millisecond * 20)
+
+	// POST login
+
+	req := &web.LoginRequest{
+		Username: "singleplayer",
+		Password: "1234",
+	}
+	buf, err = json.Marshal(req)
+	assert.NoError(t, err)
+
+	r = httptest.NewRequest("POST", "http://", bytes.NewBuffer(buf))
+	w = httptest.NewRecorder()
+
+	api.DoLogin(w, r)
+
+	assert.Equal(t, 200, w.Result().StatusCode)
+	claims := &types.Claims{}
+	assert.NoError(t, json.Unmarshal(w.Body.Bytes(), claims))
 }
 
 func TestTokenFailed(t *testing.T) {
