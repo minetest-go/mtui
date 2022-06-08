@@ -19,7 +19,7 @@ services:
   command: ["npm", "ci"]
 
  ui:
-  image: golang:1.18.0
+  image: golang:1.18.3
   environment:
    WORLD_DIR: "/minetest_home/worlds/world"
    WEBDEV: "true"
