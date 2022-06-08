@@ -1,0 +1,6 @@
+[submodule "worldmods/mail_mod"]
+	path = worldmods/mail_mod
+	url = https://github.com/minetest-mail/mail_mod
+[submodule "worldmods/mtui_mod"]
+	path = worldmods/mtui_mod
+	url = https://github.com/minetest-go/mtui_mod

@@ -6,7 +6,7 @@ services:
   user: root
   volumes:
     - "minetest_home:/root/.minetest"
-    - "../mtui_mod:/root/.minetest/worlds/world/worldmods/mtui_mod"
+    - "./worldmods:/root/.minetest/worlds/world/worldmods"
     - "./minetest.conf:/etc/minetest/minetest.conf"
   ports:
     - "30000:30000/udp"
