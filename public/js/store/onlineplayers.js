@@ -5,7 +5,7 @@ const store = Vue.reactive({
 });
 
 events.on("player_stats", function(pstats) {
-    store.players = pstats
+    store.players = pstats;
 });
 
 export default store;
