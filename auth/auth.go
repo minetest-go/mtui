@@ -48,6 +48,9 @@ func VerifyAuth(username, password string, salt, verifier []byte) (bool, error) 
 
 	// server
 	B, _, K, err := srp.Handshake(pubA, verifier)
+	if err != nil {
+		return false, err
+	}
 
 	// client
 	clientK, err := srp.CompleteHandshake(pubA, privA, []byte(username), []byte(password), salt, B)

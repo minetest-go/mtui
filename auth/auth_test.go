@@ -58,6 +58,7 @@ func TestAuth(t *testing.T) {
 
 	// ad-hoc creation
 	salt, verifier, err = CreateAuth("a", "b")
+	assert.NoError(t, err)
 
 	// valid credentials
 	success, err = VerifyAuth("a", "b", salt, verifier)
