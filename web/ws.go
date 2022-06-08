@@ -77,6 +77,7 @@ func (api *Api) Websocket(w http.ResponseWriter, r *http.Request) {
 	// send live events
 	for wse := range ch {
 		if cachedEventTypes[wse.Type] {
+			// TODO: don't write to cache in _every_ ws client instance
 			// cache event
 			cache_lock.Lock()
 			cachedEvents[wse.Type] = wse

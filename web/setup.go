@@ -20,6 +20,7 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/login", api.DoLogout).Methods(http.MethodDelete)
 	r.HandleFunc("/api/login", api.DoLogin).Methods(http.MethodPost)
 	r.HandleFunc("/api/login", api.GetLogin).Methods(http.MethodGet)
+	r.HandleFunc("/api/features", api.GetFeatures).Methods(http.MethodGet)
 	r.HandleFunc("/api/mails", Secure(api.GetMails)).Methods(http.MethodGet)
 	r.HandleFunc("/api/contacts", Secure(api.GetContacts)).Methods(http.MethodGet)
 	r.HandleFunc("/api/changepw", Secure(api.ChangePassword)).Methods(http.MethodPost)
@@ -29,6 +30,9 @@ func Setup(a *app.App) error {
 
 	// start tan login listener
 	go api.TanSetListener(a.Bridge.AddHandler())
+
+	// start feature listener
+	go api.FeatureListener(a.Bridge.AddHandler())
 
 	// static files
 	if os.Getenv("WEBDEV") == "true" {

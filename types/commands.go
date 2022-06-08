@@ -11,16 +11,19 @@ const (
 	COMMAND_CHATCMD    bridge.CommandType = "execute_command"
 	COMMAND_TAN_SET    bridge.CommandType = "tan_set"
 	COMMAND_TAN_REMOVE bridge.CommandType = "tan_remove"
+	COMMAND_FEATURES   bridge.CommandType = "features"
 )
 
 type PingCommand struct {
 }
 
+// tan command from the engine
 type TanCommand struct {
 	Playername string `json:"playername"`
 	TAN        string `json:"tan"`
 }
 
+// player stats from the engine
 type PlayerStats struct {
 	Name                 string  `json:"name"`
 	Address              string  `json:"address"`
@@ -36,12 +39,18 @@ type PlayerStats struct {
 	VersionString        string  `json:"vers_string"`
 }
 
+// stats from the engine
 type StatsCommand struct {
 	Uptime      float64 `json:"uptime"`
 	MaxLag      float64 `json:"max_lag"`
 	TimeOfDay   float64 `json:"time_of_day"`
 	PlayerCount float64 `json:"player_count"`
 	Players     []*PlayerStats
+}
+
+// ingame features
+type FeaturesCommand struct {
+	Mail bool `json:"mail"`
 }
 
 type ExecuteChatCommandRequest struct {
@@ -70,6 +79,8 @@ func ParseCommand(cmd *bridge.Command) (interface{}, error) {
 		payload = &TanCommand{}
 	case COMMAND_TAN_REMOVE:
 		payload = &TanCommand{}
+	case COMMAND_FEATURES:
+		payload = &FeaturesCommand{}
 	}
 
 	if payload != nil {
