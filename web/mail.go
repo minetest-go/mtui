@@ -46,7 +46,7 @@ func (a *Api) MarkRead(w http.ResponseWriter, r *http.Request, claims *types.Cla
 	}
 
 	for _, msg := range list {
-		if msg.Sender == sender && msg.Time == time {
+		if msg.Sender == sender && int64(msg.Time) == time {
 			msg.Unread = false
 		}
 	}
@@ -83,7 +83,7 @@ func (a *Api) SendMail(w http.ResponseWriter, r *http.Request, claims *types.Cla
 	}
 
 	// set current time
-	msg.Time = time.Now().Unix()
+	msg.Time = float64(time.Now().Unix())
 
 	recipient_mails, err := a.app.Mail.GetMessages(recipient)
 	if err != nil {

@@ -16,11 +16,11 @@ func New(world_dir string) *Mail {
 }
 
 type Message struct {
-	Body    string `json:"body"`
-	Sender  string `json:"sender"`
-	Subject string `json:"subject"`
-	Time    int64  `json:"time"`
-	Unread  bool   `json:"unread"`
+	Body    string  `json:"body"`
+	Sender  string  `json:"sender"`
+	Subject string  `json:"subject"`
+	Time    float64 `json:"time"`
+	Unread  bool    `json:"unread"`
 }
 
 type Contact struct {

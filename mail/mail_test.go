@@ -49,7 +49,7 @@ func TestListMail(t *testing.T) {
 	assert.Equal(t, "mail\nbody", list[0].Body)
 	assert.Equal(t, "otherplayer", list[0].Sender)
 	assert.Equal(t, "subj", list[0].Subject)
-	assert.Equal(t, int64(1563301643), list[0].Time)
+	assert.Equal(t, float64(1563301643), list[0].Time)
 	assert.Equal(t, false, list[0].Unread)
 
 	list, err = m.GetMessages("unknownuser")
