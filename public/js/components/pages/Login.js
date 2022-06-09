@@ -64,6 +64,10 @@ export default {
                         <i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>
                     </a>
                 </form>
+                &nbsp;
+                <div class="alert alert-primary" role="alert">
+                    <b>Note</b> you can also use <mark>/mtui_tan</mark> ingame to create a temporary password
+                </div>
             </div>
             <div class="col-md-4"></div>
         </div>
