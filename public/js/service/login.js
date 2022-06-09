@@ -3,8 +3,22 @@ import login_store from '../store/login.js';
 import { get_claims, login as api_login, logout as api_logout } from '../api/login.js';
 import { connect } from '../ws.js';
 
+import { check_features, has_feature } from './features.js';
+import { fetch_contacts, fetch_mails } from './mail.js';
+
+function update_mails() {
+    // check mails if available
+    if (has_feature("mail")) {
+        fetch_mails();
+        fetch_contacts();
+    }
+}
+
 export const check_login = () => get_claims().then(c => {
     login_store.claims = c;
+    if (c) {
+        update_mails();
+    }
     return c;
 });
 
