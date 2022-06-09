@@ -1,30 +1,34 @@
 package web
 
 import (
-	"fmt"
-	"mtui/bridge"
-	"mtui/types"
 	"net/http"
+	"os"
+	"path"
 )
 
-var features = types.FeaturesCommand{}
+type Features struct {
+	Mail bool `json:"mail"`
+}
 
-func (a *Api) FeatureListener(c chan *bridge.Command) {
-	for {
-		cmd := <-c
-		o, err := types.ParseCommand(cmd)
-		if err != nil {
-			fmt.Printf("Feature-listener-error: %s\n", err.Error())
-			continue
-		}
-
-		switch payload := o.(type) {
-		case *types.FeaturesCommand:
-			features = *payload
-		}
+func exists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
 	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
 }
 
 func (a *Api) GetFeatures(w http.ResponseWriter, r *http.Request) {
-	SendJson(w, features)
+	has_mail, err := exists(path.Join(a.app.WorldDir, "mails"))
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	SendJson(w, &Features{
+		Mail: has_mail,
+	})
 }

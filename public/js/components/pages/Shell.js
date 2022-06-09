@@ -1,5 +1,6 @@
 import { execute_chatcommand } from "../../api/chatcommand.js";
-import login_store, { has_priv } from '../../store/login.js';
+import login_store from '../../store/login.js';
+import { has_priv } from "../../service/login.js";
 
 const store = Vue.reactive({
     login_store: login_store,

@@ -11,7 +11,6 @@ const (
 	COMMAND_CHATCMD    bridge.CommandType = "execute_command"
 	COMMAND_TAN_SET    bridge.CommandType = "tan_set"
 	COMMAND_TAN_REMOVE bridge.CommandType = "tan_remove"
-	COMMAND_FEATURES   bridge.CommandType = "features"
 )
 
 type PingCommand struct {
@@ -48,11 +47,6 @@ type StatsCommand struct {
 	Players     []*PlayerStats
 }
 
-// ingame features
-type FeaturesCommand struct {
-	Mail bool `json:"mail"`
-}
-
 type ExecuteChatCommandRequest struct {
 	Playername string `json:"playername"`
 	Command    string `json:"command"`
@@ -79,8 +73,6 @@ func ParseCommand(cmd *bridge.Command) (interface{}, error) {
 		payload = &TanCommand{}
 	case COMMAND_TAN_REMOVE:
 		payload = &TanCommand{}
-	case COMMAND_FEATURES:
-		payload = &FeaturesCommand{}
 	}
 
 	if payload != nil {

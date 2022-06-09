@@ -1,18 +1,22 @@
-import { has_priv } from "../store/login.js";
+import { has_priv } from "../service/login.js";
+import { has_feature } from "../service/features.js";
 import { logout } from '../service/login.js';
 import login_store from '../store/login.js';
 import stats_store from '../store/stats.js';
+import mail_store from '../store/mail.js';
 import StatsDisplay from './StatsDisplay.js';
 
 export default {
 	data: function() {
 		return {
 			login: login_store,
-			stats: stats_store
+			stats: stats_store,
+			mail: mail_store
 		};
 	},
 	methods: {
 		has_priv: has_priv,
+		has_feature: has_feature,
 		logout: function(){
 			logout().then(() => this.$router.push("/login"));
 		}
@@ -43,7 +47,17 @@ export default {
 					<li class="nav-item" v-if="has_priv('ban')">
 						<router-link to="/online-players" class="nav-link">
 							<i class="fa fa-users"></i> Online players
-							<span class="badge rounded-pill bg-info">{{stats.player_count}}</span>
+							<span class="badge rounded-pill bg-info">
+								{{stats.player_count}}
+							</span>
+						</router-link>
+					</li>
+					<li class="nav-item" v-if="has_feature('mail')">
+						<router-link to="/mail" class="nav-link">
+							<i class="fa-solid fa-envelope"></i> Mail
+							<span class="badge rounded-pill bg-info" v-if="mail.unread_count">
+								{{mail.unread_count}}
+							</span>
 						</router-link>
 					</li>
 				</ul>

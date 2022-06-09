@@ -8,6 +8,8 @@ export const check_login = () => get_claims().then(c => {
     return c;
 });
 
+export const has_priv = priv => login_store.claims && login_store.claims.privileges.find(e => e == priv);
+
 export const login = (username, password) => {
     return api_login(username, password)
     .then(success => {
