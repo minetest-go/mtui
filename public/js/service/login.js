@@ -3,7 +3,7 @@ import login_store from '../store/login.js';
 import { get_claims, login as api_login, logout as api_logout } from '../api/login.js';
 import { connect } from '../ws.js';
 
-import { check_features, has_feature } from './features.js';
+import { has_feature } from './features.js';
 import { fetch_contacts, fetch_mails } from './mail.js';
 
 function update_mails() {
