@@ -31,8 +31,6 @@ function start(){
 	app.mount("#app");
 }
 
-Promise.all([
-	check_login(),
-	check_features()
-])
-.then(start);
+check_features()
+.then(() => check_login())
+.then(() => start());
