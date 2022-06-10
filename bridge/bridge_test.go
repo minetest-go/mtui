@@ -41,7 +41,9 @@ func TestBridgeReceiveCommand(t *testing.T) {
 	}
 	assert.Nil(t, cmd)
 
-	buf, err := json.Marshal(&bridge.Command{Type: TestCommand})
+	commands := make([]*bridge.Command, 1)
+	commands[0] = &bridge.Command{Type: TestCommand}
+	buf, err := json.Marshal(commands)
 	assert.NoError(t, err)
 
 	r := httptest.NewRequest("POST", "http://", bytes.NewBuffer(buf))
@@ -98,7 +100,9 @@ func TestBridgeExecuteCommand(t *testing.T) {
 	assert.True(t, *cmds[0].ID > 0)
 
 	// send response to bridge
-	buf, err := json.Marshal(&bridge.Command{Type: TestCommand, ID: cmds[0].ID})
+	commands := make([]*bridge.Command, 1)
+	commands[0] = &bridge.Command{Type: TestCommand, ID: cmds[0].ID}
+	buf, err := json.Marshal(commands)
 	assert.NoError(t, err)
 
 	r = httptest.NewRequest("POST", "http://", bytes.NewBuffer(buf))

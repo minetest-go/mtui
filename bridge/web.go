@@ -7,8 +7,8 @@ import (
 )
 
 func (b *Bridge) HandlePost(w http.ResponseWriter, r *http.Request) {
-	cmd := &Command{}
-	err := json.NewDecoder(r.Body).Decode(cmd)
+	commands := make([]*Command, 0)
+	err := json.NewDecoder(r.Body).Decode(&commands)
 	if err != nil {
 		w.Header().Set("Content-Type", "text/plain; charset=UTF-8")
 		w.WriteHeader(500)
@@ -17,10 +17,12 @@ func (b *Bridge) HandlePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	b.handlers_lock.RLock()
-	for _, handler := range b.handlers {
-		select {
-		case handler <- cmd:
-		case <-time.After(10 * time.Millisecond):
+	for _, cmd := range commands {
+		for _, handler := range b.handlers {
+			select {
+			case handler <- cmd:
+			case <-time.After(10 * time.Millisecond):
+			}
 		}
 	}
 	b.handlers_lock.RUnlock()
