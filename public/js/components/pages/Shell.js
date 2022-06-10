@@ -20,6 +20,7 @@ export default {
             this.execute();
         },
         execute: function() {
+            this.message = "";
             this.busy = true;
             this.error = false;
             this.success = false;
