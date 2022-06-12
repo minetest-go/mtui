@@ -53,7 +53,7 @@ func VerifyAuth(username, password string, salt, verifier []byte) (bool, error) 
 	}
 
 	// client
-	clientK, err := srp.CompleteHandshake(pubA, privA, []byte(username), []byte(password), salt, B)
+	clientK, err := srp.CompleteHandshake(pubA, privA, []byte(strings.ToLower(username)), []byte(password), salt, B)
 	if err != nil {
 		return false, err
 	}
@@ -67,5 +67,5 @@ func VerifyAuth(username, password string, salt, verifier []byte) (bool, error) 
 }
 
 func CreateAuth(username, password string) (salt, verifier []byte, err error) {
-	return srp.NewClient([]byte(username), []byte(password))
+	return srp.NewClient([]byte(strings.ToLower(username)), []byte(password))
 }
