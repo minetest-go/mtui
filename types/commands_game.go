@@ -1,20 +1,19 @@
 package types
 
+// commands from the game to the ui
+
 import (
 	"encoding/json"
 	"mtui/bridge"
 )
 
 const (
-	COMMAND_PING       bridge.CommandType = "ping"
-	COMMAND_STATS      bridge.CommandType = "stats"
-	COMMAND_CHATCMD    bridge.CommandType = "execute_command"
-	COMMAND_TAN_SET    bridge.CommandType = "tan_set"
-	COMMAND_TAN_REMOVE bridge.CommandType = "tan_remove"
+	COMMAND_STATS            bridge.CommandType = "stats"
+	COMMAND_TAN_SET          bridge.CommandType = "tan_set"
+	COMMAND_TAN_REMOVE       bridge.CommandType = "tan_remove"
+	COMMAND_CHAT_SEND_PLAYER bridge.CommandType = "chat_send_player"
+	COMMAND_CHAT_SEND_ALL    bridge.CommandType = "chat_send_all"
 )
-
-type PingCommand struct {
-}
 
 // tan command from the engine
 type TanCommand struct {
@@ -47,14 +46,13 @@ type StatsCommand struct {
 	Players     []*PlayerStats
 }
 
-type ExecuteChatCommandRequest struct {
-	Playername string `json:"playername"`
-	Command    string `json:"command"`
+type ChatSendPlayerNotification struct {
+	Name string `json:"name"`
+	Text string `json:"text"`
 }
 
-type ExecuteChatCommandResponse struct {
-	Success bool   `json:"success"`
-	Message string `json:"message"`
+type ChatSendAllNotification struct {
+	Text string `json:"text"`
 }
 
 // Parse an incoming command
@@ -73,6 +71,10 @@ func ParseCommand(cmd *bridge.Command) (interface{}, error) {
 		payload = &TanCommand{}
 	case COMMAND_TAN_REMOVE:
 		payload = &TanCommand{}
+	case COMMAND_CHAT_SEND_ALL:
+		payload = &ChatSendAllNotification{}
+	case COMMAND_CHAT_SEND_PLAYER:
+		payload = &ChatSendPlayerNotification{}
 	}
 
 	if payload != nil {
