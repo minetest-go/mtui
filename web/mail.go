@@ -30,6 +30,36 @@ func (a *Api) CheckValidRecipient(w http.ResponseWriter, r *http.Request, claims
 	}
 }
 
+func (a *Api) DeleteMail(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	vars := mux.Vars(r)
+	sender := vars["sender"]
+	time, err := strconv.ParseInt(vars["time"], 10, 64)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	list, err := a.app.Mail.GetMessages(claims.Username)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	// filter removed mail
+	new_list := make([]*mail.Message, 0)
+	for _, msg := range list {
+		if msg.Sender != sender || int64(msg.Time) != time {
+			new_list = append(new_list, msg)
+		}
+	}
+
+	err = a.app.Mail.SetMessages(claims.Username, new_list)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+}
+
 func (a *Api) MarkRead(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	vars := mux.Vars(r)
 	sender := vars["sender"]
@@ -77,13 +107,11 @@ func (a *Api) SendMail(w http.ResponseWriter, r *http.Request, claims *types.Cla
 		SendError(w, 500, err.Error())
 		return
 	}
-	if msg.Sender != claims.Username {
-		SendError(w, 403, "sender name does not match")
-		return
-	}
 
-	// set current time
+	// set known fields
+	msg.Sender = claims.Username
 	msg.Time = float64(time.Now().Unix())
+	msg.Unread = true
 
 	recipient_mails, err := a.app.Mail.GetMessages(recipient)
 	if err != nil {
