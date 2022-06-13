@@ -19,7 +19,7 @@ type LoginRequest struct {
 
 var tan_map = make(map[string]string)
 
-func (a *Api) TanSetListener(c chan *bridge.Command) {
+func (a *Api) TanSetListener(c chan *bridge.CommandResponse) {
 	for {
 		cmd := <-c
 		o, err := types.ParseCommand(cmd)

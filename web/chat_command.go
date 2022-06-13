@@ -22,7 +22,7 @@ func (a *Api) ExecuteChatcommand(w http.ResponseWriter, r *http.Request, claims 
 		return
 	}
 
-	res, err := a.app.Bridge.ExecuteCommand(types.COMMAND_CHATCMD, req, time.Second*5)
+	res, err := a.app.Bridge.ExecuteCommand(types.COMMAND_CHATCMD_REQ, req, time.Second*5)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return

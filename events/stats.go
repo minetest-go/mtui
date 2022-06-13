@@ -12,7 +12,7 @@ const (
 	PlayerStatsEvent eventbus.EventType = "player_stats"
 )
 
-func statsLoop(e *eventbus.EventBus, ch chan *bridge.Command) {
+func statsLoop(e *eventbus.EventBus, ch chan *bridge.CommandResponse) {
 	for {
 		cmd := <-ch
 		payload, err := types.ParseCommand(cmd)

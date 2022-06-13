@@ -7,7 +7,7 @@ import (
 )
 
 func (b *Bridge) HandlePost(w http.ResponseWriter, r *http.Request) {
-	commands := make([]*Command, 0)
+	commands := make([]*CommandResponse, 0)
 	err := json.NewDecoder(r.Body).Decode(&commands)
 	if err != nil {
 		w.Header().Set("Content-Type", "text/plain; charset=UTF-8")
@@ -29,8 +29,8 @@ func (b *Bridge) HandlePost(w http.ResponseWriter, r *http.Request) {
 }
 
 // collects commands for a certain amount of time
-func collectCommands(ch chan *Command, delay time.Duration) []*Command {
-	cmd_list := make([]*Command, 0)
+func collectCommands(ch chan *CommandRequest, delay time.Duration) []*CommandRequest {
+	cmd_list := make([]*CommandRequest, 0)
 	then := time.Now().Add(delay)
 	t := time.NewTimer(delay)
 
@@ -52,7 +52,7 @@ func collectCommands(ch chan *Command, delay time.Duration) []*Command {
 
 func (b *Bridge) HandleGet(w http.ResponseWriter, r *http.Request) {
 	then := time.Now().Add(20 * time.Second)
-	cmds := make([]*Command, 0)
+	cmds := make([]*CommandRequest, 0)
 	for {
 		// collect commands for at least 100ms
 		cmds = collectCommands(b.tx_cmds, 100*time.Millisecond)

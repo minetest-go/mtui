@@ -2,10 +2,19 @@ package bridge
 
 import "encoding/json"
 
-type CommandType string
+type CommandRequestType string
+type CommandResponseType string
 
-type Command struct {
-	Type CommandType     `json:"type"`
-	ID   *float64        `json:"id"`
-	Data json.RawMessage `json:"data"`
+// UI -> Game
+type CommandRequest struct {
+	Type CommandRequestType `json:"type"`
+	ID   *float64           `json:"id"`
+	Data json.RawMessage    `json:"data"`
+}
+
+// Game -> UI
+type CommandResponse struct {
+	Type CommandResponseType `json:"type"`
+	ID   *float64            `json:"id"`
+	Data json.RawMessage     `json:"data"`
 }

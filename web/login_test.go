@@ -91,8 +91,8 @@ func TestTokenTanOK(t *testing.T) {
 	tanpayload, err := json.Marshal(tanset)
 	assert.NoError(t, err)
 
-	commands := make([]*bridge.Command, 1)
-	commands[0] = &bridge.Command{
+	commands := make([]*bridge.CommandResponse, 1)
+	commands[0] = &bridge.CommandResponse{
 		Type: types.COMMAND_TAN_SET,
 		Data: tanpayload,
 	}

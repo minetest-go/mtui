@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	COMMAND_PING          bridge.CommandType = "ping"
-	COMMAND_CHATCMD       bridge.CommandType = "execute_command"
-	COMMAND_SEND_CHAT_MSG bridge.CommandType = "send_chat_message"
+	COMMAND_PING_REQ      bridge.CommandRequestType = "ping"
+	COMMAND_CHATCMD_REQ   bridge.CommandRequestType = "execute_command"
+	COMMAND_SEND_CHAT_MSG bridge.CommandRequestType = "send_chat_message"
 )
 
 type PingCommand struct{}

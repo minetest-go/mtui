@@ -8,11 +8,13 @@ import (
 )
 
 const (
-	COMMAND_STATS            bridge.CommandType = "stats"
-	COMMAND_TAN_SET          bridge.CommandType = "tan_set"
-	COMMAND_TAN_REMOVE       bridge.CommandType = "tan_remove"
-	COMMAND_CHAT_SEND_PLAYER bridge.CommandType = "chat_send_player"
-	COMMAND_CHAT_SEND_ALL    bridge.CommandType = "chat_send_all"
+	COMMAND_STATS            bridge.CommandResponseType = "stats"
+	COMMAND_TAN_SET          bridge.CommandResponseType = "tan_set"
+	COMMAND_TAN_REMOVE       bridge.CommandResponseType = "tan_remove"
+	COMMAND_CHAT_SEND_PLAYER bridge.CommandResponseType = "chat_send_player"
+	COMMAND_CHAT_SEND_ALL    bridge.CommandResponseType = "chat_send_all"
+	COMMAND_PING_RES         bridge.CommandResponseType = "ping"
+	COMMAND_CHATCMD_RES      bridge.CommandResponseType = "execute_command"
 )
 
 // tan command from the engine
@@ -56,16 +58,16 @@ type ChatSendAllNotification struct {
 }
 
 // Parse an incoming command
-func ParseCommand(cmd *bridge.Command) (interface{}, error) {
+func ParseCommand(cmd *bridge.CommandResponse) (interface{}, error) {
 	var err error
 	var payload interface{}
 
 	switch cmd.Type {
-	case COMMAND_PING:
+	case COMMAND_PING_RES:
 		payload = &PingCommand{}
 	case COMMAND_STATS:
 		payload = &StatsCommand{}
-	case COMMAND_CHATCMD:
+	case COMMAND_CHATCMD_RES:
 		payload = &ExecuteChatCommandResponse{}
 	case COMMAND_TAN_SET:
 		payload = &TanCommand{}
