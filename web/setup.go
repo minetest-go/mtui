@@ -21,6 +21,7 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/login", api.DoLogin).Methods(http.MethodPost)
 	r.HandleFunc("/api/login", api.GetLogin).Methods(http.MethodGet)
 	r.HandleFunc("/api/features", api.GetFeatures).Methods(http.MethodGet)
+	r.HandleFunc("/api/areas", Secure(api.GetAreas)).Methods(http.MethodGet)
 	r.HandleFunc("/api/mail/list", Secure(api.GetMails)).Methods(http.MethodGet)
 	r.HandleFunc("/api/mail/{sender}/{time}", Secure(api.DeleteMail)).Methods(http.MethodDelete)
 	r.HandleFunc("/api/mail/{sender}/{time}/read", Secure(api.MarkRead)).Methods(http.MethodPost)
