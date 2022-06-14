@@ -30,6 +30,10 @@ func (a *Api) GetFeatures(w http.ResponseWriter, r *http.Request) {
 	}
 
 	has_areas, err := exists(path.Join(a.app.WorldDir, "areas.json"))
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
 
 	SendJson(w, &Features{
 		Mail:  has_mail,
