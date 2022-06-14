@@ -7,3 +7,12 @@ type Claims struct {
 	Username   string   `json:"username"`
 	Privileges []string `json:"privileges"`
 }
+
+func (c *Claims) HasPriv(priv string) bool {
+	for _, p := range c.Privileges {
+		if p == priv {
+			return true
+		}
+	}
+	return false
+}
