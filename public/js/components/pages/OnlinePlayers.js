@@ -16,6 +16,7 @@ export default {
             <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Pos</th>
                     <th>Address</th>
                     <th>Protocol-Version</th>
                     <th>Connected since</th>
@@ -30,16 +31,19 @@ export default {
                         </router-link>
                     </td>
                     <td>
-                        {{player.address}}
-                        <span class="badge bg-info">IPv{{player.ip_version}}</span>
+                        {{player.pos.x}}/{{player.pos.y}}/{{player.pos.z}}
                     </td>
-                    <td>{{player.protocol_version}}</td>
-                    <td>{{ format_seconds(player.connection_uptime) }}</td>
                     <td>
-                        <i class="fa-solid fa-signal" v-bind:style="{'color': signal_color(player.avg_rtt) }"></i>
-                        {{ Math.floor(player.min_rtt*1000)/1000 }}/
-                        {{ Math.floor(player.avg_rtt*1000)/1000 }}/
-                        {{ Math.floor(player.max_rtt*1000)/1000 }} s
+                        {{player.info.address}}
+                        <span class="badge bg-info">IPv{{player.info.ip_version}}</span>
+                    </td>
+                    <td>{{player.info.protocol_version}}</td>
+                    <td>{{ format_seconds(player.info.connection_uptime) }}</td>
+                    <td>
+                        <i class="fa-solid fa-signal" v-bind:style="{'color': signal_color(player.info.avg_rtt) }"></i>
+                        {{ Math.floor(player.info.min_rtt*1000)/1000 }}/
+                        {{ Math.floor(player.info.avg_rtt*1000)/1000 }}/
+                        {{ Math.floor(player.info.max_rtt*1000)/1000 }} s
                     </td>
                 </tr>
             </tbody>
