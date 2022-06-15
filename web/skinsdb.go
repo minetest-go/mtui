@@ -9,7 +9,7 @@ import (
 )
 
 func getPlayerSkinFile(worlddir, playername string) string {
-	return path.Join(worlddir, "worldmods", "skinsdb", "textures", "player-"+playername+".png")
+	return path.Join(worlddir, "worldmods", "skinsdb", "textures", "player_"+playername+".png")
 }
 
 func (a *Api) GetSkin(w http.ResponseWriter, r *http.Request, claims *types.Claims) {

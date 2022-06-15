@@ -45,7 +45,7 @@ export default {
                             Current skin
                         </div>
                         <div class="card-body">
-                            <div class="alert alert-primary" v-if="blob && blob.size == 0">
+                            <div class="alert alert-primary" v-if="!current_image">
                                 No skin uploaded yet
                             </div>
                             <img :src="current_image" v-if="current_image"/>
