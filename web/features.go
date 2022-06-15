@@ -7,8 +7,9 @@ import (
 )
 
 type Features struct {
-	Mail  bool `json:"mail"`
-	Areas bool `json:"areas"`
+	Mail    bool `json:"mail"`
+	Areas   bool `json:"areas"`
+	SkinsDB bool `json:"skinsdb"`
 }
 
 func exists(path string) (bool, error) {
@@ -35,8 +36,15 @@ func (a *Api) GetFeatures(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	has_skinsdb, err := exists(path.Join(a.app.WorldDir, "worldmods", "skinsdb"))
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
 	SendJson(w, &Features{
-		Mail:  has_mail,
-		Areas: has_areas,
+		Mail:    has_mail,
+		Areas:   has_areas,
+		SkinsDB: has_skinsdb,
 	})
 }

@@ -6,6 +6,7 @@ import OnlinePlayers from './components/pages/OnlinePlayers.js';
 import Mail from './components/pages/Mail.js';
 import MailRead from './components/pages/MailRead.js';
 import Compose from './components/pages/Compose.js';
+import Skin from './components/pages/Skin.js';
 
 export default [{
 	path: "/", component: Start,
@@ -22,9 +23,15 @@ export default [{
 	path: "/shell", component: Shell,
 	meta: { requiredPriv: "interact" }
 }, {
-	path: "/mail", component: Mail
+	path: "/mail", component: Mail,
+	meta: { requiredPriv: "interact" }
 }, {
-	path: "/mail/read/:sender/:time", component: MailRead
+	path: "/mail/read/:sender/:time", component: MailRead,
+	meta: { requiredPriv: "interact" }
 }, {
-	path: "/mail/compose", component: Compose
+	path: "/mail/compose", component: Compose,
+	meta: { requiredPriv: "interact" }
+}, {
+	path: "/skin", component: Skin,
+	meta: { requiredPriv: "interact" }
 }];

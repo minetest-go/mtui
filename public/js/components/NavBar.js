@@ -60,6 +60,11 @@ export default {
 							</span>
 						</router-link>
 					</li>
+					<li class="nav-item" v-if="has_feature('skinsdb')">
+						<router-link to="/skin" class="nav-link">
+							<i class="fa-solid fa-user-astronaut"></i> Skin
+						</router-link>
+					</li>
 				</ul>
 				<div class="d-flex">
 					<stats-display class="navbar-text" style="padding-right: 10px;"/>

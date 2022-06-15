@@ -21,7 +21,7 @@ services:
  ui:
   image: golang:1.18.3
   environment:
-   WORLD_DIR: "/minetest_home/worlds/world"
+   WORLD_DIR: "/root/.minetest/worlds/world"
    WEBDEV: "true"
    JWTKEY: "mysecretjwtkey"
    APIKEY: "mykey"
@@ -31,7 +31,9 @@ services:
   ports:
     - 8080:8080
   volumes:
-   - "minetest_home:/minetest_home"
+   - "minetest_home:/root/.minetest"
+   - "./dev/worldmods:/root/.minetest/worlds/world/worldmods"
+   - "./minetest.conf:/etc/minetest/minetest.conf"
    - "./:/app"
    - "go_cache:/root/.cache"
    - "go_dir:/root/go"

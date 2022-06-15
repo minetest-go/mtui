@@ -65,7 +65,7 @@ export default {
                     </a>
                 </form>
                 &nbsp;
-                <div class="alert alert-primary" role="alert">
+                <div class="alert alert-primary">
                     <b>Note</b> you can also use <mark>/mtui_tan</mark> ingame to create a temporary password
                 </div>
             </div>
