@@ -33,7 +33,7 @@ func (a *Api) SetSkin(w http.ResponseWriter, r *http.Request, claims *types.Clai
 		SendError(w, 500, err.Error())
 		return
 	}
-	err = ioutil.WriteFile(getPlayerSkinFile(a.app.WorldDir, claims.Username), b, 0755)
+	err = ioutil.WriteFile(getPlayerSkinFile(a.app.WorldDir, claims.Username), b, 0666)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
