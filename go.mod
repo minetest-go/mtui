@@ -10,7 +10,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/minetest-go/mtdb v1.1.22
-	github.com/stretchr/testify v1.7.4
+	github.com/stretchr/testify v1.8.0
 	modernc.org/sqlite v1.17.3
 )
 
