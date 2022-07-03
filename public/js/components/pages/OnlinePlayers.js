@@ -16,7 +16,7 @@ export default {
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Pos</th>
+                    <th>Position</th>
                     <th>Address</th>
                     <th>Protocol-Version</th>
                     <th>Connected since</th>
@@ -31,11 +31,10 @@ export default {
                         </router-link>
                     </td>
                     <td>
-                        {{player.pos.x}}/{{player.pos.y}}/{{player.pos.z}}
+                        {{Math.floor(player.pos.x)}}/{{Math.floor(player.pos.y)}}/{{Math.floor(player.pos.z)}}
                     </td>
                     <td>
                         {{player.info.address}}
-                        <span class="badge bg-info">IPv{{player.info.ip_version}}</span>
                     </td>
                     <td>{{player.info.protocol_version}}</td>
                     <td>{{ format_seconds(player.info.connection_uptime) }}</td>
