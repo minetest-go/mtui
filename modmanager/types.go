@@ -21,6 +21,6 @@ type Mod struct {
 }
 
 type ModStatus struct {
-	CurrentVersion string
-	LatestVersion  string
+	CurrentVersion string `json:"current_version"`
+	LatestVersion  string `json:"latest_version"`
 }
