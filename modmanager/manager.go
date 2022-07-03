@@ -2,7 +2,6 @@ package modmanager
 
 import (
 	"fmt"
-	"mtui/types"
 	"os"
 	"path"
 
@@ -11,21 +10,33 @@ import (
 
 type ModManager struct {
 	world_dir string
+	mods      []*Mod
 }
 
 func New(world_dir string) *ModManager {
-	return &ModManager{world_dir: world_dir}
+	return &ModManager{
+		world_dir: world_dir,
+		mods:      make([]*Mod, 0),
+	}
 }
 
-func (m *ModManager) getDir(mod *types.Mod) string {
+func (m *ModManager) Scan() error {
+	return nil //TODO
+}
+
+func (m *ModManager) Mods() []*Mod {
+	return m.mods
+}
+
+func (m *ModManager) getDir(mod *Mod) string {
 	switch mod.ModType {
-	case types.ModTypeGame:
+	case ModTypeGame:
 		return path.Join(m.world_dir, "game")
-	case types.ModTypeRegular:
+	case ModTypeRegular:
 		return path.Join(m.world_dir, "worldmods", mod.Name)
-	case types.ModTypeTexturepack:
+	case ModTypeTexturepack:
 		return path.Join(m.world_dir, "textures", mod.Name) // TODO: verify
-	case types.ModTypeWorldmods:
+	case ModTypeWorldmods:
 		return path.Join(m.world_dir, "worldmods")
 	default:
 		return ""
@@ -43,7 +54,27 @@ func exists(path string) (bool, error) {
 	return false, err
 }
 
-func (m *ModManager) IsSync(mod *types.Mod) (bool, error) {
+func (m *ModManager) Create(mod *Mod) error {
+	return nil //TODO
+}
+
+func (m *ModManager) Status(mod *Mod) (*ModStatus, error) {
+	status := &ModStatus{
+		CurrentVersion: "",
+		LatestVersion:  "",
+	}
+	return status, nil //TODO
+}
+
+func (m *ModManager) Update(mod *Mod, version string) error {
+	return nil //TODO
+}
+
+func (m *ModManager) Remove(mod *Mod) error {
+	return nil //TODO
+}
+
+func (m *ModManager) IsSync(mod *Mod) (bool, error) {
 	dir := m.getDir(mod)
 
 	// check directory
@@ -52,7 +83,7 @@ func (m *ModManager) IsSync(mod *types.Mod) (bool, error) {
 		return false, err
 	}
 
-	if mod.SourceType == types.SourceTypeGit {
+	if mod.SourceType == SourceTypeGit {
 		// check .git directory
 		gitdir := path.Join(dir, ".git")
 		isdir, err := exists(gitdir)
@@ -77,6 +108,6 @@ func (m *ModManager) IsSync(mod *types.Mod) (bool, error) {
 	return false, nil
 }
 
-func (m *ModManager) Sync(mod *types.Mod) error {
+func (m *ModManager) Sync(mod *Mod) error {
 	return nil
 }
