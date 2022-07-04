@@ -2,6 +2,9 @@ package modmanager
 
 import (
 	"errors"
+	"io/ioutil"
+	"os"
+	"path"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
@@ -22,6 +25,50 @@ func New(world_dir string) *ModManager {
 }
 
 func (m *ModManager) Scan() error {
+	// TODO: scan other mod types
+	l, err := ioutil.ReadDir(path.Join(m.world_dir, "worldmods"))
+	if err != nil {
+		return err
+	}
+
+	for _, fi := range l {
+		if fi.IsDir() {
+			e, err := exists(path.Join(m.world_dir, "worldmods", fi.Name(), ".git"))
+			if err != nil {
+				return err
+			}
+			if e {
+				r, err := git.PlainOpen(path.Join(m.world_dir, "worldmods", fi.Name()))
+				if err != nil {
+					return err
+				}
+
+				rem, err := r.Remote("origin")
+				if err != nil {
+					return err
+				}
+				if rem == nil {
+					return errors.New("no origin found")
+				}
+
+				ref, err := r.Head()
+				if err != nil {
+					return err
+				}
+
+				mod := &Mod{
+					Name:       fi.Name(),
+					ModType:    ModTypeRegular,
+					SourceType: SourceTypeGit,
+					URL:        rem.Config().URLs[0],
+					Branch:     ref.Name().String(),
+					Version:    ref.Hash().String(),
+				}
+				m.mods = append(m.mods, mod)
+			}
+		}
+	}
+
 	return nil //TODO
 }
 
@@ -138,6 +185,11 @@ func (m *ModManager) Update(mod *Mod, version string) error {
 			return err
 		}
 
+		err = w.Pull(&git.PullOptions{RemoteName: "origin"})
+		if err != nil {
+			return err
+		}
+
 		return w.Checkout(&git.CheckoutOptions{
 			Hash: plumbing.NewHash(version),
 		})
@@ -147,9 +199,18 @@ func (m *ModManager) Update(mod *Mod, version string) error {
 }
 
 func (m *ModManager) Remove(mod *Mod) error {
-	return nil //TODO
-}
+	dir := m.getDir(mod)
+	err := os.RemoveAll(dir)
+	if err != nil {
+		return err
+	}
 
-func (m *ModManager) Sync(mod *Mod) error {
+	new_list := make([]*Mod, 0)
+	for _, lm := range m.mods {
+		if lm != mod {
+			new_list = append(new_list, lm)
+		}
+	}
+	m.mods = new_list
 	return nil
 }

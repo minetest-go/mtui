@@ -56,10 +56,19 @@ func TestCheckoutHash(t *testing.T) {
 	assert.NoError(t, mm.Create(mod))
 	assert.Equal(t, "fe34e3f3cd3e066ba0be76f9df46c11e66411496", mod.Version)
 
-	mods := mm.Mods()
+	// test Scan()
+	mm2 := modmanager.New(app.WorldDir)
+	assert.NoError(t, mm2.Scan())
+	mods := mm2.Mods()
 	assert.NotNil(t, mods)
 	assert.Equal(t, 1, len(mods))
 
+	// check list
+	mods = mm.Mods()
+	assert.NotNil(t, mods)
+	assert.Equal(t, 1, len(mods))
+
+	// check remote status
 	status, err := mm.Status(mod)
 	assert.NoError(t, err)
 	assert.NotNil(t, status)
@@ -67,10 +76,18 @@ func TestCheckoutHash(t *testing.T) {
 	assert.True(t, status.LatestVersion != "")
 	assert.True(t, status.LatestVersion != status.CurrentVersion)
 
+	// update
 	assert.NoError(t, mm.Update(mod, status.LatestVersion))
 	status2, err := mm.Status(mod)
 	assert.NoError(t, err)
 	assert.NotNil(t, status2)
 	assert.Equal(t, status.LatestVersion, status2.CurrentVersion)
 	assert.Equal(t, status.LatestVersion, status2.LatestVersion)
+
+	// remove
+	assert.NoError(t, mm.Remove(mod))
+	mods = mm.Mods()
+	assert.NotNil(t, mods)
+	assert.Equal(t, 0, len(mods))
+
 }
