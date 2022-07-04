@@ -4,7 +4,9 @@ import (
 	"errors"
 
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/storage/memory"
 )
 
 type ModManager struct {
@@ -86,15 +88,62 @@ func (m *ModManager) Create(mod *Mod) error {
 }
 
 func (m *ModManager) Status(mod *Mod) (*ModStatus, error) {
-	status := &ModStatus{
-		CurrentVersion: "",
-		LatestVersion:  "",
+	dir := m.getDir(mod)
+
+	status := &ModStatus{}
+
+	if mod.SourceType == SourceTypeGit {
+		r, err := git.PlainOpen(dir)
+		if err != nil {
+			return status, err
+		}
+
+		h, err := r.Head()
+		if err != nil {
+			return status, err
+		}
+		status.CurrentVersion = h.Hash().String()
+
+		rem := git.NewRemote(memory.NewStorage(), &config.RemoteConfig{
+			Name: "origin",
+			URLs: []string{mod.URL},
+		})
+
+		refs, err := rem.List(&git.ListOptions{})
+		if err != nil {
+			return status, err
+		}
+		for _, ref := range refs {
+			if ref.Name() == plumbing.ReferenceName(mod.Branch) {
+				status.LatestVersion = ref.Hash().String()
+			}
+		}
+
+		return status, nil
+	} else {
+		return status, errors.New("source type not implemented")
 	}
-	return status, nil //TODO
 }
 
 func (m *ModManager) Update(mod *Mod, version string) error {
-	return nil //TODO
+	dir := m.getDir(mod)
+	if mod.SourceType == SourceTypeGit {
+		r, err := git.PlainOpen(dir)
+		if err != nil {
+			return err
+		}
+
+		w, err := r.Worktree()
+		if err != nil {
+			return err
+		}
+
+		return w.Checkout(&git.CheckoutOptions{
+			Hash: plumbing.NewHash(version),
+		})
+	} else {
+		return errors.New("source type not implemented")
+	}
 }
 
 func (m *ModManager) Remove(mod *Mod) error {
