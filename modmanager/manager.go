@@ -24,21 +24,20 @@ func New(world_dir string) *ModManager {
 	}
 }
 
-func (m *ModManager) Scan() error {
-	// TODO: scan other mod types
-	l, err := ioutil.ReadDir(path.Join(m.world_dir, "worldmods"))
+func (m *ModManager) scanDir(dir string, modtype ModType) error {
+	l, err := ioutil.ReadDir(dir)
 	if err != nil {
 		return err
 	}
 
 	for _, fi := range l {
 		if fi.IsDir() {
-			e, err := exists(path.Join(m.world_dir, "worldmods", fi.Name(), ".git"))
+			e, err := exists(path.Join(dir, fi.Name(), ".git"))
 			if err != nil {
 				return err
 			}
 			if e {
-				r, err := git.PlainOpen(path.Join(m.world_dir, "worldmods", fi.Name()))
+				r, err := git.PlainOpen(path.Join(dir, fi.Name()))
 				if err != nil {
 					return err
 				}
@@ -69,7 +68,17 @@ func (m *ModManager) Scan() error {
 		}
 	}
 
-	return nil //TODO
+	return nil
+}
+
+func (m *ModManager) Scan() error {
+	// TODO: scan other mod types
+	err := m.scanDir(path.Join(m.world_dir, "worldmods"), ModTypeRegular)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (m *ModManager) Mods() []*Mod {
