@@ -24,7 +24,55 @@ func New(world_dir string) *ModManager {
 	}
 }
 
+func (m *ModManager) scanMod(modname, dir string, modtype ModType) (bool, error) {
+	e, err := exists(path.Join(dir, ".git"))
+	if err != nil {
+		return false, err
+	}
+	if !e {
+		return false, nil
+	}
+
+	r, err := git.PlainOpen(dir)
+	if err != nil {
+		return false, err
+	}
+
+	rem, err := r.Remote("origin")
+	if err != nil {
+		return false, err
+	}
+	if rem == nil {
+		return false, errors.New("no origin found")
+	}
+
+	ref, err := r.Head()
+	if err != nil {
+		return false, err
+	}
+
+	mod := &Mod{
+		Name:       modname,
+		ModType:    ModTypeRegular,
+		SourceType: SourceTypeGit,
+		URL:        rem.Config().URLs[0],
+		Branch:     ref.Name().String(),
+		Version:    ref.Hash().String(),
+	}
+	m.mods = append(m.mods, mod)
+
+	return true, nil
+}
+
 func (m *ModManager) scanDir(dir string, modtype ModType) error {
+	e, err := exists(dir)
+	if err != nil {
+		return err
+	}
+	if !e {
+		return nil
+	}
+
 	l, err := ioutil.ReadDir(dir)
 	if err != nil {
 		return err
@@ -32,38 +80,9 @@ func (m *ModManager) scanDir(dir string, modtype ModType) error {
 
 	for _, fi := range l {
 		if fi.IsDir() {
-			e, err := exists(path.Join(dir, fi.Name(), ".git"))
+			_, err := m.scanMod(fi.Name(), path.Join(dir, fi.Name()), modtype)
 			if err != nil {
 				return err
-			}
-			if e {
-				r, err := git.PlainOpen(path.Join(dir, fi.Name()))
-				if err != nil {
-					return err
-				}
-
-				rem, err := r.Remote("origin")
-				if err != nil {
-					return err
-				}
-				if rem == nil {
-					return errors.New("no origin found")
-				}
-
-				ref, err := r.Head()
-				if err != nil {
-					return err
-				}
-
-				mod := &Mod{
-					Name:       fi.Name(),
-					ModType:    ModTypeRegular,
-					SourceType: SourceTypeGit,
-					URL:        rem.Config().URLs[0],
-					Branch:     ref.Name().String(),
-					Version:    ref.Hash().String(),
-				}
-				m.mods = append(m.mods, mod)
 			}
 		}
 	}
@@ -72,8 +91,26 @@ func (m *ModManager) scanDir(dir string, modtype ModType) error {
 }
 
 func (m *ModManager) Scan() error {
-	// TODO: scan other mod types
-	err := m.scanDir(path.Join(m.world_dir, "worldmods"), ModTypeRegular)
+
+	found, err := m.scanMod("worldmods", path.Join(m.world_dir, "worldmods"), ModTypeWorldmods)
+	if err != nil {
+		return err
+	}
+
+	if !found {
+		// worldmods is not a git directory, scan all containing folders
+		err := m.scanDir(path.Join(m.world_dir, "worldmods"), ModTypeRegular)
+		if err != nil {
+			return err
+		}
+	}
+
+	err = m.scanDir(path.Join(m.world_dir, "textures"), ModTypeTexturepack)
+	if err != nil {
+		return err
+	}
+
+	_, err = m.scanMod("game", path.Join(m.world_dir, "game"), ModTypeGame)
 	if err != nil {
 		return err
 	}

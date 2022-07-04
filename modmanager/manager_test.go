@@ -62,6 +62,12 @@ func TestCheckoutHash(t *testing.T) {
 	mods := mm2.Mods()
 	assert.NotNil(t, mods)
 	assert.Equal(t, 1, len(mods))
+	assert.Equal(t, "moreblocks", mods[0].Name)
+	assert.Equal(t, "https://github.com/minetest-mods/moreblocks.git", mods[0].URL)
+	//TODO assert.Equal(t, "refs/heads/master", mods[0].Branch)
+	assert.Equal(t, "fe34e3f3cd3e066ba0be76f9df46c11e66411496", mods[0].Version)
+	assert.Equal(t, modmanager.SourceTypeGit, mods[0].SourceType)
+	assert.Equal(t, modmanager.ModTypeRegular, mods[0].ModType)
 
 	// check list
 	mods = mm.Mods()
