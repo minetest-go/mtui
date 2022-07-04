@@ -1,10 +1,10 @@
 package modmanager
 
 import (
-	"fmt"
-	"path"
+	"errors"
 
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
 )
 
 type ModManager struct {
@@ -28,7 +28,61 @@ func (m *ModManager) Mods() []*Mod {
 }
 
 func (m *ModManager) Create(mod *Mod) error {
-	return nil //TODO
+	if mod.SourceType == SourceTypeGit {
+		dir := m.getDir(mod)
+		// clone to target dir
+		r, err := git.PlainClone(dir, false, &git.CloneOptions{
+			URL:               mod.URL,
+			RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
+		})
+		if err != nil {
+			return err
+		}
+
+		w, err := r.Worktree()
+		if err != nil {
+			return err
+		}
+
+		if mod.Version != "" {
+			// check out specified version
+			err = w.Checkout(&git.CheckoutOptions{
+				Hash: plumbing.NewHash(mod.Version),
+			})
+		} else {
+			// check out branch
+			err = w.Checkout(&git.CheckoutOptions{
+				Branch: plumbing.ReferenceName(mod.Branch),
+			})
+		}
+
+		if err != nil {
+			return err
+		}
+
+		ref, err := r.Head()
+		if err != nil {
+			return err
+		}
+
+		mod.Version = ref.Hash().String()
+	} else {
+		return errors.New("source type not implemented")
+	}
+
+	found := false
+	for _, lm := range m.mods {
+		if lm == mod {
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		m.mods = append(m.mods, mod)
+	}
+
+	return nil
 }
 
 func (m *ModManager) Status(mod *Mod) (*ModStatus, error) {
@@ -45,40 +99,6 @@ func (m *ModManager) Update(mod *Mod, version string) error {
 
 func (m *ModManager) Remove(mod *Mod) error {
 	return nil //TODO
-}
-
-func (m *ModManager) IsSync(mod *Mod) (bool, error) {
-	dir := m.getDir(mod)
-
-	// check directory
-	isdir, err := exists(dir)
-	if err != nil || !isdir {
-		return false, err
-	}
-
-	if mod.SourceType == SourceTypeGit {
-		// check .git directory
-		gitdir := path.Join(dir, ".git")
-		isdir, err := exists(gitdir)
-		if err != nil || !isdir {
-			return false, err
-		}
-
-		r, err := git.PlainOpen(gitdir)
-		if err != nil {
-			return false, err
-		}
-
-		ref, err := r.Head()
-		if err != nil {
-			return false, err
-		}
-		//https://github.com/go-git/go-git/blob/master/_examples/ls-remote/main.go
-
-		fmt.Printf("Hash: %s, Name: %s\n", ref.Hash(), ref.Name())
-	}
-
-	return false, nil
 }
 
 func (m *ModManager) Sync(mod *Mod) error {

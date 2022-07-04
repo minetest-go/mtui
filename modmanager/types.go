@@ -17,6 +17,7 @@ type Mod struct {
 	ModType    ModType    `json:"mod_type"`
 	SourceType SourceType `json:"source_type"`
 	URL        string     `json:"url"`
+	Branch     string     `json:"branch"`
 	Version    string     `json:"version"`
 }
 
