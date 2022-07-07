@@ -1,8 +1,8 @@
-package types_test
+package command_test
 
 import (
 	"mtui/bridge"
-	"mtui/types"
+	"mtui/types/command"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -12,11 +12,11 @@ const UNKNOWN_RES bridge.CommandResponseType = "whatever"
 
 func TestParseCommand(t *testing.T) {
 	resp := &bridge.CommandResponse{
-		Type: types.COMMAND_PING_RES,
+		Type: command.COMMAND_PING_RES,
 		Data: []byte("{}"),
 	}
 
-	o, err := types.ParseCommand(resp)
+	o, err := command.ParseCommand(resp)
 	assert.NoError(t, err)
 	assert.NotNil(t, o)
 
@@ -25,7 +25,7 @@ func TestParseCommand(t *testing.T) {
 		Data: []byte("{}"),
 	}
 
-	o, err = types.ParseCommand(resp)
+	o, err = command.ParseCommand(resp)
 	assert.NoError(t, err)
 	assert.Nil(t, o)
 }

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"mtui/bridge"
 	"mtui/eventbus"
-	"mtui/types"
+	"mtui/types/command"
 )
 
 const (
@@ -15,13 +15,13 @@ const (
 func statsLoop(e *eventbus.EventBus, ch chan *bridge.CommandResponse) {
 	for {
 		cmd := <-ch
-		payload, err := types.ParseCommand(cmd)
+		payload, err := command.ParseCommand(cmd)
 		if err != nil {
 			fmt.Printf("Payload error: %s\n", err.Error())
 			return
 		}
 		switch data := payload.(type) {
-		case *types.StatsCommand:
+		case *command.StatsCommand:
 			e.Emit(&eventbus.Event{
 				Type: StatsEvent,
 				Data: map[string]float64{

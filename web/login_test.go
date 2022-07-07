@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"mtui/bridge"
 	"mtui/types"
+	"mtui/types/command"
 	"mtui/web"
 	"net/http/httptest"
 	"testing"
@@ -84,7 +85,7 @@ func TestTokenTanOK(t *testing.T) {
 	api, app := CreateTestApi(t)
 
 	// tan set
-	tanset := &types.TanCommand{
+	tanset := &command.TanCommand{
 		Playername: "singleplayer",
 		TAN:        "1234",
 	}
@@ -93,7 +94,7 @@ func TestTokenTanOK(t *testing.T) {
 
 	commands := make([]*bridge.CommandResponse, 1)
 	commands[0] = &bridge.CommandResponse{
-		Type: types.COMMAND_TAN_SET,
+		Type: command.COMMAND_TAN_SET,
 		Data: tanpayload,
 	}
 

@@ -6,6 +6,7 @@ import (
 	"mtui/auth"
 	"mtui/bridge"
 	"mtui/types"
+	"mtui/types/command"
 	"net/http"
 	"time"
 
@@ -22,14 +23,14 @@ var tan_map = make(map[string]string)
 func (a *Api) TanSetListener(c chan *bridge.CommandResponse) {
 	for {
 		cmd := <-c
-		o, err := types.ParseCommand(cmd)
+		o, err := command.ParseCommand(cmd)
 		if err != nil {
 			fmt.Printf("Tan-listener-error: %s\n", err.Error())
 			continue
 		}
 
 		switch payload := o.(type) {
-		case *types.TanCommand:
+		case *command.TanCommand:
 			if payload.TAN == "" {
 				delete(tan_map, payload.Playername)
 			} else {

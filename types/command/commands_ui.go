@@ -1,4 +1,4 @@
-package types
+package command
 
 // commands from the ui to ingame
 
