@@ -85,6 +85,10 @@ export default {
             <div class="col-md-12">
                 <textarea v-model="body" class="form-control" placeholder="Mail text" style="height: 250px;">
                 </textarea>
+                &nbsp;
+                <div class="alert alert-warning" v-if="recipients.length == 0">
+                    Add a recipient first with the <mark>Add</mark> button
+                </div>
                 <button class="btn btn-primary w-100" :disabled="body == '' || recipients.length == 0 || subject == ''" v-on:click="send">
                     <i class="fa-solid fa-paper-plane"></i>
                     Send
