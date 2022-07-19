@@ -7,12 +7,8 @@ import (
 )
 
 const (
-	COMMAND_PING_REQ      bridge.CommandRequestType = "ping"
-	COMMAND_CHATCMD_REQ   bridge.CommandRequestType = "execute_command"
-	COMMAND_SEND_CHAT_MSG bridge.CommandRequestType = "send_chat_message"
+	COMMAND_CHATCMD_REQ bridge.CommandRequestType = "execute_command"
 )
-
-type PingCommand struct{}
 
 type ExecuteChatCommandRequest struct {
 	Playername string `json:"playername"`
@@ -22,7 +18,4 @@ type ExecuteChatCommandRequest struct {
 type ExecuteChatCommandResponse struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
-}
-
-type SendChatMessageRequest struct {
 }

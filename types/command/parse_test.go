@@ -12,7 +12,7 @@ const UNKNOWN_RES bridge.CommandResponseType = "whatever"
 
 func TestParseCommand(t *testing.T) {
 	resp := &bridge.CommandResponse{
-		Type: command.COMMAND_PING_RES,
+		Type: command.COMMAND_TAN_REMOVE,
 		Data: []byte("{}"),
 	}
 
