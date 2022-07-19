@@ -5,5 +5,6 @@ export default Vue.reactive({
     add_recipient_name: "",
     invalid_username: false,
     recipients: [],
-    busy: false
+    busy: false,
+    mail_sent: false
 });

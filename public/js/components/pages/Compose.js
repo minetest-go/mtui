@@ -31,16 +31,18 @@ export default {
         },
         send: function() {
             this.busy = true;
+            this.mail_sent = false;
+
             const list = this.recipients.map(recipient => send({
                 body: this.body,
                 subject: this.subject
             }, recipient));
 
             Promise.all(list).then(() => {
-                this.recipients = [];
                 this.body = "";
                 this.subject = "";
                 this.busy = false;
+                this.mail_sent = true;
 
                 // re-read mails
                 fetch_mails();
@@ -89,9 +91,14 @@ export default {
                 <div class="alert alert-warning" v-if="recipients.length == 0">
                     Add a recipient first with the <mark>Add</mark> button
                 </div>
-                <button class="btn btn-primary w-100" :disabled="body == '' || recipients.length == 0 || subject == ''" v-on:click="send">
+                <button class="btn btn-outline-primary w-100" :disabled="body == '' || recipients.length == 0 || subject == ''" v-on:click="send">
                     <i class="fa-solid fa-paper-plane"></i>
                     Send
+                    &nbsp;
+                    <span v-if="mail_sent">
+                        <i class="fa-solid fa-check" style="color: green;"></i>
+                        Mail sent!
+                    </span>
                 </button>
             </div>
         </div>
