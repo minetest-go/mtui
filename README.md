@@ -14,18 +14,21 @@ Minetest web ui
 * Account/Password management
 * Remote console
 * World status
+* skin management
 
 Planned:
-* skin management
 * mod/game/texturepack configuration and updates
 
 # Development
 
-## Prerequisites
-
+Prerequisites:
 * docker
 * docker-compose
-* `mtui_mod` in relative `../mtui_mod` folder
+
+Starting:
+```sh
+docker-compose up
+```
 
 # License
 
