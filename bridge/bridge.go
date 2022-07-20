@@ -11,14 +11,14 @@ import (
 
 type Bridge struct {
 	tx_cmds       chan *CommandRequest
-	handlers      []chan *CommandResponse
+	handlers      map[CommandType][]chan *CommandResponse
 	handlers_lock *sync.RWMutex
 }
 
 func New() *Bridge {
 	return &Bridge{
 		tx_cmds:       make(chan *CommandRequest, 1000),
-		handlers:      make([]chan *CommandResponse, 0),
+		handlers:      make(map[CommandType][]chan *CommandResponse),
 		handlers_lock: &sync.RWMutex{},
 	}
 }
@@ -26,7 +26,7 @@ func New() *Bridge {
 var ErrTimeout = errors.New("timeout")
 
 // one-way command, no response
-func (b *Bridge) SendCommand(t CommandRequestType, obj interface{}) error {
+func (b *Bridge) SendCommand(t CommandType, obj interface{}) error {
 	data, err := json.Marshal(obj)
 	if err != nil {
 		return err
@@ -36,7 +36,7 @@ func (b *Bridge) SendCommand(t CommandRequestType, obj interface{}) error {
 }
 
 // execute a command on the remote side and wait for the response
-func (b *Bridge) ExecuteCommand(t CommandRequestType, obj any, resp any, timeout time.Duration) error {
+func (b *Bridge) ExecuteCommand(t CommandType, obj any, resp any, timeout time.Duration) error {
 	var rx_cmd *CommandResponse
 	var err error
 	id := math.Floor(rand.Float64() * 64000)
@@ -47,7 +47,7 @@ func (b *Bridge) ExecuteCommand(t CommandRequestType, obj any, resp any, timeout
 	}
 	b.tx_cmds <- &CommandRequest{Type: t, Data: data, ID: &id}
 
-	c := b.AddHandler()
+	c := b.AddHandler(t)
 	then := time.Now().Add(timeout)
 
 	for {
@@ -70,7 +70,7 @@ func (b *Bridge) ExecuteCommand(t CommandRequestType, obj any, resp any, timeout
 		}
 	}
 
-	b.RemoveHandler(c)
+	b.RemoveHandler(t, c)
 	if err != nil {
 		return err
 	}
@@ -79,22 +79,31 @@ func (b *Bridge) ExecuteCommand(t CommandRequestType, obj any, resp any, timeout
 
 type CommandHandler func(*CommandResponse)
 
-func (b *Bridge) AddHandler() chan *CommandResponse {
-	h := make(chan *CommandResponse, 100)
+func (b *Bridge) AddHandler(ct CommandType) chan *CommandResponse {
 	b.handlers_lock.Lock()
-	b.handlers = append(b.handlers, h)
-	b.handlers_lock.Unlock()
+	defer b.handlers_lock.Unlock()
+
+	h := make(chan *CommandResponse, 100)
+	l := b.handlers[ct]
+	if l == nil {
+		l = make([]chan *CommandResponse, 0)
+	}
+	l = append(l, h)
+	b.handlers[ct] = l
+
 	return h
 }
 
-func (b *Bridge) RemoveHandler(remove_handler chan *CommandResponse) {
-	newhandlers := make([]chan *CommandResponse, 0)
+func (b *Bridge) RemoveHandler(ct CommandType, remove_handler chan *CommandResponse) {
 	b.handlers_lock.Lock()
-	for _, h := range b.handlers {
+	defer b.handlers_lock.Unlock()
+
+	oldhandlers := b.handlers[ct]
+	newhandlers := make([]chan *CommandResponse, 0)
+	for _, h := range oldhandlers {
 		if h != remove_handler {
 			newhandlers = append(newhandlers, h)
 		}
 	}
-	b.handlers = newhandlers
-	b.handlers_lock.Unlock()
+	b.handlers[ct] = newhandlers
 }

@@ -3,8 +3,8 @@ package command
 import "mtui/bridge"
 
 const (
-	COMMAND_TAN_SET    bridge.CommandResponseType = "tan_set"
-	COMMAND_TAN_REMOVE bridge.CommandResponseType = "tan_remove"
+	COMMAND_TAN_SET    bridge.CommandType = "tan_set"
+	COMMAND_TAN_REMOVE bridge.CommandType = "tan_remove"
 )
 
 // tan command from the engine

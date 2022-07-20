@@ -18,7 +18,7 @@ func (b *Bridge) HandlePost(w http.ResponseWriter, r *http.Request) {
 
 	b.handlers_lock.RLock()
 	for _, cmd := range commands {
-		for _, handler := range b.handlers {
+		for _, handler := range b.handlers[cmd.Type] {
 			select {
 			case handler <- cmd:
 			case <-time.After(10 * time.Millisecond):

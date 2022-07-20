@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const UNKNOWN_RES bridge.CommandResponseType = "whatever"
+const UNKNOWN_RES bridge.CommandType = "whatever"
 
 func TestParseCommand(t *testing.T) {
 	resp := &bridge.CommandResponse{

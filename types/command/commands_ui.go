@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	COMMAND_CHATCMD_REQ bridge.CommandRequestType = "execute_command"
+	COMMAND_CHATCMD_REQ bridge.CommandType = "execute_command"
 )
 
 type ExecuteChatCommandRequest struct {

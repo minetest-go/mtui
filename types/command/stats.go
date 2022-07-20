@@ -3,7 +3,7 @@ package command
 import "mtui/bridge"
 
 const (
-	COMMAND_STATS bridge.CommandResponseType = "stats"
+	COMMAND_STATS bridge.CommandType = "stats"
 )
 
 // player stats from the engine

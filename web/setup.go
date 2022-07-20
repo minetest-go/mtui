@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"mtui/app"
 	"mtui/public"
+	"mtui/types/command"
 	"net/http"
 	"os"
 
@@ -37,7 +38,7 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/bridge", CheckApiKey(os.Getenv("APIKEY"), a.Bridge.HandleGet)).Methods(http.MethodGet)
 
 	// start tan login listener
-	go api.TanSetListener(a.Bridge.AddHandler())
+	go api.TanSetListener(a.Bridge.AddHandler(command.COMMAND_TAN_SET))
 
 	// static files
 	if os.Getenv("WEBDEV") == "true" {

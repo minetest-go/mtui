@@ -12,13 +12,12 @@ import (
 )
 
 const (
-	TestCommandRequest  bridge.CommandRequestType  = "test"
-	TestCommandResponse bridge.CommandResponseType = "test"
+	TestCommand bridge.CommandType = "test"
 )
 
 func TestBridgeSendCommand(t *testing.T) {
 	b := bridge.New()
-	b.SendCommand(TestCommandRequest, nil)
+	b.SendCommand(TestCommand, nil)
 
 	r := httptest.NewRequest("GET", "http://", nil)
 	w := httptest.NewRecorder()
@@ -29,12 +28,12 @@ func TestBridgeSendCommand(t *testing.T) {
 	assert.NoError(t, json.NewDecoder(w.Body).Decode(&cmds))
 	assert.NotNil(t, cmds)
 	assert.Equal(t, 1, len(cmds))
-	assert.Equal(t, TestCommandRequest, cmds[0].Type)
+	assert.Equal(t, TestCommand, cmds[0].Type)
 }
 
 func TestBridgeReceiveCommand(t *testing.T) {
 	b := bridge.New()
-	c := b.AddHandler()
+	c := b.AddHandler(TestCommand)
 
 	var cmd *bridge.CommandResponse
 	select {
@@ -44,7 +43,7 @@ func TestBridgeReceiveCommand(t *testing.T) {
 	assert.Nil(t, cmd)
 
 	commands := make([]*bridge.CommandRequest, 1)
-	commands[0] = &bridge.CommandRequest{Type: TestCommandRequest}
+	commands[0] = &bridge.CommandRequest{Type: TestCommand}
 	buf, err := json.Marshal(commands)
 	assert.NoError(t, err)
 
@@ -57,7 +56,7 @@ func TestBridgeReceiveCommand(t *testing.T) {
 
 	assert.Equal(t, 200, w.Result().StatusCode)
 	assert.NotNil(t, cmd)
-	assert.Equal(t, TestCommandResponse, cmd.Type)
+	assert.Equal(t, TestCommand, cmd.Type)
 }
 
 func TestBridgeReceiveInvalidCommand(t *testing.T) {
@@ -73,7 +72,7 @@ func TestBridgeReceiveInvalidCommand(t *testing.T) {
 func TestBridgeExecuteCommandTimeout(t *testing.T) {
 	b := bridge.New()
 	resp := struct{}{}
-	err := b.ExecuteCommand(TestCommandRequest, nil, &resp, 100*time.Millisecond)
+	err := b.ExecuteCommand(TestCommand, nil, &resp, 100*time.Millisecond)
 	assert.Error(t, err)
 }
 
@@ -82,7 +81,7 @@ func TestBridgeExecuteCommand(t *testing.T) {
 	var rx_err error
 
 	go func() {
-		rx_err = b.ExecuteCommand(TestCommandRequest, nil, &struct{}{}, 500*time.Millisecond)
+		rx_err = b.ExecuteCommand(TestCommand, nil, &struct{}{}, 500*time.Millisecond)
 	}()
 
 	// get command from bridge
@@ -95,13 +94,13 @@ func TestBridgeExecuteCommand(t *testing.T) {
 	assert.NoError(t, json.NewDecoder(w.Body).Decode(&cmds))
 	assert.NotNil(t, cmds)
 	assert.Equal(t, 1, len(cmds))
-	assert.Equal(t, TestCommandRequest, cmds[0].Type)
+	assert.Equal(t, TestCommand, cmds[0].Type)
 	assert.NotNil(t, cmds[0].ID)
 	assert.True(t, *cmds[0].ID > 0)
 
 	// send response to bridge
 	commands := make([]*bridge.CommandResponse, 1)
-	commands[0] = &bridge.CommandResponse{Type: TestCommandResponse, ID: cmds[0].ID}
+	commands[0] = &bridge.CommandResponse{Type: TestCommand, ID: cmds[0].ID}
 	buf, err := json.Marshal(commands)
 	assert.NoError(t, err)
 
