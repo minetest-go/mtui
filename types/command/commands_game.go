@@ -9,7 +9,6 @@ import (
 const (
 	COMMAND_CHAT_SEND_PLAYER bridge.CommandType = "chat_send_player"
 	COMMAND_CHAT_SEND_ALL    bridge.CommandType = "chat_send_all"
-	COMMAND_CHATCMD_RES      bridge.CommandType = "execute_command"
 )
 
 type ChatSendPlayerNotification struct {

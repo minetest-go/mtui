@@ -1,6 +1,7 @@
 package events
 
 import (
+	"encoding/json"
 	"fmt"
 	"mtui/bridge"
 	"mtui/eventbus"
@@ -15,27 +16,25 @@ const (
 func statsLoop(e *eventbus.EventBus, ch chan *bridge.CommandResponse) {
 	for {
 		cmd := <-ch
-		payload, err := command.ParseCommand(cmd)
+		stats := &command.StatsCommand{}
+		err := json.Unmarshal(cmd.Data, stats)
 		if err != nil {
 			fmt.Printf("Payload error: %s\n", err.Error())
 			return
 		}
-		switch data := payload.(type) {
-		case *command.StatsCommand:
-			e.Emit(&eventbus.Event{
-				Type: StatsEvent,
-				Data: map[string]float64{
-					"max_lag":      data.MaxLag,
-					"player_count": data.PlayerCount,
-					"time_of_day":  data.TimeOfDay,
-				},
-			})
+		e.Emit(&eventbus.Event{
+			Type: StatsEvent,
+			Data: map[string]float64{
+				"max_lag":      stats.MaxLag,
+				"player_count": stats.PlayerCount,
+				"time_of_day":  stats.TimeOfDay,
+			},
+		})
 
-			e.Emit(&eventbus.Event{
-				Type:         PlayerStatsEvent,
-				Data:         data.Players,
-				RequiredPriv: "ban",
-			})
-		}
+		e.Emit(&eventbus.Event{
+			Type:         PlayerStatsEvent,
+			Data:         stats.Players,
+			RequiredPriv: "ban",
+		})
 	}
 }

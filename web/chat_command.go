@@ -24,6 +24,6 @@ func (a *Api) ExecuteChatcommand(w http.ResponseWriter, r *http.Request, claims 
 	}
 
 	resp := &command.ExecuteChatCommandResponse{}
-	err = a.app.Bridge.ExecuteCommand(command.COMMAND_CHATCMD_REQ, req, resp, time.Second*5)
+	err = a.app.Bridge.ExecuteCommand(command.COMMAND_CHATCMD, req, resp, time.Second*5)
 	Send(w, resp, err)
 }
