@@ -3,7 +3,6 @@ package bridge_test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"mtui/bridge"
 	"net/http/httptest"
 	"testing"
@@ -73,19 +72,17 @@ func TestBridgeReceiveInvalidCommand(t *testing.T) {
 
 func TestBridgeExecuteCommandTimeout(t *testing.T) {
 	b := bridge.New()
-	cmd, err := b.ExecuteCommand(TestCommandRequest, nil, 100*time.Millisecond)
+	resp := struct{}{}
+	err := b.ExecuteCommand(TestCommandRequest, nil, &resp, 100*time.Millisecond)
 	assert.Error(t, err)
-	assert.Nil(t, cmd)
 }
 
 func TestBridgeExecuteCommand(t *testing.T) {
 	b := bridge.New()
-	var rx_cmd *bridge.CommandResponse
 	var rx_err error
 
 	go func() {
-		rx_cmd, rx_err = b.ExecuteCommand(TestCommandRequest, nil, 500*time.Millisecond)
-		fmt.Printf("execution finished: id=%f\n", *rx_cmd.ID)
+		rx_err = b.ExecuteCommand(TestCommandRequest, nil, &struct{}{}, 500*time.Millisecond)
 	}()
 
 	// get command from bridge
@@ -117,5 +114,4 @@ func TestBridgeExecuteCommand(t *testing.T) {
 
 	// assert result
 	assert.Nil(t, rx_err)
-	assert.NotNil(t, rx_cmd)
 }

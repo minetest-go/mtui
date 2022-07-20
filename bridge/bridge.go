@@ -36,14 +36,14 @@ func (b *Bridge) SendCommand(t CommandRequestType, obj interface{}) error {
 }
 
 // execute a command on the remote side and wait for the response
-func (b *Bridge) ExecuteCommand(t CommandRequestType, obj interface{}, timeout time.Duration) (*CommandResponse, error) {
+func (b *Bridge) ExecuteCommand(t CommandRequestType, obj any, resp any, timeout time.Duration) error {
 	var rx_cmd *CommandResponse
 	var err error
 	id := math.Floor(rand.Float64() * 64000)
 
 	data, err := json.Marshal(obj)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	b.tx_cmds <- &CommandRequest{Type: t, Data: data, ID: &id}
 
@@ -71,7 +71,10 @@ func (b *Bridge) ExecuteCommand(t CommandRequestType, obj interface{}, timeout t
 	}
 
 	b.RemoveHandler(c)
-	return rx_cmd, err
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(rx_cmd.Data, resp)
 }
 
 type CommandHandler func(*CommandResponse)

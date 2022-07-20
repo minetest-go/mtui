@@ -23,17 +23,7 @@ func (a *Api) ExecuteChatcommand(w http.ResponseWriter, r *http.Request, claims 
 		return
 	}
 
-	res, err := a.app.Bridge.ExecuteCommand(command.COMMAND_CHATCMD_REQ, req, time.Second*5)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	cmd, err := command.ParseCommand(res)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	SendJson(w, cmd)
+	resp := &command.ExecuteChatCommandResponse{}
+	err = a.app.Bridge.ExecuteCommand(command.COMMAND_CHATCMD_REQ, req, resp, time.Second*5)
+	Send(w, resp, err)
 }

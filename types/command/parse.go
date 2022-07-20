@@ -13,8 +13,6 @@ func ParseCommand(cmd *bridge.CommandResponse) (interface{}, error) {
 	switch cmd.Type {
 	case COMMAND_STATS:
 		payload = &StatsCommand{}
-	case COMMAND_CHATCMD_RES:
-		payload = &ExecuteChatCommandResponse{}
 	case COMMAND_TAN_SET:
 		payload = &TanCommand{}
 	case COMMAND_TAN_REMOVE:
