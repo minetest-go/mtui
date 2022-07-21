@@ -9,8 +9,12 @@ import (
 )
 
 const (
-	StatsEvent       eventbus.EventType = "stats"
+	// server stats
+	StatsEvent eventbus.EventType = "stats"
+	// all player infos, including ip,rtt,etc
 	PlayerStatsEvent eventbus.EventType = "player_stats"
+	// just the playername and hp/breath info
+	PlayerStatsEventLight eventbus.EventType = "player_stats_light"
 )
 
 func statsLoop(e *eventbus.EventBus, ch chan *bridge.CommandResponse) {
@@ -22,6 +26,7 @@ func statsLoop(e *eventbus.EventBus, ch chan *bridge.CommandResponse) {
 			fmt.Printf("Payload error: %s\n", err.Error())
 			return
 		}
+
 		e.Emit(&eventbus.Event{
 			Type: StatsEvent,
 			Data: map[string]float64{
@@ -35,6 +40,20 @@ func statsLoop(e *eventbus.EventBus, ch chan *bridge.CommandResponse) {
 			Type:         PlayerStatsEvent,
 			Data:         stats.Players,
 			RequiredPriv: "ban",
+		})
+
+		lightPlayerData := make([]*command.PlayerStats, len(stats.Players))
+		for i, p := range stats.Players {
+			lightPlayerData[i] = &command.PlayerStats{
+				Name:   p.Name,
+				HP:     p.HP,
+				Breath: p.Breath,
+			}
+		}
+
+		e.Emit(&eventbus.Event{
+			Type: PlayerStatsEventLight,
+			Data: lightPlayerData,
 		})
 	}
 }

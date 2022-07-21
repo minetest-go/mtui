@@ -21,8 +21,9 @@ var upgrader = websocket.Upgrader{
 
 // event caching
 var cachedEventTypes = map[eventbus.EventType]bool{
-	events.PlayerStatsEvent: true,
-	events.StatsEvent:       true,
+	events.PlayerStatsEvent:      true,
+	events.PlayerStatsEventLight: true,
+	events.StatsEvent:            true,
 }
 var cachedEvents = map[eventbus.EventType]*eventbus.Event{}
 var cache_lock = &sync.RWMutex{}
@@ -45,6 +46,21 @@ func sendEvent(wse *eventbus.Event, claims *types.Claims, conn *websocket.Conn) 
 		}
 	}
 	return conn.WriteJSON(wse)
+}
+
+func (api *Api) WSCacheListener() {
+	ch := make(chan *eventbus.Event, 1000)
+	api.app.WSEvents.AddListener(ch)
+	defer api.app.WSEvents.RemoveListener(ch)
+
+	for wse := range ch {
+		if cachedEventTypes[wse.Type] {
+			// cache event
+			cache_lock.Lock()
+			cachedEvents[wse.Type] = wse
+			cache_lock.Unlock()
+		}
+	}
 }
 
 func (api *Api) Websocket(w http.ResponseWriter, r *http.Request) {
@@ -76,14 +92,6 @@ func (api *Api) Websocket(w http.ResponseWriter, r *http.Request) {
 
 	// send live events
 	for wse := range ch {
-		if cachedEventTypes[wse.Type] {
-			// TODO: don't write to cache in _every_ ws client instance
-			// cache event
-			cache_lock.Lock()
-			cachedEvents[wse.Type] = wse
-			cache_lock.Unlock()
-		}
-
 		err = sendEvent(wse, claims, conn)
 		if err != nil {
 			fmt.Printf("WriteJSON: %s", err.Error())
