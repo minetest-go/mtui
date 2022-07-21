@@ -1,5 +1,6 @@
 import Start from './components/pages/Start.js';
 import Login from './components/pages/Login.js';
+import PlayerInfo from './components/pages/PlayerInfo.js';
 import Profile from './components/pages/Profile.js';
 import Shell from './components/pages/Shell.js';
 import OnlinePlayers from './components/pages/OnlinePlayers.js';
@@ -14,8 +15,12 @@ export default [{
 }, {
 	path: "/login", component: Login
 }, {
-	path: "/online-players", component: OnlinePlayers
+	path: "/online-players", component: OnlinePlayers,
+	meta: { requiredPriv: "interact" }
 }, {
+	path: "/player/:name", component: PlayerInfo,
+	meta: { requiredPriv: "ban" }
+},{
 	path: "/profile", component: Profile,
 	meta: { requiredPriv: "interact" }
 }, {
