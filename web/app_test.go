@@ -3,7 +3,6 @@ package web_test
 import (
 	"mtui/app"
 	"mtui/auth"
-	"mtui/types/command"
 	"mtui/web"
 	"os"
 	"path"
@@ -35,10 +34,9 @@ func CreateTestApi(t *testing.T) (*web.Api, *app.App) {
 	app := CreateTestApp(t)
 
 	api := web.NewApi(app)
-	assert.NotNil(t, api)
+	assert.NoError(t, api.Setup())
 
-	// start tan login listener
-	go api.TanSetListener(app.Bridge.AddHandler(command.COMMAND_TAN_SET))
+	assert.NotNil(t, api)
 
 	// create test data
 

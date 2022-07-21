@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"mtui/app"
 	"mtui/public"
-	"mtui/types/command"
 	"net/http"
 	"os"
 
@@ -17,6 +16,12 @@ func Setup(a *app.App) error {
 	r := mux.NewRouter()
 
 	api := NewApi(a)
+
+	err := api.Setup()
+	if err != nil {
+		return err
+	}
+
 	r.HandleFunc("/api/ws", api.Websocket)
 	r.HandleFunc("/api/login", api.DoLogout).Methods(http.MethodDelete)
 	r.HandleFunc("/api/login", api.DoLogin).Methods(http.MethodPost)
@@ -36,9 +41,6 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/bridge/execute_chatcommand", Secure(api.ExecuteChatcommand)).Methods(http.MethodPost)
 	r.HandleFunc("/api/bridge", CheckApiKey(os.Getenv("APIKEY"), a.Bridge.HandlePost)).Methods(http.MethodPost)
 	r.HandleFunc("/api/bridge", CheckApiKey(os.Getenv("APIKEY"), a.Bridge.HandleGet)).Methods(http.MethodGet)
-
-	// start tan login listener
-	go api.TanSetListener(a.Bridge.AddHandler(command.COMMAND_TAN_SET))
 
 	// static files
 	if os.Getenv("WEBDEV") == "true" {

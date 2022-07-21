@@ -23,19 +23,19 @@ var tan_map = make(map[string]string)
 func (a *Api) TanSetListener(c chan *bridge.CommandResponse) {
 	for {
 		cmd := <-c
-		o, err := command.ParseCommand(cmd)
+		tc := &command.TanCommand{}
+		err := json.Unmarshal(cmd.Data, tc)
 		if err != nil {
 			fmt.Printf("Tan-listener-error: %s\n", err.Error())
 			continue
 		}
 
-		switch payload := o.(type) {
-		case *command.TanCommand:
-			if payload.TAN == "" {
-				delete(tan_map, payload.Playername)
-			} else {
-				tan_map[payload.Playername] = payload.TAN
-			}
+		if tc.TAN == "" {
+			// remove tan
+			delete(tan_map, tc.Playername)
+		} else {
+			// set tan
+			tan_map[tc.Playername] = tc.TAN
 		}
 	}
 }
