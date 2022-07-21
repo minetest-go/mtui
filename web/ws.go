@@ -3,7 +3,6 @@ package web
 import (
 	"fmt"
 	"mtui/eventbus"
-	"mtui/events"
 	"mtui/types"
 	"net/http"
 	"sync"
@@ -20,11 +19,6 @@ var upgrader = websocket.Upgrader{
 }
 
 // event caching
-var cachedEventTypes = map[eventbus.EventType]bool{
-	events.PlayerStatsEvent:      true,
-	events.PlayerStatsEventLight: true,
-	events.StatsEvent:            true,
-}
 var cachedEvents = map[eventbus.EventType]*eventbus.Event{}
 var cache_lock = &sync.RWMutex{}
 
@@ -54,7 +48,7 @@ func (api *Api) WSCacheListener() {
 	defer api.app.WSEvents.RemoveListener(ch)
 
 	for wse := range ch {
-		if cachedEventTypes[wse.Type] {
+		if wse.Cache {
 			// cache event
 			cache_lock.Lock()
 			cachedEvents[wse.Type] = wse

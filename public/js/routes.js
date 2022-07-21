@@ -14,8 +14,7 @@ export default [{
 }, {
 	path: "/login", component: Login
 }, {
-	path: "/online-players", component: OnlinePlayers,
-	meta: { requiredPriv: "ban" },
+	path: "/online-players", component: OnlinePlayers
 }, {
 	path: "/profile", component: Profile,
 	meta: { requiredPriv: "interact" }

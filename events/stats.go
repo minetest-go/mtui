@@ -11,10 +11,10 @@ import (
 const (
 	// server stats
 	StatsEvent eventbus.EventType = "stats"
-	// all player infos, including ip,rtt,etc
-	PlayerStatsEvent eventbus.EventType = "player_stats"
 	// just the playername and hp/breath info
-	PlayerStatsEventLight eventbus.EventType = "player_stats_light"
+	PlayerStatsEvent eventbus.EventType = "player_stats"
+	// all player infos, including ip,rtt,etc
+	PlayerStatsEventExtra eventbus.EventType = "player_stats_extra"
 )
 
 func statsLoop(e *eventbus.EventBus, ch chan *bridge.CommandResponse) {
@@ -34,12 +34,7 @@ func statsLoop(e *eventbus.EventBus, ch chan *bridge.CommandResponse) {
 				"player_count": stats.PlayerCount,
 				"time_of_day":  stats.TimeOfDay,
 			},
-		})
-
-		e.Emit(&eventbus.Event{
-			Type:         PlayerStatsEvent,
-			Data:         stats.Players,
-			RequiredPriv: "ban",
+			Cache: true,
 		})
 
 		lightPlayerData := make([]*command.PlayerStats, len(stats.Players))
@@ -51,9 +46,19 @@ func statsLoop(e *eventbus.EventBus, ch chan *bridge.CommandResponse) {
 			}
 		}
 
+		// "light" data
 		e.Emit(&eventbus.Event{
-			Type: PlayerStatsEventLight,
-			Data: lightPlayerData,
+			Type:  PlayerStatsEvent,
+			Data:  lightPlayerData,
+			Cache: true,
+		})
+
+		// full infos about players
+		e.Emit(&eventbus.Event{
+			Type:         PlayerStatsEventExtra,
+			Data:         stats.Players,
+			RequiredPriv: "ban",
+			Cache:        true,
 		})
 	}
 }

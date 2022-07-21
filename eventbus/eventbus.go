@@ -9,6 +9,7 @@ type EventType string
 type Event struct {
 	Type         EventType   `json:"type"`
 	RequiredPriv string      `json:"required_priv"`
+	Cache        bool        `json:"cache"`
 	Data         interface{} `json:"data"`
 }
 

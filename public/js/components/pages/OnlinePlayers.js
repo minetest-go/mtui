@@ -1,9 +1,11 @@
 import onlineplayers_store from "../../store/onlineplayers.js";
 import format_seconds from "../../util/format_seconds.js";
+import { has_priv } from "../../service/login.js";
 
 export default {
     data: () => onlineplayers_store,
     methods: {
+        has_priv: has_priv,
         format_seconds: format_seconds,
         signal_color: function(rtt) {
             if (rtt < 0.1) return "green";
@@ -16,11 +18,12 @@ export default {
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Position</th>
-                    <th>Address</th>
-                    <th>Protocol-Version</th>
-                    <th>Connected since</th>
-                    <th>RTT (min/avg/max)</th>
+                    <th>Health</th>
+                    <th v-if="has_priv('ban')">Position</th>
+                    <th v-if="has_priv('ban')">Address</th>
+                    <th v-if="has_priv('ban')">Protocol-Version</th>
+                    <th v-if="has_priv('ban')">Connected since</th>
+                    <th v-if="has_priv('ban')">RTT (min/avg/max)</th>
                 </tr>
             </thead>
             <tbody>
@@ -31,14 +34,22 @@ export default {
                         </router-link>
                     </td>
                     <td>
+                        <i class="fa-solid fa-heart" style="color: red;"></i>
+                        {{ player.hp }}
+                    </td>
+                    <td v-if="has_priv('ban')">
                         {{Math.floor(player.pos.x)}}/{{Math.floor(player.pos.y)}}/{{Math.floor(player.pos.z)}}
                     </td>
-                    <td>
+                    <td v-if="has_priv('ban')">
                         {{player.info.address}}
                     </td>
-                    <td>{{player.info.protocol_version}}</td>
-                    <td>{{ format_seconds(player.info.connection_uptime) }}</td>
-                    <td>
+                    <td v-if="has_priv('ban')">
+                        {{player.info.protocol_version}}
+                    </td>
+                    <td v-if="has_priv('ban')">
+                        {{ format_seconds(player.info.connection_uptime) }}
+                    </td>
+                    <td v-if="has_priv('ban')">
                         <i class="fa-solid fa-signal" v-bind:style="{'color': signal_color(player.info.avg_rtt) }"></i>
                         {{ Math.floor(player.info.min_rtt*1000)/1000 }}/
                         {{ Math.floor(player.info.avg_rtt*1000)/1000 }}/
