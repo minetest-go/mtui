@@ -23,28 +23,19 @@ func exists(path string) (bool, error) {
 	return false, err
 }
 
+func checkFile(path string) bool {
+	f, err := exists(path)
+	if err != nil {
+		// don't set flag if an error occurs
+		return false
+	}
+	return f
+}
+
 func (a *Api) GetFeatures(w http.ResponseWriter, r *http.Request) {
-	has_mail, err := exists(path.Join(a.app.WorldDir, "mails"))
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	has_areas, err := exists(path.Join(a.app.WorldDir, "areas.json"))
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	has_skinsdb, err := exists(path.Join(a.app.WorldDir, "worldmods", "skinsdb"))
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
 	SendJson(w, &Features{
-		Mail:    has_mail,
-		Areas:   has_areas,
-		SkinsDB: has_skinsdb,
+		Mail:    checkFile(path.Join(a.app.WorldDir, "mails")),
+		Areas:   checkFile(path.Join(a.app.WorldDir, "areas.json")),
+		SkinsDB: checkFile(path.Join(a.app.WorldDir, "worldmods", "skinsdb")),
 	})
 }
