@@ -34,6 +34,8 @@ func Setup(a *app.App) error {
 
 	r.HandleFunc("/api/auth/{playername}", api.Secure(api.GetAuth)).Methods(http.MethodGet)
 
+	r.HandleFunc("/api/playerinfo/{playername}", api.GetPlayerInfo).Methods(http.MethodGet)
+
 	r.HandleFunc("/api/areas", api.Secure(api.GetAreas)).Methods(http.MethodGet)
 	r.HandleFunc("/api/areas/{playername}", api.Secure(api.GetOwnedAreas)).Methods(http.MethodGet)
 
