@@ -5,9 +5,9 @@ import (
 	"net/http"
 )
 
-func CheckApiKey(key string, fn http.HandlerFunc) http.HandlerFunc {
+func (api *Api) CheckApiKey(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Header.Get("Api-Key") != key {
+		if r.Header.Get("Api-Key") != api.app.Config.APIKey {
 			// unauthorized
 			w.WriteHeader(http.StatusUnauthorized)
 			return
@@ -19,9 +19,9 @@ func CheckApiKey(key string, fn http.HandlerFunc) http.HandlerFunc {
 
 type SecureHandlerFunc func(http.ResponseWriter, *http.Request, *types.Claims)
 
-func Secure(fn SecureHandlerFunc) http.HandlerFunc {
+func (api *Api) Secure(fn SecureHandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		claims, err := GetClaims(r)
+		claims, err := api.GetClaims(r)
 		if err == err_unauthorized {
 			SendError(w, 401, "unauthorized")
 			return
@@ -33,9 +33,9 @@ func Secure(fn SecureHandlerFunc) http.HandlerFunc {
 	}
 }
 
-func SecurePriv(required_priv string, fn SecureHandlerFunc) http.HandlerFunc {
+func (api *Api) SecurePriv(required_priv string, fn SecureHandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		claims, err := GetClaims(r)
+		claims, err := api.GetClaims(r)
 		if err == err_unauthorized {
 			SendError(w, 401, "unauthorized")
 			return

@@ -2,9 +2,11 @@ package app
 
 import (
 	"mtui/bridge"
+	"mtui/config"
 	"mtui/db"
 	"mtui/eventbus"
 	"mtui/mail"
+	"path"
 
 	"github.com/minetest-go/mtdb"
 )
@@ -16,9 +18,20 @@ type App struct {
 	Bridge    *bridge.Bridge
 	WSEvents  *eventbus.EventBus
 	Mail      *mail.Mail
+	Config    *config.Config
 }
 
 func Create(world_dir string) (*App, error) {
+	config_path := path.Join(world_dir, "mtui.json")
+	cfg, err := config.Parse(config_path)
+	if err != nil {
+		//no config, create a default config
+		cfg, err = config.WriteDefault(config_path)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	dbctx, err := mtdb.New(world_dir)
 	if err != nil {
 		return nil, err
@@ -43,6 +56,7 @@ func Create(world_dir string) (*App, error) {
 		Bridge:    bridge.New(),
 		WSEvents:  eventbus.NewEventBus(),
 		Mail:      mail.New(world_dir),
+		Config:    cfg,
 	}
 
 	return app, nil

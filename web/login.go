@@ -41,11 +41,11 @@ func (a *Api) TanSetListener(c chan *bridge.CommandResponse) {
 }
 
 func (a *Api) DoLogout(w http.ResponseWriter, r *http.Request) {
-	RemoveClaims(w)
+	a.RemoveClaims(w)
 }
 
 func (a *Api) GetLogin(w http.ResponseWriter, r *http.Request) {
-	claims, err := GetClaims(r)
+	claims, err := a.GetClaims(r)
 	if err == err_unauthorized {
 		SendError(w, 401, "unauthorized")
 	} else {
@@ -119,7 +119,7 @@ func (a *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 		Username:   req.Username,
 		Privileges: priv_arr,
 	}
-	err = SetClaims(w, claims)
+	err = a.SetClaims(w, claims)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return

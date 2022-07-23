@@ -4,7 +4,6 @@ import (
 	"errors"
 	"mtui/types"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -14,20 +13,20 @@ const TOKEN_COOKIE_NAME = "mtui"
 
 var err_unauthorized = errors.New("unauthorized")
 
-func createCookie(value string) *http.Cookie {
+func (api *Api) createCookie(value string) *http.Cookie {
 	return &http.Cookie{
 		Name:     TOKEN_COOKIE_NAME,
 		Value:    value,
-		Path:     os.Getenv("COOKIE_PATH"),
+		Path:     api.app.Config.CookiePath,
 		Expires:  time.Now().Add(7 * 24 * time.Hour),
-		Domain:   os.Getenv("COOKIE_DOMAIN"),
+		Domain:   api.app.Config.CookieDomain,
 		HttpOnly: true,
-		Secure:   os.Getenv("COOKIE_SECURE") == "true",
+		Secure:   api.app.Config.CookieSecure,
 	}
 }
 
-func SetToken(w http.ResponseWriter, token string) {
-	http.SetCookie(w, createCookie(token))
+func (api *Api) SetToken(w http.ResponseWriter, token string) {
+	http.SetCookie(w, api.createCookie(token))
 }
 
 func GetToken(r *http.Request) (string, error) {
@@ -42,23 +41,23 @@ func GetToken(r *http.Request) (string, error) {
 	return c.Value, nil
 }
 
-func RemoveClaims(w http.ResponseWriter) {
-	http.SetCookie(w, createCookie(""))
+func (api *Api) RemoveClaims(w http.ResponseWriter) {
+	http.SetCookie(w, api.createCookie(""))
 }
 
-func SetClaims(w http.ResponseWriter, claims *types.Claims) error {
+func (api *Api) SetClaims(w http.ResponseWriter, claims *types.Claims) error {
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	token, err := t.SignedString([]byte(os.Getenv("JWTKEY")))
+	token, err := t.SignedString([]byte(api.app.Config.JWTKey))
 	if err != nil {
 		return err
 	}
 
-	SetToken(w, token)
+	api.SetToken(w, token)
 	return nil
 }
 
-func GetClaims(r *http.Request) (*types.Claims, error) {
+func (api *Api) GetClaims(r *http.Request) (*types.Claims, error) {
 	t, err := GetToken(r)
 	if err != nil {
 		return nil, err
@@ -69,7 +68,7 @@ func GetClaims(r *http.Request) (*types.Claims, error) {
 	}
 
 	token, err := jwt.ParseWithClaims(t, &types.Claims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("JWTKEY")), nil
+		return []byte(api.app.Config.JWTKey), nil
 	})
 
 	if err != nil {

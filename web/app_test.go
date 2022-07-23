@@ -30,7 +30,6 @@ player_backend = sqlite3
 }
 
 func CreateTestApi(t *testing.T) (*web.Api, *app.App) {
-	os.Setenv("JWTKEY", "mykey")
 	app := CreateTestApp(t)
 
 	api := web.NewApi(app)

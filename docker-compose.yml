@@ -23,16 +23,12 @@ services:
   environment:
    WORLD_DIR: "/root/.minetest/worlds/world"
    WEBDEV: "true"
-   JWTKEY: "mysecretjwtkey"
-   APIKEY: "mykey"
-   COOKIE_DOMAIN: "127.0.0.1"
-   COOKIE_SECURE: "false"
-   COOKIE_PATH: "/"
   ports:
     - 8080:8080
   volumes:
    - "minetest_home:/root/.minetest"
    - "./dev/worldmods:/root/.minetest/worlds/world/worldmods"
+   - "./dev/mtui.json:/root/.minetest/worlds/world/mtui.json"
    - "./minetest.conf:/etc/minetest/minetest.conf"
    - "./:/app"
    - "go_cache:/root/.cache"

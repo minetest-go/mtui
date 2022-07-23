@@ -62,7 +62,7 @@ func (api *Api) Websocket(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	claims, err := GetClaims(r)
+	claims, err := api.GetClaims(r)
 	if err != nil && err != err_unauthorized {
 		return
 	}
