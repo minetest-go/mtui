@@ -11,7 +11,7 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/minetest-go/mtdb v1.1.23
 	github.com/stretchr/testify v1.8.0
-	modernc.org/sqlite v1.17.3
+	modernc.org/sqlite v1.18.0
 )
 
 require (
