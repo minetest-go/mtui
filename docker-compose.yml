@@ -2,7 +2,7 @@ version: "3.6"
 
 services:
  minetest:
-  image: registry.gitlab.com/minetest/minetest/server:5.5.0
+  image: registry.gitlab.com/minetest/minetest/server:5.6.0
   user: root
   volumes:
     - "minetest_home:/root/.minetest"
