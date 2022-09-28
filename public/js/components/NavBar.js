@@ -44,6 +44,11 @@ export default {
 							<i class="fa-solid fa-terminal"></i> Shell
 						</router-link>
 					</li>
+					<li class="nav-item" v-if="has_priv('server')">
+						<router-link to="/lua" class="nav-link">
+							<i class="fa-solid fa-terminal"></i> Lua
+						</router-link>
+					</li>
 					<li class="nav-item">
 						<router-link to="/online-players" class="nav-link">
 							<i class="fa fa-users"></i> Online players

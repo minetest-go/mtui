@@ -3,6 +3,7 @@ import Login from './components/pages/Login.js';
 import PlayerInfo from './components/pages/PlayerInfo.js';
 import Profile from './components/pages/Profile.js';
 import Shell from './components/pages/Shell.js';
+import Lua from './components/pages/Lua.js';
 import OnlinePlayers from './components/pages/OnlinePlayers.js';
 import Mail from './components/pages/Mail.js';
 import MailRead from './components/pages/MailRead.js';
@@ -24,6 +25,9 @@ export default [{
 }, {
 	path: "/shell", component: Shell,
 	meta: { requiredPriv: "interact" }
+}, {
+	path: "/lua", component: Lua,
+	meta: { requiredPriv: "server" }
 }, {
 	path: "/mail", component: Mail,
 	meta: { requiredPriv: "interact" }

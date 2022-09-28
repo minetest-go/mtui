@@ -50,6 +50,7 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/mail/contacts", api.Secure(api.GetContacts)).Methods(http.MethodGet)
 
 	r.HandleFunc("/api/bridge/execute_chatcommand", api.Secure(api.ExecuteChatcommand)).Methods(http.MethodPost)
+	r.HandleFunc("/api/bridge/lua", api.SecurePriv("server", api.ExecuteLua)).Methods(http.MethodPost)
 	r.HandleFunc("/api/bridge", api.CheckApiKey(a.Bridge.HandlePost)).Methods(http.MethodPost)
 	r.HandleFunc("/api/bridge", api.CheckApiKey(a.Bridge.HandleGet)).Methods(http.MethodGet)
 
