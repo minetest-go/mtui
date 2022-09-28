@@ -13,16 +13,9 @@ jobs:
         go-version: 1.19.x
     - name: Checkout code
       uses: actions/checkout@v3
-    - name: Install npm modules
+    - name: Test
       run: |
-        cd public && npm ci && npm run jshint && npm run bundle
-    - name: Calc coverage
-      run: |
-        go test ./... -v -covermode=count -coverprofile=coverage.out
-    - name: Convert coverage.out to coverage.lcov
-      uses: jandelgado/gcov2lcov-action@v1.0.6
-    - name: Coveralls
-      uses: coverallsapp/github-action@v1.1.2
+        go test ./... -coverprofile=profile.cov
+    - uses: shogo82148/actions-goveralls@v1.6.0
       with:
-        github-token: ${{ secrets.github_token }}
-        path-to-lcov: coverage.lcov
+        path-to-profile: profile.cov
