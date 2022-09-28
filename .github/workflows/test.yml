@@ -7,6 +7,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Install npm modules
+      run: |
+        cd public && npm ci && npm run jshint && npm run bundle
     - name: Install Go
       uses: actions/setup-go@v3
       with:
