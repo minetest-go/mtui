@@ -7,18 +7,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        submodules: recursive
+
     - name: Install npm modules
       run: |
         cd public && npm ci && npm run jshint && npm run bundle
+
     - name: Install Go
       uses: actions/setup-go@v3
       with:
         go-version: 1.19.x
-    - name: Checkout code
-      uses: actions/checkout@v3
+
     - name: Test
       run: |
         go test ./... -coverprofile=profile.cov
+
     - uses: shogo82148/actions-goveralls@v1.6.0
       with:
         path-to-profile: profile.cov
