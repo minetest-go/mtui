@@ -1,0 +1,57 @@
+package db_test
+
+import (
+	"mtui/db"
+	"mtui/types"
+	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+)
+
+func TestModRepo(t *testing.T) {
+	_db := setupDB(t)
+	repo := db.ModRepository{DB: _db}
+
+	m := &types.Mod{
+		ID:         uuid.NewString(),
+		Name:       "my_mod",
+		ModType:    types.ModTypeMod,
+		SourceType: types.SourceTypeGIT,
+		URL:        "https://",
+		Version:    "1234",
+		AutoUpdate: false,
+	}
+
+	// Create
+	assert.NoError(t, repo.Create(m))
+
+	// Read
+	list, err := repo.GetAll(types.ModTypeMod)
+	assert.NoError(t, err)
+	assert.NotNil(t, list)
+	assert.Equal(t, 1, len(list))
+	assert.Equal(t, m.ID, list[0].ID)
+	assert.Equal(t, m.ModType, list[0].ModType)
+	assert.Equal(t, m.Name, list[0].Name)
+	assert.Equal(t, m.URL, list[0].URL)
+
+	// Update
+	m.URL = "xyz"
+	assert.NoError(t, repo.Update(m))
+
+	list, err = repo.GetAll(types.ModTypeMod)
+	assert.NoError(t, err)
+	assert.NotNil(t, list)
+	assert.Equal(t, 1, len(list))
+	assert.Equal(t, m.URL, list[0].URL)
+
+	// Delete
+	assert.NoError(t, repo.Delete(m.ID))
+
+	list, err = repo.GetAll(types.ModTypeMod)
+	assert.NoError(t, err)
+	assert.NotNil(t, list)
+	assert.Equal(t, 0, len(list))
+
+}
