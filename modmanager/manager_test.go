@@ -57,12 +57,12 @@ func TestCheckoutHash(t *testing.T) {
 		Version:    "fe34e3f3cd3e066ba0be76f9df46c11e66411496",
 	}
 	assert.NoError(t, mm.Create(mod))
+	assert.NotEqual(t, "", mod.ID)
 	assert.Equal(t, "fe34e3f3cd3e066ba0be76f9df46c11e66411496", mod.Version)
 
 	// test Scan()
-	mm2 := modmanager.New(app.WorldDir, app.Repos.ModRepo)
-	assert.NoError(t, mm2.Scan())
-	mods, err := mm2.Mods()
+	assert.NoError(t, mm.Scan())
+	mods, err := mm.Mods()
 	assert.NoError(t, err)
 	assert.NotNil(t, mods)
 	assert.Equal(t, 1, len(mods))
@@ -72,6 +72,7 @@ func TestCheckoutHash(t *testing.T) {
 	assert.Equal(t, "fe34e3f3cd3e066ba0be76f9df46c11e66411496", mods[0].Version)
 	assert.Equal(t, types.SourceTypeGIT, mods[0].SourceType)
 	assert.Equal(t, types.ModTypeMod, mods[0].ModType)
+	mod = mods[0]
 
 	// check list
 	mods, err = mm.Mods()
