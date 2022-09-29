@@ -56,9 +56,9 @@ func Setup(a *app.App) error {
 
 	r.HandleFunc("/api/mods/scan", api.SecurePriv("server", api.ScanWorldDir)).Methods(http.MethodPost)
 	r.HandleFunc("/api/mods", api.SecurePriv("server", api.GetMods)).Methods(http.MethodGet)
-	r.HandleFunc("/api/mods/update/{name}/{version}", api.SecurePriv("server", api.UpdateModVersion)).Methods(http.MethodPost)
+	r.HandleFunc("/api/mods/update/{id}/{version}", api.SecurePriv("server", api.UpdateModVersion)).Methods(http.MethodPost)
 	r.HandleFunc("/api/mods/create", api.SecurePriv("server", api.CreateMod)).Methods(http.MethodPost)
-	r.HandleFunc("/api/mods/delete/{name}", api.SecurePriv("server", api.DeleteMod)).Methods(http.MethodDelete)
+	r.HandleFunc("/api/mods/delete/{id}", api.SecurePriv("server", api.DeleteMod)).Methods(http.MethodDelete)
 
 	// static files
 	if os.Getenv("WEBDEV") == "true" {

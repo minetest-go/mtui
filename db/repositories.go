@@ -5,8 +5,11 @@ import (
 )
 
 type Repositories struct {
+	ModRepo *ModRepository
 }
 
 func NewRepositories(db *sql.DB) *Repositories {
-	return &Repositories{}
+	return &Repositories{
+		ModRepo: &ModRepository{DB: db},
+	}
 }

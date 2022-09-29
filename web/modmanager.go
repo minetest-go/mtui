@@ -2,7 +2,6 @@ package web
 
 import (
 	"encoding/json"
-	"mtui/modmanager"
 	"mtui/types"
 	"net/http"
 
@@ -10,32 +9,35 @@ import (
 )
 
 func (a *Api) GetMods(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	SendJson(w, a.app.ModManager.Mods())
+	list, err := a.app.ModManager.Mods()
+	Send(w, list, err)
 }
 
 func (a *Api) ScanWorldDir(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	err := a.app.ModManager.Scan()
-	Send(w, a.app.ModManager.Mods(), err)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+	a.GetMods(w, r, claims)
 }
 
 func (a *Api) UpdateModVersion(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	vars := mux.Vars(r)
-	name := vars["name"]
+	id := vars["id"]
 	version := vars["version"]
 
-	var m *modmanager.Mod
-	for _, lm := range a.app.ModManager.Mods() {
-		if lm.Name == name {
-			m = lm
-		}
+	m, err := a.app.ModManager.Mod(id)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
 	}
-
 	if m == nil {
 		SendError(w, 404, "not found")
 		return
 	}
 
-	err := a.app.ModManager.Update(m, version)
+	err = a.app.ModManager.Update(m, version)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -48,7 +50,7 @@ func (a *Api) UpdateModVersion(w http.ResponseWriter, r *http.Request, claims *t
 }
 
 func (a *Api) CreateMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	m := &modmanager.Mod{}
+	m := &types.Mod{}
 	err := json.NewDecoder(r.Body).Decode(m)
 	if err != nil {
 		SendError(w, 500, err.Error())
@@ -60,21 +62,19 @@ func (a *Api) CreateMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 
 func (a *Api) DeleteMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	vars := mux.Vars(r)
-	name := vars["name"]
+	id := vars["id"]
 
-	var m *modmanager.Mod
-	for _, lm := range a.app.ModManager.Mods() {
-		if lm.Name == name {
-			m = lm
-		}
+	m, err := a.app.ModManager.Mod(id)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
 	}
-
 	if m == nil {
 		SendError(w, 404, "not found")
 		return
 	}
 
-	err := a.app.ModManager.Remove(m)
+	err = a.app.ModManager.Remove(m)
 	if err != nil {
 		SendError(w, 500, err.Error())
 	}

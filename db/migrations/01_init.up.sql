@@ -5,6 +5,7 @@ create table mod(
     mod_type int not null, -- game/mod/txp
     source_type int not null, -- cdb/git
     url varchar(256) not null, -- cdb user+package / git url
+    branch varchar(256) not null, -- git branch or empty
     version varchar(64) not null, -- cdb version / git branch,tag,commit
     auto_update boolean not null default false
 );

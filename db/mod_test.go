@@ -27,7 +27,7 @@ func TestModRepo(t *testing.T) {
 	assert.NoError(t, repo.Create(m))
 
 	// Read
-	list, err := repo.GetAll(types.ModTypeMod)
+	list, err := repo.GetAll()
 	assert.NoError(t, err)
 	assert.NotNil(t, list)
 	assert.Equal(t, 1, len(list))
@@ -36,11 +36,21 @@ func TestModRepo(t *testing.T) {
 	assert.Equal(t, m.Name, list[0].Name)
 	assert.Equal(t, m.URL, list[0].URL)
 
+	// by id
+	m2, err := repo.GetByID(m.ID)
+	assert.NoError(t, err)
+	assert.NotNil(t, m2)
+
+	// by non-existent id
+	m2, err = repo.GetByID(uuid.NewString())
+	assert.NoError(t, err)
+	assert.Nil(t, m2)
+
 	// Update
 	m.URL = "xyz"
 	assert.NoError(t, repo.Update(m))
 
-	list, err = repo.GetAll(types.ModTypeMod)
+	list, err = repo.GetAll()
 	assert.NoError(t, err)
 	assert.NotNil(t, list)
 	assert.Equal(t, 1, len(list))
@@ -49,7 +59,7 @@ func TestModRepo(t *testing.T) {
 	// Delete
 	assert.NoError(t, repo.Delete(m.ID))
 
-	list, err = repo.GetAll(types.ModTypeMod)
+	list, err = repo.GetAll()
 	assert.NoError(t, err)
 	assert.NotNil(t, list)
 	assert.Equal(t, 0, len(list))

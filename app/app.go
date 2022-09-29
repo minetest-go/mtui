@@ -54,7 +54,7 @@ func Create(world_dir string) (*App, error) {
 	app := &App{
 		WorldDir:   world_dir,
 		DBContext:  dbctx,
-		ModManager: modmanager.New(world_dir),
+		ModManager: modmanager.New(world_dir, repos.ModRepo),
 		Repos:      repos,
 		Bridge:     bridge.New(),
 		WSEvents:   eventbus.NewEventBus(),
