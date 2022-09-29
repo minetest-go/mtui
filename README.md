@@ -21,25 +21,14 @@ Planned:
 
 # Running
 
-## Configuration
-
-Application-config: `<world_dir>/mtui.json` (will be automatically created)
-
-Example:
-```json
-{
-    "jwt_key": "mysecretjwtkey",
-    "api_key": "mykey",
-    "cookie_domain": "127.0.0.1",
-    "cookie_secure": false,
-    "cookie_path": "/"
-}
-```
-
 ## Environment Variables
 
 * `WORLD_DIR` world directory, defaults to the current working dir
 * `WEBDEV` if set to "true": bypasses the embedded web-resources (for development)
+* `API_KEY` api key, optional, will be generated if not set
+* `COOKIE_DOMAIN` the cookie domain, defaults to "127.0.0.1"
+* `COOKIE_PATH` the cookie path, defaults to "/"
+* `COOKIE_SECURE` secure cookie, defaults to "false"
 
 # Development
 
@@ -49,6 +38,9 @@ Prerequisites:
 
 Starting:
 ```sh
+# init and update submodules
+git submodule init
+git submodule update
 # fetch the frontend libraries (one time task)
 docker-compose up ui_webapp
 # start the minetest engine and the ui
