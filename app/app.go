@@ -2,12 +2,12 @@ package app
 
 import (
 	"mtui/bridge"
-	"mtui/config"
 	"mtui/db"
 	"mtui/eventbus"
 	"mtui/mail"
 	"mtui/modmanager"
-	"path"
+	"mtui/types"
+	"os"
 
 	"github.com/minetest-go/mtdb"
 )
@@ -20,20 +20,10 @@ type App struct {
 	Bridge     *bridge.Bridge
 	WSEvents   *eventbus.EventBus
 	Mail       *mail.Mail
-	Config     *config.Config
+	Config     *types.Config
 }
 
 func Create(world_dir string) (*App, error) {
-	config_path := path.Join(world_dir, "mtui.json")
-	cfg, err := config.Parse(config_path)
-	if err != nil {
-		//no config, create a default config
-		cfg, err = config.WriteDefault(config_path)
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	dbctx, err := mtdb.New(world_dir)
 	if err != nil {
 		return nil, err
@@ -50,6 +40,57 @@ func Create(world_dir string) (*App, error) {
 	}
 
 	repos := db.NewRepositories(db_)
+
+	cfg := &types.Config{
+		CookieDomain: os.Getenv("COOKIE_DOMAIN"),
+		CookieSecure: os.Getenv("COOKIE_SECURE") == "true",
+		CookiePath:   os.Getenv("COOKIE_PATH"),
+		APIKey:       os.Getenv("API_KEY"),
+	}
+
+	// config defaults
+	if cfg.CookieDomain == "" {
+		cfg.CookieDomain = "127.0.0.1"
+	}
+	if cfg.CookiePath == "" {
+		cfg.CookiePath = "/"
+	}
+
+	jwtKey, err := repos.ConfigRepo.GetByKey(types.ConfigJWTKey)
+	if err != nil {
+		return nil, err
+	}
+	if jwtKey == nil {
+		// create key
+		jwtKey = &types.ConfigEntry{
+			Key:   types.ConfigJWTKey,
+			Value: randSeq(16),
+		}
+		err = repos.ConfigRepo.Set(jwtKey)
+		if err != nil {
+			return nil, err
+		}
+	}
+	cfg.JWTKey = jwtKey.Value
+
+	if cfg.APIKey == "" {
+		apiKey, err := repos.ConfigRepo.GetByKey(types.ConfigApiKey)
+		if err != nil {
+			return nil, err
+		}
+		if apiKey == nil {
+			// create key
+			apiKey = &types.ConfigEntry{
+				Key:   types.ConfigApiKey,
+				Value: randSeq(16),
+			}
+			err = repos.ConfigRepo.Set(apiKey)
+			if err != nil {
+				return nil, err
+			}
+		}
+		cfg.APIKey = apiKey.Value
+	}
 
 	app := &App{
 		WorldDir:   world_dir,

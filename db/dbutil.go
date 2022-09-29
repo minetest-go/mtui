@@ -43,6 +43,22 @@ func Insert(d *sql.DB, entity Insertable, additionalStmts ...string) error {
 	return err
 }
 
+func InsertOrReplace(d *sql.DB, entity Insertable, additionalStmts ...string) error {
+	cols := entity.Columns(InsertAction)
+	placeholders := make([]string, len(cols))
+	for i := range cols {
+		placeholders[i] = fmt.Sprintf("$%d", i+1)
+	}
+
+	_, err := d.Exec(fmt.Sprintf(
+		"insert or replace into %s(%s) values(%s) %s",
+		entity.Table(), strings.Join(cols, ","), strings.Join(placeholders, ","), strings.Join(additionalStmts, " ")),
+		entity.Values(InsertAction)...,
+	)
+
+	return err
+}
+
 func InsertReturning(d *sql.DB, entity Insertable, retField string, retValue any) error {
 	cols := entity.Columns(InsertAction)
 	placeholders := make([]string, len(cols))

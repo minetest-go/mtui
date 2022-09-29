@@ -1,7 +1,0 @@
-{
-    "jwt_key": "mysecretjwtkey",
-    "api_key": "mykey",
-    "cookie_domain": "127.0.0.1",
-    "cookie_secure": false,
-    "cookie_path": "/"
-}
