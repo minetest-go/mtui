@@ -10,6 +10,7 @@ const (
 	ModTypeWorldmods    ModType    = "worldmods"
 	SourceTypeContentDB SourceType = "cdb"
 	SourceTypeGit       SourceType = "git"
+	SourceTypeManual    SourceType = "manual"
 )
 
 type Mod struct {

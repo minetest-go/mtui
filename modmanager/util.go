@@ -30,3 +30,11 @@ func exists(path string) (bool, error) {
 	}
 	return false, err
 }
+
+func isDir(path string) bool {
+	fi, err := os.Stat(path)
+	if err == nil {
+		return fi.IsDir()
+	}
+	return false
+}

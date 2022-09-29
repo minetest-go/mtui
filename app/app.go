@@ -6,19 +6,21 @@ import (
 	"mtui/db"
 	"mtui/eventbus"
 	"mtui/mail"
+	"mtui/modmanager"
 	"path"
 
 	"github.com/minetest-go/mtdb"
 )
 
 type App struct {
-	DBContext *mtdb.Context
-	WorldDir  string
-	Repos     *db.Repositories
-	Bridge    *bridge.Bridge
-	WSEvents  *eventbus.EventBus
-	Mail      *mail.Mail
-	Config    *config.Config
+	DBContext  *mtdb.Context
+	WorldDir   string
+	Repos      *db.Repositories
+	ModManager *modmanager.ModManager
+	Bridge     *bridge.Bridge
+	WSEvents   *eventbus.EventBus
+	Mail       *mail.Mail
+	Config     *config.Config
 }
 
 func Create(world_dir string) (*App, error) {
@@ -50,13 +52,14 @@ func Create(world_dir string) (*App, error) {
 	repos := db.NewRepositories(db_)
 
 	app := &App{
-		WorldDir:  world_dir,
-		DBContext: dbctx,
-		Repos:     repos,
-		Bridge:    bridge.New(),
-		WSEvents:  eventbus.NewEventBus(),
-		Mail:      mail.New(world_dir),
-		Config:    cfg,
+		WorldDir:   world_dir,
+		DBContext:  dbctx,
+		ModManager: modmanager.New(world_dir),
+		Repos:      repos,
+		Bridge:     bridge.New(),
+		WSEvents:   eventbus.NewEventBus(),
+		Mail:       mail.New(world_dir),
+		Config:     cfg,
 	}
 
 	return app, nil

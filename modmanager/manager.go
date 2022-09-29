@@ -25,11 +25,17 @@ func New(world_dir string) *ModManager {
 }
 
 func (m *ModManager) scanMod(modname, dir string, modtype ModType) (bool, error) {
-	e, err := exists(path.Join(dir, ".git"))
-	if err != nil {
-		return false, err
-	}
-	if !e {
+	gitDir := isDir(path.Join(dir, ".git"))
+	if !gitDir {
+		if isDir(dir) && modtype != ModTypeWorldmods {
+			// self managed folder
+			m.mods = append(m.mods, &Mod{
+				Name:       modname,
+				SourceType: SourceTypeManual,
+				ModType:    modtype,
+			})
+		}
+
 		return false, nil
 	}
 
@@ -53,7 +59,7 @@ func (m *ModManager) scanMod(modname, dir string, modtype ModType) (bool, error)
 
 	mod := &Mod{
 		Name:       modname,
-		ModType:    ModTypeRegular,
+		ModType:    modtype,
 		SourceType: SourceTypeGit,
 		URL:        rem.Config().URLs[0],
 		Branch:     ref.Name().String(),
@@ -91,6 +97,8 @@ func (m *ModManager) scanDir(dir string, modtype ModType) error {
 }
 
 func (m *ModManager) Scan() error {
+	// clear mod list
+	m.mods = make([]*Mod, 0)
 
 	found, err := m.scanMod("worldmods", path.Join(m.world_dir, "worldmods"), ModTypeWorldmods)
 	if err != nil {
@@ -139,15 +147,23 @@ func (m *ModManager) Create(mod *Mod) error {
 			return err
 		}
 
-		if mod.Version != "" {
-			// check out specified version
-			err = w.Checkout(&git.CheckoutOptions{
-				Hash: plumbing.NewHash(mod.Version),
-			})
-		} else {
+		if mod.Branch != "" {
 			// check out branch
 			err = w.Checkout(&git.CheckoutOptions{
 				Branch: plumbing.ReferenceName(mod.Branch),
+			})
+
+			if err == nil && mod.Version != "" {
+				// checkout specified hash
+				err = w.Reset(&git.ResetOptions{
+					Commit: plumbing.NewHash(mod.Version),
+					Mode:   git.HardReset,
+				})
+			}
+		} else if mod.Version != "" {
+			// check out specified version (no tracking branch)
+			err = w.Checkout(&git.CheckoutOptions{
+				Hash: plumbing.NewHash(mod.Version),
 			})
 		}
 
@@ -232,7 +248,7 @@ func (m *ModManager) Update(mod *Mod, version string) error {
 		}
 
 		err = w.Pull(&git.PullOptions{RemoteName: "origin"})
-		if err != nil {
+		if err != nil && err != git.NoErrAlreadyUpToDate {
 			return err
 		}
 
