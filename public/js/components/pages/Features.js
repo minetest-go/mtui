@@ -27,6 +27,9 @@ const help = {
         description: "Mod, game and texturepack management",
         mods: ["mtui"],
         experimental: true
+    },
+    "mediaserver": {
+        description: "HTTP Mediaserver (remote_media)"
     }
 };
 
