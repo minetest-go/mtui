@@ -29,7 +29,8 @@ const help = {
         experimental: true
     },
     "mediaserver": {
-        description: "HTTP Mediaserver (remote_media)"
+        description: "HTTP Mediaserver (remote_media)",
+        experimental: true
     }
 };
 

@@ -59,6 +59,11 @@ export default {
 							<i class="fa fa-cubes"></i> Mods
 						</router-link>
 					</li>
+					<li class="nav-item" v-if="has_priv('server') && has_feature('mediaserver')">
+						<router-link to="/mediaserver" class="nav-link">
+							<i class="fa fa-photo-film"></i> Mediaserver
+						</router-link>
+					</li>
 					<li class="nav-item">
 						<router-link to="/online-players" class="nav-link">
 							<i class="fa fa-users"></i> Online players

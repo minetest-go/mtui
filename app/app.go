@@ -6,6 +6,7 @@ import (
 	"mtui/db"
 	"mtui/eventbus"
 	"mtui/mail"
+	"mtui/mediaserver"
 	"mtui/modmanager"
 	"mtui/types"
 	"os"
@@ -14,14 +15,15 @@ import (
 )
 
 type App struct {
-	DBContext  *mtdb.Context
-	WorldDir   string
-	Repos      *db.Repositories
-	ModManager *modmanager.ModManager
-	Bridge     *bridge.Bridge
-	WSEvents   *eventbus.EventBus
-	Mail       *mail.Mail
-	Config     *types.Config
+	DBContext   *mtdb.Context
+	WorldDir    string
+	Repos       *db.Repositories
+	ModManager  *modmanager.ModManager
+	Bridge      *bridge.Bridge
+	WSEvents    *eventbus.EventBus
+	Mail        *mail.Mail
+	Config      *types.Config
+	Mediaserver *mediaserver.MediaServer
 }
 
 func Create(world_dir string) (*App, error) {
@@ -111,14 +113,15 @@ func Create(world_dir string) (*App, error) {
 	}
 
 	app := &App{
-		WorldDir:   world_dir,
-		DBContext:  dbctx,
-		ModManager: modmanager.New(world_dir, repos.ModRepo),
-		Repos:      repos,
-		Bridge:     bridge.New(),
-		WSEvents:   eventbus.NewEventBus(),
-		Mail:       mail.New(world_dir),
-		Config:     cfg,
+		WorldDir:    world_dir,
+		DBContext:   dbctx,
+		ModManager:  modmanager.New(world_dir, repos.ModRepo),
+		Repos:       repos,
+		Bridge:      bridge.New(),
+		WSEvents:    eventbus.NewEventBus(),
+		Mail:        mail.New(world_dir),
+		Config:      cfg,
+		Mediaserver: mediaserver.New(),
 	}
 
 	return app, nil

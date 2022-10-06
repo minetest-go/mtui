@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"io"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 )
@@ -28,6 +29,22 @@ func getHash(path string) (string, error) {
 	return hashStr, nil
 }
 
+func (m *MediaServer) ScanDefaultSubdirs(wd string) error {
+	for _, dir := range []string{"game", "worldmods", "textures"} {
+		fullpath := path.Join(wd, dir)
+		info, err := os.Stat(fullpath)
+		if err != nil || info == nil || !info.IsDir() {
+			continue
+		}
+
+		err = m.Scan(fullpath)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (m *MediaServer) Scan(dir string) error {
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -39,9 +56,11 @@ func (m *MediaServer) Scan(dir string) error {
 				if err != nil {
 					return err
 				}
-				m.Count++
-				m.Size += info.Size()
-				m.Media[hash] = path
+				if m.Media[hash] == "" {
+					m.Count++
+					m.Size += info.Size()
+					m.Media[hash] = path
+				}
 			}
 		}
 		return nil

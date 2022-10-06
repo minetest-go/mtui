@@ -96,6 +96,9 @@ func (m *MediaServer) ServeHTTPFetch(w http.ResponseWriter, r *http.Request) {
 	headers.Add("Content-Type", "octet/stream")
 	headers.Add("Content-Length", fmt.Sprintf("%d", info.Size()))
 
+	// update stats
+	m.TransferredBytes.Add(info.Size())
+
 	_, err = io.Copy(w, file)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

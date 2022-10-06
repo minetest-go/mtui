@@ -11,6 +11,7 @@ import Mods from './components/pages/Mods.js';
 import Compose from './components/pages/Compose.js';
 import Skin from './components/pages/Skin.js';
 import Features from './components/pages/Features.js';
+import Mediaserver from './components/pages/Mediaserver.js';
 
 export default [{
 	path: "/", component: Start,
@@ -35,6 +36,9 @@ export default [{
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/mods", component: Mods,
+	meta: { requiredPriv: "server" }
+}, {
+	path: "/mediaserver", component: Mediaserver,
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/mail", component: Mail,
