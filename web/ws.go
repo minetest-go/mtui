@@ -1,9 +1,12 @@
 package web
 
 import (
+	"encoding/json"
 	"fmt"
 	"mtui/eventbus"
+	"mtui/events"
 	"mtui/types"
+	"mtui/types/command"
 	"net/http"
 	"sync"
 
@@ -62,12 +65,17 @@ func (api *Api) Websocket(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
+	defer conn.Close()
+
 	claims, err := api.GetClaims(r)
 	if err != nil && err != err_unauthorized {
 		return
 	}
 
-	defer conn.Close()
+	chat_chan := api.app.Bridge.AddHandler(command.COMMAND_CHAT_SEND_PLAYER)
+	defer api.app.Bridge.RemoveHandler(command.COMMAND_CHAT_SEND_PLAYER, chat_chan)
+	defer close(chat_chan)
+
 	ch := make(chan *eventbus.Event, 1000)
 	api.app.WSEvents.AddListener(ch)
 	defer api.app.WSEvents.RemoveListener(ch)
@@ -83,6 +91,28 @@ func (api *Api) Websocket(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	cache_lock.RUnlock()
+
+	// direct chat messages
+	go func() {
+		for raw_chat_cmd := range chat_chan {
+			chat_cmd := &command.ChatSendPlayerNotification{}
+			err = json.Unmarshal(raw_chat_cmd.Data, chat_cmd)
+			if err != nil {
+				fmt.Printf("chatcmd-parse: %s", err.Error())
+				continue
+			}
+
+			if claims.Username != chat_cmd.Name {
+				continue
+			}
+
+			err = sendEvent(&eventbus.Event{Type: events.DirectChatMessageEvent, Data: chat_cmd}, claims, conn)
+			if err != nil {
+				fmt.Printf("chatcmd-send: %s", err.Error())
+				continue
+			}
+		}
+	}()
 
 	// send live events
 	for wse := range ch {

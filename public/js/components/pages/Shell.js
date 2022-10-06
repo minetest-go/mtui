@@ -1,6 +1,7 @@
 import { execute_chatcommand } from "../../api/chatcommand.js";
 import login_store from '../../store/login.js';
 import { has_priv } from "../../service/login.js";
+import events from "../../events.js";
 
 const store = Vue.reactive({
     login_store: login_store,
@@ -10,6 +11,10 @@ const store = Vue.reactive({
     busy: false,
     message: "",
     delay: 0
+});
+
+events.on("direct_chat", function(data) {
+    store.message += data.text + "\n";
 });
 
 export default {
@@ -33,9 +38,12 @@ export default {
                 this.busy = false;
                 this.success = result.success;
                 this.error = !this.success;
-                this.message = result.message;
+                this.message += result.message + "\n";
                 this.delay = Date.now() - start;
             });
+        },
+        clear: function() {
+            this.message = "";
         }
     },
     template: /*html*/`
