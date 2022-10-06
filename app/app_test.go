@@ -21,7 +21,9 @@ player_backend = sqlite3
 	err = os.WriteFile(path.Join(tmpdir, "world.mt"), []byte(contents), 0644)
 	assert.NoError(t, err)
 
-	app, err := app.Create(tmpdir)
+	a, err := app.Create(tmpdir)
 	assert.NoError(t, err)
-	assert.NotNil(t, app)
+	assert.NotNil(t, a)
+
+	assert.NoError(t, app.CreateAdminUser(a.DBContext, "test", "enter"))
 }

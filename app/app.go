@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"mtui/bridge"
 	"mtui/db"
 	"mtui/eventbus"
@@ -27,6 +28,16 @@ func Create(world_dir string) (*App, error) {
 	dbctx, err := mtdb.New(world_dir)
 	if err != nil {
 		return nil, err
+	}
+
+	admin_username := os.Getenv("ADMIN_USERNAME")
+	admin_password := os.Getenv("ADMIN_PASSWORD")
+	if admin_username != "" && admin_password != "" {
+		fmt.Printf("Creating admin user '%s'\n", admin_username)
+		err = CreateAdminUser(dbctx, admin_username, admin_password)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	db_, err := db.Init(world_dir)

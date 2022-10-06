@@ -29,6 +29,8 @@ Planned:
 * `COOKIE_DOMAIN` the cookie domain, defaults to "127.0.0.1"
 * `COOKIE_PATH` the cookie path, defaults to "/"
 * `COOKIE_SECURE` secure cookie, defaults to "false"
+* `ADMIN_USERNAME` initial admin username (optional)
+* `ADMIN_PASSWORD` initial admin password (optional)
 
 # Development
 
