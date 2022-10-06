@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func setupDB(t *testing.T) (*sql.DB, *db.Repositories) {
+func setupDB(t *testing.T) *sql.DB {
 	tmpdir, err := os.MkdirTemp(os.TempDir(), "mtui")
 	assert.NoError(t, err)
 
@@ -20,9 +20,7 @@ func setupDB(t *testing.T) (*sql.DB, *db.Repositories) {
 	err = db.Migrate(db_)
 	assert.NoError(t, err)
 
-	repos := db.NewRepositories(db_)
-	assert.NotNil(t, db_)
-	return db_, repos
+	return db_
 }
 
 func TestMigrate(t *testing.T) {

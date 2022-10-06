@@ -13,20 +13,20 @@ const TOKEN_COOKIE_NAME = "mtui"
 
 var err_unauthorized = errors.New("unauthorized")
 
-func (api *Api) createCookie(value string) *http.Cookie {
+func (api *Api) createCookie(value string, expires time.Time) *http.Cookie {
 	return &http.Cookie{
 		Name:     TOKEN_COOKIE_NAME,
 		Value:    value,
 		Path:     api.app.Config.CookiePath,
-		Expires:  time.Now().Add(7 * 24 * time.Hour),
+		Expires:  expires,
 		Domain:   api.app.Config.CookieDomain,
 		HttpOnly: true,
 		Secure:   api.app.Config.CookieSecure,
 	}
 }
 
-func (api *Api) SetToken(w http.ResponseWriter, token string) {
-	http.SetCookie(w, api.createCookie(token))
+func (api *Api) SetToken(w http.ResponseWriter, token string, expires time.Time) {
+	http.SetCookie(w, api.createCookie(token, expires))
 }
 
 func GetToken(r *http.Request) (string, error) {
@@ -42,7 +42,7 @@ func GetToken(r *http.Request) (string, error) {
 }
 
 func (api *Api) RemoveClaims(w http.ResponseWriter) {
-	http.SetCookie(w, api.createCookie(""))
+	http.SetCookie(w, api.createCookie("", time.Now()))
 }
 
 func (api *Api) SetClaims(w http.ResponseWriter, claims *types.Claims) error {
@@ -53,7 +53,7 @@ func (api *Api) SetClaims(w http.ResponseWriter, claims *types.Claims) error {
 		return err
 	}
 
-	api.SetToken(w, token)
+	api.SetToken(w, token, claims.ExpiresAt.Local())
 	return nil
 }
 

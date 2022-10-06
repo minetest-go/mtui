@@ -1,19 +1,20 @@
 package modmanager
 
 import (
+	"mtui/types"
 	"os"
 	"path"
 )
 
-func (m *ModManager) getDir(mod *Mod) string {
+func (m *ModManager) getDir(mod *types.Mod) string {
 	switch mod.ModType {
-	case ModTypeGame:
+	case types.ModTypeGame:
 		return path.Join(m.world_dir, "game")
-	case ModTypeRegular:
+	case types.ModTypeMod:
 		return path.Join(m.world_dir, "worldmods", mod.Name)
-	case ModTypeTexturepack:
+	case types.ModTypeTexturepack:
 		return path.Join(m.world_dir, "textures", mod.Name) // TODO: verify
-	case ModTypeWorldmods:
+	case types.ModTypeWorldMods:
 		return path.Join(m.world_dir, "worldmods")
 	default:
 		return ""
@@ -29,4 +30,12 @@ func exists(path string) (bool, error) {
 		return false, nil
 	}
 	return false, err
+}
+
+func isDir(path string) bool {
+	fi, err := os.Stat(path)
+	if err == nil {
+		return fi.IsDir()
+	}
+	return false
 }

@@ -1,41 +1,34 @@
 package web
 
 import (
+	"encoding/json"
+	"mtui/types"
 	"net/http"
-	"os"
-	"path"
 )
 
-type Features struct {
-	Mail    bool `json:"mail"`
-	Areas   bool `json:"areas"`
-	SkinsDB bool `json:"skinsdb"`
-}
-
-func exists(path string) (bool, error) {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
-	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return false, err
-}
-
-func checkFile(path string) bool {
-	f, err := exists(path)
-	if err != nil {
-		// don't set flag if an error occurs
-		return false
-	}
-	return f
-}
-
 func (a *Api) GetFeatures(w http.ResponseWriter, r *http.Request) {
-	SendJson(w, &Features{
-		Mail:    checkFile(path.Join(a.app.WorldDir, "mails")),
-		Areas:   checkFile(path.Join(a.app.WorldDir, "areas.json")),
-		SkinsDB: checkFile(path.Join(a.app.WorldDir, "worldmods", "skinsdb")),
-	})
+	feature_map := make(map[string]bool)
+
+	list, err := a.app.Repos.FeatureRepository.GetAll()
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+	for _, feature := range list {
+		feature_map[feature.Name] = feature.Enabled
+	}
+
+	SendJson(w, feature_map)
+}
+
+func (a *Api) SetFeature(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	feature := &types.Feature{}
+	err := json.NewDecoder(r.Body).Decode(feature)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	err = a.app.Repos.FeatureRepository.Set(feature)
+	Send(w, feature, err)
 }

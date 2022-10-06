@@ -23,12 +23,14 @@ services:
   environment:
    WORLD_DIR: "/root/.minetest/worlds/world"
    WEBDEV: "true"
+   API_KEY: "mykey"
+   ADMIN_USERNAME: admin
+   ADMIN_PASSWORD: enter
   ports:
     - 8080:8080
   volumes:
    - "minetest_home:/root/.minetest"
    - "./dev/worldmods:/root/.minetest/worlds/world/worldmods"
-   - "./dev/mtui.json:/root/.minetest/worlds/world/mtui.json"
    - "./minetest.conf:/etc/minetest/minetest.conf"
    - "./:/app"
    - "go_cache:/root/.cache"

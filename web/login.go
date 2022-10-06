@@ -48,9 +48,45 @@ func (a *Api) GetLogin(w http.ResponseWriter, r *http.Request) {
 	claims, err := a.GetClaims(r)
 	if err == err_unauthorized {
 		SendError(w, 401, "unauthorized")
+	} else if err != nil {
+		SendError(w, 500, err.Error())
 	} else {
+		// refresh token
+		auth_entry, err := a.app.DBContext.Auth.GetByUsername(claims.Username)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+		if auth_entry == nil {
+			SendError(w, 404, "auth entry not found")
+			return
+		}
+
+		claims, err = a.updateToken(w, *auth_entry.ID, claims.Username)
 		Send(w, claims, err)
 	}
+}
+
+func (a *Api) updateToken(w http.ResponseWriter, id int64, username string) (*types.Claims, error) {
+	privs, err := a.app.DBContext.Privs.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	priv_arr := make([]string, len(privs))
+	for i, p := range privs {
+		priv_arr[i] = p.Privilege
+	}
+
+	expires := time.Now().Add(7 * 24 * time.Hour)
+	claims := &types.Claims{
+		RegisteredClaims: &jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(expires),
+		},
+		Username:   username,
+		Privileges: priv_arr,
+	}
+	return claims, a.SetClaims(w, claims)
 }
 
 func (a *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
@@ -101,29 +137,6 @@ func (a *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 		delete(tan_map, req.Username)
 	}
 
-	privs, err := a.app.DBContext.Privs.GetByID(*auth_entry.ID)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	priv_arr := make([]string, len(privs))
-	for i, p := range privs {
-		priv_arr[i] = p.Privilege
-	}
-
-	claims := &types.Claims{
-		RegisteredClaims: &jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 12)),
-		},
-		Username:   req.Username,
-		Privileges: priv_arr,
-	}
-	err = a.SetClaims(w, claims)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	SendJson(w, claims)
+	claims, err := a.updateToken(w, *auth_entry.ID, auth_entry.Name)
+	Send(w, claims, err)
 }

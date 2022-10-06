@@ -8,7 +8,7 @@ import (
 	"path"
 	"testing"
 
-	"github.com/minetest-go/mtdb"
+	authdb "github.com/minetest-go/mtdb/auth"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -46,7 +46,7 @@ func CreateTestApi(t *testing.T) (*web.Api, *app.App) {
 
 	// create user
 
-	auth_entry := &mtdb.AuthEntry{
+	auth_entry := &authdb.AuthEntry{
 		Name:      "singleplayer",
 		Password:  dbpass,
 		LastLogin: 123,
@@ -56,7 +56,7 @@ func CreateTestApi(t *testing.T) (*web.Api, *app.App) {
 
 	// create privs
 
-	assert.NoError(t, app.DBContext.Privs.Create(&mtdb.PrivilegeEntry{
+	assert.NoError(t, app.DBContext.Privs.Create(&authdb.PrivilegeEntry{
 		ID:        *auth_entry.ID,
 		Privilege: "interact",
 	}))

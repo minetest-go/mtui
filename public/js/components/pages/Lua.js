@@ -3,7 +3,7 @@ import login_store from '../../store/login.js';
 
 const store = Vue.reactive({
     login_store: login_store,
-    code: "",
+    code: "return minetest.features",
     success: false,
     error: false,
     busy: false,

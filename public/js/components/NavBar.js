@@ -39,14 +39,24 @@ export default {
 							<i class="fa fa-user"></i> Profile
 						</router-link>
 					</li>
-					<li class="nav-item" v-if="has_priv('interact')">
+					<li class="nav-item" v-if="has_priv('server')">
+						<router-link to="/features" class="nav-link">
+							<i class="fa fa-tags"></i> Features
+						</router-link>
+					</li>
+					<li class="nav-item" v-if="has_priv('interact') && has_feature('shell')">
 						<router-link to="/shell" class="nav-link">
 							<i class="fa-solid fa-terminal"></i> Shell
 						</router-link>
 					</li>
-					<li class="nav-item" v-if="has_priv('server')">
+					<li class="nav-item" v-if="has_priv('server') && has_feature('luashell')">
 						<router-link to="/lua" class="nav-link">
 							<i class="fa-solid fa-terminal"></i> Lua
+						</router-link>
+					</li>
+					<li class="nav-item" v-if="has_priv('server') && has_feature('modmanagement')">
+						<router-link to="/mods" class="nav-link">
+							<i class="fa fa-cubes"></i> Mods
 						</router-link>
 					</li>
 					<li class="nav-item">
