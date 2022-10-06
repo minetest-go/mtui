@@ -11,6 +11,7 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/minetest-go/mtdb v1.1.26
 	github.com/stretchr/testify v1.8.0
+	go.uber.org/atomic v1.10.0
 	modernc.org/sqlite v1.19.1
 )
 
@@ -32,7 +33,6 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/sergi/go-diff v1.2.0 // indirect
 	github.com/xanzy/ssh-agent v0.3.2 // indirect
-	go.uber.org/atomic v1.10.0 // indirect
 	golang.org/x/crypto v0.0.0-20220926161630-eccd6366d1be // indirect
 	golang.org/x/net v0.0.0-20220927171203-f486391704dc // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
