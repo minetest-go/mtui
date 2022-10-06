@@ -29,7 +29,7 @@ export default {
             <tbody>
                 <tr v-for="player in players" :key="player.name">
                     <td>
-                        <router-link :to="'/player/' + player.name">
+                        <router-link :to="'/profile/' + player.name">
                             {{player.name}}
                         </router-link>
                     </td>

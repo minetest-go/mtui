@@ -1,7 +1,7 @@
 import { changepw } from "../api/login.js";
-import login_store from '../store/login.js';
 
 export default {
+    props: ["username"],
     data: function() {
         return {
             oldpassword: "",
@@ -16,8 +16,7 @@ export default {
             this.busy = true;
             this.error = false;
 
-            const username = login_store.claims.username;
-            changepw(username, this.oldpassword, this.newpassword)
+            changepw(this.username, this.oldpassword, this.newpassword)
             .then(success => {
                 this.busy = false;
                 this.error = !success;

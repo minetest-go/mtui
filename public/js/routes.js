@@ -24,7 +24,7 @@ export default [{
 }, {
 	path: "/online-players", component: OnlinePlayers
 }, {
-	path: "/player/:name", component: PlayerInfo
+	path: "/profile/:name", component: PlayerInfo
 }, {
 	path: "/profile", component: Profile,
 	meta: { requiredPriv: "interact" }
