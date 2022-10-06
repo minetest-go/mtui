@@ -80,7 +80,7 @@ export default {
                                 <b>Last login:</b> {{ format_time(playerinfo.last_login) }}
                             </li>
                             <li>
-                                <b>Health:</b> {{playerinfo.health}}
+                                <b>Health:</b> <i class="fa-solid fa-heart" style="color: red;"></i> {{playerinfo.health}}
                             </li>
                             <li>
                                 <b>Breath:</b> {{playerinfo.breath}}

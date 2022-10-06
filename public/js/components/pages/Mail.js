@@ -59,7 +59,11 @@ export default {
             </thead>
             <tbody>
                 <tr v-for="(mail, index) in mail_store.mails" :key="index" :class="{'table-info': mail.unread}">
-                    <td>{{mail.sender}}</td>
+                    <td>
+                        <router-link :to="'/profile/' + mail.sender">
+                            {{mail.sender}}
+                        </router-link>                    
+                    </td>
                     <td>
                         <router-link :to="'/mail/read/' + mail.sender + '/' + mail.time">
                             {{mail.subject}}

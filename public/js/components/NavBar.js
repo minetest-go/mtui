@@ -67,7 +67,7 @@ export default {
 					<li class="nav-item">
 						<router-link to="/online-players" class="nav-link">
 							<i class="fa fa-users"></i> Online players
-							<span class="badge rounded-pill bg-info">
+							<span class="badge rounded-pill bg-info" v-if="stats.player_count">
 								{{stats.player_count}}
 							</span>
 						</router-link>
