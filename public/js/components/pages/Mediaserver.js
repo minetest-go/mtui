@@ -21,7 +21,7 @@ export default {
             .then(() => {
                 this.busy = false;
                 this.update();
-            })
+            });
         },
         update: function() {
             stats().then(s => this.stats = s);
