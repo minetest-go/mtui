@@ -30,6 +30,7 @@ func Create(world_dir string) (*App, error) {
 		return nil, err
 	}
 
+	// admin user
 	admin_username := os.Getenv("ADMIN_USERNAME")
 	admin_password := os.Getenv("ADMIN_PASSWORD")
 	if admin_username != "" && admin_password != "" {
@@ -51,6 +52,12 @@ func Create(world_dir string) (*App, error) {
 	}
 
 	repos := db.NewRepositories(db_)
+
+	// features
+	err = PopulateFeatures(repos.FeatureRepository)
+	if err != nil {
+		return nil, err
+	}
 
 	cfg := &types.Config{
 		CookieDomain: os.Getenv("COOKIE_DOMAIN"),

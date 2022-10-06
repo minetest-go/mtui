@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"mtui/types"
 	"net/http"
 )
@@ -54,5 +55,21 @@ func (api *Api) SecurePriv(required_priv string, fn SecureHandlerFunc) http.Hand
 			return
 		}
 		fn(w, r, claims)
+	}
+}
+
+func (api *Api) Feature(name string, fn http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		feature, err := api.app.Repos.FeatureRepository.GetByName(name)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+
+		if feature.Enabled {
+			fn(w, r)
+		} else {
+			SendError(w, 500, fmt.Sprintf("Feature '%s' not enabled", name))
+		}
 	}
 }

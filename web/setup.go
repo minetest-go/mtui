@@ -25,6 +25,7 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/ws", api.Websocket)
 
 	r.HandleFunc("/api/features", api.GetFeatures).Methods(http.MethodGet)
+	r.HandleFunc("/api/feature", api.SecurePriv("server", api.SetFeature)).Methods(http.MethodPost)
 
 	r.HandleFunc("/api/login", api.DoLogout).Methods(http.MethodDelete)
 	r.HandleFunc("/api/login", api.DoLogin).Methods(http.MethodPost)
@@ -36,30 +37,30 @@ func Setup(a *app.App) error {
 
 	r.HandleFunc("/api/playerinfo/{playername}", api.GetPlayerInfo).Methods(http.MethodGet)
 
-	r.HandleFunc("/api/areas", api.Secure(api.GetAreas)).Methods(http.MethodGet)
-	r.HandleFunc("/api/areas/{playername}", api.Secure(api.GetOwnedAreas)).Methods(http.MethodGet)
+	r.HandleFunc("/api/areas", api.Feature("areas", api.Secure(api.GetAreas))).Methods(http.MethodGet)
+	r.HandleFunc("/api/areas/{playername}", api.Feature("areas", api.Secure(api.GetOwnedAreas))).Methods(http.MethodGet)
 
-	r.HandleFunc("/api/skin", api.Secure(api.GetSkin)).Methods(http.MethodGet)
-	r.HandleFunc("/api/skin", api.Secure(api.SetSkin)).Methods(http.MethodPost)
+	r.HandleFunc("/api/skin", api.Feature("skinsdb", api.Secure(api.GetSkin))).Methods(http.MethodGet)
+	r.HandleFunc("/api/skin", api.Feature("skinsdb", api.Secure(api.SetSkin))).Methods(http.MethodPost)
 
-	r.HandleFunc("/api/mail/list", api.Secure(api.GetMails)).Methods(http.MethodGet)
-	r.HandleFunc("/api/mail/{sender}/{time}", api.Secure(api.DeleteMail)).Methods(http.MethodDelete)
-	r.HandleFunc("/api/mail/{sender}/{time}/read", api.Secure(api.MarkRead)).Methods(http.MethodPost)
-	r.HandleFunc("/api/mail/checkrecipient/{recipient}", api.Secure(api.CheckValidRecipient)).Methods(http.MethodGet)
-	r.HandleFunc("/api/mail/send/{recipient}", api.Secure(api.SendMail)).Methods(http.MethodPost)
-	r.HandleFunc("/api/mail/contacts", api.Secure(api.GetContacts)).Methods(http.MethodGet)
+	r.HandleFunc("/api/mail/list", api.Feature("mail", api.Secure(api.GetMails))).Methods(http.MethodGet)
+	r.HandleFunc("/api/mail/{sender}/{time}", api.Feature("mail", api.Secure(api.DeleteMail))).Methods(http.MethodDelete)
+	r.HandleFunc("/api/mail/{sender}/{time}/read", api.Feature("mail", api.Secure(api.MarkRead))).Methods(http.MethodPost)
+	r.HandleFunc("/api/mail/checkrecipient/{recipient}", api.Feature("mail", api.Secure(api.CheckValidRecipient))).Methods(http.MethodGet)
+	r.HandleFunc("/api/mail/send/{recipient}", api.Feature("mail", api.Secure(api.SendMail))).Methods(http.MethodPost)
+	r.HandleFunc("/api/mail/contacts", api.Feature("mail", api.Secure(api.GetContacts))).Methods(http.MethodGet)
 
-	r.HandleFunc("/api/bridge/execute_chatcommand", api.Secure(api.ExecuteChatcommand)).Methods(http.MethodPost)
-	r.HandleFunc("/api/bridge/lua", api.SecurePriv("server", api.ExecuteLua)).Methods(http.MethodPost)
+	r.HandleFunc("/api/bridge/execute_chatcommand", api.Feature("shell", api.Secure(api.ExecuteChatcommand))).Methods(http.MethodPost)
+	r.HandleFunc("/api/bridge/lua", api.Feature("luashell", api.SecurePriv("server", api.ExecuteLua))).Methods(http.MethodPost)
 	r.HandleFunc("/api/bridge", api.CheckApiKey(a.Bridge.HandlePost)).Methods(http.MethodPost)
 	r.HandleFunc("/api/bridge", api.CheckApiKey(a.Bridge.HandleGet)).Methods(http.MethodGet)
 
-	r.HandleFunc("/api/mods/scan", api.SecurePriv("server", api.ScanWorldDir)).Methods(http.MethodPost)
-	r.HandleFunc("/api/mods", api.SecurePriv("server", api.GetMods)).Methods(http.MethodGet)
-	r.HandleFunc("/api/mods/{id}/update/{version}", api.SecurePriv("server", api.UpdateModVersion)).Methods(http.MethodPost)
-	r.HandleFunc("/api/mods", api.SecurePriv("server", api.CreateMod)).Methods(http.MethodPost)
-	r.HandleFunc("/api/mods/{id}", api.SecurePriv("server", api.DeleteMod)).Methods(http.MethodDelete)
-	r.HandleFunc("/api/mods/{id}/status", api.SecurePriv("server", api.ModStatus)).Methods(http.MethodGet)
+	r.HandleFunc("/api/mods/scan", api.Feature("modmanagement", api.SecurePriv("server", api.ScanWorldDir))).Methods(http.MethodPost)
+	r.HandleFunc("/api/mods", api.Feature("modmanagement", api.SecurePriv("server", api.GetMods))).Methods(http.MethodGet)
+	r.HandleFunc("/api/mods/{id}/update/{version}", api.Feature("modmanagement", api.SecurePriv("server", api.UpdateModVersion))).Methods(http.MethodPost)
+	r.HandleFunc("/api/mods", api.Feature("modmanagement", api.SecurePriv("server", api.CreateMod))).Methods(http.MethodPost)
+	r.HandleFunc("/api/mods/{id}", api.Feature("modmanagement", api.SecurePriv("server", api.DeleteMod))).Methods(http.MethodDelete)
+	r.HandleFunc("/api/mods/{id}/status", api.Feature("modmanagement", api.SecurePriv("server", api.ModStatus))).Methods(http.MethodGet)
 
 	// static files
 	if os.Getenv("WEBDEV") == "true" {

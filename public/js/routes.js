@@ -10,6 +10,7 @@ import MailRead from './components/pages/MailRead.js';
 import Mods from './components/pages/Mods.js';
 import Compose from './components/pages/Compose.js';
 import Skin from './components/pages/Skin.js';
+import Features from './components/pages/Features.js';
 
 export default [{
 	path: "/", component: Start,
@@ -17,10 +18,13 @@ export default [{
 }, {
 	path: "/login", component: Login
 }, {
+	path: "/features", component: Features,
+	meta: { requiredPriv: "server" }
+}, {
 	path: "/online-players", component: OnlinePlayers
 }, {
 	path: "/player/:name", component: PlayerInfo
-},{
+}, {
 	path: "/profile", component: Profile,
 	meta: { requiredPriv: "interact" }
 }, {

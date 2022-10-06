@@ -13,4 +13,9 @@ create table mod(
 create table config(
     key varchar(128) primary key not null,
     value varchar(256) not null
-)
+);
+
+create table feature(
+    name varchar(128) primary key not null,
+    enabled boolean
+);
