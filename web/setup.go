@@ -23,8 +23,6 @@ func Setup(a *app.App) error {
 		return err
 	}
 
-	r.HandleFunc("/api/ws", api.Websocket)
-
 	r.HandleFunc("/api/features", api.GetFeatures).Methods(http.MethodGet)
 	r.HandleFunc("/api/feature", api.SecurePriv("server", api.SetFeature)).Methods(http.MethodPost)
 
@@ -80,5 +78,7 @@ func Setup(a *app.App) error {
 	}
 
 	http.Handle("/", r)
+	http.HandleFunc("/api/ws", api.Websocket)
+
 	return nil
 }
