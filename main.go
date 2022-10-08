@@ -10,9 +10,16 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
+
+	if os.Getenv("LOGLEVEL") == "debug" {
+		logrus.SetLevel(logrus.DebugLevel)
+	}
+
 	var err error
 	world_dir := os.Getenv("WORLD_DIR")
 	if world_dir == "" {

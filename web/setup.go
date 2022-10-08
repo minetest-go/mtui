@@ -14,6 +14,7 @@ import (
 
 func Setup(a *app.App) error {
 	r := mux.NewRouter()
+	r.Use(loggingMiddleware)
 
 	api := NewApi(a)
 
@@ -55,7 +56,7 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/bridge", api.CheckApiKey(a.Bridge.HandlePost)).Methods(http.MethodPost)
 	r.HandleFunc("/api/bridge", api.CheckApiKey(a.Bridge.HandleGet)).Methods(http.MethodGet)
 
-	r.HandleFunc("/api/media", api.Feature("mediaserver", a.Mediaserver.ServeHTTPIndex)).Methods(http.MethodPost)
+	r.HandleFunc("/api/media/index.mth", api.Feature("mediaserver", a.Mediaserver.ServeHTTPIndex)).Methods(http.MethodPost)
 	r.HandleFunc("/api/media/stats", api.Feature("mediaserver", api.GetMediaStats)).Methods(http.MethodGet)
 	r.HandleFunc("/api/media/{hash}", a.Mediaserver.ServeHTTPFetch).Methods(http.MethodGet)
 	r.HandleFunc("/api/media/scan", api.Feature("mediaserver", api.SecurePriv("server", api.ScanMedia))).Methods(http.MethodPost)

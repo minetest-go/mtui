@@ -31,6 +31,7 @@ Planned:
 * `COOKIE_SECURE` secure cookie, defaults to "false"
 * `ADMIN_USERNAME` initial admin username (optional)
 * `ADMIN_PASSWORD` initial admin password (optional)
+* `LOGLEVEL` currently supported: "debug", default is "info"
 
 # Development
 
