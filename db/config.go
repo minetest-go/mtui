@@ -9,7 +9,7 @@ type ConfigRepository struct {
 	DB *sql.DB
 }
 
-func (r *ConfigRepository) GetByKey(key string) (*types.ConfigEntry, error) {
+func (r *ConfigRepository) GetByKey(key types.ConfigKey) (*types.ConfigEntry, error) {
 	c, err := Select(r.DB, &types.ConfigEntry{}, "where key = $1", key)
 	if err == sql.ErrNoRows {
 		return nil, nil

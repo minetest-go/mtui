@@ -1,13 +1,15 @@
 package types
 
 type ConfigEntry struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
+	Key   ConfigKey `json:"key"`
+	Value string    `json:"value"`
 }
 
+type ConfigKey string
+
 const (
-	ConfigJWTKey = "jwt_key"
-	ConfigApiKey = "api_key"
+	ConfigJWTKey ConfigKey = "jwt_key"
+	ConfigApiKey ConfigKey = "api_key"
 )
 
 func (m *ConfigEntry) Columns(action string) []string {
