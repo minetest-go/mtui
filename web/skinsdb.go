@@ -2,9 +2,9 @@ package web
 
 import (
 	"io"
-	"io/ioutil"
 	"mtui/types"
 	"net/http"
+	"os"
 	"path"
 )
 
@@ -13,7 +13,7 @@ func getPlayerSkinFile(worlddir, playername string) string {
 }
 
 func (a *Api) GetSkin(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	b, err := ioutil.ReadFile(getPlayerSkinFile(a.app.WorldDir, claims.Username))
+	b, err := os.ReadFile(getPlayerSkinFile(a.app.WorldDir, claims.Username))
 	if err == nil && b != nil {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Add("Content-Type", "image/png")
@@ -33,7 +33,7 @@ func (a *Api) SetSkin(w http.ResponseWriter, r *http.Request, claims *types.Clai
 		SendError(w, 500, err.Error())
 		return
 	}
-	err = ioutil.WriteFile(getPlayerSkinFile(a.app.WorldDir, claims.Username), b, 0666)
+	err = os.WriteFile(getPlayerSkinFile(a.app.WorldDir, claims.Username), b, 0666)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
