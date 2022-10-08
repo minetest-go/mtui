@@ -37,11 +37,12 @@ func (m *MediaServer) ServeHTTPIndex(w http.ResponseWriter, r *http.Request) {
 	clientarr := make([]string, 0)
 	for {
 		h := make([]byte, 20)
-		_, err := r.Body.Read(h)
-		if err != nil {
+		count, err := r.Body.Read(h)
+		if err != nil && count == 0 {
 			break
 		}
-		clientarr = append(clientarr, hex.EncodeToString(h))
+		str := hex.EncodeToString(h)
+		clientarr = append(clientarr, str)
 	}
 	r.Body.Close()
 
