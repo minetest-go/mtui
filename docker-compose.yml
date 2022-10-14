@@ -12,7 +12,7 @@ services:
     - "30000:30000/udp"
 
  ui_webapp:
-  image: node:18.10.0-alpine3.15
+  image: node:18.11.0-alpine3.15
   volumes:
    - "./:/app"
   working_dir: /app/public
