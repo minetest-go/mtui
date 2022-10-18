@@ -7,7 +7,7 @@
   },
   "scripts": {
     "jshint": "jshint js/",
-    "bundle": "cd js && rollup -c rollup.config.js"
+    "bundle": "rollup -c rollup.config.js"
   },
   "author": "",
   "license": "ISC",
