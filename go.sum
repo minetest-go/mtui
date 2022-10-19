@@ -845,6 +845,8 @@ github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3N
 github.com/miekg/pkcs11 v1.0.3/go.mod h1:XsNlhZGX73bx86s2hdc/FuaLm2CPZJemRLMA+WTFxgs=
 github.com/minetest-go/mtdb v1.1.26 h1:aGzROijt3YoL90opYnJA7tpX9MkfS50SWdaV0cyD01Y=
 github.com/minetest-go/mtdb v1.1.26/go.mod h1:qgeABnQPSMmhpfPTEmduM6bYS/b5X3FY7sy+MoRYGXM=
+github.com/minetest-go/mtdb v1.1.27 h1:UDk5MdmU1r5agj77N//drOem/Z6OijGfd0Ql6o61gGQ=
+github.com/minetest-go/mtdb v1.1.27/go.mod h1:qgeABnQPSMmhpfPTEmduM6bYS/b5X3FY7sy+MoRYGXM=
 github.com/mistifyio/go-zfs v2.1.2-0.20190413222219-f784269be439+incompatible/go.mod h1:8AuVvqP/mXw1px98n46wfvcGfQ4ci2FwoAjKYxuo3Z4=
 github.com/mitchellh/cli v1.0.0/go.mod h1:hNIlj7HEI86fIcpObd7a0FcrxTWetlwJDGcceTlRvqc=
 github.com/mitchellh/go-homedir v1.0.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
