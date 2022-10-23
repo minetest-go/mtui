@@ -1,9 +1,12 @@
 package web
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/minetest-go/mtdb/auth"
+	"github.com/minetest-go/mtdb/player"
 )
 
 type PlayerInfo struct {
@@ -19,37 +22,19 @@ type PlayerInfo struct {
 	HP         int      `json:"health"`
 }
 
-func (a *Api) GetPlayerInfo(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	playername := vars["playername"]
-
+func mapPlayerInfo(auth *auth.AuthEntry, privs []*auth.PrivilegeEntry, player *player.Player) *PlayerInfo {
 	info := &PlayerInfo{
-		Name:  playername,
 		Privs: make([]string, 0),
 	}
 
-	auth, err := a.app.DBContext.Auth.GetByUsername(playername)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
 	if auth != nil {
+		info.Name = auth.Name
 		info.AuthEntry = true
 		info.AuthID = *auth.ID
-		privs, err := a.app.DBContext.Privs.GetByID(*auth.ID)
-		if err != nil {
-			SendError(w, 500, err.Error())
-			return
-		}
-		for _, priv := range privs {
-			info.Privs = append(info.Privs, priv.Privilege)
-		}
 	}
 
-	player, err := a.app.DBContext.Player.GetPlayer(playername)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
+	for _, priv := range privs {
+		info.Privs = append(info.Privs, priv.Privilege)
 	}
 
 	if player != nil {
@@ -60,5 +45,56 @@ func (a *Api) GetPlayerInfo(w http.ResponseWriter, r *http.Request) {
 		info.HP = player.HP
 	}
 
+	return info
+}
+
+func (a *Api) GetPlayerInfo(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	playername := vars["playername"]
+
+	auth, err := a.app.DBContext.Auth.GetByUsername(playername)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	privs, err := a.app.DBContext.Privs.GetByID(*auth.ID)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	player, err := a.app.DBContext.Player.GetPlayer(playername)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	info := mapPlayerInfo(auth, privs, player)
 	SendJson(w, info)
+}
+
+func (a *Api) SearchPlayer(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	namelike := fmt.Sprintf("%%%s%%", vars["namelike"])
+
+	list, err := a.app.DBContext.Auth.Search(&auth.AuthSearch{Usernamelike: &namelike})
+	result := make([]*PlayerInfo, len(list))
+	for i, auth := range list {
+		privs, err := a.app.DBContext.Privs.GetByID(*auth.ID)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+
+		player, err := a.app.DBContext.Player.GetPlayer(auth.Name)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+
+		result[i] = mapPlayerInfo(auth, privs, player)
+	}
+
+	Send(w, result, err)
 }
