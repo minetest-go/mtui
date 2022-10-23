@@ -35,8 +35,8 @@ export default {
 						</router-link>
 					</li>
 					<li class="nav-item" v-if="has_priv('interact')">
-						<router-link to="/profile" class="nav-link">
-							<i class="fa fa-user"></i> Profile
+						<router-link to="/playersearch" class="nav-link">
+							<i class="fa fa-magnifying-glass"></i> Player search
 						</router-link>
 					</li>
 					<li class="nav-item" v-if="has_priv('server')">
@@ -88,10 +88,20 @@ export default {
 				</ul>
 				<div class="d-flex">
 					<stats-display class="navbar-text" style="padding-right: 10px;"/>
-					<button class="btn btn-secondary" v-on:click="logout" v-if="login.loggedIn">
-						<i class="fa-solid fa-right-from-bracket"></i>
-						Logout
-					</button>
+					<div class="btn-group">
+						<button class="btn btn-outline-secondary" v-if="login.claims">
+							<router-link to="/profile">
+								<i class="fas fa-user"></i>
+								<span>
+									Logged in as <b>{{login.claims.username}}</b>
+								</span>
+							</router-link>
+						</button>
+						<button class="btn btn-secondary" v-on:click="logout" v-if="login.loggedIn">
+							<i class="fa-solid fa-right-from-bracket"></i>
+							Logout
+						</button>
+					</div>
 				<div>
 			</div>
 		</nav>

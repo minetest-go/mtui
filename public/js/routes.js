@@ -5,6 +5,7 @@ import Profile from './components/pages/Profile.js';
 import Shell from './components/pages/Shell.js';
 import Lua from './components/pages/Lua.js';
 import OnlinePlayers from './components/pages/OnlinePlayers.js';
+import PlayerSearch from './components/pages/PlayerSearch.js';
 import Mail from './components/pages/Mail.js';
 import MailRead from './components/pages/MailRead.js';
 import Mods from './components/pages/Mods.js';
@@ -25,6 +26,8 @@ export default [{
 	path: "/online-players", component: OnlinePlayers
 }, {
 	path: "/profile/:name", component: PlayerInfo
+}, {
+	path: "/playersearch", component: PlayerSearch
 }, {
 	path: "/profile", component: Profile,
 	meta: { requiredPriv: "interact" }

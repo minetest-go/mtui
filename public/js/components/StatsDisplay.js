@@ -17,15 +17,20 @@ export default {
         }
     },
     template: /*html*/`
-        <span v-if="max_lag > 0">
-            <i class="fa-solid fa-signal" v-bind:style="{'color': signalColor}"></i>
-            {{ Math.floor(max_lag*1000) }} ms
-            <i class="fa-solid fa-users"></i>
-            {{ player_count }}
-            <i class="fa-solid fa-clock"></i>
-            {{hour}}:{{minute}}
-            <i class="fa-solid fa-sun" style="color: yellow;" v-if="hour >= 6 && hour < 18"></i>
-            <i class="fa-solid fa-moon" style="color: lightblue;" v-else></i>
+        <span>
+            <span v-if="max_lag > 0">
+                <i class="fa-solid fa-signal" v-bind:style="{'color': signalColor}"></i>
+                {{ Math.floor(max_lag*1000) }} ms
+                <i class="fa-solid fa-users"></i>
+                {{ player_count }}
+                <i class="fa-solid fa-clock"></i>
+                {{hour}}:{{minute}}
+                <i class="fa-solid fa-sun" style="color: yellow;" v-if="hour >= 6 && hour < 18"></i>
+                <i class="fa-solid fa-moon" style="color: lightblue;" v-else></i>
+            </span>
+            <span v-else>
+                <i class="fa-solid fa-spinner fa-spin"></i>
+            </span>
         </span>
     `
 };
