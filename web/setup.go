@@ -32,10 +32,9 @@ func Setup(a *app.App) error {
 
 	r.HandleFunc("/api/changepw", api.Secure(api.ChangePassword)).Methods(http.MethodPost)
 
-	r.HandleFunc("/api/auth/{playername}", api.Secure(api.GetAuth)).Methods(http.MethodGet)
-
-	r.HandleFunc("/api/playerinfo/{playername}", api.GetPlayerInfo).Methods(http.MethodGet)
-	r.HandleFunc("/api/playersearch/{namelike}", api.SearchPlayer).Methods(http.MethodGet)
+	r.HandleFunc("/api/player/info/{playername}", api.SecurePriv("interact", api.GetPlayerInfo)).Methods(http.MethodGet)
+	r.HandleFunc("/api/player/search", api.SecurePriv("interact", api.SearchPlayer)).Methods(http.MethodPost)
+	r.HandleFunc("/api/player/count", api.SecurePriv("interact", api.CountPlayer)).Methods(http.MethodPost)
 
 	r.HandleFunc("/api/areas", api.Feature("areas", api.Secure(api.GetAreas))).Methods(http.MethodGet)
 	r.HandleFunc("/api/areas/{playername}", api.Feature("areas", api.Secure(api.GetOwnedAreas))).Methods(http.MethodGet)

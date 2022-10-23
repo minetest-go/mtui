@@ -1,7 +1,8 @@
 package web
 
 import (
-	"fmt"
+	"encoding/json"
+	"mtui/types"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -48,13 +49,17 @@ func mapPlayerInfo(auth *auth.AuthEntry, privs []*auth.PrivilegeEntry, player *p
 	return info
 }
 
-func (a *Api) GetPlayerInfo(w http.ResponseWriter, r *http.Request) {
+func (a *Api) GetPlayerInfo(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	vars := mux.Vars(r)
 	playername := vars["playername"]
 
 	auth, err := a.app.DBContext.Auth.GetByUsername(playername)
 	if err != nil {
 		SendError(w, 500, err.Error())
+		return
+	}
+	if auth == nil {
+		SendError(w, 404, "player not found")
 		return
 	}
 
@@ -74,11 +79,15 @@ func (a *Api) GetPlayerInfo(w http.ResponseWriter, r *http.Request) {
 	SendJson(w, info)
 }
 
-func (a *Api) SearchPlayer(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	namelike := fmt.Sprintf("%%%s%%", vars["namelike"])
+func (a *Api) SearchPlayer(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	s := &auth.AuthSearch{}
+	err := json.NewDecoder(r.Body).Decode(s)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
 
-	list, err := a.app.DBContext.Auth.Search(&auth.AuthSearch{Usernamelike: &namelike})
+	list, err := a.app.DBContext.Auth.Search(s)
 	result := make([]*PlayerInfo, len(list))
 	for i, auth := range list {
 		privs, err := a.app.DBContext.Privs.GetByID(*auth.ID)
@@ -97,4 +106,16 @@ func (a *Api) SearchPlayer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	Send(w, result, err)
+}
+
+func (a *Api) CountPlayer(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	s := &auth.AuthSearch{}
+	err := json.NewDecoder(r.Body).Decode(s)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	count, err := a.app.DBContext.Auth.Count(s)
+	Send(w, count, err)
 }
