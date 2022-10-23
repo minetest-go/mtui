@@ -91,7 +91,7 @@ func (a *Api) GetPlayerInfo(w http.ResponseWriter, r *http.Request, claims *type
 		return
 	}
 
-	info := mapPlayerInfo(auth, privs, player)
+	info := mapPlayerInfo(auth, privs, player, claims)
 	SendJson(w, info)
 }
 
@@ -118,7 +118,7 @@ func (a *Api) SearchPlayer(w http.ResponseWriter, r *http.Request, claims *types
 			return
 		}
 
-		result[i] = mapPlayerInfo(auth, privs, player)
+		result[i] = mapPlayerInfo(auth, privs, player, claims)
 	}
 
 	Send(w, result, err)
