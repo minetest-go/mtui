@@ -21,9 +21,16 @@ type PlayerInfo struct {
 	FirstLogin int64    `json:"first_login"`
 	Breath     int      `json:"breath"`
 	HP         int      `json:"health"`
+
+	// privileged info
+	Pitch float64 `json:"pitch"`
+	Yaw   float64 `json:"yaw"`
+	PosX  float64 `json:"posx"`
+	PosY  float64 `json:"posy"`
+	PosZ  float64 `json:"posz"`
 }
 
-func mapPlayerInfo(auth *auth.AuthEntry, privs []*auth.PrivilegeEntry, player *player.Player) *PlayerInfo {
+func mapPlayerInfo(auth *auth.AuthEntry, privs []*auth.PrivilegeEntry, player *player.Player, claims *types.Claims) *PlayerInfo {
 	info := &PlayerInfo{
 		Privs: make([]string, 0),
 	}
@@ -44,6 +51,15 @@ func mapPlayerInfo(auth *auth.AuthEntry, privs []*auth.PrivilegeEntry, player *p
 		info.FirstLogin = player.CreationDate
 		info.Breath = player.Breath
 		info.HP = player.HP
+
+		if claims.HasPriv("ban") {
+			// fill in privileged infos
+			info.Pitch = player.Pitch
+			info.Yaw = player.Yaw
+			info.PosX = player.PosX
+			info.PosY = player.PosY
+			info.PosZ = player.PosZ
+		}
 	}
 
 	return info
