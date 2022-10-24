@@ -107,7 +107,7 @@ func (api *Api) Websocket(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 
-			if claims.Username != chat_cmd.Name {
+			if claims == nil || claims.Username != chat_cmd.Name {
 				continue
 			}
 
