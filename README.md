@@ -32,6 +32,7 @@ Planned:
 * `ADMIN_USERNAME` initial admin username (optional)
 * `ADMIN_PASSWORD` initial admin password (optional)
 * `LOGLEVEL` currently supported: "debug", default is "info"
+* `ENABLE_FEATURES` manually enabled features
 
 # Development
 

@@ -27,6 +27,7 @@ services:
    ADMIN_USERNAME: admin
    ADMIN_PASSWORD: enter
    LOGLEVEL: debug
+   ENABLE_FEATURES: "mail,shell,luashell"
   ports:
     - 8080:8080
   volumes:
