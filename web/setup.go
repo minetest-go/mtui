@@ -23,6 +23,8 @@ func Setup(a *app.App) error {
 		return err
 	}
 
+	r.HandleFunc("/api/version", api.GetVersion)
+
 	r.HandleFunc("/api/features", api.GetFeatures).Methods(http.MethodGet)
 	r.HandleFunc("/api/feature", api.SecurePriv("server", api.SetFeature)).Methods(http.MethodPost)
 

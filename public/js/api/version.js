@@ -1,0 +1,1 @@
+export const get_version = () => fetch("api/version").then(r => r.text());

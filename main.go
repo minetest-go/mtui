@@ -35,6 +35,10 @@ func main() {
 		panic(err)
 	}
 
+	logrus.WithFields(logrus.Fields{
+		"version": app.Version,
+	}).Info("Starting mtui")
+
 	err = web.Setup(a)
 	if err != nil {
 		panic(err)

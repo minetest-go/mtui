@@ -14,6 +14,8 @@ import (
 	"github.com/minetest-go/mtdb"
 )
 
+var Version string
+
 type App struct {
 	DBContext   *mtdb.Context
 	WorldDir    string
@@ -24,6 +26,7 @@ type App struct {
 	Mail        *mail.Mail
 	Config      *types.Config
 	Mediaserver *mediaserver.MediaServer
+	Version     string
 }
 
 func Create(world_dir string) (*App, error) {
@@ -112,6 +115,10 @@ func Create(world_dir string) (*App, error) {
 		cfg.APIKey = apiKey.Value
 	}
 
+	if Version == "" {
+		Version = "DEV"
+	}
+
 	app := &App{
 		WorldDir:    world_dir,
 		DBContext:   dbctx,
@@ -122,6 +129,7 @@ func Create(world_dir string) (*App, error) {
 		Mail:        mail.New(world_dir),
 		Config:      cfg,
 		Mediaserver: mediaserver.New(),
+		Version:     Version,
 	}
 
 	return app, nil
