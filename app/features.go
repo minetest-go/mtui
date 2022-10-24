@@ -28,7 +28,7 @@ func PopulateFeatures(repo *db.FeatureRepository) error {
 		if feature == nil {
 			// check if the feature was enabled in the env-vars
 			for _, ef := range enabled_features {
-				if ef == feature.Name {
+				if ef == name {
 					enabled = true
 					break
 				}
