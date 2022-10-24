@@ -8,6 +8,7 @@ type Repositories struct {
 	ModRepo           *ModRepository
 	ConfigRepo        *ConfigRepository
 	FeatureRepository *FeatureRepository
+	LogRepository     *LogRepository
 }
 
 func NewRepositories(db *sql.DB) *Repositories {
@@ -15,5 +16,6 @@ func NewRepositories(db *sql.DB) *Repositories {
 		ModRepo:           &ModRepository{DB: db},
 		ConfigRepo:        &ConfigRepository{DB: db},
 		FeatureRepository: &FeatureRepository{DB: db},
+		LogRepository:     &LogRepository{DB: db},
 	}
 }

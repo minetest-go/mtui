@@ -18,8 +18,7 @@ const (
 )
 
 func statsLoop(e *eventbus.EventBus, ch chan *bridge.CommandResponse) {
-	for {
-		cmd := <-ch
+	for cmd := range ch {
 		stats := &command.StatsCommand{}
 		err := json.Unmarshal(cmd.Data, stats)
 		if err != nil {
