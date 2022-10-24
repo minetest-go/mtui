@@ -7,6 +7,9 @@ type Log struct {
 	Event      LogEvent    `json:"event"`
 	Username   string      `json:"username"`
 	Message    string      `json:"message"`
+	IPAddress  string      `json:"ip_address"`
+	GeoCountry string      `json:"geo_country"`
+	GeoCity    string      `json:"geo_city"`
 	PosX       int         `json:"posx"`
 	PosY       int         `json:"posy"`
 	PosZ       int         `json:"posz"`
@@ -34,11 +37,13 @@ type LogSearch struct {
 	Category      *LogCategory `json:"category"`
 	Event         *LogEvent    `json:"event"`
 	Username      *string      `json:"username"`
+	IPAddress     *string      `json:"ip_address"`
+	GeoCountry    *string      `json:"geo_country"`
 	Limit         *int         `json:"limit"`
 }
 
 func (m *Log) Columns(action string) []string {
-	return []string{"id", "timestamp", "category", "event", "username", "message", "posx", "posy", "posz", "attachment"}
+	return []string{"id", "timestamp", "category", "event", "username", "message", "ip_address", "geo_country", "geo_city", "posx", "posy", "posz", "attachment"}
 }
 
 func (m *Log) Table() string {
@@ -46,9 +51,9 @@ func (m *Log) Table() string {
 }
 
 func (m *Log) Scan(action string, r func(dest ...any) error) error {
-	return r(&m.ID, &m.Timestamp, &m.Category, &m.Event, &m.Username, &m.Message, &m.PosX, &m.PosY, &m.PosZ, &m.Attachment)
+	return r(&m.ID, &m.Timestamp, &m.Category, &m.Event, &m.Username, &m.Message, &m.IPAddress, &m.GeoCountry, &m.GeoCity, &m.PosX, &m.PosY, &m.PosZ, &m.Attachment)
 }
 
 func (m *Log) Values(action string) []any {
-	return []any{m.ID, m.Timestamp, m.Category, m.Event, m.Username, m.Message, m.PosX, m.PosY, m.PosZ, m.Attachment}
+	return []any{m.ID, m.Timestamp, m.Category, m.Event, m.Username, m.Message, m.IPAddress, m.GeoCountry, m.GeoCity, m.PosX, m.PosY, m.PosZ, m.Attachment}
 }

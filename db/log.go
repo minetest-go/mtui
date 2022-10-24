@@ -61,6 +61,18 @@ func (r *LogRepository) buildWhereClause(fields string, s *types.LogSearch) (str
 		i++
 	}
 
+	if s.IPAddress != nil {
+		q += fmt.Sprintf(" and ip_address = $%d", i)
+		args = append(args, *s.IPAddress)
+		i++
+	}
+
+	if s.GeoCountry != nil {
+		q += fmt.Sprintf(" and geo_country = $%d", i)
+		args = append(args, *s.GeoCountry)
+		i++
+	}
+
 	if s.FromTimestamp != nil {
 		q += fmt.Sprintf(" and timestamp > $%d", i)
 		args = append(args, *s.FromTimestamp)
