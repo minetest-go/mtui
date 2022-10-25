@@ -4,7 +4,7 @@ type Log struct {
 	ID         string      `json:"id"`
 	Timestamp  int64       `json:"timestamp"`
 	Category   LogCategory `json:"category"`
-	Event      LogEvent    `json:"event"`
+	Event      string      `json:"event"`
 	Username   string      `json:"username"`
 	Message    string      `json:"message"`
 	IPAddress  string      `json:"ip_address"`
@@ -23,19 +23,12 @@ const (
 	CategoryMinetest LogCategory = "minetest"
 )
 
-type LogEvent string
-
-const (
-	LogEventJoin  LogEvent = "join"
-	LogEventLeave LogEvent = "leave"
-)
-
 type LogSearch struct {
 	ID            *string      `json:"id"`
 	FromTimestamp *int64       `json:"from_timestamp"`
 	ToTimestamp   *int64       `json:"to_timestamp"`
 	Category      *LogCategory `json:"category"`
-	Event         *LogEvent    `json:"event"`
+	Event         *string      `json:"event"`
 	Username      *string      `json:"username"`
 	IPAddress     *string      `json:"ip_address"`
 	GeoCountry    *string      `json:"geo_country"`
