@@ -110,3 +110,24 @@ func (r *LogRepository) Count(s *types.LogSearch) (int64, error) {
 	err := row.Scan(&count)
 	return count, err
 }
+
+func (r *LogRepository) GetEvents(c types.LogCategory) ([]string, error) {
+	rows, err := r.DB.Query("select event from log where category = $1", c)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]string, 0)
+	for rows.Next() {
+		var e string
+		err = rows.Scan(&e)
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, e)
+	}
+
+	return result, nil
+}

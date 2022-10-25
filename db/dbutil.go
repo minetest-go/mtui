@@ -128,6 +128,7 @@ func SelectMulti[E Selectable](d *sql.DB, p func() E, constraints string, params
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	list := make([]E, 0)
 	for rows.Next() {
