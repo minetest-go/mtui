@@ -25,7 +25,7 @@ var upgrader = websocket.Upgrader{
 var cachedEvents = map[eventbus.EventType]*eventbus.Event{}
 var cache_lock = &sync.RWMutex{}
 
-func sendEvent(wse *eventbus.Event, claims *types.Claims, conn *websocket.Conn) error {
+func sendEvent(wse *eventbus.Event, claims *types.Claims, conn *websocket.Conn, mutex *sync.Mutex) error {
 	// check if a privilege is required for this event
 	if wse.RequiredPriv != "" {
 		if claims == nil {
@@ -42,6 +42,9 @@ func sendEvent(wse *eventbus.Event, claims *types.Claims, conn *websocket.Conn) 
 			return nil
 		}
 	}
+	mutex.Lock()
+	defer mutex.Unlock()
+
 	return conn.WriteJSON(wse)
 }
 
@@ -67,6 +70,8 @@ func (api *Api) Websocket(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
+	mutex := &sync.Mutex{}
+
 	claims, err := api.GetClaims(r)
 	if err != nil && err != err_unauthorized {
 		return
@@ -83,7 +88,7 @@ func (api *Api) Websocket(w http.ResponseWriter, r *http.Request) {
 	// send cached events
 	cache_lock.RLock()
 	for _, ev := range cachedEvents {
-		err = sendEvent(ev, claims, conn)
+		err = sendEvent(ev, claims, conn, mutex)
 		if err != nil {
 			fmt.Printf("WriteJSON: %s", err.Error())
 			cache_lock.RUnlock()
@@ -102,11 +107,11 @@ func (api *Api) Websocket(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 
-			if claims.Username != chat_cmd.Name {
+			if claims == nil || claims.Username != chat_cmd.Name {
 				continue
 			}
 
-			err = sendEvent(&eventbus.Event{Type: events.DirectChatMessageEvent, Data: chat_cmd}, claims, conn)
+			err = sendEvent(&eventbus.Event{Type: events.DirectChatMessageEvent, Data: chat_cmd}, claims, conn, mutex)
 			if err != nil {
 				fmt.Printf("chatcmd-send: %s", err.Error())
 				continue
@@ -116,7 +121,7 @@ func (api *Api) Websocket(w http.ResponseWriter, r *http.Request) {
 
 	// send live events
 	for wse := range ch {
-		err = sendEvent(wse, claims, conn)
+		err = sendEvent(wse, claims, conn, mutex)
 		if err != nil {
 			fmt.Printf("WriteJSON: %s", err.Error())
 			return
