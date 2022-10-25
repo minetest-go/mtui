@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"mtui/app"
 	"mtui/events"
+	"mtui/jobs"
 	"mtui/web"
 	"net/http"
 	"os"
@@ -48,6 +49,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	// start jobs
+	jobs.Start(a)
 
 	server := &http.Server{Addr: ":8080", Handler: nil}
 
