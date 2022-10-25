@@ -10,9 +10,9 @@ type Log struct {
 	IPAddress  string      `json:"ip_address"`
 	GeoCountry string      `json:"geo_country"`
 	GeoCity    string      `json:"geo_city"`
-	PosX       float64     `json:"posx"`
-	PosY       float64     `json:"posy"`
-	PosZ       float64     `json:"posz"`
+	PosX       JsonInt     `json:"posx"`
+	PosY       JsonInt     `json:"posy"`
+	PosZ       JsonInt     `json:"posz"`
 	Attachment []byte      `json:"attachment"`
 }
 

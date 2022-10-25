@@ -9,9 +9,9 @@ create table log(
     ip_address text(128),
     geo_country text(64),
     geo_city text(64),
-    posx real,
-    posy real,
-    posz real,
+    posx int,
+    posy int,
+    posz int,
     attachment text
 );
 
