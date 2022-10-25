@@ -33,4 +33,13 @@ func TestLogRepo(t *testing.T) {
 	assert.NotNil(t, list)
 	assert.Equal(t, 1, len(list))
 	assert.Equal(t, l.ID, list[0].ID)
+
+	l.Category = "xy"
+	assert.NoError(t, repo.Update(l))
+
+	list, err = repo.Search(s)
+	assert.NoError(t, err)
+	assert.NotNil(t, list)
+	assert.Equal(t, 1, len(list))
+	assert.Equal(t, types.LogCategory("xy"), list[0].Category)
 }

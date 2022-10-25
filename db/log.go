@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"mtui/types"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -26,14 +25,17 @@ func (r *LogRepository) Insert(l *types.Log) error {
 	return Insert(r.DB, l)
 }
 
+func (r *LogRepository) Update(l *types.Log) error {
+	return Update(r.DB, l, map[string]any{"id": l.ID})
+}
+
 func (r *LogRepository) RemoveBefore(timestamp int64) error {
 	_, err := r.DB.Exec("delete from log where timestamp < $1", timestamp)
 	return err
 }
 
-func (r *LogRepository) buildWhereClause(fields string, s *types.LogSearch) (string, []interface{}) {
-	l := &types.Log{}
-	q := fmt.Sprintf("select %s from %s where true ", fields, l.Table())
+func (r *LogRepository) buildWhereClause(s *types.LogSearch) (string, []interface{}) {
+	q := " where true "
 	args := make([]interface{}, 0)
 	i := 1
 
@@ -96,27 +98,14 @@ func (r *LogRepository) buildWhereClause(fields string, s *types.LogSearch) (str
 }
 
 func (r *LogRepository) Search(s *types.LogSearch) ([]*types.Log, error) {
-	l := &types.Log{}
-	q, args := r.buildWhereClause(strings.Join(l.Columns(SelectAction), ","), s)
-	rows, err := r.DB.Query(q, args...)
-	if err != nil {
-		return nil, err
-	}
-	list := make([]*types.Log, 0)
-	for rows.Next() {
-		entry := &types.Log{}
-		err := entry.Scan(SelectAction, rows.Scan)
-		if err != nil {
-			return nil, err
-		}
-		list = append(list, entry)
-	}
-	return list, nil
+	q, args := r.buildWhereClause(s)
+	return SelectMulti(r.DB, func() *types.Log { return &types.Log{} }, q, args...)
 }
 
 func (r *LogRepository) Count(s *types.LogSearch) (int64, error) {
-	q, args := r.buildWhereClause("count(*)", s)
-	row := r.DB.QueryRow(q, args...)
+	q, args := r.buildWhereClause(s)
+
+	row := r.DB.QueryRow("select count(*) from log"+q, args...)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
