@@ -38,6 +38,10 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/player/search", api.SecurePriv("interact", api.SearchPlayer)).Methods(http.MethodPost)
 	r.HandleFunc("/api/player/count", api.SecurePriv("interact", api.CountPlayer)).Methods(http.MethodPost)
 
+	r.HandleFunc("/api/log/search", api.SecurePriv("ban", api.SearchLogs)).Methods(http.MethodPost)
+	r.HandleFunc("/api/log/count", api.SecurePriv("ban", api.CountLogs)).Methods(http.MethodPost)
+	r.HandleFunc("/api/log/events/{category}", api.SecurePriv("ban", api.GetLogEvents)).Methods(http.MethodGet)
+
 	r.HandleFunc("/api/areas", api.Feature("areas", api.Secure(api.GetAreas))).Methods(http.MethodGet)
 	r.HandleFunc("/api/areas/{playername}", api.Feature("areas", api.Secure(api.GetOwnedAreas))).Methods(http.MethodGet)
 
