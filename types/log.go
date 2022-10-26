@@ -7,12 +7,12 @@ type Log struct {
 	Event      string      `json:"event"`
 	Username   string      `json:"username"`
 	Message    string      `json:"message"`
-	IPAddress  string      `json:"ip_address"`
-	GeoCountry string      `json:"geo_country"`
-	GeoCity    string      `json:"geo_city"`
-	PosX       JsonInt     `json:"posx"`
-	PosY       JsonInt     `json:"posy"`
-	PosZ       JsonInt     `json:"posz"`
+	IPAddress  *string     `json:"ip_address"`
+	GeoCountry *string     `json:"geo_country"`
+	GeoCity    *string     `json:"geo_city"`
+	PosX       *JsonInt    `json:"posx"`
+	PosY       *JsonInt    `json:"posy"`
+	PosZ       *JsonInt    `json:"posz"`
 	Attachment []byte      `json:"attachment"`
 }
 

@@ -4,7 +4,7 @@ create table log(
     timestamp integer not null, -- unix milliseconds
     category text(32) not null, -- ui, minetest
     event text(32) not null, -- login, join, leave
-    username text(64) not null, -- playername/username, SYSTEM
+    username text(64) not null, -- playername/username or empty
     message text(512) not null,
     ip_address text(128),
     geo_country text(64),

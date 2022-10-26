@@ -112,6 +112,8 @@ export default {
                     <th>Playername</th>
                     <th>Time</th>
                     <th>Message</th>
+                    <th>IP Address</th>
+                    <th>Position</th>
                 </tr>
             </thead>
             <tbody>
@@ -126,6 +128,10 @@ export default {
                     </td>
                     <td>{{ format_time(log.timestamp/1000) }}</td>
                     <td>{{log.message}}</td>
+                    <td>{{log.ip_address}}</td>
+                    <td>
+                        
+                    </td>
                 </tr>
             </tbody>
         </table>
