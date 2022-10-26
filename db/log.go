@@ -92,7 +92,7 @@ func (r *LogRepository) buildWhereClause(s *types.LogSearch) (string, []interfac
 	if s.Limit != nil && *s.Limit < limit {
 		limit = *s.Limit
 	}
-	q += fmt.Sprintf(" limit %d", limit)
+	q += fmt.Sprintf(" order by timestamp desc limit %d", limit)
 
 	return q, args
 }
