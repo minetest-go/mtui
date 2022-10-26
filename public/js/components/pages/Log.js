@@ -130,7 +130,9 @@ export default {
                     <td>{{log.message}}</td>
                     <td>{{log.ip_address}}</td>
                     <td>
-                        
+                        <span v-if="log.posx != null">
+                            {{log.posx}}/{{log.posy}}/{{log.posz}}
+                        </span>
                     </td>
                 </tr>
             </tbody>
