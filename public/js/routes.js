@@ -13,6 +13,7 @@ import Compose from './components/pages/Compose.js';
 import Skin from './components/pages/Skin.js';
 import Features from './components/pages/Features.js';
 import Mediaserver from './components/pages/Mediaserver.js';
+import Log from './components/pages/Log.js';
 
 export default [{
 	path: "/", component: Start,
@@ -22,6 +23,9 @@ export default [{
 }, {
 	path: "/features", component: Features,
 	meta: { requiredPriv: "server" }
+}, {
+	path: "/log", component: Log,
+	meta: { requiredPriv: "ban" }
 }, {
 	path: "/online-players", component: OnlinePlayers
 }, {

@@ -26,6 +26,7 @@ function start(){
 
 	// start vue
 	const app = Vue.createApp(App);
+	app.component('vue-datepicker', VueDatePicker);
 	app.use(router);
 	app.use(i18n);
 	app.mount("#app");

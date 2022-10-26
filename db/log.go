@@ -112,7 +112,7 @@ func (r *LogRepository) Count(s *types.LogSearch) (int64, error) {
 }
 
 func (r *LogRepository) GetEvents(c types.LogCategory) ([]string, error) {
-	rows, err := r.DB.Query("select event from log where category = $1", c)
+	rows, err := r.DB.Query("select event from log where category = $1 group by event", c)
 	if err != nil {
 		return nil, err
 	}

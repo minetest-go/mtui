@@ -39,6 +39,11 @@ export default {
 							<i class="fa fa-magnifying-glass"></i> Player search
 						</router-link>
 					</li>
+					<li class="nav-item" v-if="has_priv('ban')">
+						<router-link to="/log" class="nav-link">
+							<i class="fa fa-magnifying-glass"></i> Logs
+						</router-link>
+					</li>
 					<li class="nav-item" v-if="has_priv('server')">
 						<router-link to="/features" class="nav-link">
 							<i class="fa fa-tags"></i> Features
