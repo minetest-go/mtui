@@ -17,16 +17,17 @@ import (
 var Version string
 
 type App struct {
-	DBContext   *mtdb.Context
-	WorldDir    string
-	Repos       *db.Repositories
-	ModManager  *modmanager.ModManager
-	Bridge      *bridge.Bridge
-	WSEvents    *eventbus.EventBus
-	Mail        *mail.Mail
-	Config      *types.Config
-	Mediaserver *mediaserver.MediaServer
-	Version     string
+	DBContext     *mtdb.Context
+	WorldDir      string
+	Repos         *db.Repositories
+	ModManager    *modmanager.ModManager
+	Bridge        *bridge.Bridge
+	WSEvents      *eventbus.EventBus
+	Mail          *mail.Mail
+	Config        *types.Config
+	Mediaserver   *mediaserver.MediaServer
+	GeoipResolver *GeoipResolver
+	Version       string
 }
 
 func Create(world_dir string) (*App, error) {
@@ -120,16 +121,17 @@ func Create(world_dir string) (*App, error) {
 	}
 
 	app := &App{
-		WorldDir:    world_dir,
-		DBContext:   dbctx,
-		ModManager:  modmanager.New(world_dir, repos.ModRepo),
-		Repos:       repos,
-		Bridge:      bridge.New(),
-		WSEvents:    eventbus.NewEventBus(),
-		Mail:        mail.New(world_dir),
-		Config:      cfg,
-		Mediaserver: mediaserver.New(),
-		Version:     Version,
+		WorldDir:      world_dir,
+		DBContext:     dbctx,
+		ModManager:    modmanager.New(world_dir, repos.ModRepo),
+		Repos:         repos,
+		Bridge:        bridge.New(),
+		WSEvents:      eventbus.NewEventBus(),
+		Mail:          mail.New(world_dir),
+		Config:        cfg,
+		Mediaserver:   mediaserver.New(),
+		GeoipResolver: NewGeoipResolver(world_dir),
+		Version:       Version,
 	}
 
 	return app, nil
