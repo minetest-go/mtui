@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"net"
 	"path"
 
@@ -10,11 +9,12 @@ import (
 )
 
 type GeoipResolver struct {
-	db *geoip2.Reader
+	citydb *geoip2.Reader
+	asndb  *geoip2.Reader
 }
 
 func NewGeoipResolver(basedir string) *GeoipResolver {
-	db, err := geoip2.Open(path.Join(basedir, "GeoLite2-City.mmdb"))
+	citydb, err := geoip2.Open(path.Join(basedir, "GeoLite2-City.mmdb"))
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"reason": err.Error(),
@@ -22,24 +22,32 @@ func NewGeoipResolver(basedir string) *GeoipResolver {
 		return &GeoipResolver{}
 	}
 
-	return &GeoipResolver{db: db}
+	asndb, err := geoip2.Open(path.Join(basedir, "GeoLite2-ASN.mmdb"))
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"reason": err.Error(),
+		}).Debug("Skipping geoip resolver setup")
+		return &GeoipResolver{}
+	}
+
+	return &GeoipResolver{citydb: citydb, asndb: asndb}
 }
 
 type GeoipResult struct {
 	City    string
 	Country string
-	ASN     string
+	ASN     uint
 }
 
 func (r *GeoipResolver) Resolve(ipstr string) *GeoipResult {
-	if r.db == nil {
+	if r.citydb == nil || r.asndb == nil {
 		return nil
 	}
 
 	ip := net.ParseIP(ipstr)
 	result := &GeoipResult{}
 
-	city, err := r.db.City(ip)
+	city, err := r.citydb.City(ip)
 	if err != nil {
 		return nil
 	}
@@ -47,12 +55,12 @@ func (r *GeoipResolver) Resolve(ipstr string) *GeoipResult {
 	result.City = city.City.Names["en"]
 	result.Country = city.Country.Names["en"]
 
-	asn, err := r.db.ASN(ip)
+	asn, err := r.asndb.ASN(ip)
 	if err != nil {
 		return nil
 	}
 
-	result.ASN = fmt.Sprintf("%s (id: %d)", asn.AutonomousSystemOrganization, asn.AutonomousSystemNumber)
+	result.ASN = asn.AutonomousSystemNumber
 
 	return result
 }
