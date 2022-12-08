@@ -38,6 +38,7 @@ jobs:
 
       - name: Tests
         run: |
+          CGO_ENABLED=0 go build .
           go test ./...
 
       - name: Docker Login
