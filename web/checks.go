@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// check api-key (for the minetest engine calls)
 func (api *Api) CheckApiKey(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Api-Key") != api.app.Config.APIKey {
@@ -18,46 +19,60 @@ func (api *Api) CheckApiKey(fn http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+// check api-key or claims/jwt (for the engine _or_ the UI)
+func (api *Api) CheckApiKeyOrPriv(required_priv string, fn http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Api-Key") == api.app.Config.APIKey {
+			fn(w, r)
+			return
+		}
+		claims, err := api.GetClaims(r)
+		if err == nil && claims != nil && claims.HasPriv(required_priv) {
+			fn(w, r)
+			return
+		}
+		// unauthorized
+		w.WriteHeader(http.StatusUnauthorized)
+	}
+}
+
 type SecureHandlerFunc func(http.ResponseWriter, *http.Request, *types.Claims)
 
+// check for login only (UI)
 func (api *Api) Secure(fn SecureHandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		claims, err := api.GetClaims(r)
 		if err == err_unauthorized {
-			SendError(w, 401, "unauthorized")
+			SendError(w, http.StatusUnauthorized, "unauthorized")
 			return
 		} else if err != nil {
-			SendError(w, 500, err.Error())
+			SendError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 		fn(w, r, claims)
 	}
 }
 
+// check for priv (UI)
 func (api *Api) SecurePriv(required_priv string, fn SecureHandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		claims, err := api.GetClaims(r)
 		if err == err_unauthorized {
-			SendError(w, 401, "unauthorized")
+			SendError(w, http.StatusUnauthorized, "unauthorized")
 			return
 		} else if err != nil {
-			SendError(w, 500, err.Error())
+			SendError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		has_priv := false
-		for _, priv := range claims.Privileges {
-			if priv == required_priv {
-				has_priv = true
-			}
-		}
-		if !has_priv {
-			SendError(w, 403, "forbidden, missing priv: "+required_priv)
+		if !claims.HasPriv(required_priv) {
+			SendError(w, http.StatusForbidden, "forbidden, missing priv: "+required_priv)
 			return
 		}
 		fn(w, r, claims)
 	}
 }
 
+// check if a feature is enabled
 func (api *Api) Feature(name string, fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		feature, err := api.app.Repos.FeatureRepository.GetByName(name)
@@ -69,7 +84,7 @@ func (api *Api) Feature(name string, fn http.HandlerFunc) http.HandlerFunc {
 		if feature.Enabled {
 			fn(w, r)
 		} else {
-			SendError(w, 500, fmt.Sprintf("Feature '%s' not enabled", name))
+			SendError(w, http.StatusInternalServerError, fmt.Sprintf("Feature '%s' not enabled", name))
 		}
 	}
 }
