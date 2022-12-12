@@ -15,6 +15,7 @@ var feature_list = map[string]bool{
 	"shell":         false,
 	"modmanagement": false,
 	"mediaserver":   false,
+	"xban":          false,
 }
 
 func PopulateFeatures(repo *db.FeatureRepository) error {

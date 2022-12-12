@@ -58,6 +58,13 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/mail/send/{recipient}", api.Feature("mail", api.Secure(api.SendMail))).Methods(http.MethodPost)
 	r.HandleFunc("/api/mail/contacts", api.Feature("mail", api.Secure(api.GetContacts))).Methods(http.MethodGet)
 
+	r.HandleFunc("/api/xban/status", api.Feature("xban", api.SecurePriv("ban", api.GetBanDBStatus))).Methods(http.MethodGet)
+	r.HandleFunc("/api/xban/record/{playername}", api.Feature("xban", api.SecurePriv("ban", api.GetBanRecord))).Methods(http.MethodGet)
+	r.HandleFunc("/api/xban/ban", api.Feature("xban", api.SecurePriv("ban", api.BanPlayer))).Methods(http.MethodPost)
+	r.HandleFunc("/api/xban/tempban", api.Feature("xban", api.SecurePriv("ban", api.TempBanPlayer))).Methods(http.MethodPost)
+	r.HandleFunc("/api/xban/unban", api.Feature("xban", api.SecurePriv("ban", api.UnbanPlayer))).Methods(http.MethodPost)
+	r.HandleFunc("/api/xban/cleanup", api.Feature("xban", api.SecurePriv("server", api.CleanupBanDB))).Methods(http.MethodPost)
+
 	r.HandleFunc("/api/bridge/execute_chatcommand", api.Feature("shell", api.Secure(api.ExecuteChatcommand))).Methods(http.MethodPost)
 	r.HandleFunc("/api/bridge/lua", api.Feature("luashell", api.SecurePriv("server", api.ExecuteLua))).Methods(http.MethodPost)
 	r.HandleFunc("/api/bridge", api.CheckApiKey(a.Bridge.HandlePost)).Methods(http.MethodPost)

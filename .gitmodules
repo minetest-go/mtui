@@ -7,3 +7,6 @@
 [submodule "dev/worldmods/skinsdb"]
 	path = dev/worldmods/skinsdb
 	url = https://github.com/minetest-mods/skinsdb/
+[submodule "dev/worldmods/xban2"]
+	path = dev/worldmods/xban2
+	url = https://github.com/minetest-mods/xban2
