@@ -1,5 +1,6 @@
 import login_store from "../../store/login.js";
 import { login, logout } from "../../service/login.js";
+import { get_onboard_status } from "../../api/onboard.js";
 
 export default {
     data: function() {
@@ -8,6 +9,7 @@ export default {
             password: "",
             busy: false,
             error_message: "",
+            can_oboard: false,
             login_store: login_store
         };
     },
@@ -15,6 +17,9 @@ export default {
         validInput: function(){
             return this.username != "" && this.password != "";
         }
+    },
+    mounted: function() {
+        get_onboard_status().then(s => this.can_oboard = s);
     },
     methods: {
         login: function() {
@@ -66,7 +71,13 @@ export default {
                 </form>
                 &nbsp;
                 <div class="alert alert-primary">
-                    <b>Note</b> you can also use <mark>/mtui_tan</mark> ingame to create a temporary password
+                    <b>Note:</b> you can also use <mark>/mtui_tan</mark> ingame to create a temporary password
+                </div>
+                <div class="alert alert-success" v-if="can_oboard">
+                    <b>Onboarding:</b>
+                    Please set up an initial admin-user on the
+                    <router-link to="/onboard">Onboarding</router-link>
+                    page
                 </div>
             </div>
             <div class="col-md-4"></div>

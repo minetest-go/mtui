@@ -24,8 +24,8 @@ services:
    WORLD_DIR: "/root/.minetest/worlds/world"
    WEBDEV: "true"
    API_KEY: "mykey"
-   ADMIN_USERNAME: admin
-   ADMIN_PASSWORD: enter
+   #ADMIN_USERNAME: admin
+   #ADMIN_PASSWORD: enter
    LOGLEVEL: debug
    ENABLE_FEATURES: "mail,shell,luashell"
   ports:

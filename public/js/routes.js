@@ -14,12 +14,15 @@ import Skin from './components/pages/Skin.js';
 import Features from './components/pages/Features.js';
 import Mediaserver from './components/pages/Mediaserver.js';
 import Log from './components/pages/Log.js';
+import Onboard from './components/pages/Onboard.js';
 
 export default [{
 	path: "/", component: Start,
 	meta: { requiredPriv: "interact" }
 }, {
 	path: "/login", component: Login
+}, {
+	path: "/onboard", component: Onboard
 }, {
 	path: "/features", component: Features,
 	meta: { requiredPriv: "server" }

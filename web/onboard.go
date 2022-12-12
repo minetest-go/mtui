@@ -77,10 +77,6 @@ func (a *Api) CreateOnboardUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	auth_entry := &dbauth.AuthEntry{
-		Name: obr.Username,
-	}
-
 	// create new password
 	salt, verifier, err := auth.CreateAuth(obr.Username, obr.Password)
 	if err != nil {
@@ -88,8 +84,11 @@ func (a *Api) CreateOnboardUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	auth_entry := &dbauth.AuthEntry{
+		Name:     obr.Username,
+		Password: auth.CreateDBPassword(salt, verifier),
+	}
 	// save to db
-	auth_entry.Password = auth.CreateDBPassword(salt, verifier)
 	err = a.app.DBContext.Auth.Create(auth_entry)
 	if err != nil {
 		SendError(w, 500, err.Error())
