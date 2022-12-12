@@ -112,12 +112,12 @@ export default {
                     </div>
                 </div>
                 <br>
-                <div class="card" v-if="is_moderator && has_feature('xban')">
+                <div class="card" v-if="is_moderator && has_feature('xban') && xban_record">
                     <div class="card-header">
                         XBan record
-                        <span v-if="xban_record && xban_record.banned" class="badge bg-danger">Banned</span>
+                        <span v-if="xban_record.banned" class="badge bg-danger">Banned</span>
                     </div>
-                    <div class="card-body" v-if="xban_record">
+                    <div class="card-body">
                         <p v-if="xban_record.reason">
                             <b>Current ban-reason:</b> {{xban_record.reason}}
                         </p>

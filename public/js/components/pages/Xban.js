@@ -43,7 +43,7 @@ export default {
         </a>
         <div class="alert alert-success" v-if="cleanup_result">
             <b>Cleanup results:</b>
-            Removed {{cleanup_result.removed}} and retained {{cleanup_result.retained}} entry
+            Removed {{cleanup_result.removed}} and retained {{cleanup_result.retained}} entries
         </div>
     </div>
     `
