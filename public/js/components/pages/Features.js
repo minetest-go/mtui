@@ -31,6 +31,10 @@ const help = {
     "mediaserver": {
         description: "HTTP Mediaserver (remote_media)",
         experimental: true
+    },
+    "xban": {
+        description: "xban integration",
+        mods: ["xban2"]
     }
 };
 

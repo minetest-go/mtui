@@ -15,6 +15,7 @@ import Features from './components/pages/Features.js';
 import Mediaserver from './components/pages/Mediaserver.js';
 import Log from './components/pages/Log.js';
 import Onboard from './components/pages/Onboard.js';
+import Xban from './components/pages/Xban.js';
 
 export default [{
 	path: "/", component: Start,
@@ -23,6 +24,9 @@ export default [{
 	path: "/login", component: Login
 }, {
 	path: "/onboard", component: Onboard
+}, {
+	path: "/xban", component: Xban,
+	meta: { requiredPriv: "ban" }
 }, {
 	path: "/features", component: Features,
 	meta: { requiredPriv: "server" }

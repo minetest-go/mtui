@@ -1,6 +1,8 @@
 import ChangePassword from './ChangePassword.js';
 import { has_priv } from "../service/login.js";
+import { has_feature } from "../service/features.js";
 import { get as get_playerinfo } from '../api/playerinfo.js';
+import { get_record } from '../api/xban.js';
 import format_time from '../util/format_time.js';
 import login_store from '../store/login.js';
 
@@ -8,12 +10,12 @@ export default {
     props: ["username"],
     data: function() {
         return {
-            playerinfo: null
+            playerinfo: null,
+            xban_record: null
         };
     },
     mounted: function() {
-        get_playerinfo(this.username)
-        .then(pi => this.playerinfo = pi);
+        this.update();
     },
     components: {
         "change-password": ChangePassword
@@ -21,9 +23,24 @@ export default {
     computed: {
         can_change_pw: function() {
             return (login_store.claims && login_store.claims.username == this.username) || has_priv("password");
+        },
+        is_moderator: function() {
+            return has_priv("ban");
         }
     },
     methods: {
+        update: function() {
+            this.playerinfo = null;
+            this.xban_record = null;
+
+            get_playerinfo(this.username)
+            .then(pi => this.playerinfo = pi);
+    
+            if (this.is_moderator && this.has_feature("xban")) {
+                get_record(this.username).then(r => this.xban_record = r);
+            }
+        },
+        has_feature: has_feature,
         format_time: format_time,
         getPrivBadgeClass: function(priv) {
             if (priv == "server" || priv == "privs") {
@@ -34,6 +51,9 @@ export default {
                 return { "badge": true, "bg-secondary": true };
             }
         }
+    },
+    watch: {
+        "username": "update"
     },
     template: /*html*/`
     <div v-if="playerinfo">
@@ -89,6 +109,37 @@ export default {
                     </div>
                     <div class="card-body" v-else>
                         No entries found
+                    </div>
+                </div>
+                <br>
+                <div class="card" v-if="is_moderator && has_feature('xban')">
+                    <div class="card-header">
+                        XBan record
+                        <span v-if="xban_record && xban_record.banned" class="badge bg-danger">Banned</span>
+                    </div>
+                    <div class="card-body" v-if="xban_record">
+                        <p v-if="xban_record.reason">
+                            <b>Current ban-reason:</b> {{xban_record.reason}}
+                        </p>
+                        <p v-if="xban_record.last_seen">
+                            <b>Last seen:</b> {{format_time(xban_record.last_seen)}}
+                        </p>
+                        <h5>Names</h5>
+                        <ul>
+                            <li v-for="_, name in xban_record.names">
+                                <router-link :to="'/profile/' + name">
+                                    {{name}}
+                                </router-link>
+                            </li>
+                        </ul>
+                        <h5>Records</h5>
+                        <ul v-if="xban_record.record">
+                            <li v-for="record in xban_record.record">
+                                <b>Moderator:</b> {{record.source}}
+                                <b>Reason:</b> {{record.reason}}
+                                <b>Time:</b> {{format_time(record.time)}}
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>

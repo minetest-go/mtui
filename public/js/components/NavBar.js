@@ -77,6 +77,11 @@ export default {
 							</span>
 						</router-link>
 					</li>
+					<li class="nav-item" v-if="has_feature('xban') && has_priv('ban')">
+						<router-link to="/xban" class="nav-link">
+							<i class="fa fa-ban"></i> XBan
+						</router-link>
+					</li>
 					<li class="nav-item" v-if="has_feature('mail')">
 						<router-link to="/mail" class="nav-link">
 							<i class="fa-solid fa-envelope"></i> Mail
