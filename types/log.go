@@ -10,6 +10,7 @@ type Log struct {
 	IPAddress  *string     `json:"ip_address"`
 	GeoCountry *string     `json:"geo_country"`
 	GeoCity    *string     `json:"geo_city"`
+	GeoASN     *int        `json:"geo_asn"`
 	PosX       *JsonInt    `json:"posx"`
 	PosY       *JsonInt    `json:"posy"`
 	PosZ       *JsonInt    `json:"posz"`
