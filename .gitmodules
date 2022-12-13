@@ -10,3 +10,6 @@
 [submodule "dev/worldmods/xban2"]
 	path = dev/worldmods/xban2
 	url = https://github.com/minetest-mods/xban2
+[submodule "dev/worldmods/monitoring"]
+	path = dev/worldmods/monitoring
+	url = https://github.com/minetest-monitoring/monitoring
