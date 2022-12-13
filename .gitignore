@@ -1,4 +1,5 @@
 mtui
 auth.sqlite*
 GeoLite2-City.mmdb
+GeoLite2-ASN.mmdb
 docker-compose.override.yml
