@@ -11,7 +11,7 @@ type MetricTypeRepository struct {
 	DB dbutil.DBTx
 }
 
-func (r *MetricTypeRepository) CreateOrUpdate(mt *types.MetricType) error {
+func (r *MetricTypeRepository) Insert(mt *types.MetricType) error {
 	return dbutil.InsertOrReplace(r.DB, mt)
 }
 
