@@ -8,6 +8,7 @@
     "VueRouter": true,
 		"VueI18n": true,
     "VueDatePicker": true,
-    "console": true
+    "console": true,
+    "Chart": true
   }
 }

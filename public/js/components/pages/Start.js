@@ -1,11 +1,15 @@
 
 const store = Vue.reactive({ version: "" });
 import { get_version } from "../../api/version.js";
+import MetricChart from "../MetricChart.js";
 
 export default {
 	data: () => store,
 	mounted: function() {
 		get_version().then(v => this.version = v);
+	},
+	components: {
+		"metric-chart": MetricChart
 	},
 	template: /*html*/`
 	<div>
@@ -27,6 +31,7 @@ export default {
 				<i class="fa-brands fa-github"></i> Source
 			</a>
 		</div>
+		<metric-chart metric_name="max_lag"/>
 	</div>
 	`
 };
