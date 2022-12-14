@@ -27,7 +27,7 @@ services:
    #ADMIN_USERNAME: admin
    #ADMIN_PASSWORD: enter
    LOGLEVEL: debug
-   ENABLE_FEATURES: "mail,shell,luashell,xban"
+   ENABLE_FEATURES: "mail,shell,luashell,xban,monitoring"
   ports:
     - 8080:8080
   volumes:

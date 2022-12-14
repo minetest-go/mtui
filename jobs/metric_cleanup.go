@@ -6,12 +6,12 @@ import (
 	"time"
 )
 
-func logCleanup(r *db.LogRepository) {
+func metricCleanup(r *db.MetricRepository) {
 	for {
-		ts := time.Now().AddDate(0, 0, -30)
+		ts := time.Now().Add(time.Hour * -1)
 		err := r.DeleteBefore(ts.UnixMilli())
 		if err != nil {
-			fmt.Printf("Log cleanup error: %s\n", err.Error())
+			fmt.Printf("metric cleanup error: %s\n", err.Error())
 		}
 
 		// re-schedule every minute

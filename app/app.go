@@ -1,6 +1,7 @@
 package app
 
 import (
+	"database/sql"
 	"fmt"
 	"mtui/bridge"
 	"mtui/db"
@@ -18,6 +19,7 @@ var Version string
 
 type App struct {
 	DBContext     *mtdb.Context
+	DB            *sql.DB
 	WorldDir      string
 	Repos         *db.Repositories
 	ModManager    *modmanager.ModManager
@@ -123,6 +125,7 @@ func Create(world_dir string) (*App, error) {
 	app := &App{
 		WorldDir:      world_dir,
 		DBContext:     dbctx,
+		DB:            db_,
 		ModManager:    modmanager.New(world_dir, repos.ModRepo),
 		Repos:         repos,
 		Bridge:        bridge.New(),
