@@ -10,6 +10,6 @@ type MetricRepository struct {
 	DB dbutil.DBTx
 }
 
-func (r *MetricRepository) Insert(m *types.Metric) error {
+func (r *MetricRepository) Create(m *types.Metric) error {
 	return dbutil.Insert(r.DB, m)
 }
