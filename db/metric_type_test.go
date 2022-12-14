@@ -44,4 +44,10 @@ func TestMetricType(t *testing.T) {
 	assert.Equal(t, mt.Name, mt2.Name)
 	assert.Equal(t, mt.Type, mt2.Type)
 	assert.Equal(t, mt.Help, mt2.Help)
+
+	// read all
+	list, err := repos.MetricTypeRepository.GetAll()
+	assert.NoError(t, err)
+	assert.NotNil(t, list)
+	assert.Equal(t, 1, len(list))
 }
