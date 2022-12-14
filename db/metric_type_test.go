@@ -18,7 +18,7 @@ func TestMetricType(t *testing.T) {
 	}
 
 	// create
-	assert.NoError(t, repos.MetricTypeRepository.CreateOrUpdate(mt))
+	assert.NoError(t, repos.MetricTypeRepository.Insert(mt))
 
 	// read
 	mt2, err := repos.MetricTypeRepository.GetByName("junk")
@@ -35,7 +35,7 @@ func TestMetricType(t *testing.T) {
 
 	// update
 	mt.Type = "counter"
-	assert.NoError(t, repos.MetricTypeRepository.CreateOrUpdate(mt))
+	assert.NoError(t, repos.MetricTypeRepository.Insert(mt))
 
 	// read
 	mt2, err = repos.MetricTypeRepository.GetByName("my_metric")

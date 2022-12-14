@@ -43,3 +43,10 @@ func (m *Metric) Scan(action string, r func(dest ...any) error) error {
 func (m *Metric) Values(action string) []any {
 	return []any{m.Timestamp, m.Name, m.Value}
 }
+
+type MetricSearch struct {
+	Name          *string `json:"name"`
+	FromTimestamp *int64  `json:"from_timestamp"`
+	ToTimestamp   *int64  `json:"to_timestamp"`
+	Limit         *int    `json:"limit"`
+}
