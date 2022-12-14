@@ -12,9 +12,7 @@ type MetricTypeRepository struct {
 }
 
 func (r *MetricTypeRepository) CreateOrUpdate(mt *types.MetricType) error {
-	q := `insert or replace into metric_type(name, type, help) values($1,$2,$3)`
-	_, err := r.DB.Exec(q, mt.Name, mt.Type, mt.Help)
-	return err
+	return dbutil.InsertOrReplace(r.DB, mt)
 }
 
 func (r *MetricTypeRepository) GetByName(name string) (*types.MetricType, error) {

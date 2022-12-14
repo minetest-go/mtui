@@ -845,6 +845,8 @@ github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3N
 github.com/miekg/pkcs11 v1.0.3/go.mod h1:XsNlhZGX73bx86s2hdc/FuaLm2CPZJemRLMA+WTFxgs=
 github.com/minetest-go/dbutil v1.0.5 h1:c3o2O9xNLuLCYRlliZz20rxVGZnJfgje5EY6LsiFDqo=
 github.com/minetest-go/dbutil v1.0.5/go.mod h1:H80I+b3887mea/UcLKt2Sq6nyYNMLvHM9cdqe31Ia9A=
+github.com/minetest-go/dbutil v1.0.6 h1:BgQl6DCbrerTEOmauS878H5GCg9epiQuPCRlLl02KCw=
+github.com/minetest-go/dbutil v1.0.6/go.mod h1:H80I+b3887mea/UcLKt2Sq6nyYNMLvHM9cdqe31Ia9A=
 github.com/minetest-go/mtdb v1.1.26 h1:aGzROijt3YoL90opYnJA7tpX9MkfS50SWdaV0cyD01Y=
 github.com/minetest-go/mtdb v1.1.26/go.mod h1:qgeABnQPSMmhpfPTEmduM6bYS/b5X3FY7sy+MoRYGXM=
 github.com/minetest-go/mtdb v1.1.27 h1:UDk5MdmU1r5agj77N//drOem/Z6OijGfd0Ql6o61gGQ=
