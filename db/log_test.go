@@ -29,7 +29,7 @@ func TestLogRepo(t *testing.T) {
 
 	count, err := repo.Count(s)
 	assert.NoError(t, err)
-	assert.Equal(t, int64(1), count)
+	assert.Equal(t, 1, count)
 
 	list, err := repo.Search(s)
 	assert.NoError(t, err)

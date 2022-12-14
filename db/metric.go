@@ -16,7 +16,7 @@ func (r *MetricRepository) Insert(m *types.Metric) error {
 }
 
 func (r *MetricRepository) buildWhereClause(s *types.MetricSearch, order bool) (string, []interface{}) {
-	q := " where true "
+	q := "where true "
 	args := make([]interface{}, 0)
 	i := 1
 
@@ -50,7 +50,7 @@ func (r *MetricRepository) buildWhereClause(s *types.MetricSearch, order bool) (
 	return q, args
 }
 
-func (r *MetricRepository) Query(s *types.MetricSearch) ([]*types.Metric, error) {
+func (r *MetricRepository) Search(s *types.MetricSearch) ([]*types.Metric, error) {
 	q, args := r.buildWhereClause(s, true)
 	return dbutil.SelectMulti(r.DB, func() *types.Metric { return &types.Metric{} }, q, args...)
 }

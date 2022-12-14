@@ -35,7 +35,7 @@ func (r *LogRepository) RemoveBefore(timestamp int64) error {
 }
 
 func (r *LogRepository) buildWhereClause(s *types.LogSearch) (string, []interface{}) {
-	q := " where true "
+	q := "where true "
 	args := make([]interface{}, 0)
 	i := 1
 
@@ -102,13 +102,9 @@ func (r *LogRepository) Search(s *types.LogSearch) ([]*types.Log, error) {
 	return dbutil.SelectMulti(r.DB, func() *types.Log { return &types.Log{} }, q, args...)
 }
 
-func (r *LogRepository) Count(s *types.LogSearch) (int64, error) {
+func (r *LogRepository) Count(s *types.LogSearch) (int, error) {
 	q, args := r.buildWhereClause(s)
-
-	row := r.DB.QueryRow("select count(*) from log"+q, args...)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
+	return dbutil.Count(r.DB, &types.Log{}, q, args...)
 }
 
 func (r *LogRepository) GetEvents(c types.LogCategory) ([]string, error) {
