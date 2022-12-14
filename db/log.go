@@ -1,16 +1,16 @@
 package db
 
 import (
-	"database/sql"
 	"fmt"
 	"mtui/types"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/minetest-go/dbutil"
 )
 
 type LogRepository struct {
-	DB *sql.DB
+	DB dbutil.DBTx
 }
 
 func (r *LogRepository) Insert(l *types.Log) error {
@@ -22,11 +22,11 @@ func (r *LogRepository) Insert(l *types.Log) error {
 		l.Timestamp = time.Now().UnixMilli()
 	}
 
-	return Insert(r.DB, l)
+	return dbutil.Insert(r.DB, l)
 }
 
 func (r *LogRepository) Update(l *types.Log) error {
-	return Update(r.DB, l, map[string]any{"id": l.ID})
+	return dbutil.Update(r.DB, l, "where id = $1", l.ID)
 }
 
 func (r *LogRepository) RemoveBefore(timestamp int64) error {
@@ -99,7 +99,7 @@ func (r *LogRepository) buildWhereClause(s *types.LogSearch) (string, []interfac
 
 func (r *LogRepository) Search(s *types.LogSearch) ([]*types.Log, error) {
 	q, args := r.buildWhereClause(s)
-	return SelectMulti(r.DB, func() *types.Log { return &types.Log{} }, q, args...)
+	return dbutil.SelectMulti(r.DB, func() *types.Log { return &types.Log{} }, q, args...)
 }
 
 func (r *LogRepository) Count(s *types.LogSearch) (int64, error) {

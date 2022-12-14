@@ -3,22 +3,24 @@ package db
 import (
 	"database/sql"
 	"mtui/types"
+
+	"github.com/minetest-go/dbutil"
 )
 
 type ModRepository struct {
-	DB *sql.DB
+	DB dbutil.DBTx
 }
 
 func (r *ModRepository) Create(m *types.Mod) error {
-	return Insert(r.DB, m)
+	return dbutil.Insert(r.DB, m)
 }
 
 func (r *ModRepository) GetAll() ([]*types.Mod, error) {
-	return SelectMulti(r.DB, func() *types.Mod { return &types.Mod{} }, "")
+	return dbutil.SelectMulti(r.DB, func() *types.Mod { return &types.Mod{} }, "")
 }
 
 func (r *ModRepository) GetByID(id string) (*types.Mod, error) {
-	m, err := Select(r.DB, &types.Mod{}, "where id = $1", id)
+	m, err := dbutil.Select(r.DB, &types.Mod{}, "where id = $1", id)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -26,13 +28,13 @@ func (r *ModRepository) GetByID(id string) (*types.Mod, error) {
 }
 
 func (r *ModRepository) Update(m *types.Mod) error {
-	return Update(r.DB, m, map[string]any{"id": m.ID})
+	return dbutil.Update(r.DB, m, "where id = $1", m.ID)
 }
 
 func (r *ModRepository) Delete(id string) error {
-	return Delete(r.DB, &types.Mod{}, "where id = $1", id)
+	return dbutil.Delete(r.DB, &types.Mod{}, "where id = $1", id)
 }
 
 func (r *ModRepository) DeleteAll() error {
-	return Delete(r.DB, &types.Mod{}, "")
+	return dbutil.Delete(r.DB, &types.Mod{}, "")
 }
