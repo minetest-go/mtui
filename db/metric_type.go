@@ -3,10 +3,12 @@ package db
 import (
 	"database/sql"
 	"mtui/types"
+
+	"github.com/minetest-go/dbutil"
 )
 
 type MetricTypeRepository struct {
-	DB *sql.DB
+	DB dbutil.DBTx
 }
 
 func (r *MetricTypeRepository) CreateOrUpdate(mt *types.MetricType) error {
@@ -16,12 +18,13 @@ func (r *MetricTypeRepository) CreateOrUpdate(mt *types.MetricType) error {
 }
 
 func (r *MetricTypeRepository) GetByName(name string) (*types.MetricType, error) {
-	q := `select name,type,help from metric_type where name = $1`
-	row := r.DB.QueryRow(q, name)
-	mt := &types.MetricType{}
-	err := row.Scan(&mt.Name, &mt.Type, &mt.Help)
+	mt, err := dbutil.Select(r.DB, &types.MetricType{}, "where name = $1", name)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
 	return mt, err
+}
+
+func (r *MetricTypeRepository) GetAll() ([]*types.MetricType, error) {
+	return dbutil.SelectMulti(r.DB, func() *types.MetricType { return &types.MetricType{} }, "")
 }

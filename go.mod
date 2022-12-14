@@ -13,7 +13,7 @@ require (
 	github.com/sirupsen/logrus v1.9.0
 	github.com/stretchr/testify v1.8.1
 	go.uber.org/atomic v1.10.0
-	modernc.org/sqlite v1.19.2
+	modernc.org/sqlite v1.20.0
 )
 
 require (
@@ -31,6 +31,7 @@ require (
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
 	github.com/lib/pq v1.10.7 // indirect
+	github.com/minetest-go/dbutil v1.0.5 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/oschwald/geoip2-golang v1.8.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.10.0 // indirect
@@ -55,8 +56,8 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	lukechampine.com/uint128 v1.2.0 // indirect
 	modernc.org/cc/v3 v3.40.0 // indirect
-	modernc.org/ccgo/v3 v3.16.12 // indirect
-	modernc.org/libc v1.20.3 // indirect
+	modernc.org/ccgo/v3 v3.16.13 // indirect
+	modernc.org/libc v1.21.5 // indirect
 	modernc.org/mathutil v1.5.0 // indirect
 	modernc.org/memory v1.4.0 // indirect
 	modernc.org/opt v0.1.3 // indirect
