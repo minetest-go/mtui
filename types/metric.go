@@ -27,3 +27,19 @@ type Metric struct {
 	Name      string  `json:"name"`
 	Value     float64 `json:"value"`
 }
+
+func (m *Metric) Columns(action string) []string {
+	return []string{"timestamp", "name", "value"}
+}
+
+func (m *Metric) Table() string {
+	return "metric"
+}
+
+func (m *Metric) Scan(action string, r func(dest ...any) error) error {
+	return r(&m.Timestamp, &m.Name, &m.Value)
+}
+
+func (m *Metric) Values(action string) []any {
+	return []any{m.Timestamp, m.Name, m.Value}
+}
