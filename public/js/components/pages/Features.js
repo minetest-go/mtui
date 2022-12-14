@@ -35,6 +35,10 @@ const help = {
     "xban": {
         description: "xban integration",
         mods: ["xban2"]
+    },
+    "monitoring": {
+        description: "monitoring integration",
+        mods: ["monitoring"]
     }
 };
 

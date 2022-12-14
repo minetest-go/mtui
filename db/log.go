@@ -29,7 +29,7 @@ func (r *LogRepository) Update(l *types.Log) error {
 	return dbutil.Update(r.DB, l, "where id = $1", l.ID)
 }
 
-func (r *LogRepository) RemoveBefore(timestamp int64) error {
+func (r *LogRepository) DeleteBefore(timestamp int64) error {
 	_, err := r.DB.Exec("delete from log where timestamp < $1", timestamp)
 	return err
 }

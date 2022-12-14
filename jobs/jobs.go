@@ -3,5 +3,6 @@ package jobs
 import "mtui/app"
 
 func Start(a *app.App) {
-	go logcleanup(a.Repos.LogRepository)
+	go logCleanup(a.Repos.LogRepository)
+	go metricCleanup(a.Repos.MetricRepository)
 }

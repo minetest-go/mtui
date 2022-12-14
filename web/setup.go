@@ -51,6 +51,11 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/skin", api.Feature("skinsdb", api.Secure(api.GetSkin))).Methods(http.MethodGet)
 	r.HandleFunc("/api/skin", api.Feature("skinsdb", api.Secure(api.SetSkin))).Methods(http.MethodPost)
 
+	r.HandleFunc("/api/metric_types", api.Feature("monitoring", api.GetMetricTypes)).Methods(http.MethodGet)
+	r.HandleFunc("/api/metric_types/{name}", api.Feature("monitoring", api.GetMetricType)).Methods(http.MethodGet)
+	r.HandleFunc("/api/metrics/search", api.Feature("monitoring", api.SearchMetrics)).Methods(http.MethodPost)
+	r.HandleFunc("/api/metrics/count", api.Feature("monitoring", api.CountMetrics)).Methods(http.MethodPost)
+
 	r.HandleFunc("/api/mail/list", api.Feature("mail", api.Secure(api.GetMails))).Methods(http.MethodGet)
 	r.HandleFunc("/api/mail/{sender}/{time}", api.Feature("mail", api.Secure(api.DeleteMail))).Methods(http.MethodDelete)
 	r.HandleFunc("/api/mail/{sender}/{time}/read", api.Feature("mail", api.Secure(api.MarkRead))).Methods(http.MethodPost)
