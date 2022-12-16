@@ -46,6 +46,23 @@ func (a *Api) GetBanDBStatus(w http.ResponseWriter, r *http.Request, claims *typ
 	SendLuaResponse(w, err, resp)
 }
 
+func (a *Api) GetBannedRecords(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	req := &command.LuaRequest{
+		Code: `
+			local banned = {}
+			for _, entry in ipairs(xban.db) do
+				if entry.banned then
+					table.insert(banned, entry)
+				end
+			end
+			return banned
+		`,
+	}
+	resp := &command.LuaResponse{}
+	err := a.app.Bridge.ExecuteCommand(command.COMMAND_LUA, req, resp, time.Second*5)
+	SendLuaResponse(w, err, resp)
+}
+
 func (a *Api) GetBanRecord(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	vars := mux.Vars(r)
 	req := &command.LuaRequest{

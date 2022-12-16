@@ -1,7 +1,9 @@
 
 export const get_status = () => fetch(`api/xban/status`).then(r => r.json());
 
-export const get_record = playername => fetch(`api/xban/record/${playername}`).then(r => r.json());
+export const get_record = playername => fetch(`api/xban/records/${playername}`).then(r => r.json());
+
+export const get_records = () => fetch(`api/xban/records`).then(r => r.json());
 
 export const ban_player = (playername, reason) => fetch(`api/xban/ban`, {
     method: "POST",

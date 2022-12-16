@@ -64,7 +64,8 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/mail/contacts", api.Feature("mail", api.Secure(api.GetContacts))).Methods(http.MethodGet)
 
 	r.HandleFunc("/api/xban/status", api.Feature("xban", api.SecurePriv("ban", api.GetBanDBStatus))).Methods(http.MethodGet)
-	r.HandleFunc("/api/xban/record/{playername}", api.Feature("xban", api.SecurePriv("ban", api.GetBanRecord))).Methods(http.MethodGet)
+	r.HandleFunc("/api/xban/records/{playername}", api.Feature("xban", api.SecurePriv("ban", api.GetBanRecord))).Methods(http.MethodGet)
+	r.HandleFunc("/api/xban/records", api.Feature("xban", api.SecurePriv("ban", api.GetBannedRecords))).Methods(http.MethodGet)
 	r.HandleFunc("/api/xban/ban", api.Feature("xban", api.SecurePriv("ban", api.BanPlayer))).Methods(http.MethodPost)
 	r.HandleFunc("/api/xban/tempban", api.Feature("xban", api.SecurePriv("ban", api.TempBanPlayer))).Methods(http.MethodPost)
 	r.HandleFunc("/api/xban/unban", api.Feature("xban", api.SecurePriv("ban", api.UnbanPlayer))).Methods(http.MethodPost)

@@ -135,7 +135,7 @@ export default {
                         <h5>Records</h5>
                         <ul v-if="xban_record.record">
                             <li v-for="record in xban_record.record">
-                                <b>Moderator:</b> {{record.source}}
+                                <b>Source:</b> <router-link :to="'/profile/' + record.source">{{record.source}}</router-link>
                                 <b>Reason:</b> {{record.reason}}
                                 <b>Time:</b> {{format_time(record.time)}}
                             </li>
