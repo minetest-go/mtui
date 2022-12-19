@@ -1,6 +1,6 @@
 import { scan, stats } from "../../api/media.js";
-import prettycount from "../../util/prettycount.js";
-import prettysize from "../../util/prettysize.js";
+import format_count from "../../util/format_count.js";
+import format_size from "../../util/format_size.js";
 
 export default {
     data: function() {
@@ -13,8 +13,8 @@ export default {
         this.update();
     },
     methods: {
-        prettycount: prettycount,
-        prettysize: prettysize,
+        format_count: format_count,
+        format_size: format_size,
         scan: function() {
             this.busy = true;
             scan()
@@ -37,15 +37,15 @@ export default {
             <tbody>
                 <tr>
                     <td>Total size</td>
-                    <td>{{prettysize(stats.size)}}</td>
+                    <td>{{format_size(stats.size)}}</td>
                 </tr>
                 <tr>
                     <td>Total count</td>
-                    <td>{{prettycount(stats.count)}}</td>
+                    <td>{{format_count(stats.count)}}</td>
                 </tr>
                 <tr>
                     <td>Transferred</td>
-                    <td>{{prettysize(stats.transferredbytes)}}</td>
+                    <td>{{format_size(stats.transferredbytes)}}</td>
                 </tr>
             </tbody>
         </table>

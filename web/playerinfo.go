@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"mtui/types"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/minetest-go/mtdb/auth"
@@ -28,11 +29,22 @@ type PlayerInfo struct {
 	PosX  float64 `json:"posx"`
 	PosY  float64 `json:"posy"`
 	PosZ  float64 `json:"posz"`
+
+	Stats map[string]float64 `json:"stats"`
 }
 
-func mapPlayerInfo(auth *auth.AuthEntry, privs []*auth.PrivilegeEntry, player *player.Player, claims *types.Claims) *PlayerInfo {
+var player_stat_fields = map[string]bool{
+	"played_time":  true,
+	"digged_nodes": true,
+	"placed_nodes": true,
+	"died":         true,
+	"crafted":      true,
+}
+
+func mapPlayerInfo(auth *auth.AuthEntry, privs []*auth.PrivilegeEntry, player *player.Player, md []*player.PlayerMetadata, claims *types.Claims) *PlayerInfo {
 	info := &PlayerInfo{
 		Privs: make([]string, 0),
+		Stats: make(map[string]float64),
 	}
 
 	if auth != nil {
@@ -43,6 +55,15 @@ func mapPlayerInfo(auth *auth.AuthEntry, privs []*auth.PrivilegeEntry, player *p
 
 	for _, priv := range privs {
 		info.Privs = append(info.Privs, priv.Privilege)
+	}
+
+	for _, meta := range md {
+		if player_stat_fields[meta.Metadata] {
+			value, err := strconv.ParseFloat(meta.Value, 64)
+			if err == nil {
+				info.Stats[meta.Metadata] = value
+			}
+		}
 	}
 
 	if player != nil {
@@ -91,7 +112,13 @@ func (a *Api) GetPlayerInfo(w http.ResponseWriter, r *http.Request, claims *type
 		return
 	}
 
-	info := mapPlayerInfo(auth, privs, player, claims)
+	md, err := a.app.DBContext.PlayerMetadata.GetPlayerMetadata(playername)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	info := mapPlayerInfo(auth, privs, player, md, claims)
 	SendJson(w, info)
 }
 
@@ -118,7 +145,13 @@ func (a *Api) SearchPlayer(w http.ResponseWriter, r *http.Request, claims *types
 			return
 		}
 
-		result[i] = mapPlayerInfo(auth, privs, player, claims)
+		md, err := a.app.DBContext.PlayerMetadata.GetPlayerMetadata(auth.Name)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+
+		result[i] = mapPlayerInfo(auth, privs, player, md, claims)
 	}
 
 	Send(w, result, err)

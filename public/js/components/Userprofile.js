@@ -4,6 +4,8 @@ import { has_feature } from "../service/features.js";
 import { get as get_playerinfo } from '../api/playerinfo.js';
 import { get_record } from '../api/xban.js';
 import format_time from '../util/format_time.js';
+import format_duration from '../util/format_duration.js';
+import format_count from '../util/format_count.js';
 import login_store from '../store/login.js';
 
 export default {
@@ -42,6 +44,8 @@ export default {
         },
         has_feature: has_feature,
         format_time: format_time,
+        format_duration: format_duration,
+        format_count: format_count,
         getPrivBadgeClass: function(priv) {
             if (priv == "server" || priv == "privs") {
                 return { "badge": true, "bg-danger": true };
@@ -109,6 +113,34 @@ export default {
                     </div>
                     <div class="card-body" v-else>
                         No entries found
+                    </div>
+                </div>
+                <br>
+                <div class="card">
+                    <div class="card-header">
+                        Ingame stats
+                    </div>
+                    <div class="card-body" v-if="playerinfo.stats">
+                        <ul>
+                            <li v-if="playerinfo.stats.played_time">
+                                <b>Playtime:</b> {{ format_duration(playerinfo.stats.played_time) }}
+                            </li>
+                            <li v-if="playerinfo.stats.digged_nodes">
+                                <b>Digged nodes:</b> {{ format_count(playerinfo.stats.digged_nodes) }}
+                            </li>
+                            <li v-if="playerinfo.stats.placed_nodes">
+                                <b>Placed nodes:</b> {{ format_count(playerinfo.stats.placed_nodes) }}
+                            </li>
+                            <li v-if="playerinfo.stats.died">
+                                <b>Died:</b> {{ format_count(playerinfo.stats.died) }}
+                            </li>
+                            <li v-if="playerinfo.stats.crafted">
+                                <b>Crafted:</b> {{ format_count(playerinfo.stats.crafted) }}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body" v-else>
+                        No stats found
                     </div>
                 </div>
                 <br>
