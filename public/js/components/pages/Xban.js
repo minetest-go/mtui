@@ -70,7 +70,7 @@ export default {
         </div>
         <hr>
         <h4>Ban entries</h4>
-        <table class="table table-striped table-condensed" v-if="banned_records.length">
+        <table class="table table-striped table-condensed" v-if="banned_records">
             <thead>
                 <tr>
                     <th>ID</th>
