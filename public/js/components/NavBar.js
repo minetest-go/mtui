@@ -67,12 +67,12 @@ export default {
 							<i class="fa-solid fa-user-astronaut"></i> Skin
 						</router-link>
 					</li>
-					<li class="nav-item dropdown" v-if="has_priv('ban')">
-						<a class="nav-link dropdown-toggle" v-on:click="mod_menu = !mod_menu">
+					<li class="nav-item dropdown" v-if="has_priv('ban')" v-on:mouseleave="mod_menu = false">
+						<a class="nav-link dropdown-toggle" v-on:click="mod_menu = true" v-on:mouseover="mod_menu = true">
 							<i class="fa-solid fa-hammer"></i>
 							Moderation
 						</a>		
-						<ul class="dropdown-menu" v-bind:class="{'show': mod_menu}" v-on:mouseleave="mod_menu = false">
+						<ul class="dropdown-menu" v-bind:class="{'show': mod_menu}">
 							<li v-if="has_feature('xban')">
 								<router-link to="/xban" class="dropdown-item">
 									<i class="fa fa-ban"></i> XBan
@@ -85,12 +85,12 @@ export default {
 							</li>	
 						</ul>
 					</li>
-					<li class="nav-item dropdown" v-if="has_priv('server')">
-						<a class="nav-link dropdown-toggle" v-on:click="admin_menu = !admin_menu">
+					<li class="nav-item dropdown" v-if="has_priv('server')" v-on:mouseleave="admin_menu = false">
+						<a class="nav-link dropdown-toggle" v-on:click="admin_menu = true" v-on:mouseover="admin_menu = true">
 							<i class="fa-solid fa-screwdriver-wrench"></i>
 							Administration
 						</a>		
-						<ul class="dropdown-menu" v-bind:class="{'show': admin_menu}" v-on:mouseleave="admin_menu = false">
+						<ul class="dropdown-menu" v-bind:class="{'show': admin_menu}">
 							<li>
 								<router-link to="/features" class="dropdown-item">
 									<i class="fa fa-tags"></i> Features
