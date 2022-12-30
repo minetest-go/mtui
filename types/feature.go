@@ -1,5 +1,17 @@
 package types
 
+const (
+	FEATURE_MEDIASERVER   = "mediaserver"
+	FEATURE_MAIL          = "mail"
+	FEATURE_AREAS         = "areas"
+	FEATURE_SKINSDB       = "skinsdb"
+	FEATURE_LUASHELL      = "luashell"
+	FEATURE_SHELL         = "shell"
+	FEATURE_MODMANAGEMENT = "modmanagement"
+	FEATURE_XBAN          = "xban"
+	FEATURE_MONITORING    = "monitorings"
+)
+
 type Feature struct {
 	Name    string `json:"name"`
 	Enabled bool   `json:"enabled"`

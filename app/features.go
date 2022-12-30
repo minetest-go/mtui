@@ -8,15 +8,15 @@ import (
 )
 
 var feature_list = map[string]bool{
-	"mail":          false,
-	"areas":         false,
-	"skinsdb":       false,
-	"luashell":      false,
-	"shell":         false,
-	"modmanagement": false,
-	"mediaserver":   false,
-	"xban":          false,
-	"monitoring":    false,
+	types.FEATURE_MAIL:          false,
+	types.FEATURE_AREAS:         false,
+	types.FEATURE_SKINSDB:       false,
+	types.FEATURE_LUASHELL:      false,
+	types.FEATURE_SHELL:         false,
+	types.FEATURE_MODMANAGEMENT: false,
+	types.FEATURE_MEDIASERVER:   false,
+	types.FEATURE_XBAN:          false,
+	types.FEATURE_MONITORING:    false,
 }
 
 func PopulateFeatures(repo *db.FeatureRepository) error {
