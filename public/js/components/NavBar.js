@@ -11,7 +11,9 @@ export default {
 		return {
 			login: login_store,
 			stats: stats_store,
-			mail: mail_store
+			mail: mail_store,
+			admin_menu: false,
+			mod_menu: false
 		};
 	},
 	methods: {
@@ -39,34 +41,9 @@ export default {
 							<i class="fa fa-magnifying-glass"></i> Player search
 						</router-link>
 					</li>
-					<li class="nav-item" v-if="has_priv('ban')">
-						<router-link to="/log" class="nav-link">
-							<i class="fa fa-magnifying-glass"></i> Logs
-						</router-link>
-					</li>
-					<li class="nav-item" v-if="has_priv('server')">
-						<router-link to="/features" class="nav-link">
-							<i class="fa fa-tags"></i> Features
-						</router-link>
-					</li>
 					<li class="nav-item" v-if="has_priv('interact') && has_feature('shell')">
 						<router-link to="/shell" class="nav-link">
 							<i class="fa-solid fa-terminal"></i> Shell
-						</router-link>
-					</li>
-					<li class="nav-item" v-if="has_priv('server') && has_feature('luashell')">
-						<router-link to="/lua" class="nav-link">
-							<i class="fa-solid fa-terminal"></i> Lua
-						</router-link>
-					</li>
-					<li class="nav-item" v-if="has_priv('server') && has_feature('modmanagement')">
-						<router-link to="/mods" class="nav-link">
-							<i class="fa fa-cubes"></i> Mods
-						</router-link>
-					</li>
-					<li class="nav-item" v-if="has_priv('server') && has_feature('mediaserver')">
-						<router-link to="/mediaserver" class="nav-link">
-							<i class="fa fa-photo-film"></i> Mediaserver
 						</router-link>
 					</li>
 					<li class="nav-item">
@@ -75,11 +52,6 @@ export default {
 							<span class="badge rounded-pill bg-info" v-if="stats.player_count">
 								{{stats.player_count}}
 							</span>
-						</router-link>
-					</li>
-					<li class="nav-item" v-if="has_feature('xban') && has_priv('ban')">
-						<router-link to="/xban" class="nav-link">
-							<i class="fa fa-ban"></i> XBan
 						</router-link>
 					</li>
 					<li class="nav-item" v-if="has_feature('mail')">
@@ -94,6 +66,52 @@ export default {
 						<router-link to="/skin" class="nav-link">
 							<i class="fa-solid fa-user-astronaut"></i> Skin
 						</router-link>
+					</li>
+					<li class="nav-item dropdown" v-if="has_priv('ban')">
+						<a class="nav-link dropdown-toggle" v-on:click="mod_menu = !mod_menu">
+							<i class="fa-solid fa-hammer"></i>
+							Moderation
+						</a>		
+						<ul class="dropdown-menu" v-bind:class="{'show': mod_menu}" v-on:mouseleave="mod_menu = false">
+							<li v-if="has_feature('xban')">
+								<router-link to="/xban" class="dropdown-item">
+									<i class="fa fa-ban"></i> XBan
+								</router-link>
+							</li>
+							<li>
+								<router-link to="/log" class="dropdown-item">
+									<i class="fa fa-magnifying-glass"></i> Logs
+								</router-link>
+							</li>	
+						</ul>
+					</li>
+					<li class="nav-item dropdown" v-if="has_priv('server')">
+						<a class="nav-link dropdown-toggle" v-on:click="admin_menu = !admin_menu">
+							<i class="fa-solid fa-screwdriver-wrench"></i>
+							Administration
+						</a>		
+						<ul class="dropdown-menu" v-bind:class="{'show': admin_menu}" v-on:mouseleave="admin_menu = false">
+							<li>
+								<router-link to="/features" class="dropdown-item">
+									<i class="fa fa-tags"></i> Features
+								</router-link>
+							</li>
+							<li v-if="has_feature('luashell')">
+								<router-link to="/lua" class="dropdown-item">
+									<i class="fa-solid fa-terminal"></i> Lua
+								</router-link>
+							</li>
+							<li v-if="has_feature('modmanagement')">
+								<router-link to="/mods" class="dropdown-item">
+									<i class="fa fa-cubes"></i> Mods
+								</router-link>
+							</li>
+							<li v-if="has_feature('mediaserver')">
+								<router-link to="/mediaserver" class="dropdown-item">
+									<i class="fa fa-photo-film"></i> Mediaserver
+								</router-link>
+							</li>
+						</ul>
 					</li>
 				</ul>
 				<div class="d-flex">

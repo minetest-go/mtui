@@ -12,7 +12,7 @@ const store = Vue.reactive({
 export default {
     data: () => store,
     mounted: function() {
-        if (this.banned_records.length == 0){
+        if (!this.banned_records || this.banned_records.length == 0){
             this.update();
         }
     },
