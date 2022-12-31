@@ -22,7 +22,7 @@ func logLoop(lr *db.LogRepository, geoipresolver *app.GeoipResolver, ch chan *br
 			geoip := geoipresolver.Resolve(*log.IPAddress)
 			if geoip != nil {
 				log.GeoCity = &geoip.City
-				log.GeoCountry = &geoip.Country
+				log.GeoCountry = &geoip.ISOCountry
 				asn := int(geoip.ASN)
 				log.GeoASN = &asn
 			}

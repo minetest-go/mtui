@@ -34,9 +34,10 @@ func NewGeoipResolver(basedir string) *GeoipResolver {
 }
 
 type GeoipResult struct {
-	City    string
-	Country string
-	ASN     uint
+	City       string
+	Country    string
+	ISOCountry string
+	ASN        uint
 }
 
 func (r *GeoipResolver) Resolve(ipstr string) *GeoipResult {
@@ -54,6 +55,7 @@ func (r *GeoipResolver) Resolve(ipstr string) *GeoipResult {
 
 	result.City = city.City.Names["en"]
 	result.Country = city.Country.Names["en"]
+	result.ISOCountry = city.Country.IsoCode
 
 	asn, err := r.asndb.ASN(ip)
 	if err != nil {
