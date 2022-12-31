@@ -12,4 +12,4 @@ export const set_feature = (name, enabled) => {
     .then(() => check_features());
 };
 
-export const has_feature = name => store[name];
+export const has_feature = name => store[name] && store[name].enabled;

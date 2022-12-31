@@ -1,0 +1,41 @@
+[
+    {
+        "name": "areas",
+        "description": "Areas integration",
+        "mods": ["areas"],
+        "experimental": true
+    },{
+        "name": "mail",
+        "description": "Ingame mail management",
+        "mods": ["mail"]
+    },{
+        "name": "skinsdb",
+        "description": "Skin management",
+        "mods": ["skinsdb"]
+    },{
+        "name": "shell",
+        "description": "Ingame command shell",
+        "mods": ["mtui"]
+    },{
+        "name": "luashell",
+        "description": "Ingame lua command injection",
+        "mods": ["mtui"]
+    },{
+        "name": "modmanagement",
+        "description": "Mod, game and texturepack management",
+        "mods": ["mtui"],
+        "experimental": true
+    },{
+        "name": "mediaserver",
+        "description": "HTTP Mediaserver (remote_media)",
+        "experimental": true
+    },{
+        "name": "xban",
+        "description": "xban integration",
+        "mods": ["xban2"]
+    },{
+        "name": "monitoring",
+        "description": "monitoring integration",
+        "mods": ["monitoring"]
+    }
+]

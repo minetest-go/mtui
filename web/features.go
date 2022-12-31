@@ -2,12 +2,22 @@ package web
 
 import (
 	"encoding/json"
+	"mtui/app"
 	"mtui/types"
 	"net/http"
 )
 
 func (a *Api) GetFeatures(w http.ResponseWriter, r *http.Request) {
-	feature_map := make(map[string]bool)
+	feature_map := make(map[string]*app.AvailableFeature)
+
+	available_features, err := app.GetAvailableFeatures()
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+	for _, avavailable_feature := range available_features {
+		feature_map[avavailable_feature.Name] = avavailable_feature
+	}
 
 	list, err := a.app.Repos.FeatureRepository.GetAll()
 	if err != nil {
@@ -15,7 +25,10 @@ func (a *Api) GetFeatures(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	for _, feature := range list {
-		feature_map[feature.Name] = feature.Enabled
+		f := feature_map[feature.Name]
+		if f != nil {
+			f.Enabled = feature.Enabled
+		}
 	}
 
 	SendJson(w, feature_map)
