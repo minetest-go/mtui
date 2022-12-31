@@ -25,6 +25,9 @@ export default {
         },
         update: function() {
             stats().then(s => this.stats = s);
+        },
+        media_url: function() {
+            return location.protocol + "//" + location.host + location.pathname + "api/media/";
         }
     },
     template: /*html*/`
@@ -49,6 +52,10 @@ export default {
                 </tr>
             </tbody>
         </table>
+        <div class="alert alert-info">
+            URL for the "remote_media" setting:
+            <b>{{ media_url() }}</b>
+        </div>
     </div>
     `
 };
