@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"mtui/app"
 	"mtui/events"
@@ -16,6 +17,18 @@ import (
 )
 
 func main() {
+
+	version_ptr := flag.Bool("version", false, "show the current version and exit")
+	flag.Parse()
+
+	if *version_ptr {
+		v := app.Version
+		if v == "" {
+			v = "DEV"
+		}
+		fmt.Printf("mtui %s\n", v)
+		return
+	}
 
 	if os.Getenv("LOGLEVEL") == "debug" {
 		logrus.SetLevel(logrus.DebugLevel)
