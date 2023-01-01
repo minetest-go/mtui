@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/HimbeerserverDE/srp v0.0.0
 	github.com/go-git/go-git/v5 v5.4.2
-	github.com/golang-jwt/jwt/v4 v4.4.2
+	github.com/golang-jwt/jwt/v4 v4.4.3
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.5.0
