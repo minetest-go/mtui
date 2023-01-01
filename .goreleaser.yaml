@@ -14,8 +14,3 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
-dockers:
-- image_templates:
-    - "buckaroobanzay/mtui:{{ .Version }}"
-    - "buckaroobanzay/mtui:latest"
-  dockerfile: Dockerfile
