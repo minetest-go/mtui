@@ -16,6 +16,6 @@ changelog:
       - '^test:'
 dockers:
 - image_templates:
-    - "buckaroobanzay/mtui:{{ .Version }}"
-    - "buckaroobanzay/mtui:latest"
+    - "ghcr.io/minetest-go/mtui:{{ .Version }}"
+    - "ghcr.io/minetest-go/mtui:latest"
   dockerfile: Dockerfile
