@@ -35,6 +35,8 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/onboard", api.GetOnboardStatus).Methods(http.MethodGet)
 	r.HandleFunc("/api/onboard", api.CreateOnboardUser).Methods(http.MethodPost)
 
+	r.HandleFunc("/api/geoip/{ip}", api.SecurePriv("ban", api.QueryGeoip)).Methods(http.MethodGet)
+
 	r.HandleFunc("/api/changepw", api.Secure(api.ChangePassword)).Methods(http.MethodPost)
 
 	r.HandleFunc("/api/player/info/{playername}", api.SecurePriv("interact", api.GetPlayerInfo)).Methods(http.MethodGet)

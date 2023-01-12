@@ -18,7 +18,7 @@ func NewGeoipResolver(basedir string) *GeoipResolver {
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"reason": err.Error(),
-		}).Debug("Skipping geoip resolver setup")
+		}).Info("Skipping geoip resolver setup (missing city db)")
 		return &GeoipResolver{}
 	}
 
@@ -26,7 +26,7 @@ func NewGeoipResolver(basedir string) *GeoipResolver {
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"reason": err.Error(),
-		}).Debug("Skipping geoip resolver setup")
+		}).Info("Skipping geoip resolver setup (missing asn db)")
 		return &GeoipResolver{}
 	}
 
@@ -34,10 +34,10 @@ func NewGeoipResolver(basedir string) *GeoipResolver {
 }
 
 type GeoipResult struct {
-	City       string
-	Country    string
-	ISOCountry string
-	ASN        uint
+	City       string `json:"city"`
+	Country    string `json:"country"`
+	ISOCountry string `json:"country_iso"`
+	ASN        int    `json:"asn"`
 }
 
 func (r *GeoipResolver) Resolve(ipstr string) *GeoipResult {
@@ -62,7 +62,7 @@ func (r *GeoipResolver) Resolve(ipstr string) *GeoipResult {
 		return nil
 	}
 
-	result.ASN = asn.AutonomousSystemNumber
+	result.ASN = int(asn.AutonomousSystemNumber)
 
 	return result
 }

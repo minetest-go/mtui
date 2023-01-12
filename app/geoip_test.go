@@ -35,7 +35,7 @@ func TestGeoipResolve(t *testing.T) {
 	result := resolver.Resolve("81.2.69.142")
 	assert.NotNil(t, result)
 
-	assert.Equal(t, uint(0), result.ASN)
+	assert.Equal(t, 0, result.ASN)
 	assert.Equal(t, "London", result.City)
 	assert.Equal(t, "United Kingdom", result.Country)
 	assert.Equal(t, "GB", result.ISOCountry)
