@@ -38,17 +38,6 @@ func Create(world_dir string) (*App, error) {
 		return nil, err
 	}
 
-	// admin user
-	admin_username := os.Getenv("ADMIN_USERNAME")
-	admin_password := os.Getenv("ADMIN_PASSWORD")
-	if admin_username != "" && admin_password != "" {
-		fmt.Printf("Creating admin user '%s'\n", admin_username)
-		err = CreateAdminUser(dbctx, admin_username, admin_password)
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	db_, err := db.Init(world_dir)
 	if err != nil {
 		return nil, err
@@ -60,6 +49,17 @@ func Create(world_dir string) (*App, error) {
 	}
 
 	repos := db.NewRepositories(db_)
+
+	// admin user
+	admin_username := os.Getenv("ADMIN_USERNAME")
+	admin_password := os.Getenv("ADMIN_PASSWORD")
+	if admin_username != "" && admin_password != "" {
+		fmt.Printf("Creating admin user '%s'\n", admin_username)
+		err = CreateAdminUser(dbctx, admin_username, admin_password)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	// features
 	err = PopulateFeatures(repos.FeatureRepository)
