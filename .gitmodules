@@ -13,3 +13,6 @@
 [submodule "dev/worldmods/monitoring"]
 	path = dev/worldmods/monitoring
 	url = https://github.com/minetest-monitoring/monitoring
+[submodule "dev/worldmods/otp"]
+	path = dev/worldmods/otp
+	url = https://github.com/mt-mods/otp

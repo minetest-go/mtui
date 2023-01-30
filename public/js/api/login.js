@@ -1,9 +1,10 @@
 
-export const login = (username, password) => fetch("api/login", {
+export const login = (username, password, otp_code) => fetch("api/login", {
     method: "POST",
     body: JSON.stringify({
         username: username,
-        password: password
+        password: password,
+        otp_code: otp_code
     })
 })
 .then(r => r.status == 200);
