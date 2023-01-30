@@ -161,25 +161,22 @@ func (a *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if secret_entry == nil {
-			SendError(w, 500, "otp secret not found")
-			return
-		}
+		if secret_entry != nil {
+			otp_ok, err := totp.ValidateCustom(req.OTPCode, string(secret_entry.Value), time.Now(), totp.ValidateOpts{
+				Digits:    6,
+				Period:    30,
+				Algorithm: otp.AlgorithmSHA1,
+			})
 
-		otp_ok, err := totp.ValidateCustom(req.OTPCode, string(secret_entry.Value), time.Now(), totp.ValidateOpts{
-			Digits:    6,
-			Period:    30,
-			Algorithm: otp.AlgorithmSHA1,
-		})
+			if err != nil {
+				SendError(w, 500, err.Error())
+				return
+			}
 
-		if err != nil {
-			SendError(w, 500, err.Error())
-			return
-		}
-
-		if !otp_ok {
-			SendError(w, 403, "otp code wrong")
-			return
+			if !otp_ok {
+				SendError(w, 403, "otp code wrong")
+				return
+			}
 		}
 	}
 
