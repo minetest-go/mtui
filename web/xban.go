@@ -3,6 +3,7 @@ package web
 import (
 	"encoding/json"
 	"fmt"
+	"mtui/bridge"
 	"mtui/types"
 	"mtui/types/command"
 	"net/http"
@@ -66,7 +67,7 @@ func (a *Api) GetBannedRecords(w http.ResponseWriter, r *http.Request, claims *t
 func (a *Api) GetBanRecord(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	vars := mux.Vars(r)
 	req := &command.LuaRequest{
-		Code: fmt.Sprintf("return xban.find_entry('%s')", vars["playername"]),
+		Code: fmt.Sprintf("return xban.find_entry('%s')", bridge.SanitizeLuaString(vars["playername"])),
 	}
 	resp := &command.LuaResponse{}
 	err := a.app.Bridge.ExecuteCommand(command.COMMAND_LUA, req, resp, time.Second*5)
@@ -82,7 +83,11 @@ func (a *Api) BanPlayer(w http.ResponseWriter, r *http.Request, claims *types.Cl
 	}
 
 	req := &command.LuaRequest{
-		Code: fmt.Sprintf("return xban.ban_player('%s', '%s', nil, '%s')", banr.Playername, claims.Username, banr.Reason),
+		Code: fmt.Sprintf("return xban.ban_player('%s', '%s', nil, '%s')",
+			bridge.SanitizeLuaString(banr.Playername),
+			bridge.SanitizeLuaString(claims.Username),
+			bridge.SanitizeLuaString(banr.Reason),
+		),
 	}
 	resp := &command.LuaResponse{}
 	err = a.app.Bridge.ExecuteCommand(command.COMMAND_LUA, req, resp, time.Second*5)
@@ -98,7 +103,12 @@ func (a *Api) TempBanPlayer(w http.ResponseWriter, r *http.Request, claims *type
 	}
 
 	req := &command.LuaRequest{
-		Code: fmt.Sprintf("return xban.ban_player('%s', '%s', %d, '%s')", banr.Playername, claims.Username, banr.Time, banr.Reason),
+		Code: fmt.Sprintf("return xban.ban_player('%s', '%s', %d, '%s')",
+			bridge.SanitizeLuaString(banr.Playername),
+			bridge.SanitizeLuaString(claims.Username),
+			banr.Time,
+			bridge.SanitizeLuaString(banr.Reason),
+		),
 	}
 	resp := &command.LuaResponse{}
 	err = a.app.Bridge.ExecuteCommand(command.COMMAND_LUA, req, resp, time.Second*5)
@@ -114,7 +124,10 @@ func (a *Api) UnbanPlayer(w http.ResponseWriter, r *http.Request, claims *types.
 	}
 
 	req := &command.LuaRequest{
-		Code: fmt.Sprintf("return xban.unban_player('%s', '%s')", banr.Playername, claims.Username),
+		Code: fmt.Sprintf("return xban.unban_player('%s', '%s')",
+			bridge.SanitizeLuaString(banr.Playername),
+			bridge.SanitizeLuaString(claims.Username),
+		),
 	}
 	resp := &command.LuaResponse{}
 	err = a.app.Bridge.ExecuteCommand(command.COMMAND_LUA, req, resp, time.Second*5)
