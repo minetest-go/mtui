@@ -1,10 +1,11 @@
 package web
 
 import (
-	"mtui/areasparser"
 	"mtui/types"
 	"net/http"
 	"path"
+
+	"github.com/minetest-go/areasparser"
 
 	"github.com/gorilla/mux"
 )
