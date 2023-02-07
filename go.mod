@@ -18,7 +18,7 @@ require (
 	modernc.org/sqlite v1.20.3
 )
 
-require github.com/minetest-go/areasparser v1.0.1 // indirect
+require github.com/minetest-go/areasparser v1.0.1
 
 require (
 	github.com/Microsoft/go-winio v0.6.0 // indirect
