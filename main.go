@@ -69,7 +69,7 @@ func main() {
 	server := &http.Server{Addr: ":8080", Handler: nil}
 
 	go func() {
-		fmt.Printf("Listening on port %d\n", 8080)
+		logrus.WithFields(logrus.Fields{"port": 8080}).Info("Listening")
 		err = server.ListenAndServe()
 		if err != nil {
 			panic(err)

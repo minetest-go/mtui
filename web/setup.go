@@ -1,13 +1,13 @@
 package web
 
 import (
-	"fmt"
 	"mtui/app"
 	"mtui/public"
 	"net/http"
 	"os"
 
 	"github.com/gorilla/mux"
+	"github.com/sirupsen/logrus"
 	"github.com/vearutop/statigz"
 	"github.com/vearutop/statigz/brotli"
 )
@@ -92,12 +92,12 @@ func Setup(a *app.App) error {
 
 	// static files
 	if os.Getenv("WEBDEV") == "true" {
-		fmt.Println("using live mode")
+		logrus.WithFields(logrus.Fields{"dir": "public"}).Info("Using live mode")
 		fs := http.FileServer(http.FS(os.DirFS("public")))
 		r.PathPrefix("/").HandlerFunc(fs.ServeHTTP)
 
 	} else {
-		fmt.Println("using embed mode")
+		logrus.Info("Using embed mode")
 		r.PathPrefix("/").Handler(statigz.FileServer(public.Webapp, brotli.AddEncoding))
 	}
 

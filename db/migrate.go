@@ -3,13 +3,13 @@ package db
 import (
 	"database/sql"
 	"embed"
-	"fmt"
 	"net/http"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite"
 	"github.com/golang-migrate/migrate/v4/source"
 	"github.com/golang-migrate/migrate/v4/source/httpfs"
+	"github.com/sirupsen/logrus"
 	_ "modernc.org/sqlite"
 )
 
@@ -50,7 +50,7 @@ func Migrate(db *sql.DB) error {
 	}
 
 	v, _, _ := m.Version()
-	fmt.Printf("DB-Version: %d\n", v)
+	logrus.WithFields(logrus.Fields{"version": v}).Info("DB Migrated")
 
 	return nil
 }

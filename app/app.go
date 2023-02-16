@@ -2,7 +2,6 @@ package app
 
 import (
 	"database/sql"
-	"fmt"
 	"mtui/bridge"
 	"mtui/db"
 	"mtui/eventbus"
@@ -13,6 +12,7 @@ import (
 	"os"
 
 	"github.com/minetest-go/mtdb"
+	"github.com/sirupsen/logrus"
 )
 
 var Version string
@@ -54,7 +54,7 @@ func Create(world_dir string) (*App, error) {
 	admin_username := os.Getenv("ADMIN_USERNAME")
 	admin_password := os.Getenv("ADMIN_PASSWORD")
 	if admin_username != "" && admin_password != "" {
-		fmt.Printf("Creating admin user '%s'\n", admin_username)
+		logrus.WithFields(logrus.Fields{"admin_user": admin_username}).Info("Creating admin-user")
 		err = CreateAdminUser(dbctx, admin_username, admin_password)
 		if err != nil {
 			return nil, err
