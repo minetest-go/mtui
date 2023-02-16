@@ -1,5 +1,6 @@
 
 import { get, upload } from "../../api/skin.js";
+import renderskin from "../../util/renderskin.js";
 
 export default {
     data: function() {
@@ -17,7 +18,8 @@ export default {
         update: function() {
             get().then(b => {
                 if (b && b.size > 0){
-                    this.current_image = URL.createObjectURL(b);
+                    renderskin(URL.createObjectURL(b))
+                    .then(u => this.current_image = u);
                 }
             });
         },
@@ -48,7 +50,11 @@ export default {
                             <div class="alert alert-primary" v-if="!current_image">
                                 No skin uploaded yet
                             </div>
-                            <img :src="current_image" v-if="current_image"/>
+                            <img
+                                style="image-rendering: pixelated; height: 128px; width: 64px;"
+                                :src="current_image"
+                                v-if="current_image"
+                            />
                         </div>
                     </div>
                 </div>
