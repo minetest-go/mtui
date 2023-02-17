@@ -53,6 +53,10 @@ export default {
                 this.busy = false;
             });
         },
+        search_specific: function(field, value) {
+            store[field] = value;
+            this.search();
+        },
         format_time: format_time
     },
     mounted: function() {
@@ -122,13 +126,23 @@ export default {
                         <span class="badge bg-secondary">{{log.event}}</span>
                     </td>
                     <td>
+                        <i class="fa fa-magnifying-glass" v-on:click="search_specific('username', log.username)"></i>
+                        &nbsp;
                         <router-link :to="'/profile/' + log.username" v-if="log.username">
                             {{log.username}}
                         </router-link>
                     </td>
                     <td>{{ format_time(log.timestamp/1000) }}</td>
                     <td>{{log.message}}</td>
-                    <td>{{log.ip_address}}</td>
+                    <td>
+                        {{log.ip_address}}
+                        <span v-if="log.geo_country || log.geo_city" class="badge bg-success">
+                            {{log.geo_country}} <span v-if="log.geo_city">/ {{log.geo_city}}</span>
+                        </span>
+                        <span v-if="log.geo_asn" class="badge bg-info">
+                            ASN: {{log.geo_asn}}
+                        <span>
+                    </td>
                     <td>
                         <span v-if="log.posx != null">
                             {{log.posx}}/{{log.posy}}/{{log.posz}}
