@@ -53,4 +53,6 @@ docker-compose up ui minetest
 
 # License
 
-MIT
+* Code: `MIT`
+* Textures: `CC BY-SA 3.0`
+  * `public/pics/sam.png` [minetest_game](https://github.com/minetest/minetest_game)
