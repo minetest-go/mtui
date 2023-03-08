@@ -7,6 +7,7 @@ type Log struct {
 	Event      string      `json:"event"`
 	Username   string      `json:"username"`
 	Message    string      `json:"message"`
+	Nodename   *string     `json:"nodename"`
 	IPAddress  *string     `json:"ip_address"`
 	GeoCountry *string     `json:"geo_country"`
 	GeoCity    *string     `json:"geo_city"`
@@ -34,6 +35,10 @@ type LogSearch struct {
 	IPAddress     *string      `json:"ip_address"`
 	GeoCountry    *string      `json:"geo_country"`
 	Limit         *int         `json:"limit"`
+	PosX          *int         `json:"posx"`
+	PosY          *int         `json:"posy"`
+	PosZ          *int         `json:"posz"`
+	Nodename      *string      `json:"nodename"`
 }
 
 func (m *Log) Columns(action string) []string {
@@ -44,6 +49,7 @@ func (m *Log) Columns(action string) []string {
 		"event",
 		"username",
 		"message",
+		"nodename",
 		"ip_address",
 		"geo_country",
 		"geo_city",
@@ -67,6 +73,7 @@ func (m *Log) Scan(action string, r func(dest ...any) error) error {
 		&m.Event,
 		&m.Username,
 		&m.Message,
+		&m.Nodename,
 		&m.IPAddress,
 		&m.GeoCountry,
 		&m.GeoCity,
@@ -86,6 +93,7 @@ func (m *Log) Values(action string) []any {
 		m.Event,
 		m.Username,
 		m.Message,
+		m.Nodename,
 		m.IPAddress,
 		m.GeoCountry,
 		m.GeoCity,

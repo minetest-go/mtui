@@ -6,6 +6,10 @@ const store = Vue.reactive({
     events: [],
     event: "",
     username: "",
+    nodename: "",
+    posx: "",
+    posy: "",
+    posz: "",
     count: 0,
     busy: false,
     from: new Date(Date.now() - (3600*1000*2)),
@@ -32,6 +36,10 @@ export default {
                 category: this.category,
                 event: this.event != "" ? this.event : null,
                 username: this.username != "" ? this.username : null,
+                nodename: this.nodename != "" ? this.nodename : null,
+                posx: this.posx != "" ? parseInt(this.posx) : null,
+                posy: this.posy != "" ? parseInt(this.posy) : null,
+                posz: this.posz != "" ? parseInt(this.posz) : null,
                 from_timestamp: +this.from,
                 to_timestamp: +this.to
             };
@@ -57,6 +65,12 @@ export default {
             store[field] = value;
             this.search();
         },
+        search_specific_pos: function(posx, posy, posz) {
+            store.posx = posx;
+            store.posy = posy;
+            store.posz = posz;
+            this.search();
+        },
         format_time: format_time
     },
     mounted: function() {
@@ -67,7 +81,11 @@ export default {
         "event": "update_count",
         "from": "update_count",
         "to": "update_count",
-        "username": "update_count"
+        "username": "update_count",
+        "nodename": "update_count",
+        "posx": "update_count",
+        "posy": "update_count",
+        "posz": "update_count"
     },
     template: /*html*/`
     <div>
@@ -108,6 +126,24 @@ export default {
                 </a>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-2">
+                <label>Nodename</label>
+                <input type="text" class="form-control" v-model="nodename"/>
+            </div>
+            <div class="col-md-2">
+                <label>Pos X</label>
+                <input type="number" class="form-control" v-model="posx"/>
+            </div>
+            <div class="col-md-2">
+                <label>Pos Y</label>
+                <input type="number" class="form-control" v-model="posy"/>
+            </div>
+            <div class="col-md-2">
+                <label>Pos Z</label>
+                <input type="number" class="form-control" v-model="posz"/>
+            </div>
+        </div>
         <hr>
         <table class="table table-striped table-condensed">
             <thead>
@@ -116,8 +152,9 @@ export default {
                     <th>Playername</th>
                     <th>Time</th>
                     <th>Message</th>
-                    <th>IP Address</th>
+                    <th>Nodename</th>
                     <th>Position</th>
+                    <th>IP Address</th>
                 </tr>
             </thead>
             <tbody>
@@ -135,6 +172,18 @@ export default {
                     <td>{{ format_time(log.timestamp/1000) }}</td>
                     <td>{{log.message}}</td>
                     <td>
+                        <i class="fa fa-magnifying-glass" v-if="log.nodename" v-on:click="search_specific('nodename', log.nodename)"></i>
+                        &nbsp;
+                        {{log.nodename}}
+                    </td>
+                    <td>
+                        <span v-if="log.posx != null">
+                            <i class="fa fa-magnifying-glass" v-on:click="search_specific_pos(log.posx, log.posy, log.posz)"></i>
+                            &nbsp;
+                            {{log.posx}}/{{log.posy}}/{{log.posz}}
+                        </span>
+                    </td>
+                    <td>
                         {{log.ip_address}}
                         <span v-if="log.geo_country || log.geo_city" class="badge bg-success">
                             {{log.geo_country}} <span v-if="log.geo_city">/ {{log.geo_city}}</span>
@@ -142,11 +191,6 @@ export default {
                         <span v-if="log.geo_asn" class="badge bg-info">
                             ASN: {{log.geo_asn}}
                         <span>
-                    </td>
-                    <td>
-                        <span v-if="log.posx != null">
-                            {{log.posx}}/{{log.posy}}/{{log.posz}}
-                        </span>
                     </td>
                 </tr>
             </tbody>

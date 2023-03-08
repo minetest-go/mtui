@@ -63,6 +63,30 @@ func (r *LogRepository) buildWhereClause(s *types.LogSearch) (string, []interfac
 		i++
 	}
 
+	if s.Nodename != nil {
+		q += fmt.Sprintf(" and nodename = $%d", i)
+		args = append(args, *s.Nodename)
+		i++
+	}
+
+	if s.PosX != nil {
+		q += fmt.Sprintf(" and posx = $%d", i)
+		args = append(args, *s.PosX)
+		i++
+	}
+
+	if s.PosY != nil {
+		q += fmt.Sprintf(" and posy = $%d", i)
+		args = append(args, *s.PosY)
+		i++
+	}
+
+	if s.PosZ != nil {
+		q += fmt.Sprintf(" and posz = $%d", i)
+		args = append(args, *s.PosZ)
+		i++
+	}
+
 	if s.IPAddress != nil {
 		q += fmt.Sprintf(" and ip_address = $%d", i)
 		args = append(args, *s.IPAddress)
