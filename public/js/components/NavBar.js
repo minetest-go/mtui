@@ -96,6 +96,11 @@ export default {
 									<i class="fa fa-tags"></i> Features
 								</router-link>
 							</li>
+							<li>
+								<router-link to="/oauth-apps" class="dropdown-item">
+									<i class="fa fa-passport"></i> OAuth apps
+								</router-link>
+							</li>
 							<li v-if="has_feature('luashell')">
 								<router-link to="/lua" class="dropdown-item">
 									<i class="fa-solid fa-terminal"></i> Lua

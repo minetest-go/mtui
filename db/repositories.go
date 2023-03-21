@@ -11,6 +11,7 @@ type Repositories struct {
 	LogRepository        *LogRepository
 	MetricTypeRepository *MetricTypeRepository
 	MetricRepository     *MetricRepository
+	OauthAppRepo         *OauthAppRepository
 }
 
 func NewRepositories(db dbutil.DBTx) *Repositories {
@@ -21,5 +22,6 @@ func NewRepositories(db dbutil.DBTx) *Repositories {
 		LogRepository:        &LogRepository{DB: db},
 		MetricTypeRepository: &MetricTypeRepository{DB: db},
 		MetricRepository:     &MetricRepository{DB: db},
+		OauthAppRepo:         &OauthAppRepository{DB: db},
 	}
 }

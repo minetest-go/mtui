@@ -39,6 +39,11 @@ func Setup(a *app.App) error {
 
 	r.HandleFunc("/api/changepw", api.Secure(api.ChangePassword)).Methods(http.MethodPost)
 
+	r.HandleFunc("/api/oauth_app", api.SecurePriv("server", api.GetOauthApps)).Methods(http.MethodGet)
+	r.HandleFunc("/api/oauth_app", api.SecurePriv("server", api.SetOauthApp)).Methods(http.MethodPost)
+	r.HandleFunc("/api/oauth_app/{id}", api.SecurePriv("server", api.GetOauthAppByID)).Methods(http.MethodGet)
+	r.HandleFunc("/api/oauth_app/{id}", api.SecurePriv("server", api.DeleteOauthApp)).Methods(http.MethodDelete)
+
 	r.HandleFunc("/api/player/info/{playername}", api.SecurePriv("interact", api.GetPlayerInfo)).Methods(http.MethodGet)
 	r.HandleFunc("/api/player/search", api.SecurePriv("interact", api.SearchPlayer)).Methods(http.MethodPost)
 	r.HandleFunc("/api/player/count", api.SecurePriv("interact", api.CountPlayer)).Methods(http.MethodPost)

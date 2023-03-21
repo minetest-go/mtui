@@ -16,6 +16,8 @@ import Mediaserver from './components/pages/Mediaserver.js';
 import Log from './components/pages/Log.js';
 import Onboard from './components/pages/Onboard.js';
 import Xban from './components/pages/Xban.js';
+import OauthApps from './components/pages/OauthApps.js';
+import OauthAppEdit from './components/pages/OauthAppEdit.js';
 
 export default [{
 	path: "/", component: Start,
@@ -66,4 +68,10 @@ export default [{
 }, {
 	path: "/skin", component: Skin,
 	meta: { requiredPriv: "interact" }
+}, {
+	path: "/oauth-apps", component: OauthApps,
+	meta: { requiredPriv: "server" }
+}, {
+	path: "/oauth-apps/:id", component: OauthAppEdit,
+	meta: { requiredPriv: "server" }
 }];
