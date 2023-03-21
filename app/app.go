@@ -11,6 +11,12 @@ import (
 	"mtui/types"
 	"os"
 
+	"github.com/go-oauth2/oauth2/v4/errors"
+	"github.com/go-oauth2/oauth2/v4/generates"
+	"github.com/go-oauth2/oauth2/v4/manage"
+	"github.com/go-oauth2/oauth2/v4/server"
+	"github.com/go-oauth2/oauth2/v4/store"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/minetest-go/mtdb"
 	"github.com/sirupsen/logrus"
 )
@@ -30,6 +36,8 @@ type App struct {
 	Mediaserver   *mediaserver.MediaServer
 	GeoipResolver *GeoipResolver
 	Version       string
+	OAuthMgr      *manage.Manager
+	OAuthServer   *server.Server
 }
 
 func Create(world_dir string) (*App, error) {
@@ -118,6 +126,23 @@ func Create(world_dir string) (*App, error) {
 		cfg.APIKey = apiKey.Value
 	}
 
+	// oauth setup
+
+	oauth_mgr := manage.NewDefaultManager()
+	oauth_mgr.MustTokenStorage(store.NewMemoryTokenStore())
+	oauth_mgr.MapClientStorage(&db.OAuthAppStore{Repo: repos.OauthAppRepo})
+	oauth_mgr.MapAccessGenerate(generates.NewJWTAccessGenerate("", []byte(cfg.JWTKey), jwt.SigningMethodHS512))
+
+	oauth_srv := server.NewDefaultServer(oauth_mgr)
+	oauth_srv.SetInternalErrorHandler(func(err error) (re *errors.Response) {
+		logrus.WithFields(logrus.Fields{"err": re}).Error("Internal error")
+		return
+	})
+
+	oauth_srv.SetResponseErrorHandler(func(re *errors.Response) {
+		logrus.WithFields(logrus.Fields{"err": re}).Error("Response error")
+	})
+
 	if Version == "" {
 		Version = "DEV"
 	}
@@ -134,6 +159,8 @@ func Create(world_dir string) (*App, error) {
 		Config:        cfg,
 		Mediaserver:   mediaserver.New(),
 		GeoipResolver: NewGeoipResolver(world_dir),
+		OAuthMgr:      oauth_mgr,
+		OAuthServer:   oauth_srv,
 		Version:       Version,
 	}
 

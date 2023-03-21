@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/go-oauth2/oauth2/v4"
+	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"github.com/vearutop/statigz"
@@ -94,6 +96,16 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/mods", api.Feature("modmanagement", api.SecurePriv("server", api.CreateMod))).Methods(http.MethodPost)
 	r.HandleFunc("/api/mods/{id}", api.Feature("modmanagement", api.SecurePriv("server", api.DeleteMod))).Methods(http.MethodDelete)
 	r.HandleFunc("/api/mods/{id}/status", api.Feature("modmanagement", api.SecurePriv("server", api.ModStatus))).Methods(http.MethodGet)
+
+	// OAuth
+	api.app.OAuthServer.SetAllowGetAccessRequest(true)
+	api.app.OAuthServer.SetAllowedGrantType(oauth2.Implicit, oauth2.AuthorizationCode, oauth2.ClientCredentials)
+	api.app.OAuthServer.SetClientInfoHandler(server.ClientFormHandler)
+	api.app.OAuthServer.UserAuthorizationHandler = api.OAuthAuthHandler
+	api.app.OAuthServer.SetUserAuthorizationHandler(api.OauthUserAuthorizationHandler)
+
+	r.HandleFunc("/authorize", api.OAuthAuthorizeHandler)
+	r.HandleFunc("/token", api.OAuthTokenHandler)
 
 	// static files
 	if os.Getenv("WEBDEV") == "true" {

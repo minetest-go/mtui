@@ -1,11 +1,13 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"math/rand"
 	"mtui/types"
 	"time"
 
+	"github.com/go-oauth2/oauth2/v4"
 	"github.com/google/uuid"
 	"github.com/minetest-go/dbutil"
 )
@@ -62,4 +64,13 @@ func (r *OauthAppRepository) GetByID(id string) (*types.OauthApp, error) {
 
 func (r *OauthAppRepository) Delete(id string) error {
 	return dbutil.Delete(r.DB, &types.OauthApp{}, "where id = $1", id)
+}
+
+type OAuthAppStore struct {
+	Repo *OauthAppRepository
+}
+
+func (s *OAuthAppStore) GetByID(ctx context.Context, id string) (oauth2.ClientInfo, error) {
+	// id == name
+	return s.Repo.GetByName(id)
 }

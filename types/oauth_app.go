@@ -49,3 +49,23 @@ func (m *OauthApp) Values(action string) []any {
 		m.AllowPrivs,
 	}
 }
+
+func (m *OauthApp) GetID() string {
+	return m.Name
+}
+
+func (m *OauthApp) GetSecret() string {
+	return m.Secret
+}
+
+func (m *OauthApp) GetDomain() string {
+	return m.RedirectURLS
+}
+
+func (m *OauthApp) IsPublic() bool {
+	return true
+}
+
+func (m *OauthApp) GetUserID() string {
+	return ""
+}
