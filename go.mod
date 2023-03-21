@@ -20,7 +20,7 @@ require (
 
 require (
 	github.com/go-oauth2/oauth2/v4 v4.5.2
-	github.com/minetest-go/areasparser v1.0.1
+	github.com/minetest-go/areasparser v1.0.2
 )
 
 require (
