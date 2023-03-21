@@ -85,11 +85,11 @@ export default {
                                 <td>Action</td>
                                 <td>
                                     <div class="btn-group">
-                                        <button class="btn btn-success" :disabled="!input_valid" v-on:click="save">
-                                            <i class="fa fa-save"></i> Save
-                                        </button>
                                         <button class="btn btn-danger" v-on:click="remove">
                                             <i class="fa fa-trash"></i> Delete
+                                        </button>
+                                        <button class="btn btn-success" :disabled="!input_valid" v-on:click="save">
+                                            <i class="fa fa-save"></i> Save
                                         </button>
                                     </div>
                                 </td>

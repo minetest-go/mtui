@@ -32,7 +32,7 @@ export default {
                 if (!success) {
                     // no luck
                     this.error_message = "Login failed!";
-                } else if (this.$route.query) {
+                } else if (this.$route.query.return_to) {
                     // return url
                     window.location.href = atob(this.$route.query.return_to);
 
