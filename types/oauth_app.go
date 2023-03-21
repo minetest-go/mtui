@@ -1,13 +1,12 @@
 package types
 
 type OauthApp struct {
-	ID           string `json:"id"`
-	Enabled      bool   `json:"enabled"`
-	Created      int64  `json:"created"`
-	Name         string `json:"name"`
-	RedirectURLS string `json:"redirect_urls"`
-	Secret       string `json:"secret"`
-	AllowPrivs   string `json:"allow_privs"`
+	ID      string `json:"id"`
+	Enabled bool   `json:"enabled"`
+	Created int64  `json:"created"`
+	Name    string `json:"name"`
+	Domain  string `json:"domain"`
+	Secret  string `json:"secret"`
 }
 
 func (m *OauthApp) Columns(action string) []string {
@@ -16,9 +15,8 @@ func (m *OauthApp) Columns(action string) []string {
 		"enabled",
 		"created",
 		"name",
-		"redirect_urls",
+		"domain",
 		"secret",
-		"allow_privs",
 	}
 }
 
@@ -32,9 +30,8 @@ func (m *OauthApp) Scan(action string, r func(dest ...any) error) error {
 		&m.Enabled,
 		&m.Created,
 		&m.Name,
-		&m.RedirectURLS,
+		&m.Domain,
 		&m.Secret,
-		&m.AllowPrivs,
 	)
 }
 
@@ -44,9 +41,8 @@ func (m *OauthApp) Values(action string) []any {
 		m.Enabled,
 		m.Created,
 		m.Name,
-		m.RedirectURLS,
+		m.Domain,
 		m.Secret,
-		m.AllowPrivs,
 	}
 }
 
@@ -59,7 +55,7 @@ func (m *OauthApp) GetSecret() string {
 }
 
 func (m *OauthApp) GetDomain() string {
-	return m.RedirectURLS
+	return m.Domain
 }
 
 func (m *OauthApp) IsPublic() bool {

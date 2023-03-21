@@ -15,12 +15,11 @@ func TestOauthRepo(t *testing.T) {
 
 	// create
 	err := repo.Set(&types.OauthApp{
-		Name:         "my-app",
-		Enabled:      true,
-		Created:      time.Now().Unix(),
-		RedirectURLS: "",
-		Secret:       "",
-		AllowPrivs:   "",
+		Name:    "my-app",
+		Enabled: true,
+		Created: time.Now().Unix(),
+		Domain:  "",
+		Secret:  "",
 	})
 	assert.NoError(t, err)
 

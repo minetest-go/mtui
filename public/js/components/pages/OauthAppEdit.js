@@ -9,7 +9,7 @@ export default {
     },
     computed: {
         input_valid: function() {
-            return this.app.name != "" && this.app.redirect_urls != "";
+            return this.app.name != "" && this.app.domain != "";
         }
     },
     methods: {
@@ -68,18 +68,12 @@ export default {
                             <tr>
                                 <td>Redirect URLs</td>
                                 <td>
-                                    <input type="text" class="form-control" placeholder="Redirection urls, comma separated" v-model="app.redirect_urls"/>
+                                    <input type="text" class="form-control" placeholder="Redirection url" v-model="app.domain"/>
                                 </td>
                             </tr>
                             <tr>
                                 <td>Secret</td>
                                 <td>{{app.secret}}</td>
-                            </tr>
-                            <tr>
-                                <td>Allowed privs</td>
-                                <td>
-                                    <input type="text" class="form-control" placeholder="Allowed privs, comma separated" v-model="app.allowed_privs"/>
-                                </td>
                             </tr>
                             <tr>
                                 <td>Action</td>
