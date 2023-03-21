@@ -1,9 +1,8 @@
-import { get_events, count, search } from "../../api/log.js";
+import { count, search } from "../../api/log.js";
 import format_time from "../../util/format_time.js";
 
 const store = Vue.reactive({
     category: "minetest",
-    events: [],
     event: "",
     username: "",
     nodename: "",
@@ -19,18 +18,31 @@ const store = Vue.reactive({
 
 export default {
     data: () => store,
+    computed: {
+        events: function() {
+            if (this.category == "minetest") {
+                return [
+                    "prejoin",
+                    "join",
+                    "leave",
+                    "authplayer",
+                    "dieplayer",
+                    "cheat",
+                    "chat",
+                    "system",
+                    "on_generated",
+                    "protection_violation",
+                    "placenode",
+                    "dignode",
+                    "punchnode",
+                    "craft"
+                ];
+            } else {
+                return [];
+            }
+        }
+    },
     methods: {
-        update_events: function() {
-            this.busy = true;
-            get_events(this.category)
-            .then(e => {
-                this.events = e;
-                if (e.length) {
-                    this.event = e[0];
-                }
-                this.update_count();
-            });
-        },
         search_query() {
             return {
                 category: this.category,
@@ -73,11 +85,7 @@ export default {
         },
         format_time: format_time
     },
-    mounted: function() {
-        this.update_events();
-    },
     watch: {
-        "category": "update_events",
         "event": "update_count",
         "from": "update_count",
         "to": "update_count",
