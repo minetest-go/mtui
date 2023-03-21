@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"math/rand"
 	"mtui/types"
 	"time"
@@ -72,5 +73,12 @@ type OAuthAppStore struct {
 
 func (s *OAuthAppStore) GetByID(ctx context.Context, id string) (oauth2.ClientInfo, error) {
 	// id == name
-	return s.Repo.GetByName(id)
+	app, err := s.Repo.GetByName(id)
+	if err != nil {
+		return nil, err
+	} else if !app.Enabled {
+		return nil, errors.New("app not enabled")
+	} else {
+		return app, nil
+	}
 }
