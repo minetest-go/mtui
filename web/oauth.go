@@ -1,9 +1,8 @@
 package web
 
 import (
+	"encoding/base64"
 	"net/http"
-
-	"github.com/sirupsen/logrus"
 )
 
 func (a *Api) OAuthAuthHandler(w http.ResponseWriter, r *http.Request) (string, error) {
@@ -15,27 +14,16 @@ func (a *Api) OAuthAuthHandler(w http.ResponseWriter, r *http.Request) (string, 
 }
 
 func (a *Api) OauthUserAuthorizationHandler(w http.ResponseWriter, r *http.Request) (userID string, err error) {
-	logrus.WithFields(logrus.Fields{
-		"Request": r,
-	}).Info("OauthUserAuthorizationHandler")
-
 	c, err := a.GetClaims(r)
 	if err != nil {
-		return "", err
-	}
-
-	auth, err := a.app.DBContext.Auth.GetByUsername(c.Username)
-	if err != nil {
-		return "", err
-	}
-
-	if auth == nil {
-		w.Header().Set("Location", "/login")
+		r.ParseForm()
+		returnto := base64.URLEncoding.EncodeToString([]byte(r.URL.String()))
+		w.Header().Set("Location", "./#/login?return_to="+returnto)
 		w.WriteHeader(http.StatusFound)
 		return
 	}
 
-	return auth.Name, nil
+	return c.Username, nil
 }
 
 func (a *Api) OAuthAuthorizeHandler(w http.ResponseWriter, r *http.Request) {

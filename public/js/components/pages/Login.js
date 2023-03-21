@@ -30,8 +30,14 @@ export default {
             .then(success => {
                 this.busy = false;
                 if (!success) {
+                    // no luck
                     this.error_message = "Login failed!";
+                } else if (this.$route.query) {
+                    // return url
+                    window.location.href = atob(this.$route.query.return_to);
+
                 } else {
+                    // go to base page
                     this.$router.push("/");
                 }
             });
