@@ -2,133 +2,141 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"mtui/mail"
 	"mtui/types"
 	"net/http"
-	"strconv"
+	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
 
-func (a *Api) GetMails(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	list, err := a.app.Mail.GetMessages(claims.Username)
-	Send(w, list, err)
+func (a *Api) GetInbox(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	e, err := a.app.Mail.GetEntry(claims.Username)
+	Send(w, e.Inbox, err)
+}
+
+func (a *Api) GetOutbox(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	e, err := a.app.Mail.GetEntry(claims.Username)
+	Send(w, e.Outbox, err)
+}
+
+func (a *Api) GetDrafts(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	e, err := a.app.Mail.GetEntry(claims.Username)
+	Send(w, e.Drafts, err)
+}
+
+func (a *Api) markMail(w http.ResponseWriter, r *http.Request, claims *types.Claims, read bool) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	e, err := a.app.Mail.GetEntry(claims.Username)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+	m := e.FindMessage(id)
+	if m == nil {
+		SendError(w, 404, "mail not found")
+		return
+	}
+	m.Read = read
+	err = a.app.Mail.SetEntry(claims.Username, e)
+	Send(w, m, err)
+}
+
+func (a *Api) MarkRead(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	a.markMail(w, r, claims, true)
+}
+
+func (a *Api) MarkUnread(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	a.markMail(w, r, claims, false)
+}
+
+func (a *Api) isValidRecipient(recipient string) (bool, error) {
+	auth_entry, err := a.app.DBContext.Auth.GetByUsername(recipient)
+	if err != nil {
+		return false, err
+	}
+	return auth_entry != nil, nil
+}
+
+func (a *Api) checkRecipient(w http.ResponseWriter, recipient string) bool {
+	v, err := a.isValidRecipient(recipient)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return false
+	}
+	if !v {
+		SendError(w, 404, fmt.Sprintf("invalid recipient: '%s'", recipient))
+		return false
+	}
+	return true
+}
+
+func (a *Api) SendMail(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	m := &mail.Message{}
+	err := json.NewDecoder(r.Body).Decode(m)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	m.ID = uuid.NewString()
+	m.From = claims.Username
+	m.Time = float64(time.Now().Unix())
+
+	if !a.checkRecipient(w, m.To) {
+		return
+	}
+	if m.CC != nil {
+		for _, s := range strings.Split(*m.CC, ",") {
+			if !a.checkRecipient(w, s) {
+				return
+			}
+		}
+	}
+	if m.BCC != nil {
+		for _, s := range strings.Split(*m.CC, ",") {
+			if !a.checkRecipient(w, s) {
+				return
+			}
+		}
+	}
+
+	// TODO
+}
+
+func (a *Api) DeleteMail(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	e, err := a.app.Mail.GetEntry(claims.Username)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+	m := e.FindMessage(id)
+	if m == nil {
+		SendError(w, 404, "mail not found")
+		return
+	}
+	e.RemoveMessage(id)
+	err = a.app.Mail.SetEntry(claims.Username, e)
+	Send(w, m, err)
+
 }
 
 func (a *Api) CheckValidRecipient(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	vars := mux.Vars(r)
 	recipient := vars["recipient"]
-	auth_entry, err := a.app.DBContext.Auth.GetByUsername(recipient)
+	v, err := a.isValidRecipient(recipient)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
-	if auth_entry == nil {
+	if !v {
 		SendError(w, 404, "Recipient player does not exist")
 		return
 	}
-}
-
-func (a *Api) DeleteMail(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	vars := mux.Vars(r)
-	sender := vars["sender"]
-	time, err := strconv.ParseInt(vars["time"], 10, 64)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	list, err := a.app.Mail.GetMessages(claims.Username)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	// filter removed mail
-	new_list := make([]*mail.Message, 0)
-	for _, msg := range list {
-		if msg.Sender != sender || int64(msg.Time) != time {
-			new_list = append(new_list, msg)
-		}
-	}
-
-	err = a.app.Mail.SetMessages(claims.Username, new_list)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-}
-
-func (a *Api) MarkRead(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	vars := mux.Vars(r)
-	sender := vars["sender"]
-	time, err := strconv.ParseInt(vars["time"], 10, 64)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	list, err := a.app.Mail.GetMessages(claims.Username)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	for _, msg := range list {
-		if msg.Sender == sender && int64(msg.Time) == time {
-			msg.Unread = false
-		}
-	}
-
-	err = a.app.Mail.SetMessages(claims.Username, list)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-}
-
-func (a *Api) SendMail(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	vars := mux.Vars(r)
-	recipient := vars["recipient"]
-	auth_entry, err := a.app.DBContext.Auth.GetByUsername(recipient)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-	if auth_entry == nil {
-		SendError(w, 404, "Recipient player does not exist")
-		return
-	}
-
-	msg := &mail.Message{}
-	err = json.NewDecoder(r.Body).Decode(msg)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	// set known fields
-	msg.Sender = claims.Username
-	msg.Time = float64(time.Now().Unix())
-	msg.Unread = true
-
-	recipient_mails, err := a.app.Mail.GetMessages(recipient)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	recipient_mails = append(recipient_mails, msg)
-	err = a.app.Mail.SetMessages(recipient, recipient_mails)
-
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-}
-
-func (a *Api) GetContacts(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	c, err := a.app.Mail.GetContacts(claims.Username)
-	Send(w, c, err)
 }
