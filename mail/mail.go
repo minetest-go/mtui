@@ -48,10 +48,20 @@ type Contact struct {
 
 func (m *Mail) GetEntry(playername string) (*PlayerEntry, error) {
 	e, err := m.ctx.ModStorage.Get("mail", []byte(fmt.Sprintf("mail/%s", playername)))
+	pe := &PlayerEntry{
+		Inbox:    make([]*Message, 0),
+		Outbox:   make([]*Message, 0),
+		Drafts:   make([]*Message, 0),
+		Contacts: make([]*Contact, 0),
+		Lists:    make([]*Maillist, 0),
+	}
+	if e == nil {
+		// return empty entry
+		return pe, nil
+	}
 	if err != nil {
 		return nil, err
 	}
-	pe := &PlayerEntry{}
 	return pe, json.Unmarshal(e.Value, pe)
 }
 

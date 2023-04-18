@@ -155,7 +155,7 @@ func Create(world_dir string) (*App, error) {
 		Repos:         repos,
 		Bridge:        bridge.New(),
 		WSEvents:      eventbus.NewEventBus(),
-		Mail:          mail.New(world_dir),
+		Mail:          mail.New(dbctx),
 		Config:        cfg,
 		Mediaserver:   mediaserver.New(),
 		GeoipResolver: NewGeoipResolver(world_dir),
