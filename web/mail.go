@@ -83,6 +83,7 @@ func (a *Api) SendMail(w http.ResponseWriter, r *http.Request, claims *types.Cla
 		return
 	}
 
+	// populate fixed fields
 	m.ID = uuid.NewString()
 	m.From = claims.Username
 	m.Time = float64(time.Now().Unix())
@@ -98,14 +99,40 @@ func (a *Api) SendMail(w http.ResponseWriter, r *http.Request, claims *types.Cla
 		}
 	}
 	if m.BCC != nil {
-		for _, s := range strings.Split(*m.CC, ",") {
+		for _, s := range strings.Split(*m.BCC, ",") {
 			if !a.checkRecipient(w, s) {
 				return
 			}
 		}
 	}
 
-	// TODO
+	// insert into senders outbox
+	e, err := a.app.Mail.GetEntry(claims.Username)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+	e.Outbox = append(e.Outbox, m)
+	err = a.app.Mail.SetEntry(claims.Username, e)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	// insert into receivers inbox
+	e, err = a.app.Mail.GetEntry(m.To)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+	e.Inbox = append(e.Inbox, m)
+	err = a.app.Mail.SetEntry(m.To, e)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	SendJson(w, m)
 }
 
 func (a *Api) DeleteMail(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
