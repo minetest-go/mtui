@@ -106,7 +106,7 @@ export default {
                         </ul>
                     </td>
                     <td>{{format_time(record.last_seen)}}</td>
-                    <td>{{format_time(record.time)}}</td>
+                    <td>{{record.expires ? format_time(record.expires) : "permanent"}}</td>
                 </tr>
             </tbody>
         </table>
