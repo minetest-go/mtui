@@ -6,69 +6,61 @@ import (
 	"path"
 	"testing"
 
+	"github.com/google/uuid"
+	"github.com/minetest-go/mtdb"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestListMailNewDir(t *testing.T) {
 	td, err := os.MkdirTemp(os.TempDir(), "mail")
 	assert.NoError(t, err)
-	assert.NoError(t, os.MkdirAll(path.Join(td, "mails", "contacts"), 0755))
 
-	m := mail.New(td)
+	contents := `
+backend = sqlite3
+auth_backend = sqlite3
+player_backend = sqlite3
+mod_storage_backend = sqlite3
+`
+	err = os.WriteFile(path.Join(td, "world.mt"), []byte(contents), 0644)
+	assert.NoError(t, err)
+
+	ctx, err := mtdb.New(td)
+	assert.NoError(t, err)
+	assert.NotNil(t, ctx)
+
+	m := mail.New(ctx)
 	assert.NotNil(t, m)
 
-	list := make([]*mail.Message, 1)
-	list[0] = &mail.Message{
-		Body:    "abc",
-		Sender:  "def",
-		Subject: "subj",
-		Time:    123,
-		Unread:  true,
-	}
-	assert.NoError(t, m.SetMessages("singleplayer", list))
-
-	list2, err := m.GetMessages("singleplayer")
+	// get empty
+	entry, err := m.GetEntry("singleplayer")
 	assert.NoError(t, err)
-	assert.NotNil(t, list2)
-	assert.Equal(t, 1, len(list2))
-	assert.Equal(t, list2[0].Body, list[0].Body)
-	assert.Equal(t, list2[0].Sender, list[0].Sender)
-	assert.Equal(t, list2[0].Subject, list[0].Subject)
-	assert.Equal(t, list2[0].Time, list[0].Time)
-	assert.Equal(t, list2[0].Unread, list[0].Unread)
-}
+	assert.NotNil(t, entry)
+	assert.Equal(t, 0, len(entry.Contacts))
+	assert.Equal(t, 0, len(entry.Drafts))
+	assert.Equal(t, 0, len(entry.Inbox))
+	assert.Equal(t, 0, len(entry.Outbox))
+	assert.Equal(t, 0, len(entry.Lists))
 
-func TestListMail(t *testing.T) {
-	m := mail.New("testdata")
-	assert.NotNil(t, m)
+	// add mail
+	entry.Inbox = append(entry.Inbox, &mail.Message{
+		ID:      uuid.NewString(),
+		From:    "xy",
+		To:      "singleplayer",
+		Subject: "abc",
+		Body:    "body",
+	})
 
-	list, err := m.GetMessages("singleplayer")
+	// set
+	assert.NoError(t, m.SetEntry("singleplayer", entry))
+
+	// get updated entry
+	entry, err = m.GetEntry("singleplayer")
 	assert.NoError(t, err)
-	assert.NotNil(t, list)
-	assert.Equal(t, 1, len(list))
-	assert.Equal(t, "mail\nbody", list[0].Body)
-	assert.Equal(t, "otherplayer", list[0].Sender)
-	assert.Equal(t, "subj", list[0].Subject)
-	assert.Equal(t, float64(1563301643), list[0].Time)
-	assert.Equal(t, false, list[0].Unread)
+	assert.NotNil(t, entry)
+	assert.Equal(t, 1, len(entry.Inbox))
+	assert.Equal(t, "xy", entry.Inbox[0].From)
+	assert.Equal(t, "singleplayer", entry.Inbox[0].To)
+	assert.Equal(t, "abc", entry.Inbox[0].Subject)
+	assert.Equal(t, "body", entry.Inbox[0].Body)
 
-	list, err = m.GetMessages("unknownuser")
-	assert.NoError(t, err)
-	assert.Nil(t, list)
-}
-
-func TestContacts(t *testing.T) {
-	m := mail.New("testdata")
-	assert.NotNil(t, m)
-
-	c, err := m.GetContacts("singleplayer")
-	assert.NoError(t, err)
-	assert.NotNil(t, c)
-	assert.NotNil(t, c["admin"])
-	assert.Equal(t, "admin", c["admin"].Name)
-	assert.Equal(t, "", c["admin"].Note)
-
-	c, err = m.GetContacts("unknownuser")
-	assert.NoError(t, err)
-	assert.Nil(t, c)
 }

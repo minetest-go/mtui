@@ -2,73 +2,60 @@ package mail
 
 import (
 	"encoding/json"
-	"errors"
-	"os"
-	"path"
+	"fmt"
+
+	"github.com/minetest-go/mtdb"
+	"github.com/minetest-go/mtdb/mod_storage"
 )
 
 type Mail struct {
-	world_dir string
+	ctx *mtdb.Context
 }
 
-func New(world_dir string) *Mail {
-	return &Mail{world_dir: world_dir}
+func New(ctx *mtdb.Context) *Mail {
+	return &Mail{ctx: ctx}
 }
 
-type Message struct {
-	Body    string  `json:"body"`
-	Sender  string  `json:"sender"`
-	Subject string  `json:"subject"`
-	Time    float64 `json:"time"`
-	Unread  bool    `json:"unread"`
-}
-
-type Contact struct {
-	Name string `json:"name"`
-	Note string `json:"note"`
-}
-
-func (m *Mail) getMailFile(playername string) string {
-	return path.Join(m.world_dir, "mails", playername+".json")
-}
-
-func (m *Mail) getContactsFile(playername string) string {
-	return path.Join(m.world_dir, "mails", "contacts", playername+".json")
-}
-
-func (m *Mail) GetMessages(playername string) ([]*Message, error) {
-	b, err := os.ReadFile(m.getMailFile(playername))
-	if errors.Is(err, os.ErrNotExist) {
-		return nil, nil
+func (m *Mail) GetEntry(playername string) (*PlayerEntry, error) {
+	e, err := m.ctx.ModStorage.Get("mail", []byte(fmt.Sprintf("mail/%s", playername)))
+	pe := &PlayerEntry{
+		Inbox:    make([]*Message, 0),
+		Outbox:   make([]*Message, 0),
+		Drafts:   make([]*Message, 0),
+		Contacts: make([]*Contact, 0),
+		Lists:    make([]*Maillist, 0),
+	}
+	if e == nil {
+		// return empty entry
+		return pe, nil
 	}
 	if err != nil {
 		return nil, err
 	}
-
-	list := make([]*Message, 0)
-	err = json.Unmarshal(b, &list)
-	return list, err
+	return pe, json.Unmarshal(e.Value, pe)
 }
 
-func (m *Mail) SetMessages(playername string, list []*Message) error {
-	b, err := json.Marshal(list)
+func (m *Mail) SetEntry(playername string, pe *PlayerEntry) error {
+	data, err := json.Marshal(pe)
 	if err != nil {
 		return err
 	}
 
-	return os.WriteFile(m.getMailFile(playername), b, 0755)
-}
-
-func (m *Mail) GetContacts(playername string) (map[string]*Contact, error) {
-	b, err := os.ReadFile(m.getContactsFile(playername))
-	if errors.Is(err, os.ErrNotExist) {
-		return nil, nil
-	}
+	e, err := m.ctx.ModStorage.Get("mail", []byte(fmt.Sprintf("mail/%s", playername)))
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	c := make(map[string]*Contact)
-	err = json.Unmarshal(b, &c)
-	return c, err
+	if e == nil {
+		// create new
+		return m.ctx.ModStorage.Create(&mod_storage.ModStorageEntry{
+			ModName: "mail",
+			Key:     []byte(fmt.Sprintf("mail/%s", playername)),
+			Value:   data,
+		})
+	} else {
+		// update existing
+		e.Value = data
+		return m.ctx.ModStorage.Update(e)
+	}
 }

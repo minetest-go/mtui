@@ -58,21 +58,21 @@ export default {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(mail, index) in mail_store.mails" :key="index" :class="{'table-info': mail.unread}">
+                <tr v-for="(mail, index) in mail_store.mails" :key="index" :class="{'table-info': !mail.read}">
                     <td>
-                        <router-link :to="'/profile/' + mail.sender">
-                            {{mail.sender}}
+                        <router-link :to="'/profile/' + mail.from">
+                            {{mail.from}}
                         </router-link>                    
                     </td>
                     <td>
-                        <router-link :to="'/mail/read/' + mail.sender + '/' + mail.time">
+                        <router-link :to="'/mail/read/' + mail.id">
                             {{mail.subject}}
                         </router-link>
                     </td>
                     <td>{{format_time(mail.time)}}</td>
                     <td>
                         <div class="btn-group">
-                            <router-link class="btn btn-primary" :to="'/mail/read/' + mail.sender + '/' + mail.time">
+                            <router-link class="btn btn-primary" :to="'/mail/read/' + mail.id">
                                 <i class="fa-solid fa-envelope-open"></i>
                                 Open
                             </router-link>

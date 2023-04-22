@@ -60,7 +60,7 @@ export default [{
 	path: "/mail", component: Mail,
 	meta: { requiredPriv: "interact" }
 }, {
-	path: "/mail/read/:sender/:time", component: MailRead,
+	path: "/mail/read/:id", component: MailRead,
 	meta: { requiredPriv: "interact" }
 }, {
 	path: "/mail/compose", component: Compose,

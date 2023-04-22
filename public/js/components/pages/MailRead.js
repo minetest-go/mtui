@@ -5,13 +5,13 @@ import mail_compose from "../../store/mail_compose.js";
 import { fetch_mails } from '../../service/mail.js';
 
 export default {
-    props: ["sender", "time"],
+    props: ["id"],
     computed: {
         mail: function(){
-            const mail = mail_store.mails.find(m => m.sender == this.sender && m.time == this.time);
-            if (mail && mail.unread) {
+            const mail = mail_store.mails.find(m => m.id == this.id);
+            if (mail && !mail.read) {
                 mark_read(mail)
-                .then(() => mail.unread = false);
+                .then(() => mail.read = true);
             }
 
             return mail;
@@ -20,7 +20,7 @@ export default {
     methods: {
         format_time: format_time,
         reply: function() {
-            mail_compose.recipients = [this.sender];
+            mail_compose.recipients = [this.mail.from];
             mail_compose.subject = "Re: " + this.mail.subject;
             mail_compose.body = "\n---- Original message ----\n" + this.mail.body;
             this.$router.push({ path:"/mail/compose" });
@@ -32,11 +32,8 @@ export default {
         }
     },
     data: function() {
-        const sender = this.$route.params.sender;
-        const time = +this.$route.params.time;
         return {
-            sender: sender,
-            time: time
+            id: this.$route.params.id
         };
     },
     template: /*html*/`
@@ -46,7 +43,7 @@ export default {
                 <h3>
                     Mail from
                     <small class="text-muted">
-                        {{mail.sender}}
+                        {{mail.from}}
                     </small>
                 </h3>
             </div>

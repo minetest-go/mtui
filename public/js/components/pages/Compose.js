@@ -33,12 +33,18 @@ export default {
             this.busy = true;
             this.mail_sent = false;
 
-            const list = this.recipients.map(recipient => send({
+            const mail = {
                 body: this.body,
-                subject: this.subject
-            }, recipient));
+                subject: this.subject,
+                to: this.recipients[0]
+            };
 
-            Promise.all(list).then(() => {
+            if (this.recipients.length > 1) {
+                mail.cc = this.recipients.slice(1).join(",");
+            }
+
+            send(mail)
+            .then(() => {
                 this.body = "";
                 this.subject = "";
                 this.busy = false;
@@ -47,6 +53,7 @@ export default {
                 // re-read mails
                 fetch_mails();
             });
+            // TODO: error-handling
         }
     },
     template: /*html*/`
