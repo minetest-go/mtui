@@ -13,6 +13,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
+func (a *Api) GetContacts(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	e, err := a.app.Mail.GetEntry(claims.Username)
+	Send(w, e.Contacts, err)
+}
+
 func (a *Api) GetInbox(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	e, err := a.app.Mail.GetEntry(claims.Username)
 	Send(w, e.Inbox, err)

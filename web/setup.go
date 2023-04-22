@@ -69,6 +69,7 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/mail/folder/inbox", api.Feature(types.PRIV_MAIL, api.Secure(api.GetInbox))).Methods(http.MethodGet)
 	r.HandleFunc("/api/mail/folder/outbox", api.Feature(types.PRIV_MAIL, api.Secure(api.GetOutbox))).Methods(http.MethodGet)
 	r.HandleFunc("/api/mail/folder/drafts", api.Feature(types.PRIV_MAIL, api.Secure(api.GetDrafts))).Methods(http.MethodGet)
+	r.HandleFunc("/api/mail/contacts", api.Feature(types.PRIV_MAIL, api.Secure(api.GetContacts))).Methods(http.MethodGet)
 	r.HandleFunc("/api/mail", api.Feature(types.PRIV_MAIL, api.Secure(api.SendMail))).Methods(http.MethodPost)
 	r.HandleFunc("/api/mail/{id}", api.Feature(types.PRIV_MAIL, api.Secure(api.DeleteMail))).Methods(http.MethodDelete)
 	r.HandleFunc("/api/mail/{id}/read", api.Feature(types.PRIV_MAIL, api.Secure(api.MarkRead))).Methods(http.MethodPost)
