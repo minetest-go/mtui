@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/HimbeerserverDE/srp v0.0.0
 	github.com/go-git/go-git/v5 v5.6.1
-	github.com/golang-jwt/jwt/v4 v4.5.0
+	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.5.0
@@ -20,6 +20,7 @@ require (
 
 require (
 	github.com/go-oauth2/oauth2/v4 v4.5.2
+	github.com/golang-jwt/jwt/v4 v4.1.0
 	github.com/minetest-go/areasparser v1.0.2
 )
 
