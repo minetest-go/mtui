@@ -10,6 +10,7 @@ const store = Vue.reactive({
     posy: "",
     posz: "",
     count: 0,
+    geo_asn: "",
     busy: false,
     from: new Date(Date.now() - (3600*1000*2)),
     to: new Date(Date.now() + (3600*1000*1)),
@@ -53,7 +54,8 @@ export default {
                 posy: this.posy != "" ? parseInt(this.posy) : null,
                 posz: this.posz != "" ? parseInt(this.posz) : null,
                 from_timestamp: +this.from,
-                to_timestamp: +this.to
+                to_timestamp: +this.to,
+                geo_asn: this.geo_asn != "" ? parseInt(this.geo_asn) : null
             };
         },
         update_count: function() {
@@ -93,7 +95,11 @@ export default {
         "nodename": "update_count",
         "posx": "update_count",
         "posy": "update_count",
-        "posz": "update_count"
+        "posz": "update_count",
+        "geo_asn": "update_count"
+    },
+    mounted: function() {
+        this.update_count();
     },
     template: /*html*/`
     <div>
@@ -151,6 +157,10 @@ export default {
                 <label>Pos Z</label>
                 <input type="number" class="form-control" v-model="posz"/>
             </div>
+            <div class="col-md-2">
+                <label>Geo ASN</label>
+                <input type="number" class="form-control" v-model="geo_asn"/>
+            </div>
         </div>
         <hr>
         <table class="table table-striped table-condensed">
@@ -166,8 +176,23 @@ export default {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="log in logs">
+                <tr v-for="log in logs" v-bind:class="{'table-success': log.event=='join', 'table-warning': log.event=='leave'}">
                     <td>
+                        <i v-if="log.event == 'on_generated'" class="fa fa-map"></i>
+                        <i v-if="log.event == 'prejoin'" class="fa fa-shield"></i>
+                        <i v-if="log.event == 'authplayer'" class="fa fa-key"></i>
+                        <i v-if="log.event == 'join'" class="fa fa-right-from-bracket"></i>
+                        <i v-if="log.event == 'leave'" class="fa fa-right-to-bracket"></i>
+                        <i v-if="log.event == 'placenode'" class="fa fa-plus"></i>
+                        <i v-if="log.event == 'punchnode'" class="fa fa-hand-fist"></i>
+                        <i v-if="log.event == 'dignode'" class="fa fa-minus"></i>
+                        <i v-if="log.event == 'craft'" class="fa fa-cart-shopping"></i>
+                        <i v-if="log.event == 'chat'" class="fa fa-message"></i>
+                        <i v-if="log.event == 'system'" class="fa fa-gear"></i>
+                        <i v-if="log.event == 'dieplayer'" class="fa fa-tombstone"></i>
+                        <i v-if="log.event == 'cheat'" class="fa fa-question"></i>
+                        <i v-if="log.event == 'protection_violation'" class="fa fa-question"></i>
+                        &nbsp;
                         <span class="badge bg-secondary">{{log.event}}</span>
                     </td>
                     <td>

@@ -34,6 +34,8 @@ type LogSearch struct {
 	Username      *string      `json:"username"`
 	IPAddress     *string      `json:"ip_address"`
 	GeoCountry    *string      `json:"geo_country"`
+	GeoCity       *string      `json:"geo_city"`
+	GeoASN        *int         `json:"geo_asn"`
 	Limit         *int         `json:"limit"`
 	PosX          *int         `json:"posx"`
 	PosY          *int         `json:"posy"`
