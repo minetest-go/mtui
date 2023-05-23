@@ -14,7 +14,7 @@ require (
 	github.com/oschwald/geoip2-golang v1.8.0
 	github.com/sirupsen/logrus v1.9.0
 	github.com/stretchr/testify v1.8.2
-	go.uber.org/atomic v1.10.0
+	go.uber.org/atomic v1.11.0
 	modernc.org/sqlite v1.22.1
 )
 
