@@ -34,6 +34,10 @@ Planned:
 * `LOGLEVEL` currently supported: "debug", default is "info"
 * `ENABLE_FEATURES` manually enabled features
 
+# Api
+
+* See [http-api](./http-api.md)
+
 # Development
 
 Prerequisites:
