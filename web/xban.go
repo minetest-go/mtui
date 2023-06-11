@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"mtui/bridge"
-	"mtui/types"
 	"mtui/types/command"
 	"net/http"
 	"time"
@@ -28,7 +27,7 @@ func SendLuaResponse(w http.ResponseWriter, err error, lr *command.LuaResponse) 
 	}
 }
 
-func (a *Api) GetBanDBStatus(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+func (a *Api) GetBanDBStatus(w http.ResponseWriter, r *http.Request) {
 	req := &command.LuaRequest{
 		Code: `
 			local banned = 0
@@ -47,7 +46,7 @@ func (a *Api) GetBanDBStatus(w http.ResponseWriter, r *http.Request, claims *typ
 	SendLuaResponse(w, err, resp)
 }
 
-func (a *Api) GetBannedRecords(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+func (a *Api) GetBannedRecords(w http.ResponseWriter, r *http.Request) {
 	req := &command.LuaRequest{
 		Code: `
 			local banned = {}
@@ -64,7 +63,7 @@ func (a *Api) GetBannedRecords(w http.ResponseWriter, r *http.Request, claims *t
 	SendLuaResponse(w, err, resp)
 }
 
-func (a *Api) GetBanRecord(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+func (a *Api) GetBanRecord(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	req := &command.LuaRequest{
 		Code: fmt.Sprintf("return xban.find_entry('%s')", bridge.SanitizeLuaString(vars["playername"])),
@@ -74,9 +73,15 @@ func (a *Api) GetBanRecord(w http.ResponseWriter, r *http.Request, claims *types
 	SendLuaResponse(w, err, resp)
 }
 
-func (a *Api) BanPlayer(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+func (a *Api) BanPlayer(w http.ResponseWriter, r *http.Request) {
+	claims, err := a.GetClaims(r)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
 	banr := &BanRequest{}
-	err := json.NewDecoder(r.Body).Decode(banr)
+	err = json.NewDecoder(r.Body).Decode(banr)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -94,9 +99,15 @@ func (a *Api) BanPlayer(w http.ResponseWriter, r *http.Request, claims *types.Cl
 	SendLuaResponse(w, err, resp)
 }
 
-func (a *Api) TempBanPlayer(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+func (a *Api) TempBanPlayer(w http.ResponseWriter, r *http.Request) {
+	claims, err := a.GetClaims(r)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
 	banr := &BanRequest{}
-	err := json.NewDecoder(r.Body).Decode(banr)
+	err = json.NewDecoder(r.Body).Decode(banr)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -115,9 +126,15 @@ func (a *Api) TempBanPlayer(w http.ResponseWriter, r *http.Request, claims *type
 	SendLuaResponse(w, err, resp)
 }
 
-func (a *Api) UnbanPlayer(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+func (a *Api) UnbanPlayer(w http.ResponseWriter, r *http.Request) {
+	claims, err := a.GetClaims(r)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
 	banr := &BanRequest{}
-	err := json.NewDecoder(r.Body).Decode(banr)
+	err = json.NewDecoder(r.Body).Decode(banr)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -134,7 +151,7 @@ func (a *Api) UnbanPlayer(w http.ResponseWriter, r *http.Request, claims *types.
 	SendLuaResponse(w, err, resp)
 }
 
-func (a *Api) CleanupBanDB(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+func (a *Api) CleanupBanDB(w http.ResponseWriter, r *http.Request) {
 	req := &command.LuaRequest{
 		Code: `
 			local db = xban.db
