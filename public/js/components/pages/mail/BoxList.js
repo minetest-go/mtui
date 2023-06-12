@@ -1,54 +1,26 @@
-import mail_store from '../../store/mail.js';
-import { fetch_mails } from '../../service/mail.js';
-import { remove } from '../../api/mail.js';
-import format_time from '../../util/format_time.js';
+import mail_store from '../../../store/mail.js';
+import { fetch_mails } from '../../../service/mail.js';
+import { remove } from '../../../api/mail.js';
+import format_time from '../../../util/format_time.js';
+
 
 export default {
-    data: function() {
-        return {
-            mail_store: mail_store,
-            busy: false
-        };
-    },
+    props: ["mails"],
     methods: {
-        refresh: function(){
-            this.busy = true;
-            fetch_mails()
-            .then(() => this.busy = false);
-        },
         format_time: format_time,
         delete_mail: function(msg){
-            this.busy = true;
+            mail_store.busy = true;
             remove(msg)
             .then(() => fetch_mails())
-            .then(() => this.busy = false);
+            .then(() => mail_store.busy = false);
         }
     },
     template: /*html*/`
     <div>
-        <div class="row">
-            <div class="col-md-8">
-                <h3>
-                    Mail <small class="text-muted">Overview</small>
-                    <i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>
-                </h3>
-            </div>
-            <div class="col-md-4 btn-group">
-                <router-link to="/mail/compose" class="btn btn-primary">
-                    <i class="fa-solid fa-pen-to-square"></i>
-                    Compose
-                </router-link>
-                <a class="btn btn-success" v-on:click="refresh">
-                    <i class="fa-solid fa-rotate"></i>
-                    Refresh
-                </a>
-            </div>
-        </div>
-        &nbsp;
-        <div class="alert alert-primary" v-if="mail_store.mails.length == 0">
+        <div class="alert alert-primary" v-if="mails.length == 0">
             No mails
         </div>
-        <table class="table table-condensed" v-if="mail_store.mails.length > 0">
+        <table class="table table-condensed" v-if="mails.length > 0">
             <thead>
                 <tr>
                     <th>From</th>
@@ -58,7 +30,7 @@ export default {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(mail, index) in mail_store.mails" :key="index" :class="{'table-info': !mail.read}">
+                <tr v-for="(mail, index) in mails" :key="index" :class="{'table-info': !mail.read}">
                     <td>
                         <router-link :to="'/profile/' + mail.from">
                             {{mail.from}}

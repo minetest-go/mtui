@@ -32,7 +32,29 @@ func (m *Mail) GetEntry(playername string) (*PlayerEntry, error) {
 	if err != nil {
 		return nil, err
 	}
-	return pe, json.Unmarshal(e.Value, pe)
+
+	err = json.Unmarshal(e.Value, pe)
+	if err != nil {
+		return nil, err
+	}
+
+	if pe.Inbox == nil {
+		pe.Inbox = make([]*Message, 0)
+	}
+	if pe.Outbox == nil {
+		pe.Outbox = make([]*Message, 0)
+	}
+	if pe.Drafts == nil {
+		pe.Drafts = make([]*Message, 0)
+	}
+	if pe.Contacts == nil {
+		pe.Contacts = make([]*Contact, 0)
+	}
+	if pe.Lists == nil {
+		pe.Lists = make([]*Maillist, 0)
+	}
+
+	return pe, nil
 }
 
 func (m *Mail) SetEntry(playername string, pe *PlayerEntry) error {

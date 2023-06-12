@@ -1,8 +1,12 @@
 
 const store = Vue.reactive({
-    mails: [],
+    busy: false,
+    inbox: [],
+    outbox: [],
     contacts: {},
-    unread_count: Vue.computed(() => store.mails ? store.mails.filter(m => m.unread).length : 0)
+    unread_count: Vue.computed(() => store.inbox.filter(m => !m.read).length)
 });
+
+export const get_mail = id => store.inbox.concat(store.outbox).find(m => m.id == id);
 
 export default store;

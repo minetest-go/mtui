@@ -6,8 +6,8 @@ import Shell from './components/pages/Shell.js';
 import Lua from './components/pages/Lua.js';
 import OnlinePlayers from './components/pages/OnlinePlayers.js';
 import PlayerSearch from './components/pages/PlayerSearch.js';
-import Mail from './components/pages/Mail.js';
-import MailRead from './components/pages/MailRead.js';
+import Mail from './components/pages/mail/Mail.js';
+import MailRead from './components/pages/mail/MailRead.js';
 import Mods from './components/pages/Mods.js';
 import Compose from './components/pages/Compose.js';
 import Skin from './components/pages/Skin.js';
@@ -57,7 +57,9 @@ export default [{
 	path: "/mediaserver", component: Mediaserver,
 	meta: { requiredPriv: "server" }
 }, {
-	path: "/mail", component: Mail,
+	path: "/mail", redirect: '/mail/box/inbox'
+}, {
+	path: "/mail/box/:boxname", component: Mail,
 	meta: { requiredPriv: "interact" }
 }, {
 	path: "/mail/read/:id", component: MailRead,

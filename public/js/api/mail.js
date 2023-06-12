@@ -1,4 +1,5 @@
 export const list_inbox = () => fetch("api/mail/folder/inbox").then(r => r.json());
+export const list_outbox = () => fetch("api/mail/folder/outbox").then(r => r.json());
 export const list_contacts = () => fetch("api/mail/contacts").then(r => r.json());
 
 export const check_recipient = r => fetch(`api/mail/checkrecipient/${r}`).then(r => r.text());

@@ -1,14 +1,14 @@
-import format_time from '../../util/format_time.js';
-import mail_store from '../../store/mail.js';
-import { mark_read, remove } from '../../api/mail.js';
-import mail_compose from "../../store/mail_compose.js";
-import { fetch_mails } from '../../service/mail.js';
+import format_time from '../../../util/format_time.js';
+import { get_mail } from '../../../store/mail.js';
+import { mark_read, remove } from '../../../api/mail.js';
+import mail_compose from "../../../store/mail_compose.js";
+import { fetch_mails } from '../../../service/mail.js';
 
 export default {
     props: ["id"],
     computed: {
         mail: function(){
-            const mail = mail_store.mails.find(m => m.id == this.id);
+            const mail = get_mail(this.id);
             if (mail && !mail.read) {
                 mark_read(mail)
                 .then(() => mail.read = true);

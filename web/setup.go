@@ -74,7 +74,7 @@ func Setup(a *app.App) error {
 	mr.HandleFunc("/folder/outbox", api.Secure(api.GetOutbox)).Methods(http.MethodGet)
 	mr.HandleFunc("/folder/drafts", api.Secure(api.GetDrafts)).Methods(http.MethodGet)
 	mr.HandleFunc("/contacts", api.Secure(api.GetContacts)).Methods(http.MethodGet)
-	mr.HandleFunc("/", api.Secure(api.SendMail)).Methods(http.MethodPost)
+	mr.HandleFunc("", api.Secure(api.SendMail)).Methods(http.MethodPost)
 	mr.HandleFunc("/{id}", api.Secure(api.DeleteMail)).Methods(http.MethodDelete)
 	mr.HandleFunc("/{id}/read", api.Secure(api.MarkRead)).Methods(http.MethodPost)
 	mr.HandleFunc("/{id}/unread", api.Secure(api.MarkUnread)).Methods(http.MethodPost)
