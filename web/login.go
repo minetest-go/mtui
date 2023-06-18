@@ -114,20 +114,26 @@ func (a *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 	tan := tan_map[req.Username]
 	if tan == "" {
 		// login against the database password
-		salt, verifier, err := auth.ParseDBPassword(auth_entry.Password)
-		if err != nil {
-			SendError(w, 500, err.Error())
-			return
-		}
 
-		ok, err := auth.VerifyAuth(req.Username, req.Password, salt, verifier)
-		if err != nil {
-			SendError(w, 500, err.Error())
-			return
-		}
-		if !ok {
-			SendError(w, 401, "unauthorized")
-			return
+		// legacy first
+		legacy_ok := auth.VerifyLegacyPassword(req.Username, req.Password, auth_entry.Password)
+		if !legacy_ok {
+			// SRP fallback
+			salt, verifier, err := auth.ParseDBPassword(auth_entry.Password)
+			if err != nil {
+				SendError(w, 500, err.Error())
+				return
+			}
+
+			ok, err := auth.VerifyAuth(req.Username, req.Password, salt, verifier)
+			if err != nil {
+				SendError(w, 500, err.Error())
+				return
+			}
+			if !ok {
+				SendError(w, 401, "unauthorized")
+				return
+			}
 		}
 	} else {
 		// login with tan

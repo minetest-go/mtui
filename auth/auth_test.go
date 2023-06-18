@@ -65,3 +65,11 @@ func TestAuth(t *testing.T) {
 	assert.NoError(t, err)
 	assert.True(t, success)
 }
+
+func TestLagacyAuth(t *testing.T) {
+	success := VerifyLegacyPassword("BuckarooBanzai", "enter", "vTELhF7/I72pH9rsz79yU/1hZ5A")
+	assert.True(t, success)
+
+	success = VerifyLegacyPassword("BuckarooBanzai", "blah", "vTELhF7/I72pH9rsz79yU/1hZ5A")
+	assert.False(t, success)
+}

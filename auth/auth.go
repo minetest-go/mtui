@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"crypto/sha1"
 	"crypto/subtle"
 	"encoding/base64"
 	"errors"
@@ -64,6 +65,12 @@ func VerifyAuth(username, password string, salt, verifier []byte) (bool, error) 
 	}
 
 	return true, nil
+}
+
+func VerifyLegacyPassword(username, password, b64_verifier string) bool {
+	digest := sha1.Sum([]byte(username + password))
+	b64 := base64.RawStdEncoding.EncodeToString(digest[:])
+	return b64 == b64_verifier
 }
 
 func CreateAuth(username, password string) (salt, verifier []byte, err error) {

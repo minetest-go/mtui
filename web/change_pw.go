@@ -40,24 +40,30 @@ func (a *Api) ChangePassword(w http.ResponseWriter, r *http.Request, claims *typ
 	}
 
 	// check old password
-	salt, verifier, err := auth.ParseDBPassword(auth_entry.Password)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
 
-	ok, err := auth.VerifyAuth(req.Username, req.OldPassword, salt, verifier)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-	if !ok {
-		SendError(w, 401, "unauthorized")
-		return
+	// legacy password first
+	legacy_ok := auth.VerifyLegacyPassword(req.Username, req.OldPassword, auth_entry.Password)
+	if !legacy_ok {
+		// SRP fallback
+		salt, verifier, err := auth.ParseDBPassword(auth_entry.Password)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+
+		ok, err := auth.VerifyAuth(req.Username, req.OldPassword, salt, verifier)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+		if !ok {
+			SendError(w, 401, "unauthorized")
+			return
+		}
 	}
 
 	// create new password
-	salt, verifier, err = auth.CreateAuth(req.Username, req.NewPassword)
+	salt, verifier, err := auth.CreateAuth(req.Username, req.NewPassword)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
