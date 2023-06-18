@@ -11,6 +11,7 @@ const store = Vue.reactive({
     posz: "",
     count: 0,
     geo_asn: "",
+    ip_address: "",
     busy: false,
     from: new Date(Date.now() - (3600*1000*2)),
     to: new Date(Date.now() + (3600*1000*1)),
@@ -59,6 +60,7 @@ export default {
                 posx: this.posx != "" ? parseInt(this.posx) : null,
                 posy: this.posy != "" ? parseInt(this.posy) : null,
                 posz: this.posz != "" ? parseInt(this.posz) : null,
+                ip_address: this.ip_address != "" ? this.ip_address : null,
                 from_timestamp: +this.from,
                 to_timestamp: +this.to,
                 geo_asn: this.geo_asn != "" ? parseInt(this.geo_asn) : null
@@ -91,6 +93,13 @@ export default {
             store.posz = posz;
             this.search();
         },
+        get_row_class: function(log) {
+            return {
+                'table-success': log.event == 'join',
+                'table-warning': log.event=='leave',
+                'table-danger': log.event == 'logfile-error'
+            };
+        },
         format_time: format_time
     },
     watch: {
@@ -102,7 +111,8 @@ export default {
         "posx": "update_count",
         "posy": "update_count",
         "posz": "update_count",
-        "geo_asn": "update_count"
+        "geo_asn": "update_count",
+        "ip_address": "update_count"
     },
     mounted: function() {
         this.update_count();
@@ -167,6 +177,10 @@ export default {
                 <label>Geo ASN</label>
                 <input type="number" class="form-control" v-model="geo_asn"/>
             </div>
+            <div class="col-md-2">
+                <label>IP Address</label>
+                <input type="text" class="form-control" v-model="ip_address"/>
+            </div>
         </div>
         <hr>
         <table class="table table-striped table-condensed">
@@ -182,7 +196,7 @@ export default {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="log in logs" v-bind:class="{'table-success': log.event=='join', 'table-warning': log.event=='leave'}">
+                <tr v-for="log in logs" v-bind:class="get_row_class(log)">
                     <td>
                         <i v-if="log.event == 'on_generated'" class="fa fa-map"></i>
                         <i v-if="log.event == 'prejoin'" class="fa fa-shield"></i>
@@ -198,11 +212,17 @@ export default {
                         <i v-if="log.event == 'dieplayer'" class="fa fa-tombstone"></i>
                         <i v-if="log.event == 'cheat'" class="fa fa-question"></i>
                         <i v-if="log.event == 'protection_violation'" class="fa fa-question"></i>
+                        <i v-if="log.event == 'logfile'" class="fa fa-file"></i>
+                        <i v-if="log.event == 'logfile-error'" class="fa fa-file"></i>
+                        <i v-if="log.event == 'logfile-warning'" class="fa fa-file"></i>
+                        <i v-if="log.event == 'logfile-action'" class="fa fa-file"></i>
+                        <i v-if="log.event == 'logfile-info'" class="fa fa-file"></i>
+                        <i v-if="log.event == 'logfile-verbose'" class="fa fa-file"></i>
                         &nbsp;
                         <span class="badge bg-secondary">{{log.event}}</span>
                     </td>
                     <td>
-                        <i class="fa fa-magnifying-glass" v-on:click="search_specific('username', log.username)"></i>
+                        <i class="fa fa-magnifying-glass" v-on:click="search_specific('username', log.username)" v-if="log.username"></i>
                         &nbsp;
                         <router-link :to="'/profile/' + log.username" v-if="log.username">
                             {{log.username}}
@@ -223,12 +243,15 @@ export default {
                         </span>
                     </td>
                     <td>
+                        <i class="fa fa-magnifying-glass" v-on:click="search_specific('ip_address', log.ip_address)" v-if="log.ip_address"></i>
                         {{log.ip_address}}
                         <span v-if="log.geo_country || log.geo_city" class="badge bg-success">
                             {{log.geo_country}} <span v-if="log.geo_city">/ {{log.geo_city}}</span>
                         </span>
                         <span v-if="log.geo_asn" class="badge bg-info">
-                            ASN: {{log.geo_asn}}
+                            ASN:
+                            <i class="fa fa-magnifying-glass" v-on:click="search_specific('geo_asn', log.geo_asn)"></i>
+                            {{log.geo_asn}}
                         <span>
                     </td>
                 </tr>

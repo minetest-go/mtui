@@ -1,10 +1,8 @@
 import NavBar from './components/NavBar.js';
-import Footer from './components/Footer.js';
 
 export default {
 	components: {
-		"nav-bar": NavBar,
-		"nav-footer": Footer
+		"nav-bar": NavBar
 	},
 	template: /*html*/`
 		<div>
@@ -13,7 +11,6 @@ export default {
 				<br>
 				<router-view></router-view>
 			</div>
-			<nav-footer/>
 		</div>
 	`
 };
