@@ -36,7 +36,13 @@ export default {
                     "placenode",
                     "dignode",
                     "punchnode",
-                    "craft"
+                    "craft",
+                    "logfile",
+                    "logfile-error",
+                    "logfile-warning",
+                    "logfile-action",
+                    "logfile-info",
+                    "logfile-verbose"
                 ];
             } else {
                 return [];
