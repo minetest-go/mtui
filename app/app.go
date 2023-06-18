@@ -2,12 +2,14 @@ package app
 
 import (
 	"database/sql"
+	"fmt"
 	"mtui/bridge"
 	"mtui/db"
 	"mtui/eventbus"
 	"mtui/mail"
 	"mtui/mediaserver"
 	"mtui/modmanager"
+	"mtui/settings"
 	"mtui/types"
 	"os"
 
@@ -38,6 +40,7 @@ type App struct {
 	Version       string
 	OAuthMgr      *manage.Manager
 	OAuthServer   *server.Server
+	Settings      settings.Settings
 }
 
 func Create(world_dir string) (*App, error) {
@@ -143,6 +146,21 @@ func Create(world_dir string) (*App, error) {
 		logrus.WithFields(logrus.Fields{"err": re}).Error("Response error")
 	})
 
+	// Settings
+	s := settings.Settings{}
+	settings_file := os.Getenv("SETTINGS_FILE")
+	if settings_file != "" {
+		f, err := os.Open(settings_file)
+		if err != nil {
+			return nil, fmt.Errorf("could not open settings file '%s': %v", settings_file, err)
+		}
+
+		err = s.Read(f)
+		if err != nil {
+			return nil, fmt.Errorf("could not parse settings file '%s': %v", settings_file, err)
+		}
+	}
+
 	if Version == "" {
 		Version = "DEV"
 	}
@@ -162,6 +180,7 @@ func Create(world_dir string) (*App, error) {
 		OAuthMgr:      oauth_mgr,
 		OAuthServer:   oauth_srv,
 		Version:       Version,
+		Settings:      s,
 	}
 
 	return app, nil

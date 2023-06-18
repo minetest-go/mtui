@@ -109,6 +109,10 @@ func Setup(a *app.App) error {
 	apir.HandleFunc("/mods/{id}", api.Feature(types.FEATURE_MODMANAGEMENT, api.SecurePriv(types.PRIV_SERVER, api.DeleteMod))).Methods(http.MethodDelete)
 	apir.HandleFunc("/mods/{id}/status", api.Feature(types.FEATURE_MODMANAGEMENT, api.SecurePriv(types.PRIV_SERVER, api.ModStatus))).Methods(http.MethodGet)
 
+	ssr := apir.PathPrefix("/settings").Subrouter()
+	ssr.Use(SecureHandler(api.FeatureCheck(types.FEATURE_SETTINGS)))
+	ssr.HandleFunc("", api.SecurePriv(types.PRIV_SERVER, api.GetSettings)).Methods(http.MethodGet)
+
 	// OAuth
 	api.app.OAuthServer.SetAllowGetAccessRequest(true)
 	api.app.OAuthServer.SetAllowedGrantType(oauth2.Implicit, oauth2.AuthorizationCode, oauth2.ClientCredentials)

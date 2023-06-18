@@ -10,6 +10,7 @@ const (
 	FEATURE_MODMANAGEMENT = "modmanagement"
 	FEATURE_XBAN          = "xban"
 	FEATURE_MONITORING    = "monitoring"
+	FEATURE_SETTINGS      = "settings"
 )
 
 type Feature struct {
