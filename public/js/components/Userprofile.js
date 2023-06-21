@@ -97,6 +97,7 @@ export default {
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header">
+                        <i class="fa-solid fa-award"></i>
                         Privileges
                     </div>
                     <div class="card-body">
@@ -135,6 +136,7 @@ export default {
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header">
+                        <i class="fa-solid fa-door-open"></i>
                         Login stats
                     </div>
                     <div class="card-body" v-if="playerinfo.player_entry">
@@ -160,6 +162,7 @@ export default {
                 <br>
                 <div class="card">
                     <div class="card-header">
+                        <i class="fa-solid fa-info"></i>
                         Ingame stats
                     </div>
                     <div class="card-body" v-if="playerinfo.stats">
@@ -189,6 +192,7 @@ export default {
             <div class="col-md-4" v-if="can_change_pw">
                 <div class="card">
                     <div class="card-header">
+                        <i class="fa-solid fa-key"></i>
                         Password
                     </div>
                     <div class="card-body">
@@ -198,6 +202,7 @@ export default {
                 <br>
                 <div class="card" v-if="is_moderator && has_feature('xban') && xban_record">
                     <div class="card-header">
+                        <i class="fa-solid fa-clipboard"></i>
                         XBan record
                         <span v-if="xban_record.banned" class="badge bg-danger">Banned</span>
                     </div>
