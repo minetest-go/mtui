@@ -27,8 +27,7 @@
         "experimental": true
     },{
         "name": "mediaserver",
-        "description": "HTTP Mediaserver (remote_media)",
-        "experimental": true
+        "description": "HTTP Mediaserver (remote_media)"
     },{
         "name": "xban",
         "description": "xban integration",
