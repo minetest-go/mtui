@@ -13,7 +13,7 @@ require (
 	github.com/minetest-go/mtdb v1.1.36
 	github.com/oschwald/geoip2-golang v1.8.0
 	github.com/sirupsen/logrus v1.9.3
-	github.com/stretchr/testify v1.8.2
+	github.com/stretchr/testify v1.8.4
 	go.uber.org/atomic v1.11.0
 	modernc.org/sqlite v1.22.1
 )
