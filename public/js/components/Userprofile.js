@@ -145,6 +145,16 @@ export default {
                         No stats found
                     </div>
                 </div>
+            </div>
+            <div class="col-md-4" v-if="can_change_pw">
+                <div class="card">
+                    <div class="card-header">
+                        Password
+                    </div>
+                    <div class="card-body">
+                        <change-password :username="username"/>
+                    </div>
+                </div>
                 <br>
                 <div class="card" v-if="is_moderator && has_feature('xban') && xban_record">
                     <div class="card-header">
@@ -174,16 +184,6 @@ export default {
                                 <b>Time:</b> {{format_time(record.time)}}
                             </li>
                         </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4" v-if="can_change_pw">
-                <div class="card">
-                    <div class="card-header">
-                        Password
-                    </div>
-                    <div class="card-body">
-                        <change-password :username="username"/>
                     </div>
                 </div>
             </div>
