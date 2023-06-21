@@ -7,13 +7,15 @@ import format_time from '../util/format_time.js';
 import format_duration from '../util/format_duration.js';
 import format_count from '../util/format_count.js';
 import login_store from '../store/login.js';
+import { execute_chatcommand } from "../api/chatcommand.js";
 
 export default {
     props: ["username"],
     data: function() {
         return {
             playerinfo: null,
-            xban_record: null
+            xban_record: null,
+            new_priv: ""
         };
     },
     mounted: function() {
@@ -31,18 +33,32 @@ export default {
         }
     },
     methods: {
-        update: function() {
-            this.playerinfo = null;
-            this.xban_record = null;
-
+        update_playerinfo: function() {
             get_playerinfo(this.username)
             .then(pi => this.playerinfo = pi);
-    
+        },
+        update: function() {
+            this.playerinfo = null;
+            this.update_playerinfo();
+
+            this.xban_record = null;
             if (this.is_moderator && this.has_feature("xban")) {
                 get_record(this.username).then(r => this.xban_record = r);
             }
         },
+        has_priv: has_priv,
         has_feature: has_feature,
+        revoke_priv: function(priv) {
+            execute_chatcommand(login_store.claims.username, `revoke ${this.username} ${priv}`)
+            .then(() => this.update_playerinfo());
+        },
+        grant_priv: function() {
+            execute_chatcommand(login_store.claims.username, `grant ${this.username} ${this.new_priv}`)
+            .then(() => {
+                this.new_priv = "";
+                this.update_playerinfo();
+            });
+        },
         format_time: format_time,
         format_duration: format_duration,
         format_count: format_count,
@@ -84,11 +100,35 @@ export default {
                         Privileges
                     </div>
                     <div class="card-body">
-                        <ul v-if="playerinfo.auth_entry">
-                            <li v-for="priv in playerinfo.privs">
-                                <span v-bind:class="getPrivBadgeClass(priv)">{{ priv }}</span>
-                            </li>
-                        </ul>
+                        <table>
+                            <tr v-for="priv in playerinfo.privs">
+                                <td>
+                                    <span v-bind:class="getPrivBadgeClass(priv)">
+                                        {{ priv }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a class="btn btn-sm btn-warning" v-if="has_priv('privs')" v-on:click="revoke_priv(priv)">
+                                        <i class="fa fa-times"></i>
+                                        Revoke
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr v-if="has_priv('privs')">
+                                <td>
+                                    <input type="text" class="form-control" v-model="new_priv"/>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-success"
+                                        v-if="has_priv('privs')"
+                                        :disabled="new_priv == ''"
+                                        v-on:click="grant_priv">
+                                        <i class="fa fa-plus"></i>
+                                        Grant
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
             </div>
