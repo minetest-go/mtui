@@ -11,6 +11,7 @@ const (
 	FEATURE_XBAN          = "xban"
 	FEATURE_MONITORING    = "monitoring"
 	FEATURE_SETTINGS      = "settings"
+	FEATURE_OTP           = "otp"
 )
 
 type Feature struct {

@@ -1,6 +1,7 @@
 import login_store from "../../store/login.js";
 import { login, logout } from "../../service/login.js";
 import { get_onboard_status } from "../../api/onboard.js";
+import { has_feature } from "../../service/features.js";
 
 export default {
     data: function() {
@@ -23,6 +24,7 @@ export default {
         get_onboard_status().then(s => this.can_oboard = s);
     },
     methods: {
+        has_feature: has_feature,
         login: function() {
             this.busy = true;
             this.error_message = "";
@@ -69,6 +71,7 @@ export default {
                         class="form-control"
                         placeholder="OTP Code (optional)"
                         :disabled="login_store.loggedIn"
+                        v-if="has_feature('otp')"
                         v-model="otp_code"/>
                     <button class="btn btn-primary w-100" v-if="!login_store.loggedIn" type="submit" :disabled="!validInput">
                         <i class="fa-solid fa-right-to-bracket"></i>
