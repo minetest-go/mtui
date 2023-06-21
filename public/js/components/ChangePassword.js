@@ -1,4 +1,5 @@
 import { changepw } from "../api/login.js";
+import { has_priv } from "../service/login.js";
 
 export default {
     props: ["username"],
@@ -12,6 +13,14 @@ export default {
         };
     },
     methods: {
+        is_superuser: function() {
+            return has_priv("password");
+        },
+        submit_disable: function() {
+            return this.newpassword == '' ||
+                this.newpassword != this.newpassword2 ||
+                (this.oldpassword == '' && !this.is_superuser());
+        },
         changepw: function() {
             this.busy = true;
             this.error = false;
@@ -30,11 +39,10 @@ export default {
     },
     template: /*html*/`
         <form @submit.prevent="changepw">
-            <input type="password" class="form-control" placeholder="Old password" v-model="oldpassword"/>
+            <input type="password" class="form-control" placeholder="Old password" v-if="!is_superuser()" v-model="oldpassword"/>
             <input type="password" class="form-control" placeholder="New password" v-model="newpassword"/>
             <input type="password" class="form-control" placeholder="New password (again)" v-model="newpassword2"/>
-            <button class="btn btn-primary w-100" type="submit"
-                :disabled="newpassword == '' || oldpassword == '' || newpassword != newpassword2">
+            <button class="btn btn-primary w-100" type="submit" :disabled="submit_disable()">
                 Change password
                 <i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>
                 <span class="badge bg-danger" v-if="error">Change failed</span>

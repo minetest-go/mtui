@@ -21,10 +21,12 @@ func (a *Api) ChangePassword(w http.ResponseWriter, r *http.Request, claims *typ
 		return
 	}
 
+	is_superuser := claims.HasPriv("server") || claims.HasPriv("password")
+
 	// check username
-	if req.Username != claims.Username {
-		// username does not match
-		SendError(w, 500, "username mismatch")
+	if req.Username != claims.Username && !is_superuser {
+		// username does not match and "server" or "password" not found (not a superuser)
+		SendError(w, 500, "username mismatch and not a superuser")
 		return
 	}
 
@@ -39,26 +41,28 @@ func (a *Api) ChangePassword(w http.ResponseWriter, r *http.Request, claims *typ
 		return
 	}
 
-	// check old password
+	if !is_superuser {
+		// check old password (not a super-user)
 
-	// legacy password first
-	legacy_ok := auth.VerifyLegacyPassword(req.Username, req.OldPassword, auth_entry.Password)
-	if !legacy_ok {
-		// SRP fallback
-		salt, verifier, err := auth.ParseDBPassword(auth_entry.Password)
-		if err != nil {
-			SendError(w, 500, err.Error())
-			return
-		}
+		// legacy password first
+		legacy_ok := auth.VerifyLegacyPassword(req.Username, req.OldPassword, auth_entry.Password)
+		if !legacy_ok {
+			// SRP fallback
+			salt, verifier, err := auth.ParseDBPassword(auth_entry.Password)
+			if err != nil {
+				SendError(w, 500, err.Error())
+				return
+			}
 
-		ok, err := auth.VerifyAuth(req.Username, req.OldPassword, salt, verifier)
-		if err != nil {
-			SendError(w, 500, err.Error())
-			return
-		}
-		if !ok {
-			SendError(w, 401, "unauthorized")
-			return
+			ok, err := auth.VerifyAuth(req.Username, req.OldPassword, salt, verifier)
+			if err != nil {
+				SendError(w, 500, err.Error())
+				return
+			}
+			if !ok {
+				SendError(w, 401, "unauthorized")
+				return
+			}
 		}
 	}
 
