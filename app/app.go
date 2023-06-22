@@ -8,8 +8,8 @@ import (
 	"mtui/eventbus"
 	"mtui/mail"
 	"mtui/mediaserver"
+	"mtui/minetestconfig"
 	"mtui/modmanager"
-	"mtui/settings"
 	"mtui/types"
 	"os"
 
@@ -40,7 +40,7 @@ type App struct {
 	Version       string
 	OAuthMgr      *manage.Manager
 	OAuthServer   *server.Server
-	Settings      settings.Settings
+	MTConfig      minetestconfig.MinetestConfig
 }
 
 func Create(world_dir string) (*App, error) {
@@ -147,18 +147,23 @@ func Create(world_dir string) (*App, error) {
 	})
 
 	// Settings
-	s := settings.Settings{}
-	settings_file := os.Getenv("SETTINGS_FILE")
-	if settings_file != "" {
-		f, err := os.Open(settings_file)
+	mtcfg := minetestconfig.MinetestConfig{}
+	mtconfig_file := os.Getenv("MINETEST_CONFIG")
+	if mtconfig_file != "" {
+		f, err := os.Open(mtconfig_file)
 		if err != nil {
-			return nil, fmt.Errorf("could not open settings file '%s': %v", settings_file, err)
+			return nil, fmt.Errorf("could not open minetest config file '%s': %v", mtconfig_file, err)
 		}
 
-		err = s.Read(f)
+		err = mtcfg.Read(f)
 		if err != nil {
-			return nil, fmt.Errorf("could not parse settings file '%s': %v", settings_file, err)
+			return nil, fmt.Errorf("could not parse minetest config file '%s': %v", mtconfig_file, err)
 		}
+
+		logrus.WithFields(logrus.Fields{
+			"filename": mtconfig_file,
+			"entries":  len(mtcfg),
+		}).Info("Read minetest config")
 	}
 
 	if Version == "" {
@@ -180,7 +185,7 @@ func Create(world_dir string) (*App, error) {
 		OAuthMgr:      oauth_mgr,
 		OAuthServer:   oauth_srv,
 		Version:       Version,
-		Settings:      s,
+		MTConfig:      mtcfg,
 	}
 
 	return app, nil

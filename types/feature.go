@@ -1,17 +1,17 @@
 package types
 
 const (
-	FEATURE_MEDIASERVER   = "mediaserver"
-	FEATURE_MAIL          = "mail"
-	FEATURE_AREAS         = "areas"
-	FEATURE_SKINSDB       = "skinsdb"
-	FEATURE_LUASHELL      = "luashell"
-	FEATURE_SHELL         = "shell"
-	FEATURE_MODMANAGEMENT = "modmanagement"
-	FEATURE_XBAN          = "xban"
-	FEATURE_MONITORING    = "monitoring"
-	FEATURE_SETTINGS      = "settings"
-	FEATURE_OTP           = "otp"
+	FEATURE_MEDIASERVER     = "mediaserver"
+	FEATURE_MAIL            = "mail"
+	FEATURE_AREAS           = "areas"
+	FEATURE_SKINSDB         = "skinsdb"
+	FEATURE_LUASHELL        = "luashell"
+	FEATURE_SHELL           = "shell"
+	FEATURE_MODMANAGEMENT   = "modmanagement"
+	FEATURE_XBAN            = "xban"
+	FEATURE_MONITORING      = "monitoring"
+	FEATURE_MINETEST_CONFIG = "minetest_config"
+	FEATURE_OTP             = "otp"
 )
 
 type Feature struct {

@@ -106,6 +106,11 @@ export default {
 									<i class="fa-solid fa-terminal"></i> Lua
 								</router-link>
 							</li>
+							<li v-if="has_feature('minetest_config')">
+								<router-link to="/minetest-config" class="dropdown-item">
+									<i class="fa fa-cog"></i> Minetest config
+								</router-link>
+							</li>
 							<li v-if="has_feature('modmanagement')">
 								<router-link to="/mods" class="dropdown-item">
 									<i class="fa fa-cubes"></i> Mods

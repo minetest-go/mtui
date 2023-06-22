@@ -39,5 +39,9 @@
     },{
         "name": "otp",
         "description": "Enable otp login"
+    },{
+        "name": "minetest_config",
+        "description": "minetest configuration management",
+        "experimental": true
     }
 ]

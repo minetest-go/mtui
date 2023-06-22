@@ -18,6 +18,8 @@ import Onboard from './components/pages/Onboard.js';
 import Xban from './components/pages/Xban.js';
 import OauthApps from './components/pages/OauthApps.js';
 import OauthAppEdit from './components/pages/OauthAppEdit.js';
+import MinetestConfig from './components/pages/MinetestConfig.js';
+import MinetestConfigEdit from './components/pages/MinetestConfigEdit.js';
 
 export default [{
 	path: "/", component: Start,
@@ -75,5 +77,11 @@ export default [{
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/oauth-apps/:id", component: OauthAppEdit,
+	meta: { requiredPriv: "server" }
+}, {
+	path: "/minetest-config", component: MinetestConfig,
+	meta: { requiredPriv: "server" }
+}, {
+	path: "/minetest-config/:key", component: MinetestConfigEdit,
 	meta: { requiredPriv: "server" }
 }];

@@ -41,7 +41,7 @@ Planned:
 * `ADMIN_PASSWORD` initial admin password (optional)
 * `LOGLEVEL` currently supported: "debug", default is "info"
 * `ENABLE_FEATURES` manually enabled features
-* `SETTINGS_FILE` set this to the `minetest.conf` location to enable the settings-management
+* `MINETEST_CONFIG` set this to the `minetest.conf` location to enable the settings-management
 
 # Api
 
