@@ -15,7 +15,7 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/atomic v1.11.0
-	modernc.org/sqlite v1.22.1
+	modernc.org/sqlite v1.23.1
 )
 
 require (
