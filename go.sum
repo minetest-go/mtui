@@ -901,6 +901,8 @@ github.com/minetest-go/mtdb v1.1.32 h1:Tv+Yj5Ap3X06R8SZLlWk0SbhpxXjpePj8maH2/awa
 github.com/minetest-go/mtdb v1.1.32/go.mod h1:sKO3hTtIVfZSADtPEhPTd5CmQLbKLDZQiS1AvHlchyw=
 github.com/minetest-go/mtdb v1.1.36 h1:GaYKBOUKGs19ViWZRWK67OBzRlXHSQwqPmW3bKlxcNM=
 github.com/minetest-go/mtdb v1.1.36/go.mod h1:sKO3hTtIVfZSADtPEhPTd5CmQLbKLDZQiS1AvHlchyw=
+github.com/minetest-go/mtdb v1.1.39 h1:8Vz9vUQPsc8OdQBgcSX19g8ciuSzvpGplIkyj7dLmB4=
+github.com/minetest-go/mtdb v1.1.39/go.mod h1:Juojtq6Nr2QfajjyFFuLSodPlPG55iv5CKMViRYU778=
 github.com/mistifyio/go-zfs v2.1.2-0.20190413222219-f784269be439+incompatible/go.mod h1:8AuVvqP/mXw1px98n46wfvcGfQ4ci2FwoAjKYxuo3Z4=
 github.com/mitchellh/cli v1.0.0/go.mod h1:hNIlj7HEI86fIcpObd7a0FcrxTWetlwJDGcceTlRvqc=
 github.com/mitchellh/go-homedir v1.0.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
