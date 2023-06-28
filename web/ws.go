@@ -78,8 +78,8 @@ func (api *Api) Websocket(w http.ResponseWriter, r *http.Request) {
 	}
 
 	chat_chan := api.app.Bridge.AddHandler(command.COMMAND_CHAT_SEND_PLAYER)
-	defer api.app.Bridge.RemoveHandler(command.COMMAND_CHAT_SEND_PLAYER, chat_chan)
 	defer close(chat_chan)
+	defer api.app.Bridge.RemoveHandler(command.COMMAND_CHAT_SEND_PLAYER, chat_chan)
 
 	ch := make(chan *eventbus.Event, 1000)
 	api.app.WSEvents.AddListener(ch)
