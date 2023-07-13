@@ -130,6 +130,8 @@ github.com/alexflint/go-filemutex v0.0.0-20171022225611-72bdc8eae2ae/go.mod h1:C
 github.com/alexflint/go-filemutex v1.1.0/go.mod h1:7P4iRhttt/nUvUOrYIhcpMzv2G6CY9UnI16Z+UJqRyk=
 github.com/andybalholm/brotli v1.0.4 h1:V7DdXeJtZscaqfNuAdSRuRFzuiKlHSC/Zh3zl9qY3JY=
 github.com/andybalholm/brotli v1.0.4/go.mod h1:fO7iG3H7G2nSZ7m0zPUDn85XEX2GTukHGRSepvi9Eig=
+github.com/andybalholm/brotli v1.0.5 h1:8uQZIdzKmjc/iuPu7O2ioW48L81FgatrcpfFmiq/cCs=
+github.com/andybalholm/brotli v1.0.5/go.mod h1:fO7iG3H7G2nSZ7m0zPUDn85XEX2GTukHGRSepvi9Eig=
 github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be h1:9AeTilPcZAjCFIImctFaOjnTIavg87rW78vTPkQqLI8=
 github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be/go.mod h1:ySMOLuWl6zY27l47sB3qLNK6tF2fkHG55UZxx8oIVo4=
 github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kdvxnR2qWY=
@@ -1203,6 +1205,8 @@ github.com/vearutop/statigz v1.1.8 h1:IJgQHx6EomuYOYd2TzFt3haP+BIzV471zn7aepRiLH
 github.com/vearutop/statigz v1.1.8/go.mod h1:pfzrpvgLRnFeSVZd9iUYrpYDLqbV+RgeCfizr3ZFf44=
 github.com/vearutop/statigz v1.3.0 h1:RoIbvbMilsT8gXtPflWLcVlce89l5qZP9SHlKhXtEsg=
 github.com/vearutop/statigz v1.3.0/go.mod h1:jqlOPvLAdiQktMtYAkyguI3Ee0FA26iXKeEx2pS5l88=
+github.com/vearutop/statigz v1.4.0 h1:RQL0KG3j/uyA/PFpHeZ/L6l2ta920/MxlOAIGEOuwmU=
+github.com/vearutop/statigz v1.4.0/go.mod h1:LYTolBLiz9oJISwiVKnOQoIwhO1LWX1A7OECawGS8XE=
 github.com/vishvananda/netlink v0.0.0-20181108222139-023a6dafdcdf/go.mod h1:+SR5DhBJrl6ZM7CoCKvpw5BKroDKQ+PJqOg65H/2ktk=
 github.com/vishvananda/netlink v1.1.0/go.mod h1:cTgwzPIzzgDAYoQrMm0EdrjRUBkTqKYppBueQtXaqoE=
 github.com/vishvananda/netlink v1.1.1-0.20201029203352-d40f9887b852/go.mod h1:twkDnbuQxJYemMlGd4JFIcuhgX83tXhKS2B/PRMpOho=
