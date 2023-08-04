@@ -1,7 +1,11 @@
 
-export const upload = data => fetch(`api/skin`, {
+export const upload = (id, data) => fetch(`api/skin/${id}`, {
     method: "POST",
     body: data
 });
 
-export const get = () => fetch(`api/skin`).then(r => r.blob());
+export const get = id => fetch(`api/skin/${id}`).then(r => r.blob());
+
+export const remove = id => fetch(`api/skin/${id}`, {
+    method: "DELETE"
+});

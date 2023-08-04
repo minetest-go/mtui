@@ -60,8 +60,9 @@ func Setup(a *app.App) error {
 	apir.HandleFunc("/areas", api.Feature(types.PRIV_AREAS, api.Secure(api.GetAreas))).Methods(http.MethodGet)
 	apir.HandleFunc("/areas/{playername}", api.Feature(types.PRIV_AREAS, api.Secure(api.GetOwnedAreas))).Methods(http.MethodGet)
 
-	apir.HandleFunc("/skin", api.Feature(types.FEATURE_SKINSDB, api.Secure(api.GetSkin))).Methods(http.MethodGet)
-	apir.HandleFunc("/skin", api.Feature(types.FEATURE_SKINSDB, api.Secure(api.SetSkin))).Methods(http.MethodPost)
+	apir.HandleFunc("/skin/{id}", api.Feature(types.FEATURE_SKINSDB, api.Secure(api.GetSkin))).Methods(http.MethodGet)
+	apir.HandleFunc("/skin/{id}", api.Feature(types.FEATURE_SKINSDB, api.Secure(api.SetSkin))).Methods(http.MethodPost)
+	apir.HandleFunc("/skin/{id}", api.Feature(types.FEATURE_SKINSDB, api.Secure(api.RemoveSkin))).Methods(http.MethodDelete)
 
 	apir.HandleFunc("/metric_types", api.Feature(types.FEATURE_MONITORING, api.GetMetricTypes)).Methods(http.MethodGet)
 	apir.HandleFunc("/metric_types/{name}", api.Feature(types.FEATURE_MONITORING, api.GetMetricType)).Methods(http.MethodGet)
