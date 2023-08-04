@@ -36,6 +36,7 @@ services:
    - "./:/app"
    - "go_cache:/root/.cache"
    - "go_dir:/root/go"
+   - "/var/run/docker.sock:/var/run/docker.sock:ro"
   working_dir: /app
   command: ["go", "run", "."]
   
