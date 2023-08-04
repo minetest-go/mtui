@@ -12,6 +12,7 @@ import (
 
 	dockertypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
@@ -37,6 +38,35 @@ type ServiceStatus struct {
 }
 
 func (a *Api) GetEngineStatus(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	ctx := context.Background()
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("docker client error: %v", err))
+		return
+	}
+	defer cli.Close()
+
+	f := filters.NewArgs()
+	f.Add("name", os.Getenv("DOCKER_MINETEST_CONTAINER"))
+	containers, err := cli.ContainerList(ctx, dockertypes.ContainerListOptions{
+		All:     true,
+		Filters: f,
+	})
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("container-list error: %v", err))
+		return
+	}
+
+	status := &ServiceStatus{}
+
+	if len(containers) == 1 {
+		container := containers[0]
+		status.ID = container.ID
+		status.Created = true
+		status.Running = container.State == "running"
+	}
+
+	SendJson(w, status)
 }
 
 type CreateEngineRequest struct {
@@ -58,9 +88,6 @@ func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types
 		SendError(w, 404, fmt.Sprintf("unknown version: %s", cer.Version))
 		return
 	}
-
-	os.Getenv("DOCKER_MINETEST_PORT")
-	os.Getuid()
 
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())

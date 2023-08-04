@@ -1,3 +1,4 @@
+import { create, start, get_status, stop } from "../../../api/service_engine.js";
 
 export default {
 	data: function(){
@@ -11,12 +12,15 @@ export default {
 		this.update_state();
 	},
 	methods: {
-		update_state(){
+		update_state(){},
+		start: start,
+		stop: stop,
+		create: function(){
+			create({
+				version: "5.7.0"
+			});
 		},
-		start: function(){
-		},
-		stop: function(){
-		}
+		get_status: get_status
 	},
 	template: /*html*/`
 		<div class="row" v-if="state">
@@ -35,14 +39,17 @@ export default {
 							</div>
 							<div class="col-md-4">
 								<div class="btn-group">
-									<button class="btn btn-secondary" :disabled="state.created">
-										<i class="fa fa-check"></i> Initialize
+									<button class="btn btn-secondary" v-on:click="create">
+										<i class="fa fa-check"></i> Create
 									</button>
-									<button class="btn btn-success" :disabled="state.running || !state.created" v-on:click="start">
+									<button class="btn btn-success" v-on:click="start">
 										<i class="fa fa-play"></i> Start
 									</button>
-									<button class="btn btn-danger" :disabled="!state.running || !state.created" v-on:click="stop">
+									<button class="btn btn-danger" v-on:click="stop">
 										<i class="fa fa-stop"></i> Stop
+									</button>
+									<button class="btn btn-info" v-on:click="get_status">
+										<i class="fa fa-info"></i> Info
 									</button>
 								</div>
 							</div>
