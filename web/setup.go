@@ -28,7 +28,7 @@ func Setup(a *app.App) error {
 
 	apir := r.PathPrefix("/api").Subrouter()
 
-	apir.HandleFunc("/version", api.GetVersion)
+	apir.HandleFunc("/appinfo", api.GetAppInfo)
 
 	apir.HandleFunc("/features", api.GetFeatures).Methods(http.MethodGet)
 	apir.HandleFunc("/feature", api.SecurePriv(types.PRIV_SERVER, api.SetFeature)).Methods(http.MethodPost)

@@ -124,7 +124,6 @@ export default {
                 <label>Category</label>
                 <select class="form-control" v-model="category">
                     <option value="minetest">Minetest</option>
-                    <option value="ui">UI</option>
                 </select>
             </div>
             <div class="col-md-2">
@@ -219,7 +218,10 @@ export default {
                         <i v-if="log.event == 'logfile-info'" class="fa fa-file"></i>
                         <i v-if="log.event == 'logfile-verbose'" class="fa fa-file"></i>
                         &nbsp;
-                        <span class="badge bg-secondary">{{log.event}}</span>
+                        <span class="badge bg-secondary">
+                            {{log.event}}
+                            <i class="fa fa-magnifying-glass" v-on:click="search_specific('event', log.event)"></i>
+                        </span>
                     </td>
                     <td>
                         <i class="fa fa-magnifying-glass" v-on:click="search_specific('username', log.username)" v-if="log.username"></i>

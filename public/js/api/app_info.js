@@ -1,0 +1,1 @@
+export const get_appinfo = () => fetch("api/appinfo").then(r => r.json());

@@ -1,16 +1,14 @@
-
-const store = Vue.reactive({ version: "" });
-import { get_version } from "../../api/version.js";
+import app_info from "../../store/app_info.js";
 
 export default {
-	data: () => store,
-	mounted: function() {
-		get_version().then(v => this.version = v);
-	},
+	data: () => app_info,
 	template: /*html*/`
 	<div>
 		<div class="text-center">
-			<h4>Start page</h4>
+			<h3>
+				Minetest Web UI
+				<small class="text-muted" v-if="servername">{{servername}}</small>
+			</h3>
 			<span v-if="version">
 				Version: <span class="badge bg-primary">{{ version }}</span>
 			</span>

@@ -25,6 +25,7 @@ services:
    WEBDEV: "true"
    API_KEY: "mykey"
    LOGLEVEL: debug
+   SERVER_NAME: "dev-server"
    ENABLE_FEATURES: "mail,shell,luashell,xban,monitoring,minetest_config"
    MINETEST_CONFIG: "/etc/minetest/minetest.conf"
   ports:

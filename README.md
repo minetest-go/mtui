@@ -40,6 +40,7 @@ Planned:
 * `ADMIN_USERNAME` initial admin username (optional)
 * `ADMIN_PASSWORD` initial admin password (optional)
 * `LOGLEVEL` currently supported: "debug", default is "info"
+* `SERVER_NAME` Server-name to display on the ui
 * `ENABLE_FEATURES` manually enabled features
 * `MINETEST_CONFIG` set this to the `minetest.conf` location to enable the settings-management
 

@@ -68,11 +68,13 @@ export default {
         </form>
         <div class="row">
             <div class="col-md-12">
-            <a class="btn btn-outline-secondary" v-on:click="predefined('status')" v-if="has_priv('interact')">status</a>
-            <a class="btn btn-outline-secondary" v-on:click="predefined('privs')" v-if="has_priv('interact')">privs</a>
-            <a class="btn btn-outline-secondary" v-on:click="predefined('days')" v-if="has_priv('interact')">days</a>
-            <a class="btn btn-outline-secondary" v-on:click="predefined('time 6000')" v-if="has_priv('settime')">time 6000</a>
-            <a class="btn btn-outline-secondary" v-on:click="predefined('shutdown 120 -r')" v-if="has_priv('server')">shutdown 120 -r</a>
+                <div class="input-group">
+                    <a class="btn btn-outline-secondary" v-on:click="predefined('status')" v-if="has_priv('interact')">status</a>
+                    <a class="btn btn-outline-secondary" v-on:click="predefined('privs')" v-if="has_priv('interact')">privs</a>
+                    <a class="btn btn-outline-secondary" v-on:click="predefined('days')" v-if="has_priv('interact')">days</a>
+                    <a class="btn btn-outline-secondary" v-on:click="predefined('time 6000')" v-if="has_priv('settime')">time 6000</a>
+                    <a class="btn btn-warning" v-on:click="predefined('shutdown 120 -r')" v-if="has_priv('server')">shutdown 120 -r</a>
+                </div>
             </div>
         </div>
         <hr>

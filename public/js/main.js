@@ -4,9 +4,13 @@ import messages from './messages.js';
 import { check_login } from './service/login.js';
 import { check_features } from './service/features.js';
 import router_guards from './util/router_guards.js';
+import { fetch_info } from './service/app_info.js';
 import { connect } from './ws.js';
 
 function start(){
+	// fetch app info
+	fetch_info();
+
 	// create router instance
 	const router = VueRouter.createRouter({
 		history: VueRouter.createWebHashHistory(),
