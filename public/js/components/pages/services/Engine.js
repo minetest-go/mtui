@@ -1,9 +1,5 @@
-import LiveLogs from '../LiveLogs.js';
 
 export default {
-	components: {
-		"live-logs": LiveLogs
-	},
 	data: function(){
 		return {
 			state: {
@@ -33,12 +29,8 @@ export default {
 						<div class="row">
 							<div class="col-md-4">
 								<select class="form-control">
-									<option>registry.gitlab.com/minetest/minetest/server:5.2.0</option>
-									<option>registry.gitlab.com/minetest/minetest/server:5.3.0</option>
-									<option>registry.gitlab.com/minetest/minetest/server:5.4.0</option>
-									<option>registry.gitlab.com/minetest/minetest/server:latest</option>
-									<option>buckaroobanzay/minetest:5.3.0-r5</option>
-									<option>buckaroobanzay/minetest:5.3.0-r7</option>
+									<option>5.7.0</option>
+									<option>5.6.0</option>
 								</select>
 							</div>
 							<div class="col-md-4">
@@ -59,11 +51,6 @@ export default {
 							</div>
 						</div>
 						<br>
-						<div class="row">
-							<div class="col-md-12">
-								<live-logs name="minetest"/>
-							</div>
-						</div>
 					</div>
 				</div>
 			</div>

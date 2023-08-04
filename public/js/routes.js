@@ -20,6 +20,7 @@ import OauthApps from './components/pages/OauthApps.js';
 import OauthAppEdit from './components/pages/OauthAppEdit.js';
 import MinetestConfig from './components/pages/MinetestConfig.js';
 import MinetestConfigEdit from './components/pages/MinetestConfigEdit.js';
+import EngineService from './components/pages/services/Engine.js';
 
 export default [{
 	path: "/", component: Start,
@@ -83,5 +84,8 @@ export default [{
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/minetest-config/:key", component: MinetestConfigEdit,
+	meta: { requiredPriv: "server" }
+}, {
+	path: "/services/engine", component: EngineService,
 	meta: { requiredPriv: "server" }
 }];

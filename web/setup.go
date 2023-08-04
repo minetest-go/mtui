@@ -116,6 +116,15 @@ func Setup(a *app.App) error {
 	cfgr.HandleFunc("/{key}", api.SecurePriv(types.PRIV_SERVER, api.SetMTConfig)).Methods(http.MethodPost)
 	cfgr.HandleFunc("/{key}", api.SecurePriv(types.PRIV_SERVER, api.DeleteMTConfig)).Methods(http.MethodDelete)
 
+	servapi := apir.PathPrefix("/service").Subrouter()
+	servapi.Use(SecureHandler(api.FeatureCheck(types.FEATURE_DOCKER)))
+	servapi.HandleFunc("/engine/versions", api.SecurePriv(types.PRIV_SERVER, api.GetEngineVersions)).Methods(http.MethodGet)
+	servapi.HandleFunc("/engine", api.SecurePriv(types.PRIV_SERVER, api.GetEngineStatus)).Methods(http.MethodGet)
+	servapi.HandleFunc("/engine", api.SecurePriv(types.PRIV_SERVER, api.CreateEngine)).Methods(http.MethodPost)
+	servapi.HandleFunc("/engine", api.SecurePriv(types.PRIV_SERVER, api.RemoveEngine)).Methods(http.MethodDelete)
+	servapi.HandleFunc("/engine/start", api.SecurePriv(types.PRIV_SERVER, api.StartEngine)).Methods(http.MethodPost)
+	servapi.HandleFunc("/engine/stop", api.SecurePriv(types.PRIV_SERVER, api.StopEngine)).Methods(http.MethodPost)
+
 	// OAuth
 	api.app.OAuthServer.SetAllowGetAccessRequest(true)
 	api.app.OAuthServer.SetAllowedGrantType(oauth2.Implicit, oauth2.AuthorizationCode, oauth2.ClientCredentials)

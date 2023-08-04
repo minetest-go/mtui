@@ -5,7 +5,7 @@ services:
   image: registry.gitlab.com/minetest/minetest/server:5.7.0
   user: root
   volumes:
-    - "minetest_home:/root/.minetest"
+    - "${PWD}/dev/world:/root/.minetest/worlds/world"
     - "./dev/worldmods:/root/.minetest/worlds/world/worldmods"
     - "./minetest.conf:/etc/minetest/minetest.conf"
   ports:
@@ -26,12 +26,17 @@ services:
    API_KEY: "mykey"
    LOGLEVEL: debug
    SERVER_NAME: "dev-server"
-   ENABLE_FEATURES: "mail,shell,luashell,xban,monitoring,minetest_config"
+   ENABLE_FEATURES: "mail,shell,luashell,xban,monitoring,minetest_config,docker"
    MINETEST_CONFIG: "/etc/minetest/minetest.conf"
+   DOCKER_MINETEST_CONFIG: "${PWD}/minetest.conf"
+   DOCKER_MINETEST_PORT: 30000
+   DOCKER_NETWORK: "mtui_default"
+   DOCKER_WORLD_DIR: "${PWD}/dev/world"
+   DOCKER_MINETEST_CONTAINER: "mtui_engine"
   ports:
     - 8080:8080
   volumes:
-   - "minetest_home:/root/.minetest"
+   - "${PWD}/dev/world:/root/.minetest/worlds/world"
    - "./dev/worldmods:/root/.minetest/worlds/world/worldmods"
    - "./minetest.conf:/etc/minetest/minetest.conf"
    - "./:/app"
@@ -42,6 +47,5 @@ services:
   
 
 volumes:
-  minetest_home: {}
   go_cache: {}
   go_dir: {}
