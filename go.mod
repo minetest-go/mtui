@@ -19,7 +19,7 @@ require (
 
 require (
 	github.com/go-oauth2/oauth2/v4 v4.5.2
-	github.com/golang-jwt/jwt/v4 v4.4.2
+	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/minetest-go/areasparser v1.0.3
 )
 
