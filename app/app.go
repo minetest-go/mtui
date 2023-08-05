@@ -2,6 +2,7 @@ package app
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"mtui/bridge"
 	"mtui/db"
@@ -12,8 +13,9 @@ import (
 	"mtui/modmanager"
 	"mtui/types"
 	"os"
+	"path"
 
-	"github.com/go-oauth2/oauth2/v4/errors"
+	oautherrors "github.com/go-oauth2/oauth2/v4/errors"
 	"github.com/go-oauth2/oauth2/v4/generates"
 	"github.com/go-oauth2/oauth2/v4/manage"
 	"github.com/go-oauth2/oauth2/v4/server"
@@ -43,7 +45,26 @@ type App struct {
 	MTConfig      minetestconfig.MinetestConfig
 }
 
+const default_world_mt_content = `
+mod_storage_backend = sqlite3
+auth_backend = sqlite3
+player_backend = sqlite3
+backend = sqlite3
+gameid = minetest_game
+`
+
 func Create(world_dir string) (*App, error) {
+
+	// check world.mt file and fall back to defaults
+	world_mt_file := path.Join(world_dir, "world.mt")
+	_, err := os.Stat(world_mt_file)
+	if errors.Is(err, os.ErrNotExist) {
+		err = os.WriteFile(world_mt_file, []byte(default_world_mt_content), 0644)
+		if err != nil {
+			return nil, fmt.Errorf("could not write world.mt defaults to '%s'", world_mt_file)
+		}
+	}
+
 	dbctx, err := mtdb.New(world_dir)
 	if err != nil {
 		return nil, err
@@ -137,12 +158,12 @@ func Create(world_dir string) (*App, error) {
 	oauth_mgr.MapAccessGenerate(generates.NewJWTAccessGenerate("", []byte(cfg.JWTKey), jwt.SigningMethodHS512))
 
 	oauth_srv := server.NewDefaultServer(oauth_mgr)
-	oauth_srv.SetInternalErrorHandler(func(err error) (re *errors.Response) {
+	oauth_srv.SetInternalErrorHandler(func(err error) (re *oautherrors.Response) {
 		logrus.WithFields(logrus.Fields{"err": re}).Error("Internal error")
 		return
 	})
 
-	oauth_srv.SetResponseErrorHandler(func(re *errors.Response) {
+	oauth_srv.SetResponseErrorHandler(func(re *oautherrors.Response) {
 		logrus.WithFields(logrus.Fields{"err": re}).Error("Response error")
 	})
 

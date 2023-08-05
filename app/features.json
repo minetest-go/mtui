@@ -43,5 +43,9 @@
         "name": "minetest_config",
         "description": "minetest configuration management",
         "experimental": true
+    },{
+        "name": "docker",
+        "description": "docker container management for other services",
+        "experimental": true
     }
 ]

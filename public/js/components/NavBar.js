@@ -13,7 +13,8 @@ export default {
 			stats: stats_store,
 			mail: mail_store,
 			admin_menu: false,
-			mod_menu: false
+			mod_menu: false,
+			services_menu: false
 		};
 	},
 	methods: {
@@ -83,6 +84,19 @@ export default {
 									<i class="fa fa-magnifying-glass"></i> Logs
 								</router-link>
 							</li>	
+						</ul>
+					</li>
+					<li class="nav-item dropdown" v-if="has_feature('docker')" v-on:mouseleave="services_menu = false">
+						<a class="nav-link dropdown-toggle" v-on:click="services_menu = true" v-on:mouseover="services_menu = true">
+							<i class="fa-solid fa-gears"></i>
+							Services
+						</a>		
+						<ul class="dropdown-menu" v-bind:class="{'show': services_menu}">
+							<li>
+								<router-link to="/services/engine" class="dropdown-item">
+									<i class="fa fa-gear"></i> Minetest engine
+								</router-link>
+							</li>
 						</ul>
 					</li>
 					<li class="nav-item dropdown" v-if="has_priv('server')" v-on:mouseleave="admin_menu = false">
