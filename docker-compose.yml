@@ -1,16 +1,6 @@
 version: "3.6"
 
 services:
- minetest:
-  image: registry.gitlab.com/minetest/minetest/server:5.7.0
-  user: root
-  volumes:
-    - "${PWD}/dev/world:/root/.minetest/worlds/world"
-    - "./dev/worldmods:/root/.minetest/worlds/world/worldmods"
-    - "./minetest.conf:/etc/minetest/minetest.conf"
-  ports:
-    - "30000:30000/udp"
-
  ui_webapp:
   image: node:19.2.0-alpine3.15
   volumes:
@@ -45,7 +35,6 @@ services:
   working_dir: /app
   command: ["go", "run", "."]
   
-
 volumes:
   go_cache: {}
   go_dir: {}
