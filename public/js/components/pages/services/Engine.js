@@ -63,6 +63,9 @@ export default {
 				<div class="card">
 					<div class="card-header">
 						Engine
+						<i class="fa fa-play" v-if="status && status.running" style="color: green;"></i>
+						<i class="fa fa-stop" v-if="status && !status.running" style="color: red;"></i>
+						<i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>
 					</div>
 					<div class="card-body">
 						<div class="row">
@@ -71,22 +74,19 @@ export default {
 									<option v-for="(image, version) in versions" :value="version">{{version}}</option>
 								</select>
 							</div>
-							<div class="col-md-4">
+							<div class="col-md-4" v-if="status">
 								<div class="btn-group">
-									<button class="btn btn-secondary" v-on:click="create">
-										<i class="fa fa-check"></i> Create
+									<button class="btn btn-secondary" :disabled="busy || status.created || !version" v-on:click="create">
+										<i class="fa fa-check"></i> Install
 									</button>
-									<button class="btn btn-success" v-on:click="start">
+									<button class="btn btn-secondary" :disabled="busy || status.running || !status.created" v-on:click="remove">
+										<i class="fa fa-times"></i> Uninstall
+									</button>
+									<button class="btn btn-success" :disabled="busy || !status.created || status.running" v-on:click="start">
 										<i class="fa fa-play"></i> Start
 									</button>
-									<button class="btn btn-warning" v-on:click="stop">
+									<button class="btn btn-warning" :disabled="busy || !status.created || !status.running" v-on:click="stop">
 										<i class="fa fa-stop"></i> Stop
-									</button>
-									<button class="btn btn-danger" v-on:click="remove">
-										<i class="fa fa-times"></i> Remove
-									</button>
-									<button class="btn btn-info" v-on:click="get_status">
-										<i class="fa fa-info"></i> Info
 									</button>
 								</div>
 							</div>

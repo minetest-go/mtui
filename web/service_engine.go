@@ -181,6 +181,9 @@ func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types
 		Tty:   false,
 		User:  fmt.Sprintf("%d", os.Getuid()),
 	}, &container.HostConfig{
+		RestartPolicy: container.RestartPolicy{
+			Name: "always",
+		},
 		Mounts: []mount.Mount{
 			{
 				Type:   mount.TypeBind,
