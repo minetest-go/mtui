@@ -333,7 +333,6 @@ func (a *Api) GetEngineLogs(w http.ResponseWriter, r *http.Request, claims *type
 	logs, err := cli.ContainerLogs(ctx, container.ID, dockertypes.ContainerLogsOptions{
 		ShowStdout: true,
 		ShowStderr: true,
-		Timestamps: true,
 		Since:      since,
 		Until:      until,
 	})
