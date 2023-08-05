@@ -1,29 +1,64 @@
-import { create, start, get_status, stop } from "../../../api/service_engine.js";
+import { create, remove, start, get_status, stop, get_versions } from "../../../api/service_engine.js";
+
+const store = Vue.reactive({
+	versions: null,
+	busy: false,
+	status: null,
+	version: ""
+});
 
 export default {
 	data: function(){
-		return {
-			state: {
-				created: true
-			}
-		};
+		return store;
 	},
 	created: function(){
-		this.update_state();
+		if (!store.status){
+			this.update_state();
+		}
+		if (!store.versions) {
+			get_versions()
+			.then(v => store.versions = v);
+		}
 	},
 	methods: {
-		update_state(){},
-		start: start,
-		stop: stop,
-		create: function(){
-			create({
-				version: "5.7.0"
-			});
+		update_state(){
+			store.busy = true;
+			get_status()
+			.then(s => store.status = s)
+			.then(() => store.version = store.status.version)
+			.finally(() => store.busy = false);
 		},
-		get_status: get_status
+		start: function(){
+			store.busy = true;
+			start()
+			.then(() => get_status())
+			.then(s => store.status = s)
+			.finally(() => store.busy = false);
+		},
+		stop: function(){
+			store.busy = true;
+			stop()
+			.then(() => get_status())
+			.then(s => store.status = s)
+			.finally(() => store.busy = false);
+		},
+		remove: function(){
+			store.busy = true;
+			remove()
+			.then(() => get_status())
+			.then(s => store.status = s)
+			.finally(() => store.busy = false);
+		},
+		create: function(){
+			store.busy = true;
+			create({version: store.version})
+			.then(() => get_status())
+			.then(s => store.status = s)
+			.finally(() => store.busy = false);
+		}
 	},
 	template: /*html*/`
-		<div class="row" v-if="state">
+		<div class="row">
 			<div class="col-md-12">
 				<div class="card">
 					<div class="card-header">
@@ -31,10 +66,9 @@ export default {
 					</div>
 					<div class="card-body">
 						<div class="row">
-							<div class="col-md-4">
-								<select class="form-control">
-									<option>5.7.0</option>
-									<option>5.6.0</option>
+							<div class="col-md-4" v-if="versions && status">
+								<select class="form-control" v-model="version">
+									<option v-for="(image, version) in versions" :value="version">{{version}}</option>
 								</select>
 							</div>
 							<div class="col-md-4">
@@ -45,8 +79,11 @@ export default {
 									<button class="btn btn-success" v-on:click="start">
 										<i class="fa fa-play"></i> Start
 									</button>
-									<button class="btn btn-danger" v-on:click="stop">
+									<button class="btn btn-warning" v-on:click="stop">
 										<i class="fa fa-stop"></i> Stop
+									</button>
+									<button class="btn btn-danger" v-on:click="remove">
+										<i class="fa fa-times"></i> Remove
 									</button>
 									<button class="btn btn-info" v-on:click="get_status">
 										<i class="fa fa-info"></i> Info

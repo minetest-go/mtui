@@ -37,33 +37,61 @@ type ServiceStatus struct {
 	Version string `json:"version"`
 }
 
-func (a *Api) GetEngineStatus(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	ctx := context.Background()
+func getDockerCli() (*client.Client, error) {
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
-		SendError(w, 500, fmt.Sprintf("docker client error: %v", err))
-		return
+		return nil, fmt.Errorf("new client error: %v", err)
 	}
-	defer cli.Close()
+	return cli, nil
+}
 
+func getMinetestContainer() (*dockertypes.Container, error) {
+	cli, err := getDockerCli()
+	if err != nil {
+		return nil, err
+	}
+
+	ctx := context.Background()
+	container_name := os.Getenv("DOCKER_MINETEST_CONTAINER")
 	f := filters.NewArgs()
-	f.Add("name", os.Getenv("DOCKER_MINETEST_CONTAINER"))
+	f.Add("name", container_name)
 	containers, err := cli.ContainerList(ctx, dockertypes.ContainerListOptions{
 		All:     true,
 		Filters: f,
 	})
 	if err != nil {
-		SendError(w, 500, fmt.Sprintf("container-list error: %v", err))
-		return
+		return nil, fmt.Errorf("container-list error: %v", err)
 	}
 
+	if len(containers) == 1 {
+		// single container found
+		return &containers[0], nil
+	} else if len(containers) > 1 {
+		return nil, fmt.Errorf("multiple containers found with name '%s'", container_name)
+	}
+
+	// no container found
+	return nil, nil
+}
+
+func (a *Api) GetEngineStatus(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	status := &ServiceStatus{}
 
-	if len(containers) == 1 {
-		container := containers[0]
+	container, err := getMinetestContainer()
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("fetch container error: %v", err))
+		return
+	}
+	if container != nil {
 		status.ID = container.ID
 		status.Created = true
 		status.Running = container.State == "running"
+		for v, img := range VersionImageMapping {
+			if img == container.Image {
+				status.Version = v
+				break
+			}
+		}
 	}
 
 	SendJson(w, status)
@@ -76,8 +104,19 @@ type CreateEngineRequest struct {
 func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	// https://docs.docker.com/engine/api/sdk/examples/
 
+	// check if container already exists
+	c, err := getMinetestContainer()
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("fetch container error: %v", err))
+		return
+	}
+	if c != nil {
+		SendError(w, 500, "container already created")
+		return
+	}
+
 	cer := &CreateEngineRequest{}
-	err := json.NewDecoder(r.Body).Decode(cer)
+	err = json.NewDecoder(r.Body).Decode(cer)
 	if err != nil {
 		SendError(w, 500, fmt.Sprintf("json error: %v", err))
 		return
@@ -90,7 +129,7 @@ func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types
 	}
 
 	ctx := context.Background()
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	cli, err := getDockerCli()
 	if err != nil {
 		SendError(w, 500, fmt.Sprintf("docker client error: %v", err))
 		return
@@ -138,7 +177,7 @@ func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types
 	// prefix world and config with /data inside container to prevent filename collisions
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
 		Image: image,
-		Cmd:   []string{"--world", world_dir_container, "--config", minetest_config_container},
+		Cmd:   []string{"minetestserver", "--world", world_dir_container, "--config", minetest_config_container},
 		Tty:   false,
 		User:  fmt.Sprintf("%d", os.Getuid()),
 	}, &container.HostConfig{
@@ -180,10 +219,67 @@ func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types
 }
 
 func (a *Api) StartEngine(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	c, err := getMinetestContainer()
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("fetch container error: %v", err))
+		return
+	}
+	if c == nil {
+		SendError(w, 404, "no container found")
+		return
+	}
+
+	cli, err := getDockerCli()
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("docker client error: %v", err))
+		return
+	}
+
+	ctx := context.Background()
+	err = cli.ContainerStart(ctx, c.ID, dockertypes.ContainerStartOptions{})
+	Send(w, true, err)
 }
 
 func (a *Api) StopEngine(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	c, err := getMinetestContainer()
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("fetch container error: %v", err))
+		return
+	}
+	if c == nil {
+		SendError(w, 404, "no container found")
+		return
+	}
+
+	cli, err := getDockerCli()
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("docker client error: %v", err))
+		return
+	}
+
+	ctx := context.Background()
+	err = cli.ContainerStop(ctx, c.ID, container.StopOptions{})
+	Send(w, true, err)
 }
 
 func (a *Api) RemoveEngine(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	c, err := getMinetestContainer()
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("fetch container error: %v", err))
+		return
+	}
+	if c == nil {
+		SendError(w, 404, "no container found")
+		return
+	}
+
+	cli, err := getDockerCli()
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("docker client error: %v", err))
+		return
+	}
+
+	ctx := context.Background()
+	err = cli.ContainerRemove(ctx, c.ID, dockertypes.ContainerRemoveOptions{})
+	Send(w, true, err)
 }

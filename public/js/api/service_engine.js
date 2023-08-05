@@ -12,7 +12,7 @@ export const start = () => fetch(`api/service/engine/start`, {
     method: "POST"
 });
 
-export const stop = () => fetch(`api/service/engine/start`, {
+export const stop = () => fetch(`api/service/engine/stop`, {
     method: "POST"
 });
 
