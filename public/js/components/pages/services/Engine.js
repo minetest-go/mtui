@@ -1,11 +1,33 @@
-import { create, remove, start, get_status, stop, get_versions } from "../../../api/service_engine.js";
+import { create, remove, start, get_status, stop, get_versions, get_logs } from "../../../api/service_engine.js";
 
 const store = Vue.reactive({
 	versions: null,
 	busy: false,
 	status: null,
-	version: ""
+	version: "",
+	logs: "",
+	logs_since: Date.now() - (1000*60*60) //since an hour
 });
+
+function update_logs(){
+	if (!store.status || !store.status.created) {
+		// skip log-fetching if no container created
+		return;
+	}
+
+	// fetch and shift window
+	const now = Date.now();
+	get_logs(store.logs_since, now)
+	.then(l => {
+		if (l.out){
+			store.logs += l.out;
+		}
+		if (l.err){
+			store.logs += l.err;
+		}
+		store.logs_since = now + 1;
+	});
+}
 
 export default {
 	data: function(){
@@ -19,6 +41,10 @@ export default {
 			get_versions()
 			.then(v => store.versions = v);
 		}
+		this.log_update_handle = setInterval(update_logs, 1000);
+	},
+	unmounted: function() {
+		clearInterval(this.log_update_handle);
 	},
 	methods: {
 		update_state(){
@@ -95,6 +121,19 @@ export default {
 							</div>
 						</div>
 						<br>
+					</div>
+				</div>
+			</div>
+		</div>
+		&nbsp;
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card">
+					<div class="card-header">
+						Logs
+					</div>
+					<div class="card-body">
+						<pre style="height: 400px; background: grey;">{{logs}}</pre>
 					</div>
 				</div>
 			</div>

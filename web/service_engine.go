@@ -1,6 +1,7 @@
 package web
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -9,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	dockertypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -16,7 +18,9 @@ import (
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
+	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/docker/go-connections/nat"
+	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 )
 
@@ -285,4 +289,73 @@ func (a *Api) RemoveEngine(w http.ResponseWriter, r *http.Request, claims *types
 	ctx := context.Background()
 	err = cli.ContainerRemove(ctx, c.ID, dockertypes.ContainerRemoveOptions{})
 	Send(w, true, err)
+}
+
+type ServiceLogResponse struct {
+	Out string `json:"out"`
+	Err string `json:"err"`
+}
+
+func (a *Api) GetEngineLogs(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	vars := mux.Vars(r)
+
+	since_millis, err := strconv.ParseInt(vars["since"], 10, 64)
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("invalid since format: %s", vars["since"]))
+		return
+	}
+	since := time.UnixMilli(since_millis).Format(time.RFC3339)
+
+	until_millis, err := strconv.ParseInt(vars["until"], 10, 64)
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("invalid until format: %s", vars["until"]))
+		return
+	}
+	until := time.UnixMilli(until_millis).Format(time.RFC3339)
+
+	container, err := getMinetestContainer()
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("fetch container error: %v", err))
+		return
+	}
+	if container == nil {
+		SendError(w, 404, "container not found")
+		return
+	}
+
+	cli, err := getDockerCli()
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("docker client error: %v", err))
+		return
+	}
+
+	ctx := context.Background()
+	logs, err := cli.ContainerLogs(ctx, container.ID, dockertypes.ContainerLogsOptions{
+		ShowStdout: true,
+		ShowStderr: true,
+		Timestamps: true,
+		Since:      since,
+		Until:      until,
+	})
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("docker stdout log error: %v", err))
+		return
+	}
+	defer logs.Close()
+
+	out_buf := bytes.NewBuffer([]byte{})
+	err_buf := bytes.NewBuffer([]byte{})
+
+	_, err = stdcopy.StdCopy(out_buf, err_buf, logs)
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("docker stdcopy error: %v", err))
+		return
+	}
+
+	slogs := &ServiceLogResponse{
+		Out: out_buf.String(),
+		Err: err_buf.String(),
+	}
+
+	Send(w, slogs, nil)
 }

@@ -19,3 +19,5 @@ export const stop = () => fetch(`api/service/engine/stop`, {
 export const remove = () => fetch(`api/service/engine`, {
     method: "DELETE"
 });
+
+export const get_logs = (since, until) => fetch(`api/service/engine/logs/${since}/${until}`).then(r => r.json());
