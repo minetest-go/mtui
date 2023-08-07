@@ -13,15 +13,6 @@ func (a *Api) GetMods(w http.ResponseWriter, r *http.Request, claims *types.Clai
 	Send(w, list, err)
 }
 
-func (a *Api) ScanWorldDir(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	err := a.app.ModManager.Scan()
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-	a.GetMods(w, r, claims)
-}
-
 func (a *Api) UpdateModVersion(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	vars := mux.Vars(r)
 	id := vars["id"]

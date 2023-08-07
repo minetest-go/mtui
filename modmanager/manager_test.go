@@ -13,9 +13,6 @@ func TestScan(t *testing.T) {
 	mm := modmanager.New(app.WorldDir, app.Repos.ModRepo)
 	assert.NotNil(t, mm)
 
-	err := mm.Scan()
-	assert.NoError(t, err)
-
 	mods, err := mm.Mods()
 	assert.NoError(t, err)
 	assert.NotNil(t, mods)
@@ -60,8 +57,6 @@ func TestCheckoutHash(t *testing.T) {
 	assert.NotEqual(t, "", mod.ID)
 	assert.Equal(t, "fe34e3f3cd3e066ba0be76f9df46c11e66411496", mod.Version)
 
-	// test Scan()
-	assert.NoError(t, mm.Scan())
 	mods, err := mm.Mods()
 	assert.NoError(t, err)
 	assert.NotNil(t, mods)

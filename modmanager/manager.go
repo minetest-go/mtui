@@ -2,11 +2,9 @@ package modmanager
 
 import (
 	"errors"
-	"io/ioutil"
 	"mtui/db"
 	"mtui/types"
 	"os"
-	"path"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
@@ -25,95 +23,6 @@ func New(world_dir string, repo *db.ModRepository) *ModManager {
 		world_dir: world_dir,
 		repo:      repo,
 	}
-}
-
-func (m *ModManager) scanMod(modname, dir string, modtype types.ModType) (bool, error) {
-	gitDir := isDir(path.Join(dir, ".git"))
-	if !gitDir {
-		return false, nil
-	}
-
-	r, err := git.PlainOpen(dir)
-	if err != nil {
-		return false, err
-	}
-
-	rem, err := r.Remote("origin")
-	if err != nil {
-		return false, err
-	}
-	if rem == nil {
-		return false, errors.New("no origin found")
-	}
-
-	ref, err := r.Head()
-	if err != nil {
-		return false, err
-	}
-
-	mod := &types.Mod{
-		ID:         uuid.NewString(),
-		Name:       modname,
-		ModType:    modtype,
-		SourceType: types.SourceTypeGIT,
-		URL:        rem.Config().URLs[0],
-		Branch:     ref.Name().String(),
-		Version:    ref.Hash().String(),
-	}
-
-	return true, m.repo.Create(mod)
-}
-
-func (m *ModManager) scanDir(dir string, modtype types.ModType) error {
-	e, err := exists(dir)
-	if err != nil {
-		return err
-	}
-	if !e {
-		return nil
-	}
-
-	l, err := ioutil.ReadDir(dir)
-	if err != nil {
-		return err
-	}
-
-	for _, fi := range l {
-		if fi.IsDir() {
-			_, err := m.scanMod(fi.Name(), path.Join(dir, fi.Name()), modtype)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
-}
-
-func (m *ModManager) Scan() error {
-	// clear mod list
-	err := m.repo.DeleteAll()
-	if err != nil {
-		return err
-	}
-
-	// scan all containing folders
-	err = m.scanDir(path.Join(m.world_dir, "worldmods"), types.ModTypeMod)
-	if err != nil {
-		return err
-	}
-
-	err = m.scanDir(path.Join(m.world_dir, "textures"), types.ModTypeTexturepack)
-	if err != nil {
-		return err
-	}
-
-	_, err = m.scanMod("game", path.Join(m.world_dir, "game"), types.ModTypeGame)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func (m *ModManager) Mods() ([]*types.Mod, error) {

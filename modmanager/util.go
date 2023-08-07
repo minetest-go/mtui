@@ -2,7 +2,6 @@ package modmanager
 
 import (
 	"mtui/types"
-	"os"
 	"path"
 )
 
@@ -17,23 +16,4 @@ func (m *ModManager) getDir(mod *types.Mod) string {
 	default:
 		return ""
 	}
-}
-
-func exists(path string) (bool, error) {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
-	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return false, err
-}
-
-func isDir(path string) bool {
-	fi, err := os.Stat(path)
-	if err == nil {
-		return fi.IsDir()
-	}
-	return false
 }

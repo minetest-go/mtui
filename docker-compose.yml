@@ -27,7 +27,6 @@ services:
     - 8080:8080
   volumes:
    - "${PWD}/dev/world:/root/.minetest/worlds/world"
-   - "./dev/worldmods:/root/.minetest/worlds/world/worldmods"
    - "./minetest.conf:/etc/minetest/minetest.conf"
    - "./:/app"
    - "go_cache:/go"
