@@ -14,8 +14,6 @@ func (m *ModManager) getDir(mod *types.Mod) string {
 		return path.Join(m.world_dir, "worldmods", mod.Name)
 	case types.ModTypeTexturepack:
 		return path.Join(m.world_dir, "textures", mod.Name) // TODO: verify
-	case types.ModTypeWorldMods:
-		return path.Join(m.world_dir, "worldmods")
 	default:
 		return ""
 	}

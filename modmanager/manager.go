@@ -30,16 +30,6 @@ func New(world_dir string, repo *db.ModRepository) *ModManager {
 func (m *ModManager) scanMod(modname, dir string, modtype types.ModType) (bool, error) {
 	gitDir := isDir(path.Join(dir, ".git"))
 	if !gitDir {
-		if isDir(dir) && modtype != types.ModTypeWorldMods {
-			// self managed folder
-			return true, m.repo.Create(&types.Mod{
-				ID:         uuid.NewString(),
-				Name:       modname,
-				SourceType: types.SourceTypeManual,
-				ModType:    modtype,
-			})
-		}
-
 		return false, nil
 	}
 
@@ -107,17 +97,10 @@ func (m *ModManager) Scan() error {
 		return err
 	}
 
-	found, err := m.scanMod("worldmods", path.Join(m.world_dir, "worldmods"), types.ModTypeWorldMods)
+	// scan all containing folders
+	err = m.scanDir(path.Join(m.world_dir, "worldmods"), types.ModTypeMod)
 	if err != nil {
 		return err
-	}
-
-	if !found {
-		// worldmods is not a git directory, scan all containing folders
-		err := m.scanDir(path.Join(m.world_dir, "worldmods"), types.ModTypeMod)
-		if err != nil {
-			return err
-		}
 	}
 
 	err = m.scanDir(path.Join(m.world_dir, "textures"), types.ModTypeTexturepack)

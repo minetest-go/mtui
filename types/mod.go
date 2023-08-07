@@ -4,7 +4,6 @@ type ModType string
 
 const (
 	ModTypeMod         ModType = "mod"
-	ModTypeWorldMods   ModType = "worldmods"
 	ModTypeGame        ModType = "game"
 	ModTypeTexturepack ModType = "txp"
 )
