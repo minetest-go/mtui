@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 )
 
 type CDBClient struct {
@@ -29,26 +30,74 @@ func New() *CDBClient {
 	})
 }
 
-func (c *CDBClient) GetPackages() ([]*Package, error) {
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/api/packages", c.opts.BaseURL), nil)
+func (c *CDBClient) get(suffix string, data any, queryparams map[string]string) error {
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", c.opts.BaseURL, suffix), nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	if c.opts.Token != "" {
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.opts.Token))
 	}
 
+	params := url.Values{}
+	for k, v := range queryparams {
+		params.Add(k, v)
+	}
+	req.URL.RawQuery = params.Encode()
+
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("unexpected response-code: %d", resp.StatusCode)
+		return fmt.Errorf("unexpected response-code: %d", resp.StatusCode)
 	}
 
-	p := make([]*Package, 0)
-	err = json.NewDecoder(resp.Body).Decode(&p)
+	return json.NewDecoder(resp.Body).Decode(data)
+}
 
-	return p, err
+func (c *CDBClient) GetPackages() ([]*Package, error) {
+	pkgs := make([]*Package, 0)
+	err := c.get("api/packages", &pkgs, nil)
+	return pkgs, err
+}
+
+func (c *CDBClient) SearchPackages(q *PackageQuery) ([]*Package, error) {
+	pkgs := make([]*Package, 0)
+
+	params := make(map[string]string)
+	if q.Type != "" {
+		params["type"] = string(q.Type)
+	}
+	if q.Query != "" {
+		params["q"] = q.Query
+	}
+
+	err := c.get("api/packages", &pkgs, params)
+	return pkgs, err
+}
+
+func (c *CDBClient) GetDetails(p *Package) (*PackageDetails, error) {
+	details := &PackageDetails{}
+	err := c.get(fmt.Sprintf("api/packages/%s/%s", p.Author, p.Name), details, nil)
+	return details, err
+}
+
+func (c *CDBClient) GetDependencies(p *Package) (PackageDependency, error) {
+	pd := PackageDependency{}
+	err := c.get(fmt.Sprintf("api/packages/%s/%s/dependencies", p.Author, p.Name), &pd, nil)
+	return pd, err
+}
+
+func (c *CDBClient) GetReleases(p *Package) ([]*PackageRelease, error) {
+	pr := []*PackageRelease{}
+	err := c.get(fmt.Sprintf("api/packages/%s/%s/releases", p.Author, p.Name), &pr, nil)
+	return pr, err
+}
+
+func (c *CDBClient) GetScreenshots(p *Package) ([]*PackageScreenshot, error) {
+	ps := []*PackageScreenshot{}
+	err := c.get(fmt.Sprintf("api/packages/%s/%s/screenshots", p.Author, p.Name), &ps, nil)
+	return ps, err
 }

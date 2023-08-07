@@ -1,7 +1,5 @@
 package cdb
 
-import "time"
-
 type PackageType string
 
 const (
@@ -9,6 +7,11 @@ const (
 	PackageTypeGame        PackageType = "game"
 	PackageTypeTexturepack PackageType = "txp"
 )
+
+type PackageQuery struct {
+	Type  PackageType
+	Query string
+}
 
 type Package struct {
 	Author           string      `json:"author"`
@@ -27,7 +30,7 @@ type PackageStateType string
 type PackageDetails struct {
 	*Package
 	ContentWarnings []string         `json:"content_warnings"`
-	CreatedAt       time.Time        `json:"created_at"`
+	CreatedAt       string           `json:"created_at"`
 	DevStage        DevStateType     `json:"dev_state"`
 	DonateURL       string           `json:"donate_url"`
 	Downloads       int              `json:"downloads"`
@@ -55,4 +58,33 @@ type DependencyInfo struct {
 	Packages   []string `json:"packages"`
 }
 
-type PackageDependency map[string]*DependencyInfo
+type PackageDependency map[string][]*DependencyInfo
+
+type MinetestVersion struct {
+	IsDev           bool   `json:"is_dev"`
+	Name            string `json:"name"`
+	ProtocolVersion int    `json:"protocol_version"`
+}
+
+type PackageRelease struct {
+	Commit             string           `json:"commit"`
+	Downloads          int              `json:"downloads"`
+	ID                 int              `json:"id"`
+	MinMinetestVersion *MinetestVersion `json:"min_minetest_version"`
+	MaxMinetestVersion *MinetestVersion `json:"max_minetest_version"`
+	ReleaseDate        string           `json:"release_date"`
+	Title              string           `json:"title"`
+	URL                string           `json:"url"` ///uploads/e4e8d405b0.zip
+}
+
+type PackageScreenshot struct {
+	Approved     bool   `json:"approved"`
+	CreatedAt    string `json:"created_at"`
+	Height       int    `json:"height"`
+	Width        int    `json:"width"`
+	ID           int    `json:"id"`
+	IsCoverImage bool   `json:"is_cover_image"`
+	Order        int    `json:"order"`
+	Title        string `json:"title"`
+	URL          string `json:"url"` //https://content.minetest.net/uploads/Bz7IWGEnCH.png
+}
