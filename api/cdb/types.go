@@ -88,3 +88,9 @@ type PackageScreenshot struct {
 	Title        string `json:"title"`
 	URL          string `json:"url"` //https://content.minetest.net/uploads/Bz7IWGEnCH.png
 }
+
+type PackageThumbnails struct {
+	Small  string `json:"small"`
+	Medium string `json:"medium"`
+	Large  string `json:"large"`
+}

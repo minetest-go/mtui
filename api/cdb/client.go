@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 type CDBClient struct {
@@ -100,4 +101,12 @@ func (c *CDBClient) GetScreenshots(p *Package) ([]*PackageScreenshot, error) {
 	ps := []*PackageScreenshot{}
 	err := c.get(fmt.Sprintf("api/packages/%s/%s/screenshots", p.Author, p.Name), &ps, nil)
 	return ps, err
+}
+
+func (c *CDBClient) GetThumbnails(ss *PackageScreenshot) *PackageThumbnails {
+	return &PackageThumbnails{
+		Small:  strings.ReplaceAll(ss.URL, "/uploads/", "/thumbnails/1/"),
+		Medium: strings.ReplaceAll(ss.URL, "/uploads/", "/thumbnails/2/"),
+		Large:  strings.ReplaceAll(ss.URL, "/uploads/", "/thumbnails/3/"),
+	}
 }

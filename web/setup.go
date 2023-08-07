@@ -126,6 +126,10 @@ func Setup(a *app.App) error {
 	servapi.HandleFunc("/engine/stop", api.SecurePriv(types.PRIV_SERVER, api.StopEngine)).Methods(http.MethodPost)
 	servapi.HandleFunc("/engine/logs/{since}/{until}", api.SecurePriv(types.PRIV_SERVER, api.GetEngineLogs)).Methods(http.MethodGet)
 
+	cdbapi := apir.PathPrefix("/cdb").Subrouter()
+	cdbapi.Use(SecureHandler(api.FeatureCheck(types.FEATURE_MODMANAGEMENT), api.PrivCheck("server")))
+	cdbapi.HandleFunc("/packages/{type}", api.Secure(api.GetCDBPackages))
+
 	// OAuth
 	api.app.OAuthServer.SetAllowGetAccessRequest(true)
 	api.app.OAuthServer.SetAllowedGrantType(oauth2.Implicit, oauth2.AuthorizationCode, oauth2.ClientCredentials)
