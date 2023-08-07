@@ -1,4 +1,4 @@
-import { list, scan, create, remove } from '../../api/mods.js';
+import { list, create, remove } from '../../../api/mods.js';
 
 const store = Vue.reactive({
 	list: [],
@@ -152,10 +152,10 @@ export default {
 						<td>
 						</td>
 						<td>
-							<button class="btn btn-success" :disabled="busy">
+							<router-link to="/mods/cdb/browse" class="btn btn-success" :disabled="busy">
 								<i class="fa-solid fa-box-open"></i>
 								Add from contentdb
-							</button>
+							</router-link>
 						</td>
 					</tr>
 				</tbody>
