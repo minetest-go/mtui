@@ -29,4 +29,15 @@ func TestParseModConf(t *testing.T) {
 	assert.NotNil(t, cfg)
 	assert.Equal(t, "abc", cfg.Name)
 	assert.Equal(t, 2, len(cfg.Depends))
+
+	cfg, err = modmanager.ParseModConf([]byte(`
+		name = abc
+		description = """
+		something, something
+		something else
+		"""
+	`))
+	assert.NoError(t, err)
+	assert.NotNil(t, cfg)
+	assert.NotEqual(t, "", cfg.Description)
 }

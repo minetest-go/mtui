@@ -16,6 +16,33 @@ type ModConfig struct {
 	Title           string   `json:"title"`
 }
 
+func addModConfField(cfg *ModConfig, key, value string) {
+	switch key {
+	case "name":
+		cfg.Name = value
+	case "description":
+		cfg.Description = value
+	case "author":
+		cfg.Author = value
+	case "title":
+		cfg.Title = value
+	case "depends":
+		value = strings.ReplaceAll(value, "\n", "")
+		value = strings.ReplaceAll(value, "\r", "")
+
+		for _, dep := range strings.Split(value, ",") {
+			cfg.Depends = append(cfg.Depends, strings.TrimSpace(dep))
+		}
+	case "optional_depends":
+		value = strings.ReplaceAll(value, "\n", "")
+		value = strings.ReplaceAll(value, "\r", "")
+
+		for _, dep := range strings.Split(value, ",") {
+			cfg.Depends = append(cfg.Depends, strings.TrimSpace(dep))
+		}
+	}
+}
+
 func ParseModConf(data []byte) (*ModConfig, error) {
 	cfg := &ModConfig{
 		Depends:         make([]string, 0),
@@ -48,25 +75,8 @@ func ParseModConf(data []byte) (*ModConfig, error) {
 			if strings.Contains(value, "\"\"\"") {
 				is_in_multiline = true
 				multiline_key = key
-			}
-
-			switch key {
-			case "name":
-				cfg.Name = value
-			case "description":
-				cfg.Description = value
-			case "author":
-				cfg.Author = value
-			case "title":
-				cfg.Title = value
-			case "depends":
-				for _, dep := range strings.Split(value, ",") {
-					cfg.Depends = append(cfg.Depends, strings.TrimSpace(dep))
-				}
-			case "optional_depends":
-				for _, dep := range strings.Split(value, ",") {
-					cfg.Depends = append(cfg.Depends, strings.TrimSpace(dep))
-				}
+			} else {
+				addModConfField(cfg, key, value)
 			}
 		} else {
 			// multiline case
@@ -74,22 +84,7 @@ func ParseModConf(data []byte) (*ModConfig, error) {
 				//end of multiline
 				is_in_multiline = false
 
-				// remove newlines
-				multiline_value = strings.ReplaceAll(multiline_value, "\n", "")
-				multiline_value = strings.ReplaceAll(multiline_value, "\r", "")
-
-				deps := []string{}
-				for _, dep := range strings.Split(multiline_value, ",") {
-					deps = append(deps, strings.TrimSpace(dep))
-				}
-
-				switch multiline_key {
-				case "depends":
-					cfg.Depends = deps
-				case "optional_depends":
-					cfg.OptionalDepends = deps
-				}
-
+				addModConfField(cfg, multiline_key, multiline_value)
 				multiline_value = ""
 			} else {
 				// append all found lines
