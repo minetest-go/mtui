@@ -19,6 +19,7 @@ const (
 type Mod struct {
 	ID         string     `json:"id"`
 	Name       string     `json:"name"`
+	Author     string     `json:"author"`
 	ModType    ModType    `json:"mod_type"`
 	SourceType SourceType `json:"source_type"`
 	URL        string     `json:"url"`
@@ -28,7 +29,7 @@ type Mod struct {
 }
 
 func (m *Mod) Columns(action string) []string {
-	return []string{"id", "name", "mod_type", "source_type", "url", "branch", "version", "auto_update"}
+	return []string{"id", "name", "author", "mod_type", "source_type", "url", "branch", "version", "auto_update"}
 }
 
 func (m *Mod) Table() string {
@@ -36,9 +37,9 @@ func (m *Mod) Table() string {
 }
 
 func (m *Mod) Scan(action string, r func(dest ...any) error) error {
-	return r(&m.ID, &m.Name, &m.ModType, &m.SourceType, &m.URL, &m.Branch, &m.Version, &m.AutoUpdate)
+	return r(&m.ID, &m.Name, &m.Author, &m.ModType, &m.SourceType, &m.URL, &m.Branch, &m.Version, &m.AutoUpdate)
 }
 
 func (m *Mod) Values(action string) []any {
-	return []any{m.ID, m.Name, m.ModType, m.SourceType, m.URL, m.Branch, m.Version, m.AutoUpdate}
+	return []any{m.ID, m.Name, m.Author, m.ModType, m.SourceType, m.URL, m.Branch, m.Version, m.AutoUpdate}
 }

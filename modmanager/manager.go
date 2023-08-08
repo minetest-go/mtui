@@ -8,7 +8,6 @@ import (
 	"mtui/types"
 	"os"
 	"strconv"
-	"strings"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
@@ -92,33 +91,27 @@ func (m *ModManager) Create(mod *types.Mod) error {
 		mod.Version = ref.Hash().String()
 
 	case types.SourceTypeCDB:
-		parts := strings.Split(mod.Name, "/")
-		if len(parts) != 2 {
-			return fmt.Errorf("invalid modname: '%s'", mod.Name)
-		}
-		author := parts[0]
-		package_name := parts[1]
-
 		cli := cdb.New()
-		pkg, err := cli.GetDetails(author, package_name)
+		pkg, err := cli.GetDetails(mod.Author, mod.Name)
 		if err != nil {
 			return fmt.Errorf("could not fetch details: %v", err)
 		}
 		if pkg == nil {
-			return fmt.Errorf("could not find package '%s/%s'", author, package_name)
+			return fmt.Errorf("could not find package '%s/%s'", mod.Author, mod.Name)
 		}
 
 		var release *cdb.PackageRelease
 		if mod.Version == "" {
 			// no version specified, fetch latest
-			releases, err := cli.GetReleases(author, package_name)
+			releases, err := cli.GetReleases(mod.Author, mod.Name)
 			if err != nil {
 				return fmt.Errorf("could not fetch releases: %v", err)
 			}
 			if len(releases) == 0 {
-				return fmt.Errorf("no releases for package '%s/%s'", author, package_name)
+				return fmt.Errorf("no releases for package '%s/%s'", mod.Author, mod.Name)
 			}
 			release = releases[0]
+			mod.Version = fmt.Sprintf("%d", release.ID)
 
 		} else {
 			// version specified, fetch specific release
@@ -127,7 +120,7 @@ func (m *ModManager) Create(mod *types.Mod) error {
 				return fmt.Errorf("could not parse version: '%s'", mod.Version)
 			}
 
-			release, err = cli.GetRelease(author, package_name, int(version))
+			release, err = cli.GetRelease(mod.Author, mod.Name, int(version))
 			if err != nil {
 				return fmt.Errorf("could not fetch releases: %v", err)
 			}
