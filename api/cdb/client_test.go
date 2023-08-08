@@ -14,7 +14,7 @@ func TestPackages(t *testing.T) {
 	assert.NotNil(t, pkgs)
 	assert.True(t, len(pkgs) > 0)
 
-	details, err := c.GetDetails(pkgs[0])
+	details, err := c.GetDetails(pkgs[0].Author, pkgs[0].Name)
 	assert.NoError(t, err)
 	assert.NotNil(t, details)
 	assert.Equal(t, pkgs[0].Name, details.Name)
@@ -24,22 +24,29 @@ func TestPackages(t *testing.T) {
 	assert.NotNil(t, pkgs)
 	assert.True(t, len(pkgs) > 0 && len(pkgs) < 100)
 
-	deps, err := c.GetDependencies(pkgs[0])
+	deps, err := c.GetDependencies(pkgs[0].Author, pkgs[0].Name)
 	assert.NoError(t, err)
 	assert.NotNil(t, deps)
 	assert.True(t, len(deps) > 0)
 
-	releases, err := c.GetReleases(pkgs[0])
+	releases, err := c.GetReleases(pkgs[0].Author, pkgs[0].Name)
 	assert.NoError(t, err)
 	assert.NotNil(t, releases)
 	assert.True(t, len(releases) > 0)
 
-	release, err := c.GetRelease(pkgs[0], releases[0].ID)
+	release, err := c.GetRelease(pkgs[0].Author, pkgs[0].Name, releases[0].ID)
 	assert.NoError(t, err)
 	assert.NotNil(t, release)
 	assert.NotEmpty(t, release.URL)
 
-	screenshots, err := c.GetScreenshots(pkgs[0])
+	z, err := c.DownloadZip(releases[0])
+	assert.NoError(t, err)
+	assert.NotNil(t, z)
+	f, err := z.Open("blockexchange/init.lua")
+	assert.NoError(t, err)
+	assert.NotNil(t, f)
+
+	screenshots, err := c.GetScreenshots(pkgs[0].Author, pkgs[0].Name)
 	assert.NoError(t, err)
 	assert.NotNil(t, screenshots)
 	assert.True(t, len(screenshots) > 0)
