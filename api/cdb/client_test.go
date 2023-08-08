@@ -34,6 +34,11 @@ func TestPackages(t *testing.T) {
 	assert.NotNil(t, releases)
 	assert.True(t, len(releases) > 0)
 
+	release, err := c.GetRelease(pkgs[0], releases[0].ID)
+	assert.NoError(t, err)
+	assert.NotNil(t, release)
+	assert.NotEmpty(t, release.URL)
+
 	screenshots, err := c.GetScreenshots(pkgs[0])
 	assert.NoError(t, err)
 	assert.NotNil(t, screenshots)

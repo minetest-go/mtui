@@ -18,7 +18,7 @@ type Package struct {
 	Name             string      `json:"name"`
 	Release          int         `json:"release"`
 	ShortDescription string      `json:"short_description"`
-	Thumbnail        string      `json:"thumbnail"` //https://content.minetest.net/thumbnails/1/6b28be927c.jpg
+	Thumbnail        string      `json:"thumbnail"` // https://content.minetest.net/thumbnails/1/6b28be927c.jpg
 	Title            string      `json:"title"`
 	Type             PackageType `json:"type"`
 }
@@ -47,7 +47,7 @@ type PackageDetails struct {
 	Screenshots     []string         `json:"screenshots"`
 	State           PackageStateType `json:"state"`
 	Tags            []string         `json:"tags"`
-	URL             string           `json:"url"` //https://content.minetest.net/packages/Warr1024/nodecore/download/
+	URL             string           `json:"url"` // https://content.minetest.net/packages/Warr1024/nodecore/download/
 	VideoURL        string           `json:"video_url"`
 	Website         string           `json:"website"`
 }
@@ -74,7 +74,7 @@ type PackageRelease struct {
 	MaxMinetestVersion *MinetestVersion `json:"max_minetest_version"`
 	ReleaseDate        string           `json:"release_date"`
 	Title              string           `json:"title"`
-	URL                string           `json:"url"` ///uploads/e4e8d405b0.zip
+	URL                string           `json:"url"` // /uploads/e4e8d405b0.zip
 }
 
 type PackageScreenshot struct {
@@ -86,7 +86,7 @@ type PackageScreenshot struct {
 	IsCoverImage bool   `json:"is_cover_image"`
 	Order        int    `json:"order"`
 	Title        string `json:"title"`
-	URL          string `json:"url"` //https://content.minetest.net/uploads/Bz7IWGEnCH.png
+	URL          string `json:"url"` // https://content.minetest.net/uploads/Bz7IWGEnCH.png
 }
 
 type PackageThumbnails struct {
