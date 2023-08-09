@@ -1,7 +1,7 @@
-package modmanager_test
+package depanalyzer_test
 
 import (
-	"mtui/modmanager"
+	"mtui/modmanager/depanalyzer"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,7 +9,7 @@ import (
 
 func TestParseModConf(t *testing.T) {
 
-	cfg, err := modmanager.ParseModConf([]byte(`
+	cfg, err := depanalyzer.ParseModConf([]byte(`
 		name = abc
 		depends = xy, my_mod
 	`))
@@ -18,7 +18,7 @@ func TestParseModConf(t *testing.T) {
 	assert.Equal(t, "abc", cfg.Name)
 	assert.Equal(t, 2, len(cfg.Depends))
 
-	cfg, err = modmanager.ParseModConf([]byte(`
+	cfg, err = depanalyzer.ParseModConf([]byte(`
 		name = abc
 		depends = """
 		xy,
@@ -30,7 +30,7 @@ func TestParseModConf(t *testing.T) {
 	assert.Equal(t, "abc", cfg.Name)
 	assert.Equal(t, 2, len(cfg.Depends))
 
-	cfg, err = modmanager.ParseModConf([]byte(`
+	cfg, err = depanalyzer.ParseModConf([]byte(`
 		name = abc
 		description = """
 		something, something

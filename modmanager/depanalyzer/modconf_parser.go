@@ -1,4 +1,4 @@
-package modmanager
+package depanalyzer
 
 import (
 	"bufio"
