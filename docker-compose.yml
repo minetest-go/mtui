@@ -29,7 +29,8 @@ services:
    - "${PWD}/dev/world:/root/.minetest/worlds/world"
    - "./minetest.conf:/etc/minetest/minetest.conf"
    - "./:/app"
-   - "go_cache:/go"
+   - "go_dir:/go"
+   - "go_cache:/.cache"
    - "/var/run/docker.sock:/var/run/docker.sock:ro"
   working_dir: /app
   command: ["go", "run", "."]
