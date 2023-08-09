@@ -8,9 +8,30 @@ const (
 	PackageTypeTexturepack PackageType = "txp"
 )
 
+type PackageSortType string
+
+const (
+	PackageSortScore       PackageSortType = "score"
+	PackageSortReviews     PackageSortType = "reviews"
+	PackageSortDownloads   PackageSortType = "downloads"
+	PackageSortLastRelease PackageSortType = "last_release"
+)
+
+type PackageSortOrderType string
+
+const (
+	PackageSortOrderAscending  PackageSortOrderType = "asc"
+	PackageSortOrderDescending PackageSortOrderType = "desc"
+)
+
 type PackageQuery struct {
-	Type  PackageType
-	Query string
+	Type   []PackageType
+	Query  string
+	Author string
+	Limit  int
+	Hide   []ContentWarning
+	Sort   PackageSortType
+	Order  PackageSortOrderType
 }
 
 type Package struct {
@@ -21,6 +42,20 @@ type Package struct {
 	Thumbnail        string      `json:"thumbnail"` // https://content.minetest.net/thumbnails/1/6b28be927c.jpg
 	Title            string      `json:"title"`
 	Type             PackageType `json:"type"`
+}
+
+type Tag struct {
+	Description string `json:"description"`
+	IsProtected bool   `json:"is_protected"`
+	Name        string `json:"name"`
+	Title       string `json:"title"`
+	Views       int    `json:"views"`
+}
+
+type ContentWarning struct {
+	Description string `json:"description"`
+	Name        string `json:"name"`
+	Title       string `json:"title"`
 }
 
 type DevStateType string

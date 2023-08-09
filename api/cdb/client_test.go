@@ -9,20 +9,26 @@ import (
 
 func TestPackages(t *testing.T) {
 	c := cdb.New()
-	pkgs, err := c.GetPackages()
+
+	tags, err := c.GetTags()
+	assert.NoError(t, err)
+	assert.NotNil(t, tags)
+	assert.True(t, len(tags) > 0)
+
+	cws, err := c.GetContentWarnings()
+	assert.NoError(t, err)
+	assert.NotNil(t, cws)
+	assert.True(t, len(cws) > 0)
+
+	pkgs, err := c.SearchPackages(&cdb.PackageQuery{Query: "blockexchange", Author: "buckaroobanzay", Limit: 1})
 	assert.NoError(t, err)
 	assert.NotNil(t, pkgs)
-	assert.True(t, len(pkgs) > 0)
+	assert.Equal(t, 1, len(pkgs))
 
 	details, err := c.GetDetails(pkgs[0].Author, pkgs[0].Name)
 	assert.NoError(t, err)
 	assert.NotNil(t, details)
 	assert.Equal(t, pkgs[0].Name, details.Name)
-
-	pkgs, err = c.SearchPackages(&cdb.PackageQuery{Query: "blockexchange"})
-	assert.NoError(t, err)
-	assert.NotNil(t, pkgs)
-	assert.True(t, len(pkgs) > 0 && len(pkgs) < 100)
 
 	deps, err := c.GetDependencies(pkgs[0].Author, pkgs[0].Name)
 	assert.NoError(t, err)

@@ -34,7 +34,7 @@ func New() *CDBClient {
 	})
 }
 
-func (c *CDBClient) get(suffix string, data any, queryparams map[string]string) error {
+func (c *CDBClient) get(suffix string, data any, params url.Values) error {
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", c.opts.BaseURL, suffix), nil)
 	if err != nil {
 		return err
@@ -44,11 +44,9 @@ func (c *CDBClient) get(suffix string, data any, queryparams map[string]string) 
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.opts.Token))
 	}
 
-	params := url.Values{}
-	for k, v := range queryparams {
-		params.Add(k, v)
+	if params != nil {
+		req.URL.RawQuery = params.Encode()
 	}
-	req.URL.RawQuery = params.Encode()
 
 	resp, err := c.client.Do(req)
 	if err != nil {
@@ -70,16 +68,43 @@ func (c *CDBClient) GetPackages() ([]*Package, error) {
 func (c *CDBClient) SearchPackages(q *PackageQuery) ([]*Package, error) {
 	pkgs := make([]*Package, 0)
 
-	params := make(map[string]string)
-	if q.Type != "" {
-		params["type"] = string(q.Type)
+	params := url.Values{}
+	for _, t := range q.Type {
+		params.Add("type", string(t))
 	}
 	if q.Query != "" {
-		params["q"] = q.Query
+		params.Add("q", q.Query)
+	}
+	if q.Author != "" {
+		params.Add("author", q.Author)
+	}
+	if q.Limit > 0 {
+		params.Add("limit", fmt.Sprintf("%d", q.Limit))
+	}
+	for _, cw := range q.Hide {
+		params.Add("hide", cw.Name)
+	}
+	if q.Sort != "" {
+		params.Add("sort", string(q.Sort))
+	}
+	if q.Order != "" {
+		params.Add("order", string(q.Order))
 	}
 
 	err := c.get("api/packages", &pkgs, params)
 	return pkgs, err
+}
+
+func (c *CDBClient) GetTags() ([]*Tag, error) {
+	tags := make([]*Tag, 0)
+	err := c.get("api/tags", &tags, nil)
+	return tags, err
+}
+
+func (c *CDBClient) GetContentWarnings() ([]*ContentWarning, error) {
+	list := make([]*ContentWarning, 0)
+	err := c.get("api/content_warnings", &list, nil)
+	return list, err
 }
 
 func (c *CDBClient) GetDetails(author, name string) (*PackageDetails, error) {
