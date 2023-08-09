@@ -142,7 +142,7 @@ export default {
 						<td>
 							<span class="badge bg-success">
 								<i class="fa-solid fa-box-open"></i>
-								CDB
+								ContentDB
 							</span>
 						</td>
 						<td>
@@ -154,7 +154,7 @@ export default {
 						<td>
 							<router-link to="/cdb/browse" class="btn btn-success" :disabled="busy">
 								<i class="fa-solid fa-box-open"></i>
-								Add from contentdb
+								Add from ContentDB
 							</router-link>
 						</td>
 					</tr>
