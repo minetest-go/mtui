@@ -146,7 +146,11 @@ func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types
 		return
 	}
 	defer reader.Close()
-	io.Copy(os.Stdout, reader)
+	_, err = io.Copy(os.Stdout, reader)
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("io-copy error: %v", err))
+		return
+	}
 
 	world_dir := os.Getenv("DOCKER_WORLD_DIR")
 	world_dir_container := "/world"
