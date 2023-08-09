@@ -8,7 +8,7 @@ import (
 )
 
 func TestSet1(t *testing.T) {
-	a, err := depanalyzer.AnalyzeDeps("testdata/set1")
+	a, err := depanalyzer.AnalyzeDeps("testdata/set1", "testdata/set1_invalid")
 	assert.NoError(t, err)
 	assert.NotNil(t, a)
 	assert.Contains(t, a.Installed, "mymod")

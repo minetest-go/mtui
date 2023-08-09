@@ -74,6 +74,12 @@ func scanDir(dir string, ctx *dependencycontext) error {
 }
 
 func scanDirs(dir string, ctx *dependencycontext) error {
+	fi, _ := os.Stat(dir)
+	if fi == nil {
+		// nonexistent dir
+		return nil
+	}
+
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return err

@@ -104,6 +104,7 @@ func Setup(a *app.App) error {
 	msr.HandleFunc("/scan", api.SecurePriv(types.PRIV_SERVER, api.ScanMedia)).Methods(http.MethodPost)
 
 	apir.HandleFunc("/mods", api.Feature(types.FEATURE_MODMANAGEMENT, api.SecurePriv(types.PRIV_SERVER, api.GetMods))).Methods(http.MethodGet)
+	apir.HandleFunc("/mods/validate", api.Feature(types.FEATURE_MODMANAGEMENT, api.SecurePriv(types.PRIV_SERVER, api.ModsValidate))).Methods(http.MethodGet)
 	apir.HandleFunc("/mods/{id}/update/{version}", api.Feature(types.FEATURE_MODMANAGEMENT, api.SecurePriv(types.PRIV_SERVER, api.UpdateModVersion))).Methods(http.MethodPost)
 	apir.HandleFunc("/mods", api.Feature(types.FEATURE_MODMANAGEMENT, api.SecurePriv(types.PRIV_SERVER, api.CreateMod))).Methods(http.MethodPost)
 	apir.HandleFunc("/mods/{id}", api.Feature(types.FEATURE_MODMANAGEMENT, api.SecurePriv(types.PRIV_SERVER, api.DeleteMod))).Methods(http.MethodDelete)

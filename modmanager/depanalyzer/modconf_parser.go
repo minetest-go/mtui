@@ -38,7 +38,7 @@ func addModConfField(cfg *ModConfig, key, value string) {
 		value = strings.ReplaceAll(value, "\r", "")
 
 		for _, dep := range strings.Split(value, ",") {
-			cfg.Depends = append(cfg.Depends, strings.TrimSpace(dep))
+			cfg.OptionalDepends = append(cfg.OptionalDepends, strings.TrimSpace(dep))
 		}
 	}
 }
@@ -57,7 +57,10 @@ func ParseModConf(data []byte) (*ModConfig, error) {
 	line_num := 0
 	for sc.Scan() {
 		line_num++
-		line := sc.Text()
+		line := strings.TrimSpace(sc.Text())
+		if line == "" {
+			continue
+		}
 
 		if !is_in_multiline {
 			if strings.HasPrefix(line, "#") {
