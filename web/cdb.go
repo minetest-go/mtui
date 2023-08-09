@@ -29,3 +29,10 @@ func (a *Api) GetCDBPackage(w http.ResponseWriter, r *http.Request, claims *type
 	details, err := cdbcli.GetDetails(vars["author"], vars["name"])
 	Send(w, details, err)
 }
+
+func (a *Api) GetCDBPackageDependencies(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	vars := mux.Vars(r)
+
+	deps, err := cdbcli.GetDependencies(vars["author"], vars["name"])
+	Send(w, deps, err)
+}
