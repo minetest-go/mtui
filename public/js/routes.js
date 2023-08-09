@@ -22,8 +22,9 @@ import MinetestConfigEdit from './components/pages/MinetestConfigEdit.js';
 import EngineService from './components/pages/services/Engine.js';
 
 import Mods from './components/pages/mods/Mods.js';
-import ContentdbBrowse from './components/pages/mods/ContentdbBrowse.js';
+import ContentBrowse from './components/cdb/Browse.js';
 import ContentdbInstall from './components/pages/mods/ContentdbInstall.js';
+import ContentdbDetail from './components/cdb/Detail.js';
 
 export default [{
 	path: "/", component: Start,
@@ -60,10 +61,13 @@ export default [{
 	path: "/mods", component: Mods,
 	meta: { requiredPriv: "server" }
 }, {
-	path: "/mods/cdb/browse", component: ContentdbBrowse,
+	path: "/cdb/browse", component: ContentBrowse,
 	meta: { requiredPriv: "server" }
 }, {
-	path: "/mods/cdb/install/:author/:name", component: ContentdbInstall,
+	path: "/cdb/install/:author/:name", component: ContentdbInstall,
+	meta: { requiredPriv: "server" }
+}, {
+	path: "/cdb/detail/:author/:name", component: ContentdbDetail,
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/mediaserver", component: Mediaserver,

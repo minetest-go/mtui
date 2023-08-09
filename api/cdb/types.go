@@ -25,13 +25,13 @@ const (
 )
 
 type PackageQuery struct {
-	Type   []PackageType
-	Query  string
-	Author string
-	Limit  int
-	Hide   []ContentWarning
-	Sort   PackageSortType
-	Order  PackageSortOrderType
+	Type   []PackageType        `json:"type"`
+	Query  string               `json:"query"`
+	Author string               `json:"author"`
+	Limit  int                  `json:"limit"`
+	Hide   []ContentWarning     `json:"hide"`
+	Sort   PackageSortType      `json:"sort"`
+	Order  PackageSortOrderType `json:"order"`
 }
 
 type Package struct {
@@ -70,7 +70,6 @@ type PackageDetails struct {
 	DonateURL       string           `json:"donate_url"`
 	Downloads       int              `json:"downloads"`
 	Forums          int              `json:"forums"`
-	GameSupport     []string         `json:"game_support"`
 	IssueTracker    string           `json:"issue_tracker"`
 	License         string           `json:"license"`
 	LongDescription string           `json:"long_description"`
