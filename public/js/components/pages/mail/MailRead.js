@@ -3,18 +3,21 @@ import { get_mail } from '../../../store/mail.js';
 import { mark_read, remove } from '../../../api/mail.js';
 import mail_compose from "../../../store/mail_compose.js";
 import { fetch_mails } from '../../../service/mail.js';
+import login_store from '../../../store/login.js';
 
 export default {
-    props: ["id"],
     computed: {
-        mail: function(){
+        mail: function() {
             const mail = get_mail(this.id);
             if (mail && !mail.read) {
                 mark_read(mail)
                 .then(() => mail.read = true);
             }
-
+            
             return mail;
+        },
+        is_sent: function() {
+            return login_store.claims.username == this.mail.from;
         }
     },
     methods: {
@@ -40,7 +43,13 @@ export default {
     <div v-if="mail">
         <div class="row">
             <div class="col-md-10">
-                <h3>
+                <h3 v-if="is_sent">
+                    Mail sent to
+                    <small class="text-muted">
+                        {{mail.to}}
+                    </small>
+                </h3>
+                <h3 v-else>
                     Mail from
                     <small class="text-muted">
                         {{mail.from}}
