@@ -3,16 +3,44 @@ import { fetch_mails } from '../../../service/mail.js';
 import { remove } from '../../../api/mail.js';
 import format_time from '../../../util/format_time.js';
 
+const store = Vue.reactive({
+    sortfield: "time",
+    sortdirection: "asc"
+});
 
 export default {
     props: ["mails"],
+    data: () => store,
+    watch: {
+        "mails": function() {
+            this.sort();
+        }
+    },
     methods: {
         format_time: format_time,
         delete_mail: function(msg){
             mail_store.busy = true;
             remove(msg)
             .then(() => fetch_mails())
+            .then(() => this.sort(this.sortfield, this.sortdirection))
             .then(() => mail_store.busy = false);
+        },
+        sort: function(field, direction) {
+            this.sortfield = field || this.sortfield;
+            this.sortdirection = direction || this.sortdirection;
+
+            if (this.sortdirection == "asc"){
+                this.mails.sort((a, b) => a[this.sortfield] < b[this.sortfield]);
+            } else if (this.sortdirection == "desc") {
+                this.mails.sort((a, b) => a[this.sortfield] > b[this.sortfield]);
+            }
+        },
+        chevron_style: function(field, direction) {
+            if (this.sortfield == field && this.sortdirection == direction) {
+                return { color: "red" };
+            } else {
+                return {};
+            }
         }
     },
     template: /*html*/`
@@ -23,9 +51,21 @@ export default {
         <table class="table table-condensed" v-if="mails.length > 0">
             <thead>
                 <tr>
-                    <th>From</th>
-                    <th>Subject</th>
-                    <th>Time</th>
+                    <th>
+                        From
+                        <i class="fa-solid fa-chevron-up" v-bind:style="chevron_style('from', 'asc')" v-on:click="sort('from', 'asc')"></i>
+                        <i class="fa-solid fa-chevron-down" v-bind:style="chevron_style('from', 'desc')" v-on:click="sort('from', 'desc')"></i>
+                    </th>
+                    <th>
+                        Subject
+                        <i class="fa-solid fa-chevron-up" v-bind:style="chevron_style('subject', 'asc')" v-on:click="sort('subject', 'asc')"></i>
+                        <i class="fa-solid fa-chevron-down" v-bind:style="chevron_style('subject', 'desc')" v-on:click="sort('subject', 'desc')"></i>
+                    </th>
+                    <th>
+                        Time
+                        <i class="fa-solid fa-chevron-up" v-bind:style="chevron_style('time', 'asc')" v-on:click="sort('time', 'asc')"></i>
+                        <i class="fa-solid fa-chevron-down" v-bind:style="chevron_style('time', 'desc')" v-on:click="sort('time', 'desc')"></i>
+                    </th>
                     <th>Action</th>
                 </tr>
             </thead>
