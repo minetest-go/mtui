@@ -1,6 +1,7 @@
 package modmanager
 
 import (
+	"fmt"
 	"mtui/types"
 	"os"
 
@@ -15,18 +16,24 @@ type GitModHandler struct{}
 func (h *GitModHandler) Create(ctx *HandlerContext, mod *types.Mod) error {
 	dir := getDir(ctx.WorldDir, mod)
 
+	// prune dir before re-installing
+	err := os.RemoveAll(dir)
+	if err != nil {
+		return fmt.Errorf("error in initial cleanup: %v", err)
+	}
+
 	// clone to target dir
 	r, err := git.PlainClone(dir, false, &git.CloneOptions{
 		URL:               mod.URL,
 		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
 	})
 	if err != nil {
-		return err
+		return fmt.Errorf("error while cloning: %v", err)
 	}
 
 	w, err := r.Worktree()
 	if err != nil {
-		return err
+		return fmt.Errorf("error switching to worktree: %v", err)
 	}
 
 	if mod.Branch != "" {
@@ -50,12 +57,12 @@ func (h *GitModHandler) Create(ctx *HandlerContext, mod *types.Mod) error {
 	}
 
 	if err != nil {
-		return err
+		return fmt.Errorf("error in checkout: %v", err)
 	}
 
 	ref, err := r.Head()
 	if err != nil {
-		return err
+		return fmt.Errorf("error switching head: %v", err)
 	}
 
 	mod.Version = ref.Hash().String()

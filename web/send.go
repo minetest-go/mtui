@@ -8,6 +8,33 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+/*
+type ErrorResponse struct {
+	Success bool   `json:"success"`
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
+
+func SendError(w http.ResponseWriter, code int, message string) {
+	logrus.WithFields(logrus.Fields{
+		"code":    code,
+		"message": message,
+	}).Error("http error")
+
+	errmsg := &ErrorResponse{
+		Success: false,
+		Code:    code,
+		Message: message,
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(code)
+	buf := bytes.NewBuffer([]byte{})
+	json.NewEncoder(buf).Encode(errmsg)
+	w.Write(buf.Bytes())
+}
+*/
+
 func SendError(w http.ResponseWriter, code int, message string) {
 	logrus.WithFields(logrus.Fields{
 		"code":    code,

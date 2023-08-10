@@ -3,6 +3,7 @@ import { list, create, remove } from '../../../api/mods.js';
 const store = Vue.reactive({
 	list: [],
 	busy: false,
+	error_msg: "",
 	add_name: "",
 	add_mod_type: "mod",
 	add_source_type: "git",
@@ -40,6 +41,21 @@ export default {
 			list()
 			.then(l => this.list = l);
 		},
+		add_mtui_mod: function() {
+			this.busy = true;
+			create({
+				name: "mtui",
+				mod_type: "mod",
+				source_type: "git",
+				url: "https://github.com/minetest-go/mtui_mod.git",
+				branch: "refs/heads/master"
+			})
+			.catch(e => this.error_msg = e)
+			.finally(() => {
+				this.busy = false;
+				this.update();
+			});
+		},
 		remove: function(id) {
 			remove(id)
 			.then(() => this.update());
@@ -47,7 +63,36 @@ export default {
 	},
 	template: /*html*/`
 		<div>
-			<h3>Mod management</h3>
+			<h3>
+				Mod management
+				<i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>
+			</h3>
+			<div class="alert alert-danger" v-if="error_msg">
+				<div class="row">
+					<div class="col-12">
+						<i class="fa-solid fa-triangle-exclamation"></i>
+						<b>Error:</b>
+						{{error_msg}}
+						<button class="btn btn-primary float-end" :disabled="busy" v-on:click="error_msg = ''">
+							<i class="fa fa-times"></i>
+							Dismiss
+						</button>
+					</div>
+				</div>
+			</div>
+			<div class="alert alert-warning">
+				<div class="row">
+					<div class="col-12">
+						<i class="fa-solid fa-triangle-exclamation"></i>
+						<b>Warning:</b>
+						The <i>mtui</i> mod is not installed, some features may not work properly
+						<button class="btn btn-primary float-end" :disabled="busy" v-on:click="add_mtui_mod">
+							<i class="fa fa-plus"></i>
+							Install "mtui" mod
+						</button>
+					</div>
+				</div>
+			</div>
 			<table class="table table-condensed table-striped">
 				<thead>
 					<tr>
@@ -107,7 +152,7 @@ export default {
 							<select class="form-control" v-model="add_mod_type">
 								<option value="mod">Mod</option>
 								<option value="game">Game</option>
-								<option value="txp">Textures</option>
+								<option value="txp" v-if="false">Textures</option>
 							</select>
 						</td>
 						<td>
