@@ -50,7 +50,7 @@ mod_storage_backend = sqlite3
 auth_backend = sqlite3
 player_backend = sqlite3
 backend = sqlite3
-gameid = minetest_game
+gameid = game
 `
 
 func Create(world_dir string) (*App, error) {
