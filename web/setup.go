@@ -103,12 +103,20 @@ func Setup(a *app.App) error {
 	msr.HandleFunc("/{hash}", a.Mediaserver.ServeHTTPFetch).Methods(http.MethodGet)
 	msr.HandleFunc("/scan", api.SecurePriv(types.PRIV_SERVER, api.ScanMedia)).Methods(http.MethodPost)
 
-	apir.HandleFunc("/mods", api.Feature(types.FEATURE_MODMANAGEMENT, api.SecurePriv(types.PRIV_SERVER, api.GetMods))).Methods(http.MethodGet)
-	apir.HandleFunc("/mods/validate", api.Feature(types.FEATURE_MODMANAGEMENT, api.SecurePriv(types.PRIV_SERVER, api.ModsValidate))).Methods(http.MethodGet)
-	apir.HandleFunc("/mods/{id}/update/{version}", api.Feature(types.FEATURE_MODMANAGEMENT, api.SecurePriv(types.PRIV_SERVER, api.UpdateModVersion))).Methods(http.MethodPost)
-	apir.HandleFunc("/mods", api.Feature(types.FEATURE_MODMANAGEMENT, api.SecurePriv(types.PRIV_SERVER, api.CreateMod))).Methods(http.MethodPost)
-	apir.HandleFunc("/mods/{id}", api.Feature(types.FEATURE_MODMANAGEMENT, api.SecurePriv(types.PRIV_SERVER, api.DeleteMod))).Methods(http.MethodDelete)
-	apir.HandleFunc("/mods/{id}/status", api.Feature(types.FEATURE_MODMANAGEMENT, api.SecurePriv(types.PRIV_SERVER, api.ModStatus))).Methods(http.MethodGet)
+	modsapi := apir.PathPrefix("/mods").Subrouter()
+	modsapi.Use(SecureHandler(api.FeatureCheck(types.FEATURE_MODMANAGEMENT), api.PrivCheck("server")))
+	modsapi.HandleFunc("", api.Secure(api.GetMods)).Methods(http.MethodGet)
+	modsapi.HandleFunc("", api.Secure(api.CreateMod)).Methods(http.MethodPost)
+	modsapi.HandleFunc("/validate", api.Secure(api.ModsValidate)).Methods(http.MethodGet)
+	modsapi.HandleFunc("/{id}/update/{version}", api.Secure(api.UpdateModVersion)).Methods(http.MethodPost)
+	modsapi.HandleFunc("/{id}", api.Secure(api.DeleteMod)).Methods(http.MethodDelete)
+	modsapi.HandleFunc("/{id}/status", api.Secure(api.ModStatus)).Methods(http.MethodGet)
+
+	cdbapi := apir.PathPrefix("/cdb").Subrouter()
+	cdbapi.Use(SecureHandler(api.FeatureCheck(types.FEATURE_MODMANAGEMENT), api.PrivCheck("server")))
+	cdbapi.HandleFunc("/search", api.Secure(api.SearchCDBPackages)).Methods(http.MethodPost)
+	cdbapi.HandleFunc("/detail/{author}/{name}", api.Secure(api.GetCDBPackage)).Methods(http.MethodGet)
+	cdbapi.HandleFunc("/detail/{author}/{name}/dependencies", api.Secure(api.GetCDBPackageDependencies)).Methods(http.MethodGet)
 
 	cfgr := apir.PathPrefix("/mtconfig").Subrouter()
 	cfgr.Use(SecureHandler(api.FeatureCheck(types.FEATURE_MINETEST_CONFIG)))
@@ -125,12 +133,6 @@ func Setup(a *app.App) error {
 	servapi.HandleFunc("/engine/start", api.SecurePriv(types.PRIV_SERVER, api.StartEngine)).Methods(http.MethodPost)
 	servapi.HandleFunc("/engine/stop", api.SecurePriv(types.PRIV_SERVER, api.StopEngine)).Methods(http.MethodPost)
 	servapi.HandleFunc("/engine/logs/{since}/{until}", api.SecurePriv(types.PRIV_SERVER, api.GetEngineLogs)).Methods(http.MethodGet)
-
-	cdbapi := apir.PathPrefix("/cdb").Subrouter()
-	cdbapi.Use(SecureHandler(api.FeatureCheck(types.FEATURE_MODMANAGEMENT), api.PrivCheck("server")))
-	cdbapi.HandleFunc("/search", api.Secure(api.SearchCDBPackages)).Methods(http.MethodPost)
-	cdbapi.HandleFunc("/detail/{author}/{name}", api.Secure(api.GetCDBPackage)).Methods(http.MethodGet)
-	cdbapi.HandleFunc("/detail/{author}/{name}/dependencies", api.Secure(api.GetCDBPackageDependencies)).Methods(http.MethodGet)
 
 	// OAuth
 	api.app.OAuthServer.SetAllowGetAccessRequest(true)
