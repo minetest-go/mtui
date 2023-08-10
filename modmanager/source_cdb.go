@@ -31,8 +31,15 @@ func (h *ContentDBModHandler) installMod(ctx *HandlerContext, mod *types.Mod, re
 	}
 
 	// zip structure:
-	// mods: "modname/init.lua"
+	// mods: "modname/init.lua" or "init.lua"
 	// games: "mods/modname/init.lua"
+
+	bare := false
+	initlua, _ := z.Open("init.lua")
+	if initlua != nil {
+		// "bare" mod without enclosed directory
+		bare = true
+	}
 
 	for _, f := range z.File {
 		if strings.HasSuffix(f.Name, "/") || strings.HasPrefix(f.Name, "/") {
@@ -44,7 +51,11 @@ func (h *ContentDBModHandler) installMod(ctx *HandlerContext, mod *types.Mod, re
 		var fullpath string
 		switch mod.ModType {
 		case types.ModTypeMod:
-			fullpath = path.Join(path.Dir(dir), f.Name)
+			if bare {
+				fullpath = path.Join(dir, f.Name)
+			} else {
+				fullpath = path.Join(path.Dir(dir), f.Name)
+			}
 		case types.ModTypeGame:
 			fullpath = path.Join(dir, f.Name)
 		default:

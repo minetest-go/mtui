@@ -1,5 +1,7 @@
 
 import { get_package, get_dependencies } from "../../api/cdb.js";
+import { add } from "../../service/mods.js";
+import store from '../../store/mods.js'
 
 export default {
     data: function() {
@@ -23,6 +25,19 @@ export default {
         },
         cdb_link: function() {
             return `https://content.minetest.net/packages/${this.pkg.author}/${this.pkg.name}/`;
+        },
+        is_installed: function() {
+            return store.list && store.list.find(m => m.name == this.name && m.author == this.author);
+        }
+    },
+    methods: {
+        install: function() {
+            add({
+				name: this.pkg.name,
+                author: this.pkg.author,
+				mod_type: this.pkg.type,
+				source_type: "cdb"
+			});
         }
     },
     template: /*html*/`
@@ -71,10 +86,10 @@ export default {
                             View source
                         </a>
                         <hr>
-                        <router-link :to="'/cdb/install/' + pkg.author + '/' + pkg.name" class="btn btn-success">
+                        <button class="btn btn-success" v-on:click="install" :disabled="is_installed">
                             <i class="fa-solid fa-plus"></i>
                             Install
-                        </router-link>
+                        </button>
                     </div>
                 </div>
             </div>

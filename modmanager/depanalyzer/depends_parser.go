@@ -2,10 +2,28 @@ package depanalyzer
 
 import "strings"
 
-func ParseDependsTXT(data []byte) []string {
-	deps := []string{}
-	for _, dep := range strings.Split(string(data), ",") {
-		deps = append(deps, strings.TrimSpace(dep))
+func ParseDependsTXT(data []byte) (*DependsInfo, error) {
+	di := &DependsInfo{
+		Depends:         make([]string, 0),
+		OptionalDepends: make([]string, 0),
 	}
-	return deps
+
+	str := string(data)
+	str = strings.ReplaceAll(str, "\n", ",")
+
+	for _, raw_dep := range strings.Split(str, ",") {
+		dep := strings.TrimSpace(raw_dep)
+		if dep == "" {
+			continue
+		}
+		if strings.HasSuffix(dep, "?") {
+			// optional
+			di.OptionalDepends = append(di.OptionalDepends, strings.ReplaceAll(dep, "?", ""))
+		} else {
+			// hard
+			di.Depends = append(di.Depends, dep)
+		}
+	}
+
+	return di, nil
 }

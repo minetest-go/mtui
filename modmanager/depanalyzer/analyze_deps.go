@@ -57,13 +57,16 @@ func scanDir(dir string, ctx *dependencycontext) error {
 		if err != nil {
 			return fmt.Errorf("error reading '%s': %v", depends, err)
 		}
-		deptxt := ParseDependsTXT(data)
+		di, err := ParseDependsTXT(data)
+		if err != nil {
+			return fmt.Errorf("error in depends.txt: %v", err)
+		}
 
 		modname := path.Base(dir)
 		ctx.installed[modname] = true
 		ctx.missing[modname] = false
 
-		for _, dep := range deptxt {
+		for _, dep := range di.Depends {
 			if !ctx.installed[dep] {
 				ctx.missing[dep] = true
 			}

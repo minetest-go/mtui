@@ -7,15 +7,6 @@ import (
 	"strings"
 )
 
-type ModConfig struct {
-	Name            string   `json:"name"`
-	Description     string   `json:"description"`
-	Depends         []string `json:"depends"`
-	OptionalDepends []string `json:"optional_depends"`
-	Author          string   `json:"author"`
-	Title           string   `json:"title"`
-}
-
 func addModConfField(cfg *ModConfig, key, value string) {
 	switch key {
 	case "name":
@@ -45,8 +36,10 @@ func addModConfField(cfg *ModConfig, key, value string) {
 
 func ParseModConf(data []byte) (*ModConfig, error) {
 	cfg := &ModConfig{
-		Depends:         make([]string, 0),
-		OptionalDepends: make([]string, 0),
+		DependsInfo: &DependsInfo{
+			Depends:         make([]string, 0),
+			OptionalDepends: make([]string, 0),
+		},
 	}
 	sc := bufio.NewScanner(bytes.NewReader(data))
 
