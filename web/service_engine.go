@@ -188,6 +188,7 @@ func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types
 		Cmd:   []string{"minetestserver", "--world", world_dir_container, "--config", minetest_config_container},
 		Tty:   false,
 		User:  fmt.Sprintf("%d", os.Getuid()),
+		Env:   []string{"HTTP_PROXY=", "HTTPS_PROXY=", "http_proxy=", "https_proxy="},
 	}, &container.HostConfig{
 		RestartPolicy: container.RestartPolicy{
 			Name: "always",
