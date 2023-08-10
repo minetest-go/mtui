@@ -26,4 +26,16 @@ func TestLatestCDBRelease(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, mods)
 	assert.Equal(t, 1, len(mods))
+
+	status, err := mm.Status(mod)
+	assert.NoError(t, err)
+	assert.NotNil(t, status)
+	assert.Equal(t, mod.Version, status.CurrentVersion)
+	assert.Equal(t, mod.Version, status.LatestVersion)
+
+	err = mm.Update(mod, mod.Version)
+	assert.NoError(t, err)
+
+	err = mm.Remove(mod)
+	assert.NoError(t, err)
 }
