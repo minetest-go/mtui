@@ -1,6 +1,6 @@
 import { list_mods, create_mod, remove_mod } from '../api/mods.js';
 
-import store from '../store/mods.js'
+import store from '../store/mods.js';
 
 export const update = () => {
     store.busy = true;

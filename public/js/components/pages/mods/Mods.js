@@ -1,4 +1,4 @@
-import store from '../../../store/mods.js'
+import store from '../../../store/mods.js';
 
 import { add, remove } from '../../../service/mods.js';
 

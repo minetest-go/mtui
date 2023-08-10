@@ -1,7 +1,7 @@
 
 import { get_package, get_dependencies } from "../../api/cdb.js";
 import { add } from "../../service/mods.js";
-import store from '../../store/mods.js'
+import store from '../../store/mods.js';
 
 export default {
     data: function() {
