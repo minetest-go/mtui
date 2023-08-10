@@ -30,15 +30,19 @@ func (h *ContentDBModHandler) installMod(ctx *HandlerContext, mod *types.Mod, re
 		return fmt.Errorf("could not remove dir '%s': %v", dir, err)
 	}
 
-	// zip structure:
-	// mods: "modname/init.lua" or "init.lua"
-	// games: "mods/modname/init.lua"
-
-	bare := false
-	initlua, _ := z.Open("init.lua")
-	if initlua != nil {
-		// "bare" mod without enclosed directory
-		bare = true
+	// strip the first directory level in the zipfile
+	strip_basedir := false
+	if mod.ModType == types.ModTypeMod {
+		initlua, _ := z.Open("init.lua")
+		if initlua == nil {
+			strip_basedir = true
+		}
+	}
+	if mod.ModType == types.ModTypeGame {
+		gameconf, _ := z.Open("game.conf")
+		if gameconf == nil {
+			strip_basedir = true
+		}
 	}
 
 	for _, f := range z.File {
@@ -51,16 +55,21 @@ func (h *ContentDBModHandler) installMod(ctx *HandlerContext, mod *types.Mod, re
 		var fullpath string
 		switch mod.ModType {
 		case types.ModTypeMod:
-			if bare {
-				fullpath = path.Join(dir, f.Name)
-			} else {
+			if strip_basedir {
 				fullpath = path.Join(path.Dir(dir), f.Name)
+			} else {
+				fullpath = path.Join(dir, f.Name)
 			}
 		case types.ModTypeGame:
-			fullpath = path.Join(dir, f.Name)
+			if strip_basedir {
+				fullpath = path.Join(dir, strings.TrimPrefix(f.Name, fmt.Sprintf("%s/", mod.Name)))
+			} else {
+				fullpath = path.Join(dir, f.Name)
+			}
 		default:
 			return fmt.Errorf("mod type not supported: %s", mod.ModType)
 		}
+		fmt.Printf("Fullpath: '%s' entry: '%s'\n", fullpath, f.Name)
 
 		// create basedir if it does not exist
 		basedir := path.Dir(fullpath)
@@ -81,6 +90,7 @@ func (h *ContentDBModHandler) installMod(ctx *HandlerContext, mod *types.Mod, re
 
 		_, err = io.Copy(target, r)
 		r.Close()
+		target.Close()
 		if err != nil {
 			return fmt.Errorf("could not copy data to '%s': %v", f.Name, err)
 		}
