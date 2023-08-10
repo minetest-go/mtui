@@ -11,8 +11,8 @@ import (
 )
 
 func (a *Api) GetMods(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	list, err := a.app.ModManager.Mods()
-	Send(w, list, err)
+	mods, err := a.app.Repos.ModRepo.GetAll()
+	Send(w, mods, err)
 }
 
 func (a *Api) UpdateModVersion(w http.ResponseWriter, r *http.Request, claims *types.Claims) {

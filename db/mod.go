@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"mtui/types"
 
+	"github.com/google/uuid"
 	"github.com/minetest-go/dbutil"
 )
 
@@ -12,6 +13,9 @@ type ModRepository struct {
 }
 
 func (r *ModRepository) Create(m *types.Mod) error {
+	if m.ID == "" {
+		m.ID = uuid.NewString()
+	}
 	return dbutil.Insert(r.DB, m)
 }
 

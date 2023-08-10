@@ -8,17 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestScan(t *testing.T) {
-	app := CreateTestApp(t)
-	mm := modmanager.New(app.WorldDir, app.Repos.ModRepo)
-	assert.NotNil(t, mm)
-
-	mods, err := mm.Mods()
-	assert.NoError(t, err)
-	assert.NotNil(t, mods)
-	assert.Equal(t, 0, len(mods))
-}
-
 func TestCheckoutBranch(t *testing.T) {
 	app := CreateTestApp(t)
 	mm := modmanager.New(app.WorldDir, app.Repos.ModRepo)
@@ -34,7 +23,7 @@ func TestCheckoutBranch(t *testing.T) {
 	assert.NoError(t, mm.Create(mod))
 	assert.True(t, mod.Version != "")
 
-	mods, err := mm.Mods()
+	mods, err := app.Repos.ModRepo.GetAll()
 	assert.NoError(t, err)
 	assert.NotNil(t, mods)
 	assert.Equal(t, 1, len(mods))
@@ -57,7 +46,7 @@ func TestCheckoutHash(t *testing.T) {
 	assert.NotEqual(t, "", mod.ID)
 	assert.Equal(t, "fe34e3f3cd3e066ba0be76f9df46c11e66411496", mod.Version)
 
-	mods, err := mm.Mods()
+	mods, err := app.Repos.ModRepo.GetAll()
 	assert.NoError(t, err)
 	assert.NotNil(t, mods)
 	assert.Equal(t, 1, len(mods))
@@ -70,7 +59,7 @@ func TestCheckoutHash(t *testing.T) {
 	mod = mods[0]
 
 	// check list
-	mods, err = mm.Mods()
+	mods, err = app.Repos.ModRepo.GetAll()
 	assert.NoError(t, err)
 	assert.NotNil(t, mods)
 	assert.Equal(t, 1, len(mods))
@@ -93,7 +82,7 @@ func TestCheckoutHash(t *testing.T) {
 
 	// remove
 	assert.NoError(t, mm.Remove(mod))
-	mods, err = mm.Mods()
+	mods, err = app.Repos.ModRepo.GetAll()
 	assert.NoError(t, err)
 	assert.NotNil(t, mods)
 	assert.Equal(t, 0, len(mods))
