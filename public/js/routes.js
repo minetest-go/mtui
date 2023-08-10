@@ -8,7 +8,6 @@ import OnlinePlayers from './components/pages/OnlinePlayers.js';
 import PlayerSearch from './components/pages/PlayerSearch.js';
 import Mail from './components/pages/mail/Mail.js';
 import MailRead from './components/pages/mail/MailRead.js';
-import Mods from './components/pages/Mods.js';
 import Compose from './components/pages/Compose.js';
 import Skin from './components/pages/Skin.js';
 import Features from './components/pages/Features.js';
@@ -21,6 +20,10 @@ import OauthAppEdit from './components/pages/OauthAppEdit.js';
 import MinetestConfig from './components/pages/MinetestConfig.js';
 import MinetestConfigEdit from './components/pages/MinetestConfigEdit.js';
 import EngineService from './components/pages/services/Engine.js';
+
+import Mods from './components/pages/mods/Mods.js';
+import ContentBrowse from './components/cdb/Browse.js';
+import ContentdbDetail from './components/cdb/Detail.js';
 
 export default [{
 	path: "/", component: Start,
@@ -55,6 +58,12 @@ export default [{
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/mods", component: Mods,
+	meta: { requiredPriv: "server" }
+}, {
+	path: "/cdb/browse", component: ContentBrowse,
+	meta: { requiredPriv: "server" }
+}, {
+	path: "/cdb/detail/:author/:name", component: ContentdbDetail,
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/mediaserver", component: Mediaserver,

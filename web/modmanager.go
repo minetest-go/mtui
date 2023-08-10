@@ -2,24 +2,17 @@ package web
 
 import (
 	"encoding/json"
+	"mtui/modmanager/depanalyzer"
 	"mtui/types"
 	"net/http"
+	"path"
 
 	"github.com/gorilla/mux"
 )
 
 func (a *Api) GetMods(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	list, err := a.app.ModManager.Mods()
-	Send(w, list, err)
-}
-
-func (a *Api) ScanWorldDir(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	err := a.app.ModManager.Scan()
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-	a.GetMods(w, r, claims)
+	mods, err := a.app.Repos.ModRepo.GetAll()
+	Send(w, mods, err)
 }
 
 func (a *Api) UpdateModVersion(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
@@ -91,4 +84,12 @@ func (a *Api) ModStatus(w http.ResponseWriter, r *http.Request, claims *types.Cl
 	}
 	status, err := a.app.ModManager.Status(m)
 	Send(w, status, err)
+}
+
+func (a *Api) ModsValidate(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	ad, err := depanalyzer.AnalyzeDeps(
+		path.Join(a.app.WorldDir, "worldmods"),
+		path.Join(a.app.WorldDir, "game/mods"),
+	)
+	Send(w, ad, err)
 }

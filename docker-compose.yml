@@ -16,7 +16,7 @@ services:
    API_KEY: "mykey"
    LOGLEVEL: debug
    SERVER_NAME: "dev-server"
-   ENABLE_FEATURES: "shell,luashell,minetest_config,docker"
+   ENABLE_FEATURES: "shell,luashell,minetest_config,docker,modmanagement"
    MINETEST_CONFIG: "/etc/minetest/minetest.conf"
    DOCKER_MINETEST_CONFIG: "${PWD}/minetest.conf"
    DOCKER_MINETEST_PORT: 30000
@@ -27,10 +27,10 @@ services:
     - 8080:8080
   volumes:
    - "${PWD}/dev/world:/root/.minetest/worlds/world"
-   - "./dev/worldmods:/root/.minetest/worlds/world/worldmods"
    - "./minetest.conf:/etc/minetest/minetest.conf"
    - "./:/app"
-   - "go_cache:/go"
+   - "go_dir:/go"
+   - "go_cache:/.cache"
    - "/var/run/docker.sock:/var/run/docker.sock:ro"
   working_dir: /app
   command: ["go", "run", "."]
