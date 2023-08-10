@@ -6,7 +6,6 @@
   "globals": {
     "Vue": true,
     "VueRouter": true,
-		"VueI18n": true,
     "VueDatePicker": true,
     "console": true,
     "Chart": true

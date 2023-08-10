@@ -1,6 +1,5 @@
 import App from './app.js';
 import routes from './routes.js';
-import messages from './messages.js';
 import { check_login, has_priv } from './service/login.js';
 import { check_features, has_feature } from './service/features.js';
 import router_guards from './util/router_guards.js';
@@ -25,11 +24,6 @@ function start(){
 	// set up router guards
 	router_guards(router);
 
-	const i18n = VueI18n.createI18n({
-		fallbackLocale: 'en',
-		messages: messages
-	});
-
 	// set up websocket events
 	connect();
 
@@ -37,7 +31,6 @@ function start(){
 	const app = Vue.createApp(App);
 	app.component('vue-datepicker', VueDatePicker);
 	app.use(router);
-	app.use(i18n);
 	app.mount("#app");
 }
 
