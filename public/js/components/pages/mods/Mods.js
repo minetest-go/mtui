@@ -1,27 +1,23 @@
-import { list, create, remove } from '../../../api/mods.js';
+import store from '../../../store/mods.js'
 
-const store = Vue.reactive({
-	list: [],
-	busy: false,
-	error_msg: "",
-	add_name: "",
-	add_mod_type: "mod",
-	add_source_type: "git",
-	add_url: "",
-	add_version: ""
-});
+import { add, remove } from '../../../service/mods.js';
 
 export default {
-	data: () => store,
-	mounted: function() {
-		if (this.list.length == 0) {
-			this.update();
-		}
+	data: () => {
+		return {
+			add_name: "",
+			add_mod_type: "mod",
+			add_source_type: "git",
+			add_url: "",
+			add_version: "",
+			error_msg: "",
+			store: store
+		};
 	},
 	methods: {
 		add: function() {
 			this.busy = true;
-			create({
+			add({
 				name: this.add_name,
 				mod_type: this.add_mod_type,
 				source_type: this.add_source_type,
@@ -30,63 +26,48 @@ export default {
 				version: this.add_version
 			})
 			.then(() => {
-				this.busy = false;
 				this.add_name = "";
 				this.add_url = "";
 				this.add_version = "";
-				this.update();
 			});
 		},
-		update: function() {
-			list()
-			.then(l => this.list = l);
-		},
 		add_mtui_mod: function() {
-			this.busy = true;
-			create({
+			add({
 				name: "mtui",
 				mod_type: "mod",
 				source_type: "git",
 				url: "https://github.com/minetest-go/mtui_mod.git",
 				branch: "refs/heads/master"
-			})
-			.catch(e => this.error_msg = e)
-			.finally(() => {
-				this.busy = false;
-				this.update();
 			});
 		},
-		remove: function(id) {
-			remove(id)
-			.then(() => this.update());
-		}
+		remove: remove
 	},
 	template: /*html*/`
 		<div>
 			<h3>
 				Mod management
-				<i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>
+				<i class="fa-solid fa-spinner fa-spin" v-if="store.busy"></i>
 			</h3>
-			<div class="alert alert-danger" v-if="error_msg">
+			<div class="alert alert-danger" v-if="store.error_msg">
 				<div class="row">
 					<div class="col-12">
 						<i class="fa-solid fa-triangle-exclamation"></i>
 						<b>Error:</b>
-						{{error_msg}}
-						<button class="btn btn-primary float-end" :disabled="busy" v-on:click="error_msg = ''">
+						{{store.error_msg}}
+						<button class="btn btn-secondary float-end" :disabled="store.busy" v-on:click="store.error_msg = ''">
 							<i class="fa fa-times"></i>
 							Dismiss
 						</button>
 					</div>
 				</div>
 			</div>
-			<div class="alert alert-warning">
+			<div class="alert alert-warning" v-if="store.list && !store.has_mtui_mod">
 				<div class="row">
 					<div class="col-12">
 						<i class="fa-solid fa-triangle-exclamation"></i>
 						<b>Warning:</b>
 						The <i>mtui</i> mod is not installed, some features may not work properly
-						<button class="btn btn-primary float-end" :disabled="busy" v-on:click="add_mtui_mod">
+						<button class="btn btn-primary float-end" :disabled="store.busy" v-on:click="add_mtui_mod">
 							<i class="fa fa-plus"></i>
 							Install "mtui" mod
 						</button>
@@ -106,7 +87,7 @@ export default {
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="mod in list">
+					<tr v-for="mod in store.list">
 						<td>
 							<span class="badge bg-secondary">{{mod.mod_type}}</span>
 						</td>

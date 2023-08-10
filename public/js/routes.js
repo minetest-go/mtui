@@ -23,7 +23,6 @@ import EngineService from './components/pages/services/Engine.js';
 
 import Mods from './components/pages/mods/Mods.js';
 import ContentBrowse from './components/cdb/Browse.js';
-import ContentdbInstall from './components/pages/mods/ContentdbInstall.js';
 import ContentdbDetail from './components/cdb/Detail.js';
 
 export default [{
@@ -62,9 +61,6 @@ export default [{
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/cdb/browse", component: ContentBrowse,
-	meta: { requiredPriv: "server" }
-}, {
-	path: "/cdb/install/:author/:name", component: ContentdbInstall,
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/cdb/detail/:author/:name", component: ContentdbDetail,

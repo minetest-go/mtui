@@ -71,10 +71,10 @@ export default {
                             View source
                         </a>
                         <hr>
-                        <a class="btn btn-success">
+                        <router-link :to="'/cdb/install/' + pkg.author + '/' + pkg.name" class="btn btn-success">
                             <i class="fa-solid fa-plus"></i>
                             Install
-                        </a>
+                        </router-link>
                     </div>
                 </div>
             </div>
