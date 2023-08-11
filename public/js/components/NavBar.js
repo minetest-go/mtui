@@ -106,6 +106,11 @@ export default {
 						</a>		
 						<ul class="dropdown-menu" v-bind:class="{'show': admin_menu}">
 							<li>
+								<router-link to="/ui/settings" class="dropdown-item">
+									<i class="fa-solid fa-list-check"></i> UI Settings
+								</router-link>
+							</li>
+							<li>
 								<router-link to="/features" class="dropdown-item">
 									<i class="fa fa-tags"></i> Features
 								</router-link>

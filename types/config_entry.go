@@ -8,8 +8,9 @@ type ConfigEntry struct {
 type ConfigKey string
 
 const (
-	ConfigJWTKey ConfigKey = "jwt_key"
-	ConfigApiKey ConfigKey = "api_key"
+	ConfigJWTKey   ConfigKey = "jwt_key"
+	ConfigApiKey   ConfigKey = "api_key"
+	ConfigThemeKey ConfigKey = "theme"
 )
 
 func (m *ConfigEntry) Columns(action string) []string {

@@ -29,6 +29,7 @@ func Setup(a *app.App) error {
 	apir := r.PathPrefix("/api").Subrouter()
 
 	apir.HandleFunc("/appinfo", api.GetAppInfo)
+	apir.HandleFunc("/themes", api.SecurePriv(types.PRIV_SERVER, api.GetThemes))
 
 	apir.HandleFunc("/features", api.GetFeatures).Methods(http.MethodGet)
 	apir.HandleFunc("/feature", api.SecurePriv(types.PRIV_SERVER, api.SetFeature)).Methods(http.MethodPost)
@@ -68,6 +69,11 @@ func Setup(a *app.App) error {
 	apir.HandleFunc("/metric_types/{name}", api.Feature(types.FEATURE_MONITORING, api.GetMetricType)).Methods(http.MethodGet)
 	apir.HandleFunc("/metrics/search", api.Feature(types.FEATURE_MONITORING, api.SearchMetrics)).Methods(http.MethodPost)
 	apir.HandleFunc("/metrics/count", api.Feature(types.FEATURE_MONITORING, api.CountMetrics)).Methods(http.MethodPost)
+
+	acfgr := apir.PathPrefix("/config").Subrouter()
+	acfgr.Use(SecureHandler(api.PrivCheck(types.PRIV_SERVER)))
+	acfgr.HandleFunc("/{key}", api.Secure(api.GetConfig)).Methods(http.MethodGet)
+	acfgr.HandleFunc("/{key}", api.Secure(api.SetConfig)).Methods(http.MethodPost)
 
 	mr := apir.PathPrefix("/mail").Subrouter()
 	mr.Use(SecureHandler(api.PrivCheck(types.PRIV_INTERACT), api.FeatureCheck(types.FEATURE_MAIL)))
@@ -143,6 +149,10 @@ func Setup(a *app.App) error {
 
 	apir.HandleFunc("/authorize", api.OAuthAuthorizeHandler)
 	apir.HandleFunc("/token", api.OAuthTokenHandler)
+
+	// index.html or /
+	r.HandleFunc("/", api.GetIndex)
+	r.HandleFunc("/index.html", api.GetIndex)
 
 	// static files
 	if os.Getenv("WEBDEV") == "true" {
