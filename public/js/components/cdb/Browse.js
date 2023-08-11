@@ -19,6 +19,11 @@ export default {
     components: {
         "package-preview": Preview
     },
+    watch: {
+        "type": function() {
+            this.search();
+        }
+    },
     methods: {
         search: function() {
             this.busy = true;
