@@ -7,8 +7,6 @@ import (
 	"strings"
 )
 
-type MinetestConfig map[string]string
-
 const multine_delimiter = "\"\"\""
 
 func (s MinetestConfig) Read(r io.Reader) error {
