@@ -134,6 +134,8 @@ github.com/mattn/go-isatty v0.0.16/go.mod h1:kYGgaQfpe5nmfYZH+SKPsOc2e4SrIfOl2e/
 github.com/mattn/go-sqlite3 v1.14.16 h1:yOQRA0RpS5PFz/oikGwBEqvAWhWg5ufRz4ETLjwpU1Y=
 github.com/minetest-go/areasparser v1.0.3 h1:z8Uy+IOw/IpxuZtPpOiLOU6g+YN2J5L2bA4TTGOsOSs=
 github.com/minetest-go/areasparser v1.0.3/go.mod h1:NvohBk60WBrAbfvgmJccCEblz9I/Ygba4k9V81rwoNc=
+github.com/minetest-go/areasparser v1.0.4 h1:lHq+SdU08DJ7QbQ1S6QBeXCnYL94h1Ep4xArMKuiUqM=
+github.com/minetest-go/areasparser v1.0.4/go.mod h1:NvohBk60WBrAbfvgmJccCEblz9I/Ygba4k9V81rwoNc=
 github.com/minetest-go/dbutil v1.0.7 h1:3/aNRzU+OA0+Q1AEVvS/25YEUFlZdEyKgdRpKWEPXq8=
 github.com/minetest-go/dbutil v1.0.7/go.mod h1:H80I+b3887mea/UcLKt2Sq6nyYNMLvHM9cdqe31Ia9A=
 github.com/minetest-go/mtdb v1.1.39 h1:8Vz9vUQPsc8OdQBgcSX19g8ciuSzvpGplIkyj7dLmB4=
