@@ -1,7 +1,7 @@
 import { execute_chatcommand } from "../../api/chatcommand.js";
 import login_store from '../../store/login.js';
 import { has_priv } from "../../service/login.js";
-import events from "../../events.js";
+import events, { EVENT_DIRECT_CHAT } from "../../events.js";
 
 const store = Vue.reactive({
     login_store: login_store,
@@ -13,7 +13,7 @@ const store = Vue.reactive({
     delay: 0
 });
 
-events.on("direct_chat", function(data) {
+events.on(EVENT_DIRECT_CHAT, function(data) {
     store.message += data.text + "\n";
 });
 

@@ -1,5 +1,7 @@
 import { list_inbox, list_outbox, list_contacts } from "../api/mail.js";
 import store from "../store/mail.js";
+import events, { EVENT_LOGGED_IN } from "../events.js";
+import { has_feature } from "./features.js";
 
 export const fetch_mails = () =>
     list_inbox()
@@ -12,3 +14,10 @@ export const fetch_mails = () =>
 export const fetch_contacts = () =>
     list_contacts()
     .then(c => store.contacts = c);
+
+events.on(EVENT_LOGGED_IN, function() {
+    if (has_feature("mail")) {
+        fetch_mails();
+        fetch_contacts();
+    }
+});

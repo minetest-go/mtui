@@ -1,4 +1,4 @@
-import events from "../events.js";
+import events, { EVENT_STATS } from "../events.js";
 
 const store = Vue.reactive({
     max_lag: null,
@@ -7,7 +7,7 @@ const store = Vue.reactive({
     player_count: null
 });
 
-events.on("stats", function(stats) {
+events.on(EVENT_STATS, function(stats) {
     Object
     .keys(stats)
     .forEach(k => {

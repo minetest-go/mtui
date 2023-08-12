@@ -1,4 +1,4 @@
-import events from "../events.js";
+import events, { EVENT_PLAYER_STATS, EVENT_PLAYER_STATS_EXTRA } from "../events.js";
 import { has_priv } from "../service/login.js";
 
 const store = Vue.reactive({
@@ -6,14 +6,14 @@ const store = Vue.reactive({
 });
 
 // plain player info
-events.on("player_stats", function(pstats) {
+events.on(EVENT_PLAYER_STATS, function(pstats) {
     if (!has_priv("ban")) {
         store.players = pstats;
     }
 });
 
 // additional infos
-events.on("player_stats_extra", function(pstats) {
+events.on(EVENT_PLAYER_STATS_EXTRA, function(pstats) {
     if (has_priv("ban")) {
         store.players = pstats;
     }

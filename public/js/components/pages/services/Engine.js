@@ -1,11 +1,21 @@
 import { create, remove, start, get_status, stop, get_versions } from "../../../api/service_engine.js";
 import EngineLogs from "./EngineLogs.js";
+import events, { EVENT_LOGGED_IN } from "../../../events.js";
+import { has_feature } from "../../../service/features.js";
+import { has_priv } from "../../../service/login.js";
 
 export const store = Vue.reactive({
 	versions: null,
 	busy: false,
 	status: null,
 	version: ""
+});
+
+events.on(EVENT_LOGGED_IN, function() {
+	if (has_feature("docker") && has_priv("server")) {
+		get_versions()
+		.then(v => store.versions = v);
+	}
 });
 
 export default {
@@ -16,13 +26,7 @@ export default {
 		return store;
 	},
 	created: function(){
-		if (!store.status){
-			this.update_state();
-		}
-		if (!store.versions) {
-			get_versions()
-			.then(v => store.versions = v);
-		}
+		this.update_state();
 	},
 	methods: {
 		update_state(){

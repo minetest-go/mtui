@@ -6,6 +6,7 @@ import router_guards from './util/router_guards.js';
 import { fetch_info } from './service/app_info.js';
 import { update as update_modlist } from './service/mods.js';
 import { connect } from './ws.js';
+import events, { EVENT_STARTUP } from './events.js';
 
 function start(){
 	// fetch app info
@@ -26,6 +27,9 @@ function start(){
 
 	// set up websocket events
 	connect();
+
+	// trigger startup event
+	events.emit(EVENT_STARTUP);
 
 	// start vue
 	const app = Vue.createApp(App);
