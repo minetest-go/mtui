@@ -1,7 +1,7 @@
 import { create, remove, start, get_status, stop, get_versions } from "../../../api/service_engine.js";
 import EngineLogs from "./EngineLogs.js";
 
-const store = Vue.reactive({
+export const store = Vue.reactive({
 	versions: null,
 	busy: false,
 	status: null,

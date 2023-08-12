@@ -1,4 +1,5 @@
 import { get_logs } from "../../../api/service_engine.js";
+import { store as engine_store } from "./Engine.js";
 
 const store = Vue.reactive({
     busy: false,
@@ -36,7 +37,7 @@ export default {
             }
         },
         update_logs: function(){
-            if (!this.live) {
+            if (!this.live || !engine_store.status || !engine_store.status.running) {
                 // skip log-fetching if not enabled or not live
                 return;
             }
@@ -75,18 +76,18 @@ export default {
                     <vue-datepicker v-model="until"/>
                 </div>
                 <div class="col-2">
-                    <label>Log search</label>
-                    <button class="btn btn-primary w-100" v-on:click="fetch_logs" :disabled="live">
-                        Search
-                    </button>
-                </div>
-                <div class="col-2">
                     <label>Live logs</label>
                     <button class="btn btn-outline-secondary w-100" v-on:click="live = true" v-if="!live">
                         Disabled
                     </button>
                     <button class="btn btn-success w-100" v-on:click="live = false" v-if="live">
                         Enabled
+                    </button>
+                </div>
+                <div class="col-2">
+                    <label>Log search</label>
+                    <button class="btn btn-primary w-100" v-on:click="fetch_logs" :disabled="live">
+                        Search
                     </button>
                 </div>
                 <div class="col-2">
