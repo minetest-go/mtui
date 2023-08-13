@@ -10,12 +10,6 @@ export const update = () => {
     .finally(() => store.busy = false);
 };
 
-export const add = m => {
-    store.busy = true;
-    return create_mod(m)
-    .then(update)
-	.catch(e => store.error_msg = e)
-    .finally(() => store.busy = false);
-};
+export const add = m => create_mod(m).then(update);
 
 export const remove = id => remove_mod(id).then(update);

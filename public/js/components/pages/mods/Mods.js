@@ -1,8 +1,12 @@
 import store from '../../../store/mods.js';
 
 import { add, remove } from '../../../service/mods.js';
+import FeedbackButton from '../../FeedbackButton.js';
 
 export default {
+	components: {
+		"feedback-button": FeedbackButton
+	},
 	data: () => {
 		return {
 			add_name: "",
@@ -16,8 +20,7 @@ export default {
 	},
 	methods: {
 		add: function() {
-			this.busy = true;
-			add({
+			return add({
 				name: this.add_name,
 				mod_type: this.add_mod_type,
 				source_type: this.add_source_type,
@@ -154,10 +157,10 @@ export default {
 						<td>
 						</td>
 						<td>
-							<button class="btn btn-success" v-on:click="add" :disabled="busy">
+							<feedback-button classes="btn btn-success" :fn="add">
 								<i class="fa-brands fa-git-alt"></i>
 								Add from git
-							</button>
+							</feedback-button>
 						</td>
 					</tr>
 					<tr>
