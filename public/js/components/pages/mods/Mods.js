@@ -157,7 +157,7 @@ export default {
 						<td>
 						</td>
 						<td>
-							<feedback-button classes="btn btn-success" :fn="add">
+							<feedback-button type="success" :fn="add">
 								<i class="fa-brands fa-git-alt"></i>
 								Add from git
 							</feedback-button>
