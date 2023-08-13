@@ -2,8 +2,12 @@
 import { get_package, get_dependencies } from "../../api/cdb.js";
 import { add } from "../../service/mods.js";
 import store from '../../store/mods.js';
+import FeedbackButton from "../FeedbackButton.js";
 
 export default {
+    components: {
+        "feedback-button": FeedbackButton
+    },
     data: function() {
         return {
             author: this.$route.params.author,
@@ -32,7 +36,7 @@ export default {
     },
     methods: {
         install: function() {
-            add({
+            return add({
 				name: this.pkg.name,
                 author: this.pkg.author,
 				mod_type: this.pkg.type,
@@ -86,10 +90,10 @@ export default {
                             View source
                         </a>
                         <hr>
-                        <button class="btn btn-success" v-on:click="install" :disabled="is_installed">
+                        <feedback-button type="success" :fn="install" :disabled="is_installed">
                             <i class="fa-solid fa-plus"></i>
                             Install
-                        </button>
+                        </feedback-button>
                     </div>
                 </div>
             </div>
