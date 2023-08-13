@@ -1,5 +1,5 @@
 import { get_logs } from "../../../api/service_engine.js";
-import { store as engine_store } from "./Engine.js";
+import { store as engine_store } from "../../../store/engine.js";
 
 const store = Vue.reactive({
     busy: false,
