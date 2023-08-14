@@ -14,25 +14,25 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/atomic v1.11.0
-	modernc.org/sqlite v1.25.0
+	modernc.org/sqlite v1.25.0 // indirect
 )
 
 require (
+	github.com/docker/docker v24.0.5+incompatible
+	github.com/docker/go-connections v0.4.0
 	github.com/go-oauth2/oauth2/v4 v4.5.2
 	github.com/golang-jwt/jwt/v4 v4.5.0
+	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/minetest-go/areasparser v1.0.3
 )
 
 require (
 	dario.cat/mergo v1.0.0 // indirect
 	github.com/docker/distribution v2.8.2+incompatible // indirect
-	github.com/docker/docker v24.0.5+incompatible // indirect
-	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt v3.2.1+incompatible // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	github.com/mattn/go-sqlite3 v1.14.17 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -44,6 +44,8 @@ require (
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/tidwall/rtree v0.0.0-20180113144539-6cd427091e0e // indirect
 	github.com/tidwall/tinyqueue v0.0.0-20180302190814-1e39f5511563 // indirect
+	golang.org/x/time v0.3.0 // indirect
+	gotest.tools/v3 v3.5.0 // indirect
 )
 
 require (

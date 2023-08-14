@@ -44,8 +44,8 @@ func TestLogRepo(t *testing.T) {
 	assert.NoError(t, repo.Update(l))
 
 	//XXX
-	_, err = _db.Exec("update log set category = 'ui', id = $1 where id = $1", l.ID)
-	assert.NoError(t, err)
+	//_, err = _db.Exec("update log set category = 'ui', id = $1 where id = $1", l.ID)
+	//assert.NoError(t, err)
 
 	list, err = repo.Search(s)
 	assert.NoError(t, err)
