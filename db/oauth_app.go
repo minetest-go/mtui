@@ -14,7 +14,7 @@ import (
 )
 
 type OauthAppRepository struct {
-	DB dbutil.DBTx
+	dbu *dbutil.DBUtil[*types.OauthApp]
 }
 
 // https://stackoverflow.com/questions/22892120/how-to-generate-a-random-string-of-a-fixed-length-in-go/22892986#22892986
@@ -38,15 +38,15 @@ func (r *OauthAppRepository) Set(m *types.OauthApp) error {
 	if m.Created == 0 {
 		m.Created = time.Now().Unix()
 	}
-	return dbutil.InsertOrReplace(r.DB, m)
+	return r.dbu.InsertOrReplace(m)
 }
 
 func (r *OauthAppRepository) GetAll() ([]*types.OauthApp, error) {
-	return dbutil.SelectMulti(r.DB, func() *types.OauthApp { return &types.OauthApp{} }, "")
+	return r.dbu.SelectMulti("")
 }
 
 func (r *OauthAppRepository) GetByName(name string) (*types.OauthApp, error) {
-	f, err := dbutil.Select(r.DB, &types.OauthApp{}, "where name = $1", name)
+	f, err := r.dbu.Select("where name = %s", name)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	} else {
@@ -55,7 +55,7 @@ func (r *OauthAppRepository) GetByName(name string) (*types.OauthApp, error) {
 }
 
 func (r *OauthAppRepository) GetByID(id string) (*types.OauthApp, error) {
-	f, err := dbutil.Select(r.DB, &types.OauthApp{}, "where id = $1", id)
+	f, err := r.dbu.Select("where id = %s", id)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	} else {
@@ -64,7 +64,7 @@ func (r *OauthAppRepository) GetByID(id string) (*types.OauthApp, error) {
 }
 
 func (r *OauthAppRepository) Delete(id string) error {
-	return dbutil.Delete(r.DB, &types.OauthApp{}, "where id = $1", id)
+	return r.dbu.Delete("where id = %s", id)
 }
 
 type OAuthAppStore struct {

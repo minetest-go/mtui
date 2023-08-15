@@ -10,11 +10,8 @@ import (
 
 func TestLogRepo(t *testing.T) {
 	_db := setupDB(t)
-	_db.SetMaxIdleConns(1)
-	_db.SetMaxOpenConns(1)
 
-	repo := db.LogRepository{DB: _db}
-
+	repo := db.NewRepositories(_db).LogRepository
 	l := &types.Log{
 		Event:    "myevent",
 		Category: types.CategoryMinetest,
@@ -42,10 +39,6 @@ func TestLogRepo(t *testing.T) {
 
 	l.Category = types.CategoryUI
 	assert.NoError(t, repo.Update(l))
-
-	//XXX
-	//_, err = _db.Exec("update log set category = 'ui', id = $1 where id = $1", l.ID)
-	//assert.NoError(t, err)
 
 	list, err = repo.Search(s)
 	assert.NoError(t, err)

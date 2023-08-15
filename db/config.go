@@ -8,11 +8,11 @@ import (
 )
 
 type ConfigRepository struct {
-	DB dbutil.DBTx
+	dbu *dbutil.DBUtil[*types.ConfigEntry]
 }
 
 func (r *ConfigRepository) GetByKey(key types.ConfigKey) (*types.ConfigEntry, error) {
-	c, err := dbutil.Select(r.DB, &types.ConfigEntry{}, "where key = $1", key)
+	c, err := r.dbu.Select("where key = %s", key)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -20,9 +20,9 @@ func (r *ConfigRepository) GetByKey(key types.ConfigKey) (*types.ConfigEntry, er
 }
 
 func (r *ConfigRepository) Set(c *types.ConfigEntry) error {
-	return dbutil.InsertOrReplace(r.DB, c)
+	return r.dbu.InsertOrReplace(c)
 }
 
 func (r *ConfigRepository) Delete(key string) error {
-	return dbutil.Delete(r.DB, &types.ConfigEntry{}, "where key = $1", key)
+	return r.dbu.Delete("where key = %s", key)
 }

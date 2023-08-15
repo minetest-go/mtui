@@ -9,22 +9,22 @@ import (
 )
 
 type ModRepository struct {
-	DB dbutil.DBTx
+	dbu *dbutil.DBUtil[*types.Mod]
 }
 
 func (r *ModRepository) Create(m *types.Mod) error {
 	if m.ID == "" {
 		m.ID = uuid.NewString()
 	}
-	return dbutil.Insert(r.DB, m)
+	return r.dbu.Insert(m)
 }
 
 func (r *ModRepository) GetAll() ([]*types.Mod, error) {
-	return dbutil.SelectMulti(r.DB, func() *types.Mod { return &types.Mod{} }, "")
+	return r.dbu.SelectMulti("")
 }
 
 func (r *ModRepository) GetByID(id string) (*types.Mod, error) {
-	m, err := dbutil.Select(r.DB, &types.Mod{}, "where id = $1", id)
+	m, err := r.dbu.Select("where id = %s", id)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -32,13 +32,13 @@ func (r *ModRepository) GetByID(id string) (*types.Mod, error) {
 }
 
 func (r *ModRepository) Update(m *types.Mod) error {
-	return dbutil.Update(r.DB, m, "where id = $1", m.ID)
+	return r.dbu.Update(m, "where id = %s", m.ID)
 }
 
 func (r *ModRepository) Delete(id string) error {
-	return dbutil.Delete(r.DB, &types.Mod{}, "where id = $1", id)
+	return r.dbu.Delete("where id = %s", id)
 }
 
 func (r *ModRepository) DeleteAll() error {
-	return dbutil.Delete(r.DB, &types.Mod{}, "")
+	return r.dbu.Delete("")
 }

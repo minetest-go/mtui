@@ -138,6 +138,8 @@ github.com/minetest-go/areasparser v1.0.4 h1:lHq+SdU08DJ7QbQ1S6QBeXCnYL94h1Ep4xA
 github.com/minetest-go/areasparser v1.0.4/go.mod h1:NvohBk60WBrAbfvgmJccCEblz9I/Ygba4k9V81rwoNc=
 github.com/minetest-go/dbutil v1.0.7 h1:3/aNRzU+OA0+Q1AEVvS/25YEUFlZdEyKgdRpKWEPXq8=
 github.com/minetest-go/dbutil v1.0.7/go.mod h1:H80I+b3887mea/UcLKt2Sq6nyYNMLvHM9cdqe31Ia9A=
+github.com/minetest-go/dbutil v1.1.0 h1:eQp4NC1pctAxrLUeq4otCDz8N4szja2rE/nz40XQQJY=
+github.com/minetest-go/dbutil v1.1.0/go.mod h1:STa/8ka7xZgs4OMOQcKX5vcYU5YUuImQaMEyDwWmnko=
 github.com/minetest-go/mtdb v1.1.41 h1:+p6j+7Gk6bi2O9GAeuh3YBmFmNQ4V/Mi6yweL7mii5I=
 github.com/minetest-go/mtdb v1.1.41/go.mod h1:hQAtCqHzQfOxgkf4vm++4A0pqu+uXegF67f4Mefxyzk=
 github.com/moby/term v0.5.0 h1:xt8Q1nalod/v7BqbG21f8mQPqH+xAaC9C3N3wfWbVP0=
@@ -184,6 +186,7 @@ github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d/go.mod h1
 github.com/smartystreets/goconvey v1.6.4 h1:fv0U8FUIMPNf1L9lnHLvLhgicrIVChEkdzIKYqbNC9s=
 github.com/smartystreets/goconvey v1.6.4/go.mod h1:syvi0/a8iFYH4r/RixwvyeAJjdLS9QV7WQ/tjFTllLA=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
+github.com/stretchr/objx v0.5.0/go.mod h1:Yh+to48EsGEfYuaHDzXPcE3xhTkx73EhmCGUpEOglKo=
 github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
@@ -380,7 +383,9 @@ modernc.org/cc/v3 v3.41.0/go.mod h1:Ni4zjJYJ04CDOhG7dn640WGfwBzfE0ecX8TyMB0Fv0Y=
 modernc.org/ccgo/v3 v3.16.14 h1:af6KNtFgsVmnDYrWk3PQCS9XT6BXe7o3ZFJKkIKvXNQ=
 modernc.org/ccgo/v3 v3.16.14/go.mod h1:mPDSujUIaTNWQSG4eqKw+atqLOEbma6Ncsa94WbC9zo=
 modernc.org/ccorpus v1.11.6 h1:J16RXiiqiCgua6+ZvQot4yUuUy8zxgqbqEEUuGPlISk=
+modernc.org/ccorpus v1.11.6/go.mod h1:2gEUTrWqdpH2pXsmTM1ZkjeSrUWDpjMu2T6m29L/ErQ=
 modernc.org/httpfs v1.0.6 h1:AAgIpFZRXuYnkjftxTAZwMIiwEqAfk8aVB2/oA6nAeM=
+modernc.org/httpfs v1.0.6/go.mod h1:7dosgurJGp0sPaRanU53W4xZYKh14wfzX420oZADeHM=
 modernc.org/libc v1.24.1 h1:uvJSeCKL/AgzBo2yYIPPTy82v21KgGnizcGYfBHaNuM=
 modernc.org/libc v1.24.1/go.mod h1:FmfO1RLrU3MHJfyi9eYYmZBfi/R+tqZ6+hQ3yQQUkak=
 modernc.org/mathutil v1.6.0 h1:fRe9+AmYlaej+64JsEEhoWuAYBkOtQiMEU7n/XgfYi4=

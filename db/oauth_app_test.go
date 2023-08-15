@@ -11,7 +11,7 @@ import (
 
 func TestOauthRepo(t *testing.T) {
 	DB := setupDB(t)
-	repo := db.OauthAppRepository{DB: DB}
+	repo := db.NewRepositories(DB).OauthAppRepo
 
 	// create
 	err := repo.Set(&types.OauthApp{
