@@ -31,7 +31,7 @@ func (r *LogRepository) Update(l *types.Log) error {
 }
 
 func (r *LogRepository) DeleteBefore(timestamp int64) error {
-	_, err := r.db.Exec("delete from log where timestamp < %s", timestamp)
+	_, err := r.db.Exec("delete from log where timestamp < ?1", timestamp)
 	return err
 }
 
