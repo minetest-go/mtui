@@ -8,7 +8,7 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.16.2
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.5.0
-	github.com/minetest-go/dbutil v1.0.7
+	github.com/minetest-go/dbutil v1.1.0
 	github.com/minetest-go/mtdb v1.1.39
 	github.com/oschwald/geoip2-golang v1.9.0
 	github.com/sirupsen/logrus v1.9.3
@@ -18,6 +18,8 @@ require (
 )
 
 require (
+	github.com/docker/docker v24.0.5+incompatible
+	github.com/docker/go-connections v0.4.0
 	github.com/go-oauth2/oauth2/v4 v4.5.2
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/minetest-go/areasparser v1.0.3
@@ -26,8 +28,6 @@ require (
 require (
 	dario.cat/mergo v1.0.0 // indirect
 	github.com/docker/distribution v2.8.2+incompatible // indirect
-	github.com/docker/docker v24.0.5+incompatible // indirect
-	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt v3.2.1+incompatible // indirect

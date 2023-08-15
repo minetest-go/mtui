@@ -136,6 +136,8 @@ github.com/minetest-go/areasparser v1.0.3 h1:z8Uy+IOw/IpxuZtPpOiLOU6g+YN2J5L2bA4
 github.com/minetest-go/areasparser v1.0.3/go.mod h1:NvohBk60WBrAbfvgmJccCEblz9I/Ygba4k9V81rwoNc=
 github.com/minetest-go/dbutil v1.0.7 h1:3/aNRzU+OA0+Q1AEVvS/25YEUFlZdEyKgdRpKWEPXq8=
 github.com/minetest-go/dbutil v1.0.7/go.mod h1:H80I+b3887mea/UcLKt2Sq6nyYNMLvHM9cdqe31Ia9A=
+github.com/minetest-go/dbutil v1.1.0 h1:eQp4NC1pctAxrLUeq4otCDz8N4szja2rE/nz40XQQJY=
+github.com/minetest-go/dbutil v1.1.0/go.mod h1:STa/8ka7xZgs4OMOQcKX5vcYU5YUuImQaMEyDwWmnko=
 github.com/minetest-go/mtdb v1.1.39 h1:8Vz9vUQPsc8OdQBgcSX19g8ciuSzvpGplIkyj7dLmB4=
 github.com/minetest-go/mtdb v1.1.39/go.mod h1:Juojtq6Nr2QfajjyFFuLSodPlPG55iv5CKMViRYU778=
 github.com/moul/http2curl v1.0.0 h1:dRMWoAtb+ePxMlLkrCbAqh4TlPHXvoGUSQ323/9Zahs=
