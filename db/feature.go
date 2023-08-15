@@ -8,19 +8,19 @@ import (
 )
 
 type FeatureRepository struct {
-	DB dbutil.DBTx
+	dbu *dbutil.DBUtil[*types.Feature]
 }
 
 func (r *FeatureRepository) Set(m *types.Feature) error {
-	return dbutil.InsertOrReplace(r.DB, m)
+	return r.dbu.InsertOrReplace(m)
 }
 
 func (r *FeatureRepository) GetAll() ([]*types.Feature, error) {
-	return dbutil.SelectMulti(r.DB, func() *types.Feature { return &types.Feature{} }, "")
+	return r.dbu.SelectMulti("")
 }
 
 func (r *FeatureRepository) GetByName(name string) (*types.Feature, error) {
-	f, err := dbutil.Select(r.DB, &types.Feature{}, "where name = $1", name)
+	f, err := r.dbu.Select("where name = %s", name)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	} else {

@@ -10,7 +10,7 @@ import (
 
 func TestConfig(t *testing.T) {
 	DB := setupDB(t)
-	repo := &db.ConfigRepository{DB: DB}
+	repo := db.NewRepositories(DB).ConfigRepo
 
 	// create
 	assert.NoError(t, repo.Set(&types.ConfigEntry{Key: "x", Value: "y"}))

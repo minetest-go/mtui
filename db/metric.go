@@ -8,34 +8,30 @@ import (
 )
 
 type MetricRepository struct {
-	DB dbutil.DBTx
+	dbu *dbutil.DBUtil[*types.Metric]
 }
 
 func (r *MetricRepository) Insert(m *types.Metric) error {
-	return dbutil.Insert(r.DB, m)
+	return r.dbu.Insert(m)
 }
 
 func (r *MetricRepository) buildWhereClause(s *types.MetricSearch, order bool) (string, []interface{}) {
 	q := "where true "
 	args := make([]interface{}, 0)
-	i := 1
 
 	if s.Name != nil {
-		q += fmt.Sprintf(" and name = $%d", i)
+		q += " and name = %s"
 		args = append(args, *s.Name)
-		i++
 	}
 
 	if s.FromTimestamp != nil {
-		q += fmt.Sprintf(" and timestamp > $%d", i)
+		q += " and timestamp > %s"
 		args = append(args, *s.FromTimestamp)
-		i++
 	}
 
 	if s.ToTimestamp != nil {
-		q += fmt.Sprintf(" and timestamp < $%d", i)
+		q += " and timestamp < %s"
 		args = append(args, *s.ToTimestamp)
-		i++
 	}
 
 	if order {
@@ -52,14 +48,14 @@ func (r *MetricRepository) buildWhereClause(s *types.MetricSearch, order bool) (
 
 func (r *MetricRepository) Search(s *types.MetricSearch) ([]*types.Metric, error) {
 	q, args := r.buildWhereClause(s, true)
-	return dbutil.SelectMulti(r.DB, func() *types.Metric { return &types.Metric{} }, q, args...)
+	return r.dbu.SelectMulti(q, args...)
 }
 
 func (r *MetricRepository) Count(s *types.MetricSearch) (int, error) {
 	q, args := r.buildWhereClause(s, false)
-	return dbutil.Count(r.DB, &types.Metric{}, q, args...)
+	return r.dbu.Count(q, args...)
 }
 
 func (r *MetricRepository) DeleteBefore(timestamp int64) error {
-	return dbutil.Delete(r.DB, &types.Metric{}, "where timestamp < $1", timestamp)
+	return r.dbu.Delete("where timestamp < %s", timestamp)
 }

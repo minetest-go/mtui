@@ -10,8 +10,7 @@ import (
 
 func TestFeatureRepo(t *testing.T) {
 	_db := setupDB(t)
-	repo := db.FeatureRepository{DB: _db}
-
+	repo := db.NewRepositories(_db).FeatureRepository
 	// create
 	assert.NoError(t, repo.Set(&types.Feature{Name: "f1", Enabled: true}))
 	assert.NoError(t, repo.Set(&types.Feature{Name: "f2", Enabled: false}))

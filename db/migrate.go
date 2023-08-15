@@ -7,8 +7,8 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/sirupsen/logrus"
-	_ "modernc.org/sqlite"
 )
 
 //go:embed migrations/*.sql
@@ -25,7 +25,7 @@ func Migrate(db *sql.DB) error {
 		return err
 	}
 
-	m, err := migrate.NewWithInstance("iofs", d, "sqlite", driver)
+	m, err := migrate.NewWithInstance("iofs", d, "sqlite3", driver)
 	if err != nil {
 		return err
 	}

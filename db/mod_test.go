@@ -11,7 +11,7 @@ import (
 
 func TestModRepo(t *testing.T) {
 	_db := setupDB(t)
-	repo := db.ModRepository{DB: _db}
+	repo := db.NewRepositories(_db).ModRepo
 
 	m := &types.Mod{
 		ID:         uuid.NewString(),

@@ -3,11 +3,11 @@ before:
     - go mod tidy
 builds:
   - env:
-      - CGO_ENABLED=0
+      - CGO_ENABLED=1
     targets:
       - linux_amd64
     ldflags:
-      - -s -w -X mtui/app.Version={{.Version}}
+      - -s -w -extldflags=-static -X mtui/app.Version={{.Version}}
 changelog:
   sort: asc
   filters:

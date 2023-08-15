@@ -8,15 +8,15 @@ import (
 )
 
 type MetricTypeRepository struct {
-	DB dbutil.DBTx
+	dbu *dbutil.DBUtil[*types.MetricType]
 }
 
 func (r *MetricTypeRepository) Insert(mt *types.MetricType) error {
-	return dbutil.InsertOrReplace(r.DB, mt)
+	return r.dbu.InsertOrReplace(mt)
 }
 
 func (r *MetricTypeRepository) GetByName(name string) (*types.MetricType, error) {
-	mt, err := dbutil.Select(r.DB, &types.MetricType{}, "where name = $1", name)
+	mt, err := r.dbu.Select("where name = %s", name)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -24,5 +24,5 @@ func (r *MetricTypeRepository) GetByName(name string) (*types.MetricType, error)
 }
 
 func (r *MetricTypeRepository) GetAll() ([]*types.MetricType, error) {
-	return dbutil.SelectMulti(r.DB, func() *types.MetricType { return &types.MetricType{} }, "")
+	return r.dbu.SelectMulti("")
 }
