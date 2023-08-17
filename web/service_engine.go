@@ -172,13 +172,6 @@ func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types
 	network_names := strings.Split(os.Getenv("DOCKER_NETWORK"), ",")
 	container_name := os.Getenv("DOCKER_MINETEST_CONTAINER")
 
-	network_settings := map[string]*network.EndpointSettings{}
-	for _, name := range network_names {
-		network_settings[name] = &network.EndpointSettings{
-			NetworkID: name,
-		}
-	}
-
 	logrus.WithFields(logrus.Fields{
 		"world_dir":       world_dir,
 		"minetest_config": minetest_config,
@@ -220,12 +213,20 @@ func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types
 				},
 			},
 		},
-	}, &network.NetworkingConfig{
-		EndpointsConfig: network_settings,
-	}, nil, container_name)
+	}, nil, nil, container_name)
 	if err != nil {
 		SendError(w, 500, fmt.Sprintf("container create error: %v", err))
 		return
+	}
+
+	for _, name := range network_names {
+		err = cli.NetworkConnect(ctx, name, resp.ID, &network.EndpointSettings{
+			NetworkID: name,
+		})
+		if err != nil {
+			SendError(w, 500, fmt.Sprintf("could not connect container %s to network %s: %v", resp.ID, name, err))
+			return
+		}
 	}
 
 	SendJson(w, &ServiceStatus{
