@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	dockertypes "github.com/docker/docker/api/types"
@@ -168,8 +169,15 @@ func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types
 		return
 	}
 
-	network_name := os.Getenv("DOCKER_NETWORK")
+	network_names := strings.Split(os.Getenv("DOCKER_NETWORK"), ",")
 	container_name := os.Getenv("DOCKER_MINETEST_CONTAINER")
+
+	network_settings := map[string]*network.EndpointSettings{}
+	for _, name := range network_names {
+		network_settings[name] = &network.EndpointSettings{
+			NetworkID: name,
+		}
+	}
 
 	logrus.WithFields(logrus.Fields{
 		"world_dir":       world_dir,
@@ -178,7 +186,7 @@ func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types
 		"image":           image,
 		"port":            port,
 		"uid":             os.Getuid(),
-		"network":         network_name,
+		"network_names":   network_names,
 		"container_name":  container_name,
 	}).Info("Creating minetest engine service")
 
@@ -213,9 +221,7 @@ func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types
 			},
 		},
 	}, &network.NetworkingConfig{
-		EndpointsConfig: map[string]*network.EndpointSettings{
-			network_name: {NetworkID: network_name},
-		},
+		EndpointsConfig: network_settings,
 	}, nil, container_name)
 	if err != nil {
 		SendError(w, 500, fmt.Sprintf("container create error: %v", err))
