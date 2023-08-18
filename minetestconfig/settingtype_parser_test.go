@@ -140,12 +140,35 @@ func TestEnumSetting(t *testing.T) {
 	assert.Equal(t, "statbar_modern", list[0].Choices[2])
 }
 
-func TestV3FSetting(t *testing.T) {
+func TestNoiseParams2D(t *testing.T) {
+	list, err := minetestconfig.ParseSettingTypes([]byte("mgfractal_np_seabed (Seabed noise) noise_params_2d -14, 9, (600, 601, 602), 41900, 5, 0.6, 2.0, eased"))
+	assert.NoError(t, err)
+	assert.NotNil(t, list)
+	assert.Equal(t, 1, len(list))
+
+	assert.Equal(t, "mgfractal_np_seabed", list[0].Key)
+	assert.Equal(t, "Seabed noise", list[0].ShortDescription)
+	assert.Equal(t, "noise_params_2d", list[0].Type)
+	assert.Equal(t, -14.0, list[0].Offset)
+	assert.Equal(t, 9.0, list[0].Scale)
+	assert.Equal(t, 600.0, list[0].SpreadX)
+	assert.Equal(t, 601.0, list[0].SpreadY)
+	assert.Equal(t, 602.0, list[0].SpreadZ)
+	assert.Equal(t, "41900", list[0].Seed)
+	assert.Equal(t, 5.0, list[0].Octaves)
+	assert.Equal(t, 0.6, list[0].Persistence)
+	assert.Equal(t, 2.0, list[0].Lacunarity)
+	assert.Equal(t, 1, len(list[0].DefaultMGFlags))
+	assert.Equal(t, "eased", list[0].DefaultMGFlags[0])
+}
+
+func TestTypeV3F(t *testing.T) {
 	list, err := minetestconfig.ParseSettingTypes([]byte("mgfractal_scale (Scale) v3f (4096.0, 1024.0, 2048.0)"))
 	assert.NoError(t, err)
 	assert.NotNil(t, list)
 	assert.Equal(t, 1, len(list))
 
+	assert.Equal(t, "Scale", list[0].ShortDescription)
 	assert.Equal(t, "mgfractal_scale", list[0].Key)
 	assert.Equal(t, "v3f", list[0].Type)
 	assert.Equal(t, 4096.0, list[0].X)
