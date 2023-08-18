@@ -113,6 +113,7 @@ func Setup(a *app.App) error {
 	modsapi.Use(SecureHandler(api.FeatureCheck(types.FEATURE_MODMANAGEMENT), api.PrivCheck("server")))
 	modsapi.HandleFunc("", api.Secure(api.GetMods)).Methods(http.MethodGet)
 	modsapi.HandleFunc("", api.Secure(api.CreateMod)).Methods(http.MethodPost)
+	modsapi.HandleFunc("/settingtypes", api.Secure(api.GetSettingTypes))
 	modsapi.HandleFunc("/validate", api.Secure(api.ModsValidate)).Methods(http.MethodGet)
 	modsapi.HandleFunc("/{id}/update/{version}", api.Secure(api.UpdateModVersion)).Methods(http.MethodPost)
 	modsapi.HandleFunc("/{id}", api.Secure(api.DeleteMod)).Methods(http.MethodDelete)

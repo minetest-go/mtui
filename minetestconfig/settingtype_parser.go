@@ -4,6 +4,11 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"io/fs"
+	"mtui/modmanager/depanalyzer"
+	"os"
+	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -44,7 +49,7 @@ func ParseSettingTypes(data []byte) ([]*SettingType, error) {
 
 		// everything else is a settingtype entry
 		s := &SettingType{
-			LongDescription: last_comment,
+			LongDescription: strings.TrimPrefix(last_comment, "\n"),
 			Category:        categories,
 		}
 		// reset comment for next entry
@@ -80,12 +85,17 @@ func ParseSettingTypes(data []byte) ([]*SettingType, error) {
 		s.Default = strings.TrimSpace(parts[1])
 
 		if len(parts) >= 3 {
-			// float 600.0 0.0
-			v, err := strconv.ParseFloat(parts[2], 64)
-			if err != nil {
-				return nil, fmt.Errorf("invalid 'min' setting in '%s': %v", s.Key, err)
+			if s.Type == "enum" {
+				// hudbars_bar_type (HUD bars style) enum progress_bar progress_bar,statbar_classic,statbar_modern
+				s.Choices = strings.Split(parts[2], ",")
+			} else {
+				// float 600.0 0.0
+				v, err := strconv.ParseFloat(parts[2], 64)
+				if err != nil {
+					return nil, fmt.Errorf("invalid 'min' setting in '%s': %v", s.Key, err)
+				}
+				s.Min = v
 			}
-			s.Min = v
 		}
 
 		if len(parts) >= 4 {
@@ -101,4 +111,69 @@ func ParseSettingTypes(data []byte) ([]*SettingType, error) {
 	}
 
 	return list, nil
+}
+
+func GetAllSettingTypes(dir string) ([]*SettingType, error) {
+	list := []*SettingType{}
+
+	err := filepath.WalkDir(dir, func(p string, d fs.DirEntry, _ error) error {
+		if d != nil && d.IsDir() {
+			return nil
+		}
+
+		basename := path.Base(p)
+		if basename != "settingtypes.txt" {
+			return nil
+		}
+
+		data, err := os.ReadFile(p)
+		if err != nil {
+			return err
+		}
+
+		st, err := ParseSettingTypes(data)
+		if err != nil {
+			return err
+		}
+
+		dirname := path.Dir(p)
+		gameconf, _ := os.Stat(path.Join(dirname, "game.conf"))
+		if gameconf != nil {
+			// game-setting
+			for _, s := range st {
+				s.Category = append([]string{"Game"}, s.Category...)
+				list = append(list, s)
+			}
+			return nil
+		}
+
+		modname := path.Dir(dirname)
+		modconf, _ := os.Stat(path.Join(dirname, "mod.conf"))
+		if modconf != nil {
+			// mod-setting
+			data, err = os.ReadFile(path.Join(dirname, "mod.conf"))
+			if err != nil {
+				return err
+			}
+			c, err := depanalyzer.ParseModConf(data)
+			if err != nil {
+				return err
+			}
+			modname = c.Name
+		}
+		dependstxt, _ := os.Stat(path.Join(dirname, "depends.txt"))
+		if dependstxt == nil && modconf == nil {
+			// not a mod directory
+			return nil
+		}
+
+		for _, s := range st {
+			s.Category = append([]string{"Mods", modname}, s.Category...)
+			list = append(list, s)
+		}
+
+		return nil
+	})
+
+	return list, err
 }

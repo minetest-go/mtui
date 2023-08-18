@@ -102,3 +102,40 @@ func TestSettingParserMod(t *testing.T) {
 	assert.Equal(t, "true", list[2].Default)
 
 }
+
+const setting_with_enum = `
+[Appearance]
+# Specifies how the value indicators (i.e. health, breah, etc.) look. There are 3 styles
+# available. You can choose between the default progress-bar-like bars and the good
+# old statbars like you know from vanilla Minetest.
+# These values are possible:
+#   - progress_bar:    A horizontal progress-bar-like bar with a label, showing numerical value
+#                      (current, maximum), and an icon. These bars usually convey the most
+#                      information. This is the default and recommended value.
+#   - statbar_classic: Classic statbar, like in vanilla Minetest. Made out of up to 20
+#                      half-symbols. Those bars represent the vague ratio between
+#                      the current value and the maximum value. 1 half-symbol stands for
+#                      approximately 5% of the maximum value.
+#   - statbar_modern:  Like the classic statbar, but also supports background images, this
+#                      kind of statbar may be considered to be more user-friendly than the
+#                      classic statbar. This bar type closely resembles the mod
+#                      “Better HUD” [hud] by BlockMen.
+hudbars_bar_type (HUD bars style) enum progress_bar progress_bar,statbar_classic,statbar_modern
+`
+
+func TestEnumSetting(t *testing.T) {
+	list, err := minetestconfig.ParseSettingTypes([]byte(setting_with_enum))
+	assert.NoError(t, err)
+	assert.NotNil(t, list)
+	assert.Equal(t, 1, len(list))
+
+	assert.Equal(t, 1, len(list[0].Category))
+	assert.Equal(t, "Appearance", list[0].Category[0])
+	assert.Equal(t, "hudbars_bar_type", list[0].Key)
+	assert.Equal(t, "HUD bars style", list[0].ShortDescription)
+	assert.Equal(t, "enum", list[0].Type)
+	assert.Equal(t, 3, len(list[0].Choices))
+	assert.Equal(t, "progress_bar", list[0].Choices[0])
+	assert.Equal(t, "statbar_classic", list[0].Choices[1])
+	assert.Equal(t, "statbar_modern", list[0].Choices[2])
+}
