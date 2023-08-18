@@ -12,4 +12,7 @@ type SettingType struct {
 	Default          string   `json:"default"`
 	Min              float64  `json:"min"`
 	Max              float64  `json:"max"`
+	X                float64  `json:"x"`
+	Y                float64  `json:"y"`
+	Z                float64  `json:"z"`
 }

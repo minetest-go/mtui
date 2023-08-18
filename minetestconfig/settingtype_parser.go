@@ -3,6 +3,7 @@ package minetestconfig
 import (
 	"bufio"
 	"bytes"
+	"embed"
 	"fmt"
 	"io/fs"
 	"mtui/modmanager/depanalyzer"
@@ -50,7 +51,7 @@ func ParseSettingTypes(data []byte) ([]*SettingType, error) {
 		// everything else is a settingtype entry
 		s := &SettingType{
 			LongDescription: strings.TrimPrefix(last_comment, "\n"),
-			Category:        categories,
+			Category:        append([]string{}, categories...),
 		}
 		// reset comment for next entry
 		last_comment = ""
@@ -77,18 +78,43 @@ func ParseSettingTypes(data []byte) ([]*SettingType, error) {
 		}
 
 		parts = strings.Split(rest, " ")
-		if len(parts) < 2 {
-			// not enough parts
-			continue
+
+		if len(parts) >= 1 {
+			s.Type = strings.TrimSpace(parts[0])
 		}
-		s.Type = strings.TrimSpace(parts[0])
-		s.Default = strings.TrimSpace(parts[1])
+
+		if len(parts) >= 2 {
+
+			switch s.Type {
+			case "v3f":
+				// mgfractal_scale (Scale) v3f (4096.0, 1024.0, 4096.0)
+				v3f_str := strings.Join(parts[1:], "")
+				v3f_str = strings.ReplaceAll(v3f_str, "(", "")
+				v3f_str = strings.ReplaceAll(v3f_str, "(", "")
+
+				v3f := strings.Split(v3f_str, ",")
+				if len(v3f) != 3 {
+					break
+				}
+
+				s.X, _ = strconv.ParseFloat(v3f[0], 64)
+				s.Y, _ = strconv.ParseFloat(v3f[1], 64)
+				s.Z, _ = strconv.ParseFloat(v3f[2], 64)
+			default:
+				s.Default = strings.TrimSpace(parts[1])
+			}
+		}
 
 		if len(parts) >= 3 {
-			if s.Type == "enum" {
+			switch s.Type {
+			case "string":
+				// server_name (Server name) string Minetest server
+				s.Default = strings.Join(parts[2:], " ")
+			case "enum", "flags":
 				// hudbars_bar_type (HUD bars style) enum progress_bar progress_bar,statbar_classic,statbar_modern
+				// mg_flags (Mapgen flags) flags caves,dungeons,light,decorations,biomes,ores caves,dungeons,light,decorations,biomes,ores,nocaves,nodungeons,nolight,nodecorations,nobiomes,noores
 				s.Choices = strings.Split(parts[2], ",")
-			} else {
+			case "int", "float":
 				// float 600.0 0.0
 				v, err := strconv.ParseFloat(parts[2], 64)
 				if err != nil {
@@ -100,11 +126,14 @@ func ParseSettingTypes(data []byte) ([]*SettingType, error) {
 
 		if len(parts) >= 4 {
 			// int 20 -1 32767
-			v, err := strconv.ParseFloat(parts[3], 64)
-			if err != nil {
-				return nil, fmt.Errorf("invalid 'max' setting in '%s': %v", s.Key, err)
+			switch s.Type {
+			case "int", "float":
+				v, err := strconv.ParseFloat(parts[3], 64)
+				if err != nil {
+					return nil, fmt.Errorf("invalid 'max' setting in '%s': %v", s.Key, err)
+				}
+				s.Max = v
 			}
-			s.Max = v
 		}
 
 		list = append(list, s)
@@ -176,4 +205,16 @@ func GetAllSettingTypes(dir string) ([]*SettingType, error) {
 	})
 
 	return list, err
+}
+
+//go:embed server_settings.txt
+var serversettings embed.FS
+
+func GetServerSettingTypes() ([]*SettingType, error) {
+	data, err := serversettings.ReadFile("server_settings.txt")
+	if err != nil {
+		return nil, err
+	}
+
+	return ParseSettingTypes(data)
 }
