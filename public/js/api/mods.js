@@ -1,6 +1,6 @@
 import { protected_fetch } from "./util.js";
 
-export const list_mods = () => fetch("api/mods").then(r => r.json());
+export const list_mods = () => protected_fetch("api/mods");
 
 export const create_mod = mod => protected_fetch("api/mods", {
     method: "POST",
@@ -9,4 +9,4 @@ export const create_mod = mod => protected_fetch("api/mods", {
 
 export const remove_mod = id => fetch(`api/mods/${id}`, {method: "DELETE"});
 
-export const get_settingtypes = () => fetch("api/mods/settingtypes").then(r => r.json());
+export const get_settingtypes = () => protected_fetch("api/mods/settingtypes");

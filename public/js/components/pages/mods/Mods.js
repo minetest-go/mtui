@@ -14,7 +14,6 @@ export default {
 			add_source_type: "git",
 			add_url: "",
 			add_version: "",
-			error_msg: "",
 			store: store
 		};
 	},
@@ -51,19 +50,6 @@ export default {
 				Mod management
 				<i class="fa-solid fa-spinner fa-spin" v-if="store.busy"></i>
 			</h3>
-			<div class="alert alert-danger" v-if="store.error_msg">
-				<div class="row">
-					<div class="col-12">
-						<i class="fa-solid fa-triangle-exclamation"></i>
-						<b>Error:</b>
-						{{store.error_msg}}
-						<button class="btn btn-secondary float-end" :disabled="store.busy" v-on:click="store.error_msg = ''">
-							<i class="fa fa-times"></i>
-							Dismiss
-						</button>
-					</div>
-				</div>
-			</div>
 			<div class="alert alert-warning" v-if="store.list && !store.has_mtui_mod">
 				<div class="row">
 					<div class="col-12">

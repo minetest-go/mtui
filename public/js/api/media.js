@@ -1,3 +1,4 @@
+import { protected_fetch } from "./util.js";
 
-export const scan = () => fetch("api/media/scan", { method: "POST" }).then(r => r.json());
-export const stats = () => fetch("api/media/stats").then(r => r.json());
+export const scan = () => protected_fetch("api/media/scan", { method: "POST" });
+export const stats = () => protected_fetch("api/media/stats");

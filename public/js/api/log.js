@@ -1,14 +1,13 @@
+import { protected_fetch } from "./util.js";
 
-export const get_events = category => fetch(`api/log/events/${category}`).then(r => r.json());
+export const get_events = category => protected_fetch(`api/log/events/${category}`);
 
-export const count = s => fetch("api/log/count", {
+export const count = s => protected_fetch("api/log/count", {
     method: "POST",
     body: JSON.stringify(s)
-})
-.then(r => r.json());
+});
 
-export const search = s => fetch("api/log/search", {
+export const search = s => protected_fetch("api/log/search", {
     method: "POST",
     body: JSON.stringify(s)
-})
-.then(r => r.json());
+});

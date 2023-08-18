@@ -1,23 +1,24 @@
+import { protected_fetch } from "./util.js";
 
-export const get_versions = () => fetch(`api/service/engine/versions`).then(r => r.json());
+export const get_versions = () => protected_fetch(`api/service/engine/versions`);
 
-export const get_status = () => fetch(`api/service/engine`).then(r => r.json());
+export const get_status = () => protected_fetch(`api/service/engine`);
 
-export const create = opts => fetch(`api/service/engine`, {
+export const create = opts => protected_fetch(`api/service/engine`, {
     method: "POST",
     body: JSON.stringify(opts)
 });
 
-export const start = () => fetch(`api/service/engine/start`, {
+export const start = () => protected_fetch(`api/service/engine/start`, {
     method: "POST"
 });
 
-export const stop = () => fetch(`api/service/engine/stop`, {
+export const stop = () => protected_fetch(`api/service/engine/stop`, {
     method: "POST"
 });
 
-export const remove = () => fetch(`api/service/engine`, {
+export const remove = () => protected_fetch(`api/service/engine`, {
     method: "DELETE"
 });
 
-export const get_logs = (since, until) => fetch(`api/service/engine/logs/${since}/${until}`).then(r => r.json());
+export const get_logs = (since, until) => protected_fetch(`api/service/engine/logs/${since}/${until}`);
