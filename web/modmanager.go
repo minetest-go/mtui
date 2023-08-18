@@ -107,8 +107,14 @@ func (a *Api) GetSettingTypes(w http.ResponseWriter, r *http.Request, claims *ty
 		SendError(w, 500, err.Error())
 		return
 	}
-
 	list = append(list, list2...)
+
+	serversettings, err := minetestconfig.GetServerSettingTypes()
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+	list = append(list, serversettings...)
 
 	Send(w, list, nil)
 }

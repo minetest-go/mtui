@@ -3,6 +3,7 @@ package minetestconfig
 import (
 	"bufio"
 	"bytes"
+	"embed"
 	"fmt"
 	"io/fs"
 	"mtui/modmanager/depanalyzer"
@@ -12,6 +13,8 @@ import (
 	"strconv"
 	"strings"
 )
+
+var bracket_replacer = strings.NewReplacer(")", "", "(", "")
 
 func ParseSettingTypes(data []byte) ([]*SettingType, error) {
 	sc := bufio.NewScanner(bytes.NewReader(data))
@@ -50,61 +53,117 @@ func ParseSettingTypes(data []byte) ([]*SettingType, error) {
 		// everything else is a settingtype entry
 		s := &SettingType{
 			LongDescription: strings.TrimPrefix(last_comment, "\n"),
-			Category:        categories,
+			Category:        append([]string{}, categories...),
 		}
 		// reset comment for next entry
 		last_comment = ""
 
 		// disassemble setting line
-		parts := strings.Split(line, "(")
+		parts := strings.Split(line, " ")
 		if len(parts) < 2 {
-			// "(" not found, skip
+			// not a valid setting
 			continue
 		}
 		s.Key = strings.TrimSpace(parts[0])
 
-		descparts := strings.Split(parts[1], ")")
-		if len(descparts) < 2 {
-			// ")" not found
+		// remove parsed key from line
+		line = line[len(s.Key)+1:]
+
+		i1 := strings.Index(line, "(")
+		i2 := strings.Index(line, ")")
+
+		if i1 < 0 || i2 < 0 {
+			// invalid short desc
 			continue
 		}
-		s.ShortDescription = strings.TrimSpace(descparts[0])
 
-		rest := strings.TrimSpace(descparts[1])
-		// remove double spaces
-		for strings.Contains(rest, "  ") {
-			rest = strings.ReplaceAll(rest, "  ", " ")
-		}
+		s.ShortDescription = line[i1+1 : i2]
 
-		parts = strings.Split(rest, " ")
-		if len(parts) < 2 {
-			// not enough parts
-			continue
-		}
-		s.Type = strings.TrimSpace(parts[0])
-		s.Default = strings.TrimSpace(parts[1])
+		// remove parsed desc from line
+		line = line[i2+2:]
 
-		if len(parts) >= 3 {
-			if s.Type == "enum" {
-				// hudbars_bar_type (HUD bars style) enum progress_bar progress_bar,statbar_classic,statbar_modern
-				s.Choices = strings.Split(parts[2], ",")
+		i1 = strings.Index(line, " ")
+		if i1 < 0 {
+			// end of line
+			if line == "" {
+				// empty type, skip
+				continue
 			} else {
-				// float 600.0 0.0
-				v, err := strconv.ParseFloat(parts[2], 64)
-				if err != nil {
-					return nil, fmt.Errorf("invalid 'min' setting in '%s': %v", s.Key, err)
-				}
-				s.Min = v
+				// last piece is type
+				s.Type = line
 			}
+		} else {
+			// line continues
+			s.Type = line[:i1]
 		}
 
-		if len(parts) >= 4 {
-			// int 20 -1 32767
-			v, err := strconv.ParseFloat(parts[3], 64)
-			if err != nil {
-				return nil, fmt.Errorf("invalid 'max' setting in '%s': %v", s.Key, err)
+		// remove parsed type from line
+		line = line[i1+1:]
+
+		switch s.Type {
+		case "string", "path", "filepath", "key":
+			// server_name (Server name) string Minetest server
+			s.Default = line
+		case "bool":
+			parts = strings.Split(line, " ")
+			if len(parts) >= 1 {
+				s.Default = parts[0]
 			}
-			s.Max = v
+		case "int", "float":
+			parts = strings.Split(line, " ")
+			if len(parts) >= 1 {
+				s.Default = parts[0]
+			}
+			if len(parts) >= 2 {
+				s.Min, _ = strconv.ParseFloat(parts[1], 64)
+			}
+			if len(parts) >= 3 {
+				s.Max, _ = strconv.ParseFloat(parts[2], 64)
+			}
+		case "enum", "flags":
+			parts = strings.Split(line, " ")
+			if len(parts) >= 1 {
+				s.Default = parts[0]
+			}
+			if len(parts) >= 2 {
+				s.Choices = strings.Split(parts[1], ",")
+			}
+		case "v3f":
+			i1 = strings.Index(line, "(")
+			i2 = strings.Index(line, ")")
+			if i1 < 0 || i2 < 0 {
+				continue
+			}
+			parts = strings.Split(line[i1+1:i2-1], ",")
+			if len(parts) != 3 {
+				continue
+			}
+			s.X, _ = strconv.ParseFloat(strings.TrimSpace(parts[0]), 64)
+			s.Y, _ = strconv.ParseFloat(strings.TrimSpace(parts[1]), 64)
+			s.Z, _ = strconv.ParseFloat(strings.TrimSpace(parts[2]), 64)
+		case "noise_params_2d", "noise_params_3d":
+			// <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistence>, <lacunarity>[, <default flags>]
+			// mgfractal_np_seabed (Seabed noise) noise_params_2d -14, 9, (600, 600, 600), 41900, 5, 0.6, 2.0, eased
+			// mgv5_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+
+			// remove brackets
+			line = bracket_replacer.Replace(line)
+			parts = strings.Split(line, ",")
+			if len(parts) >= 9 {
+				s.Offset, _ = strconv.ParseFloat(strings.TrimSpace(parts[0]), 64)
+				s.Scale, _ = strconv.ParseFloat(strings.TrimSpace(parts[1]), 64)
+				s.SpreadX, _ = strconv.ParseFloat(strings.TrimSpace(parts[2]), 64)
+				s.SpreadY, _ = strconv.ParseFloat(strings.TrimSpace(parts[3]), 64)
+				s.SpreadZ, _ = strconv.ParseFloat(strings.TrimSpace(parts[4]), 64)
+				s.Seed = strings.TrimSpace(parts[5])
+				s.Octaves, _ = strconv.ParseFloat(strings.TrimSpace(parts[6]), 64)
+				s.Persistence, _ = strconv.ParseFloat(strings.TrimSpace(parts[7]), 64)
+				s.Lacunarity, _ = strconv.ParseFloat(strings.TrimSpace(parts[8]), 64)
+			}
+
+			if len(parts) >= 10 {
+				s.DefaultMGFlags = strings.Split(strings.TrimSpace(parts[9]), ",")
+			}
 		}
 
 		list = append(list, s)
@@ -176,4 +235,16 @@ func GetAllSettingTypes(dir string) ([]*SettingType, error) {
 	})
 
 	return list, err
+}
+
+//go:embed server_settings.txt
+var serversettings embed.FS
+
+func GetServerSettingTypes() ([]*SettingType, error) {
+	data, err := serversettings.ReadFile("server_settings.txt")
+	if err != nil {
+		return nil, err
+	}
+
+	return ParseSettingTypes(data)
 }

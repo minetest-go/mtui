@@ -12,4 +12,17 @@ type SettingType struct {
 	Default          string   `json:"default"`
 	Min              float64  `json:"min"`
 	Max              float64  `json:"max"`
+	X                float64  `json:"x"`
+	Y                float64  `json:"y"`
+	Z                float64  `json:"z"`
+	Offset           float64  `json:"offset"`
+	Scale            float64  `json:"scale"`
+	SpreadX          float64  `json:"spread_x"`
+	SpreadY          float64  `json:"spread_y"`
+	SpreadZ          float64  `json:"spread_z"`
+	Seed             string   `json:"seed"`
+	Octaves          float64  `json:"octaves"`
+	Persistence      float64  `json:"persistence"`
+	Lacunarity       float64  `json:"lacunarity"`
+	DefaultMGFlags   []string `json:"default_mg_flags"`
 }

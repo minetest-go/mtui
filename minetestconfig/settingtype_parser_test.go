@@ -139,3 +139,94 @@ func TestEnumSetting(t *testing.T) {
 	assert.Equal(t, "statbar_classic", list[0].Choices[1])
 	assert.Equal(t, "statbar_modern", list[0].Choices[2])
 }
+
+func TestNoiseParams2D(t *testing.T) {
+	list, err := minetestconfig.ParseSettingTypes([]byte("mgfractal_np_seabed (Seabed noise) noise_params_2d -14, 9, (600, 601, 602), 41900, 5, 0.6, 2.0, eased"))
+	assert.NoError(t, err)
+	assert.NotNil(t, list)
+	assert.Equal(t, 1, len(list))
+
+	assert.Equal(t, "mgfractal_np_seabed", list[0].Key)
+	assert.Equal(t, "Seabed noise", list[0].ShortDescription)
+	assert.Equal(t, "noise_params_2d", list[0].Type)
+	assert.Equal(t, -14.0, list[0].Offset)
+	assert.Equal(t, 9.0, list[0].Scale)
+	assert.Equal(t, 600.0, list[0].SpreadX)
+	assert.Equal(t, 601.0, list[0].SpreadY)
+	assert.Equal(t, 602.0, list[0].SpreadZ)
+	assert.Equal(t, "41900", list[0].Seed)
+	assert.Equal(t, 5.0, list[0].Octaves)
+	assert.Equal(t, 0.6, list[0].Persistence)
+	assert.Equal(t, 2.0, list[0].Lacunarity)
+	assert.Equal(t, 1, len(list[0].DefaultMGFlags))
+	assert.Equal(t, "eased", list[0].DefaultMGFlags[0])
+}
+
+func TestTypeV3F(t *testing.T) {
+	list, err := minetestconfig.ParseSettingTypes([]byte("mgfractal_scale (Scale) v3f (4096.0, 1024.0, 2048.0)"))
+	assert.NoError(t, err)
+	assert.NotNil(t, list)
+	assert.Equal(t, 1, len(list))
+
+	assert.Equal(t, "Scale", list[0].ShortDescription)
+	assert.Equal(t, "mgfractal_scale", list[0].Key)
+	assert.Equal(t, "v3f", list[0].Type)
+	assert.Equal(t, 4096.0, list[0].X)
+	assert.Equal(t, 1024.0, list[0].Y)
+	assert.Equal(t, 2048.0, list[0].Z)
+}
+
+const nested_settings = `
+[D1]
+[*D2]
+[**D3]
+
+[T1]
+
+[*T2]
+
+x2 (desc2) string
+
+[**D4]
+
+[**T3]
+
+x3 (desc3) string
+`
+
+func TestNestedSettings(t *testing.T) {
+	list, err := minetestconfig.ParseSettingTypes([]byte(nested_settings))
+	assert.NoError(t, err)
+	assert.NotNil(t, list)
+	assert.Equal(t, 2, len(list))
+
+	assert.Equal(t, 2, len(list[0].Category))
+	assert.Equal(t, "x2", list[0].Key)
+	assert.Equal(t, "T1", list[0].Category[0])
+	assert.Equal(t, "T2", list[0].Category[1])
+
+	assert.Equal(t, 3, len(list[1].Category))
+	assert.Equal(t, "x3", list[1].Key)
+	assert.Equal(t, "T1", list[1].Category[0])
+	assert.Equal(t, "T2", list[1].Category[1])
+	assert.Equal(t, "T3", list[1].Category[2])
+}
+
+func TestGetServerSettingTypes(t *testing.T) {
+	ss, err := minetestconfig.GetServerSettingTypes()
+	assert.NoError(t, err)
+	assert.NotNil(t, ss)
+
+	var mgv7_spflags *minetestconfig.SettingType
+	for _, s := range ss {
+		if s.Key == "mgv7_spflags" {
+			mgv7_spflags = s
+			break
+		}
+	}
+
+	assert.NotNil(t, mgv7_spflags)
+	assert.Equal(t, 2, len(mgv7_spflags.Category))
+	assert.Equal(t, "Mapgen", mgv7_spflags.Category[0])
+	assert.Equal(t, "Mapgen V7", mgv7_spflags.Category[1])
+}
