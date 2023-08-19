@@ -13,5 +13,19 @@ events.on(EVENT_LOGGED_IN, function() {
     .then(result => {
         store.settings = result[0];
         store.settingtypes = result[1];
+
+        // add dummy settingtypes for unknown/custom settings
+        Object
+        .keys(store.settings)
+        .filter(s => !store.settingtypes[s])
+        .forEach(key => {
+            store.settingtypes[key] = {
+                topic: ["custom"],
+                type: "string",
+                default: {
+                    value: ""
+                }
+            };
+        });
     });
 });

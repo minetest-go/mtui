@@ -34,6 +34,20 @@ const SettingRow = {
         </div>
     </td>
     <td>
+        <div class="btn-group" v-if="setting.type == 'string'">
+            <a class="btn btn-success">
+                <i class="fa fa-floppy-disk"></i>
+                Save
+            </a>
+            <a class="btn btn-primary">
+                <i class="fa-solid fa-arrow-rotate-left"></i>
+                Reset
+            </a>
+            <a class="btn btn-danger">
+                <i class="fa fa-trash"></i>
+                Delete
+            </a>
+        </div>
     </td>
     `
 };
@@ -62,7 +76,7 @@ export default {
                     <label class="form-check-label">Show only configured settings</label>
                 </div>
                 <div class="col-2">
-                    Showing <span class="badge bg-info">{{count}}</span> settings
+                    Found <span class="badge bg-info">{{count}}</span> settings
                 </div>
             </div>
             <div v-for="topic in topics">
