@@ -18,7 +18,6 @@ import Xban from './components/pages/Xban.js';
 import OauthApps from './components/pages/OauthApps.js';
 import OauthAppEdit from './components/pages/OauthAppEdit.js';
 import MinetestConfig from './components/pages/MinetestConfig.js';
-import MinetestConfigEdit from './components/pages/MinetestConfigEdit.js';
 import EngineService from './components/pages/services/Engine.js';
 import UISettings from './components/pages/UISettings.js';
 
@@ -91,9 +90,6 @@ export default [{
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/minetest-config", component: MinetestConfig,
-	meta: { requiredPriv: "server" }
-}, {
-	path: "/minetest-config/:key", component: MinetestConfigEdit,
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/services/engine", component: EngineService,
