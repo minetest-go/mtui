@@ -16,10 +16,10 @@ import (
 
 var bracket_replacer = strings.NewReplacer(")", "", "(", "")
 
-func ParseSettingTypes(data []byte) ([]*SettingType, error) {
+func ParseSettingTypes(data []byte) (SettingTypes, error) {
 	sc := bufio.NewScanner(bytes.NewReader(data))
 
-	list := make([]*SettingType, 0)
+	stypes := SettingTypes{}
 
 	last_comment := ""
 	categories := []string{}
@@ -54,6 +54,7 @@ func ParseSettingTypes(data []byte) ([]*SettingType, error) {
 		s := &SettingType{
 			LongDescription: strings.TrimPrefix(last_comment, "\n"),
 			Category:        append([]string{}, categories...),
+			Setting:         &Setting{},
 		}
 		// reset comment for next entry
 		last_comment = ""
@@ -166,14 +167,14 @@ func ParseSettingTypes(data []byte) ([]*SettingType, error) {
 			}
 		}
 
-		list = append(list, s)
+		stypes[s.Key] = s
 	}
 
-	return list, nil
+	return stypes, nil
 }
 
-func GetAllSettingTypes(dir string) ([]*SettingType, error) {
-	list := []*SettingType{}
+func GetAllSettingTypes(dir string) (SettingTypes, error) {
+	sts := SettingTypes{}
 
 	err := filepath.WalkDir(dir, func(p string, d fs.DirEntry, _ error) error {
 		if d != nil && d.IsDir() {
@@ -201,7 +202,7 @@ func GetAllSettingTypes(dir string) ([]*SettingType, error) {
 			// game-setting
 			for _, s := range st {
 				s.Category = append([]string{"Game"}, s.Category...)
-				list = append(list, s)
+				sts[s.Key] = s
 			}
 			return nil
 		}
@@ -228,19 +229,19 @@ func GetAllSettingTypes(dir string) ([]*SettingType, error) {
 
 		for _, s := range st {
 			s.Category = append([]string{"Mods", modname}, s.Category...)
-			list = append(list, s)
+			sts[s.Key] = s
 		}
 
 		return nil
 	})
 
-	return list, err
+	return sts, err
 }
 
 //go:embed server_settings.txt
 var serversettings embed.FS
 
-func GetServerSettingTypes() ([]*SettingType, error) {
+func GetServerSettingTypes() (SettingTypes, error) {
 	data, err := serversettings.ReadFile("server_settings.txt")
 	if err != nil {
 		return nil, err

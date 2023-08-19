@@ -1,20 +1,37 @@
 package minetestconfig_test
 
 import (
+	"bytes"
 	"mtui/minetestconfig"
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParse(t *testing.T) {
-	cfg := minetestconfig.MinetestConfig{}
-	f, err := os.Open("testdata/simple.conf")
-	assert.NoError(t, err)
-	assert.NotNil(t, f)
+const simple_config = `
+xy = 123
+# abc = def
 
-	err = cfg.Read(f)
+description = """
+a
+b
+c
+"""
+`
+
+const simple_settingtypes = `
+xy (my xa setting) string blah
+`
+
+func TestParse(t *testing.T) {
+	st, err := minetestconfig.ParseSettingTypes([]byte(simple_settingtypes))
+	assert.NoError(t, err)
+	assert.NotNil(t, st)
+	//TODO: use settingtypes for config parsing
+
+	cfg := minetestconfig.MinetestConfig{}
+	buf := bytes.NewBuffer([]byte(simple_config))
+	err = cfg.Read(buf)
 	assert.NoError(t, err)
 
 	assert.Equal(t, "123", cfg["xy"])

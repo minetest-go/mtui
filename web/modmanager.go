@@ -96,25 +96,34 @@ func (a *Api) ModsValidate(w http.ResponseWriter, r *http.Request, claims *types
 }
 
 func (a *Api) GetSettingTypes(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	list, err := minetestconfig.GetAllSettingTypes(path.Join(a.app.WorldDir, "worldmods"))
+	modst, err := minetestconfig.GetAllSettingTypes(path.Join(a.app.WorldDir, "worldmods"))
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
-	list2, err := minetestconfig.GetAllSettingTypes(path.Join(a.app.WorldDir, "game/mods"))
+	gamest, err := minetestconfig.GetAllSettingTypes(path.Join(a.app.WorldDir, "game/mods"))
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
-	list = append(list, list2...)
 
 	serversettings, err := minetestconfig.GetServerSettingTypes()
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
-	list = append(list, serversettings...)
 
-	Send(w, list, nil)
+	sts := minetestconfig.SettingTypes{}
+	for k, s := range modst {
+		sts[k] = s
+	}
+	for k, s := range gamest {
+		sts[k] = s
+	}
+	for k, s := range serversettings {
+		sts[k] = s
+	}
+
+	Send(w, sts, nil)
 }
