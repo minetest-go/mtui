@@ -13,5 +13,6 @@ export const protected_fetch = (url, opts) => fetch(url, opts)
     })
     .catch(e => {
         error_toast_store.title = `HTTP fetch error`;
+        error_toast_store.url = url;
         error_toast_store.message = e;
     });
