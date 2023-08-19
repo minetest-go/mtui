@@ -3,7 +3,7 @@ package web
 import (
 	"encoding/json"
 	"mtui/minetestconfig"
-	"mtui/modmanager/depanalyzer"
+	"mtui/minetestconfig/depanalyzer"
 	"mtui/types"
 	"net/http"
 	"path"

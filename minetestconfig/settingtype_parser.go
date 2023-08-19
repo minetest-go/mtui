@@ -6,7 +6,7 @@ import (
 	"embed"
 	"fmt"
 	"io/fs"
-	"mtui/modmanager/depanalyzer"
+	"mtui/minetestconfig/depanalyzer"
 	"os"
 	"path"
 	"path/filepath"
