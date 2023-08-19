@@ -9,7 +9,7 @@ import (
 
 const multine_delimiter = "\"\"\""
 
-func (s MinetestConfig) Read(r io.Reader) error {
+func (s Settings) Read(r io.Reader) error {
 	sc := bufio.NewScanner(r)
 	linenum := 0
 	in_multiline := false
@@ -57,7 +57,7 @@ func (s MinetestConfig) Read(r io.Reader) error {
 	return nil
 }
 
-func (s MinetestConfig) Write(w io.Writer) error {
+func (s Settings) Write(w io.Writer) error {
 	for key, value := range s {
 		_, err := w.Write([]byte(fmt.Sprintf("%s = %s\n", key, value)))
 		if err != nil {

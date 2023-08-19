@@ -19,7 +19,7 @@ func (a *Api) GetMTConfig(w http.ResponseWriter, r *http.Request, claims *types.
 	Send(w, a.app.MTConfig, nil)
 }
 
-func writeMTConfig(cfg minetestconfig.MinetestConfig) error {
+func writeMTConfig(cfg minetestconfig.Settings) error {
 	mtconfig_file := os.Getenv("MINETEST_CONFIG")
 	f, err := os.OpenFile(mtconfig_file, os.O_RDWR, 0755)
 	if err != nil {

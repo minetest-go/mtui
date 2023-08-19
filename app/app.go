@@ -42,7 +42,7 @@ type App struct {
 	Version       string
 	OAuthMgr      *manage.Manager
 	OAuthServer   *server.Server
-	MTConfig      minetestconfig.MinetestConfig
+	MTConfig      minetestconfig.Settings
 }
 
 const default_world_mt_content = `
@@ -168,7 +168,7 @@ func Create(world_dir string) (*App, error) {
 	})
 
 	// Settings
-	mtcfg := minetestconfig.MinetestConfig{}
+	mtcfg := minetestconfig.Settings{}
 	mtconfig_file := os.Getenv("MINETEST_CONFIG")
 	if mtconfig_file != "" {
 		f, err := os.Open(mtconfig_file)

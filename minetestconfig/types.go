@@ -1,6 +1,6 @@
 package minetestconfig
 
-type MinetestConfig map[string]string
+type Settings map[string]string
 
 type SettingTypes map[string]*SettingType
 

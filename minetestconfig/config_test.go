@@ -29,7 +29,7 @@ func TestParse(t *testing.T) {
 	assert.NotNil(t, st)
 	//TODO: use settingtypes for config parsing
 
-	cfg := minetestconfig.MinetestConfig{}
+	cfg := minetestconfig.Settings{}
 	buf := bytes.NewBuffer([]byte(simple_config))
 	err = cfg.Read(buf)
 	assert.NoError(t, err)
