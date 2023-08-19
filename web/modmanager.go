@@ -2,7 +2,6 @@ package web
 
 import (
 	"encoding/json"
-	"mtui/minetestconfig"
 	"mtui/minetestconfig/depanalyzer"
 	"mtui/types"
 	"net/http"
@@ -93,37 +92,4 @@ func (a *Api) ModsValidate(w http.ResponseWriter, r *http.Request, claims *types
 		path.Join(a.app.WorldDir, "game/mods"),
 	)
 	Send(w, ad, err)
-}
-
-func (a *Api) GetSettingTypes(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	modst, err := minetestconfig.GetAllSettingTypes(path.Join(a.app.WorldDir, "worldmods"))
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	gamest, err := minetestconfig.GetAllSettingTypes(path.Join(a.app.WorldDir, "game/mods"))
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	serversettings, err := minetestconfig.GetServerSettingTypes()
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	sts := minetestconfig.SettingTypes{}
-	for k, s := range modst {
-		sts[k] = s
-	}
-	for k, s := range gamest {
-		sts[k] = s
-	}
-	for k, s := range serversettings {
-		sts[k] = s
-	}
-
-	Send(w, sts, nil)
 }

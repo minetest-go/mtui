@@ -113,7 +113,6 @@ func Setup(a *app.App) error {
 	modsapi.Use(SecureHandler(api.FeatureCheck(types.FEATURE_MODMANAGEMENT), api.PrivCheck("server")))
 	modsapi.HandleFunc("", api.Secure(api.GetMods)).Methods(http.MethodGet)
 	modsapi.HandleFunc("", api.Secure(api.CreateMod)).Methods(http.MethodPost)
-	modsapi.HandleFunc("/settingtypes", api.Secure(api.GetSettingTypes))
 	modsapi.HandleFunc("/validate", api.Secure(api.ModsValidate)).Methods(http.MethodGet)
 	modsapi.HandleFunc("/{id}/update/{version}", api.Secure(api.UpdateModVersion)).Methods(http.MethodPost)
 	modsapi.HandleFunc("/{id}", api.Secure(api.DeleteMod)).Methods(http.MethodDelete)
@@ -127,9 +126,10 @@ func Setup(a *app.App) error {
 
 	cfgr := apir.PathPrefix("/mtconfig").Subrouter()
 	cfgr.Use(SecureHandler(api.FeatureCheck(types.FEATURE_MINETEST_CONFIG)))
-	cfgr.HandleFunc("", api.SecurePriv(types.PRIV_SERVER, api.GetMTConfig)).Methods(http.MethodGet)
-	cfgr.HandleFunc("/{key}", api.SecurePriv(types.PRIV_SERVER, api.SetMTConfig)).Methods(http.MethodPost)
-	cfgr.HandleFunc("/{key}", api.SecurePriv(types.PRIV_SERVER, api.DeleteMTConfig)).Methods(http.MethodDelete)
+	cfgr.HandleFunc("/settingtypes", api.SecurePriv(types.PRIV_SERVER, api.GetSettingTypes))
+	cfgr.HandleFunc("/settings", api.SecurePriv(types.PRIV_SERVER, api.GetMTConfig)).Methods(http.MethodGet)
+	cfgr.HandleFunc("/settings/{key}", api.SecurePriv(types.PRIV_SERVER, api.SetMTConfig)).Methods(http.MethodPost)
+	cfgr.HandleFunc("/settings/{key}", api.SecurePriv(types.PRIV_SERVER, api.DeleteMTConfig)).Methods(http.MethodDelete)
 
 	servapi := apir.PathPrefix("/service").Subrouter()
 	servapi.Use(SecureHandler(api.FeatureCheck(types.FEATURE_DOCKER)))

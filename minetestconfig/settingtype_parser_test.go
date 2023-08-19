@@ -42,7 +42,7 @@ func TestSettingParserminetestSettings(t *testing.T) {
 	assert.Equal(t, "Networking", e.Category[2])
 	assert.Equal(t, "prometheus_listener_address", e.Key)
 	assert.Equal(t, "Prometheus listener address", e.ShortDescription)
-	assert.Equal(t, "127.0.0.1:30000", e.Default)
+	assert.Equal(t, "127.0.0.1:30000", e.Default.Value)
 	assert.Equal(t, "string", e.Type)
 
 	e = sts["max_out_chat_queue_size"]
@@ -52,7 +52,7 @@ func TestSettingParserminetestSettings(t *testing.T) {
 	assert.Equal(t, "Networking", e.Category[2])
 	assert.Equal(t, "max_out_chat_queue_size", e.Key)
 	assert.Equal(t, "Maximum size of the out chat queue", e.ShortDescription)
-	assert.Equal(t, "20", e.Default)
+	assert.Equal(t, "20", e.Default.Value)
 	assert.Equal(t, "int", e.Type)
 	assert.Equal(t, float64(-1), e.Min)
 	assert.Equal(t, float64(32767), e.Max)
@@ -91,21 +91,21 @@ func TestSettingParserMod(t *testing.T) {
 	assert.Equal(t, "wrench.enable_crafting", e.Key)
 	assert.Equal(t, "Enable crafting recipe", e.ShortDescription)
 	assert.Equal(t, "bool", e.Type)
-	assert.Equal(t, "true", e.Default)
+	assert.Equal(t, "true", e.Default.Value)
 
 	e = sts["wrench.tool_uses"]
 	assert.Equal(t, 0, len(e.Category))
 	assert.Equal(t, "wrench.tool_uses", e.Key)
 	assert.Equal(t, "Wrench uses", e.ShortDescription)
 	assert.Equal(t, "int", e.Type)
-	assert.Equal(t, "50", e.Default)
+	assert.Equal(t, "50", e.Default.Value)
 
 	e = sts["wrench.compress_data"]
 	assert.Equal(t, 0, len(e.Category))
 	assert.Equal(t, "wrench.compress_data", e.Key)
 	assert.Equal(t, "Compress item metadata", e.ShortDescription)
 	assert.Equal(t, "bool", e.Type)
-	assert.Equal(t, "true", e.Default)
+	assert.Equal(t, "true", e.Default.Value)
 
 }
 
@@ -157,15 +157,15 @@ func TestNoiseParams2D(t *testing.T) {
 	assert.Equal(t, "mgfractal_np_seabed", e.Key)
 	assert.Equal(t, "Seabed noise", e.ShortDescription)
 	assert.Equal(t, "noise_params_2d", e.Type)
-	assert.Equal(t, -14.0, e.Offset)
-	assert.Equal(t, 9.0, e.Scale)
-	assert.Equal(t, 600.0, e.SpreadX)
-	assert.Equal(t, 601.0, e.SpreadY)
-	assert.Equal(t, 602.0, e.SpreadZ)
-	assert.Equal(t, "41900", e.Seed)
-	assert.Equal(t, 5.0, e.Octaves)
-	assert.Equal(t, 0.6, e.Persistence)
-	assert.Equal(t, 2.0, e.Lacunarity)
+	assert.Equal(t, -14.0, e.Default.Offset)
+	assert.Equal(t, 9.0, e.Default.Scale)
+	assert.Equal(t, 600.0, e.Default.SpreadX)
+	assert.Equal(t, 601.0, e.Default.SpreadY)
+	assert.Equal(t, 602.0, e.Default.SpreadZ)
+	assert.Equal(t, "41900", e.Default.Seed)
+	assert.Equal(t, 5.0, e.Default.Octaves)
+	assert.Equal(t, 0.6, e.Default.Persistence)
+	assert.Equal(t, 2.0, e.Default.Lacunarity)
 	assert.Equal(t, 1, len(e.DefaultMGFlags))
 	assert.Equal(t, "eased", e.DefaultMGFlags[0])
 }
@@ -180,9 +180,9 @@ func TestTypeV3F(t *testing.T) {
 	assert.Equal(t, "Scale", e.ShortDescription)
 	assert.Equal(t, "mgfractal_scale", e.Key)
 	assert.Equal(t, "v3f", e.Type)
-	assert.Equal(t, 4096.0, e.X)
-	assert.Equal(t, 1024.0, e.Y)
-	assert.Equal(t, 2048.0, e.Z)
+	assert.Equal(t, 4096.0, e.Default.X)
+	assert.Equal(t, 1024.0, e.Default.Y)
+	assert.Equal(t, 2048.0, e.Default.Z)
 }
 
 const nested_settings = `

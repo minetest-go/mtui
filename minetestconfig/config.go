@@ -29,13 +29,9 @@ func (s Settings) Read(r io.Reader, sts SettingTypes) error {
 			if line == multine_delimiter {
 				// end of multiline
 				in_multiline = false
-				setting := s[multiline_key]
-				if setting == nil {
-					setting = &Setting{}
-					s[multiline_key] = setting
-				}
+				st := sts[multiline_key]
+				s.Add(multiline_key, multiline_value, st)
 
-				setting.Value = multiline_value
 			} else {
 				// continue with multiline
 				multiline_value += line + "\n"
@@ -51,7 +47,6 @@ func (s Settings) Read(r io.Reader, sts SettingTypes) error {
 		if sepIndex < 0 {
 			continue
 		}
-		//TODO: multiline values with """
 
 		value := strings.Trim(line[sepIndex+1:], " ")
 		key := strings.Trim(line[:sepIndex], " ")
@@ -62,27 +57,27 @@ func (s Settings) Read(r io.Reader, sts SettingTypes) error {
 			continue
 		}
 
-		setting := s[multiline_key]
-		if setting == nil {
-			setting = &Setting{}
-			s[key] = setting
-		}
-
-		setting.Value = value
+		st := sts[key]
+		s.Add(key, value, st)
 	}
 	return nil
 }
 
-func (s Settings) Write(w io.Writer) error {
+func (s Settings) Write(w io.Writer, sts SettingTypes) error {
+	if sts == nil {
+		sts = SettingTypes{}
+	}
+
 	for key, setting := range s {
 		entry := fmt.Sprintf("%s = ", key)
+		value := setting.ToStringValue(sts[key])
 
-		if strings.Contains(setting.Value, "\n") {
+		if strings.Contains(value, "\n") {
 			// multiline value
-			entry += multine_delimiter + "\n" + setting.Value + "\n" + multine_delimiter
+			entry += multine_delimiter + "\n" + value + "\n" + multine_delimiter
 		} else {
 			// simple value
-			entry += setting.Value + "\n"
+			entry += value + "\n"
 		}
 		_, err := w.Write([]byte(entry))
 		if err != nil {
