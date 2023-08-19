@@ -24,17 +24,20 @@ xy (my xa setting) string blah
 `
 
 func TestParse(t *testing.T) {
-	st, err := minetestconfig.ParseSettingTypes([]byte(simple_settingtypes))
+	sts, err := minetestconfig.ParseSettingTypes([]byte(simple_settingtypes))
 	assert.NoError(t, err)
-	assert.NotNil(t, st)
-	//TODO: use settingtypes for config parsing
+	assert.NotNil(t, sts)
 
 	cfg := minetestconfig.Settings{}
 	buf := bytes.NewBuffer([]byte(simple_config))
-	err = cfg.Read(buf)
+	err = cfg.Read(buf, sts)
 	assert.NoError(t, err)
 
-	assert.Equal(t, "123", cfg["xy"])
-	assert.Equal(t, "a\nb\nc\n", cfg["description"])
 	assert.Equal(t, 2, len(cfg))
+
+	assert.NotNil(t, cfg["xy"])
+	assert.Equal(t, "123", cfg["xy"].Value)
+
+	assert.NotNil(t, cfg["description"])
+	assert.Equal(t, "a\nb\nc\n", cfg["description"].Value)
 }

@@ -9,7 +9,6 @@ import (
 	"mtui/eventbus"
 	"mtui/mail"
 	"mtui/mediaserver"
-	"mtui/minetestconfig"
 	"mtui/modmanager"
 	"mtui/types"
 	"os"
@@ -42,7 +41,6 @@ type App struct {
 	Version       string
 	OAuthMgr      *manage.Manager
 	OAuthServer   *server.Server
-	MTConfig      minetestconfig.Settings
 }
 
 const default_world_mt_content = `
@@ -167,26 +165,6 @@ func Create(world_dir string) (*App, error) {
 		logrus.WithFields(logrus.Fields{"err": re}).Error("Response error")
 	})
 
-	// Settings
-	mtcfg := minetestconfig.Settings{}
-	mtconfig_file := os.Getenv("MINETEST_CONFIG")
-	if mtconfig_file != "" {
-		f, err := os.Open(mtconfig_file)
-		if err != nil {
-			return nil, fmt.Errorf("could not open minetest config file '%s': %v", mtconfig_file, err)
-		}
-
-		err = mtcfg.Read(f)
-		if err != nil {
-			return nil, fmt.Errorf("could not parse minetest config file '%s': %v", mtconfig_file, err)
-		}
-
-		logrus.WithFields(logrus.Fields{
-			"filename": mtconfig_file,
-			"entries":  len(mtcfg),
-		}).Info("Read minetest config")
-	}
-
 	if Version == "" {
 		Version = "DEV"
 	}
@@ -206,7 +184,6 @@ func Create(world_dir string) (*App, error) {
 		OAuthMgr:      oauth_mgr,
 		OAuthServer:   oauth_srv,
 		Version:       Version,
-		MTConfig:      mtcfg,
 	}
 
 	return app, nil
