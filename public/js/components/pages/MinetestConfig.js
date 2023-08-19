@@ -1,4 +1,4 @@
-import store from '../../store/mtconfig.js';
+import { ordered_settings, topics } from '../../store/mtconfig.js';
 import '../../service/mtconfig.js';
 
 export default {
@@ -6,7 +6,8 @@ export default {
         return {
             config: {},
             only_configured: true,
-            store: store
+            ordered_settings: ordered_settings,
+            topics: topics
         };
     },
     template: /*html*/`
@@ -25,7 +26,7 @@ export default {
                     </a>
                 </div>
             </div>
-            <div v-for="topic in store.topics">
+            <div v-for="topic in topics">
                 <h4>{{topic}}</h4>
                 <table class="table table-striped table-condensed">
                     <thead>
@@ -38,7 +39,7 @@ export default {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="setting in store.ordered_settings[topic]" >
+                        <tr v-for="setting in ordered_settings[topic]" >
                             <td>{{setting.key}}</td>
                             <td>
                                 <span class="badge bg-info">{{setting.type}}</span>
@@ -46,17 +47,17 @@ export default {
                             <td>{{setting.short_description}}</td>
                             <td>
                                 <div v-if="setting.type == 'string'">
-                                    <input type="text" class="form-control"/>
+                                    <input type="text" class="form-control" :value="setting.default.value"/>
                                 </div>
                                 <div v-if="setting.type == 'bool'">
-                                    <input type="checkbox" class="form-check-input" :checked="setting.default == 'true'"/>
+                                    <input type="checkbox" class="form-check-input" :checked="setting.default.value == 'true'"/>
                                 </div>
                                 <div v-if="setting.type == 'int' || setting.type == 'float'">
-                                    <input type="number" class="form-control" :value="setting.default" :min="setting.min" :max="setting.max"/>
+                                    <input type="number" class="form-control" :value="setting.default.value" :min="setting.min" :max="setting.max"/>
                                 </div>
                                 <div v-if="setting.type == 'enum'">
                                     <select class="form-control">
-                                        <option v-for="choice in setting.choices" :selected="choice == setting.default">{{choice}}</option>
+                                        <option v-for="choice in setting.choices" :selected="choice == setting.default.value">{{choice}}</option>
                                     </select>
                                 </div>
                                 <div v-if="setting.type == 'flags'">

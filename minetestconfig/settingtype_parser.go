@@ -97,9 +97,11 @@ func ParseSettingTypes(data []byte) (SettingTypes, error) {
 			s.Type = line[:i1]
 		}
 
-		// remove parsed type from line
-		line = line[i1+1:]
-		s.Default.ParseStringValue(line, s)
+		if i1 >= 0 {
+			// remove parsed type from line
+			line = line[i1+1:]
+			s.Default.ParseStringValue(line, s)
+		}
 
 		stypes[s.Key] = s
 	}

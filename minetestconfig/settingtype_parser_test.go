@@ -228,16 +228,13 @@ func TestGetServerSettingTypes(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, ss)
 
-	var mgv7_spflags *minetestconfig.SettingType
-	for _, s := range ss {
-		if s.Key == "mgv7_spflags" {
-			mgv7_spflags = s
-			break
-		}
-	}
-
+	mgv7_spflags := ss["mgv7_spflags"]
 	assert.NotNil(t, mgv7_spflags)
 	assert.Equal(t, 2, len(mgv7_spflags.Category))
 	assert.Equal(t, "Mapgen", mgv7_spflags.Category[0])
 	assert.Equal(t, "Mapgen V7", mgv7_spflags.Category[1])
+
+	bind_address := ss["bind_address"]
+	assert.NotNil(t, bind_address)
+	assert.Equal(t, "", bind_address.Default.Value)
 }
