@@ -1,5 +1,4 @@
-import { store, ordered_settings, topics, count } from '../../store/mtconfig.js';
-import '../../service/mtconfig.js';
+import { store, ordered_settings, topics, count } from '../../service/mtconfig.js';
 
 const SettingRow = {
     props: ["setting"],
