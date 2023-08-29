@@ -1,9 +1,12 @@
 import { store, ordered_settings, topics, count } from '../../service/mtconfig.js';
 
 const SettingRow = {
-    props: ["setting"],
+    props: ["setting", "is_set"],
     template: /*html*/`
-    <td>{{setting.key}}</td>
+    <td>
+        {{setting.key}}
+        <i class="fa fa-lg fa-square-check" style="color: green;" title="this setting is configured/set in the minetest.conf" v-if="is_set"></i>
+    </td>
     <td>
         <span class="badge bg-info">{{setting.type}}</span>
     </td>
@@ -30,6 +33,40 @@ const SettingRow = {
                     {{choice}}
                 </li>
             </ul>
+        </div>
+        <div v-if="setting.type == 'v3f'">
+            <details>
+                <summary>3D Vector setting</summary>
+                <label>X</label>
+                <input type="text" class="form-control" :value="setting.default.x"/>
+                <label>Y</label>
+                <input type="text" class="form-control" :value="setting.default.y"/>
+                <label>Z</label>
+                <input type="text" class="form-control" :value="setting.default.z"/>
+            </details>
+        </div>
+        <div v-if="setting.type == 'noise_params_2d' || setting.type == 'noise_params_3d'">
+            <details>
+                <summary>Noise parameter setting</summary>
+                <label>Offset</label>
+                <input type="number" class="form-control" :value="setting.default.offset"/>
+                <label>Scale</label>
+                <input type="number" class="form-control" :value="setting.default.scale"/>
+                <label>Spread X</label>
+                <input type="number" class="form-control" :value="setting.default.spread_x"/>
+                <label>Spread Y</label>
+                <input type="number" class="form-control" :value="setting.default.spread_y"/>
+                <label>Spread Z</label>
+                <input type="number" class="form-control" :value="setting.default.spread_z"/>
+                <label>Seed</label>
+                <input type="text" class="form-control" :value="setting.default.seed"/>
+                <label>Octaves</label>
+                <input type="number" class="form-control" :value="setting.default.octaves"/>
+                <label>Persistence</label>
+                <input type="number" class="form-control" :value="setting.default.persistence"/>
+                <label>Lacunarity</label>
+                <input type="number" class="form-control" :value="setting.default.lacunarity"/>
+            </details>
         </div>
     </td>
     <td>
@@ -92,7 +129,7 @@ export default {
                     </thead>
                     <tbody>
                         <tr v-for="setting in ordered_settings[topic]" v-key="setting.key">
-                            <setting-row :setting="setting"/>
+                            <setting-row :setting="setting" :is_set="setting.is_set"/>
                         </tr>
                     </tbody>
                 </table>

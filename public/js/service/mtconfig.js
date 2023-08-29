@@ -24,6 +24,7 @@ export const ordered_settings = Vue.computed(() => {
         st.link = st.topic.join("/");
         st.key = key;
         st.current = store.settings[key];
+        st.is_set = st.current != undefined;
 
         if (store.search) {
             // search enabled
