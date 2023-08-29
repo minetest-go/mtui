@@ -2,6 +2,22 @@ import { store, ordered_settings, topics, count } from '../../service/mtconfig.j
 
 const SettingRow = {
     props: ["setting", "is_set"],
+    data: function() {
+        return {
+            work_setting: this.is_set ? this.setting.current : this.setting.default
+        };
+    },
+    methods: {
+        save: function() {
+            console.log(this.setting, this.work_setting);
+        },
+        reset: function() {
+
+        },
+        remove: function() {
+
+        }
+    },
     template: /*html*/`
     <td>
         {{setting.key}}
@@ -13,17 +29,17 @@ const SettingRow = {
     <td>{{setting.short_description}}</td>
     <td>
         <div v-if="setting.type == 'string'">
-            <input type="text" class="form-control" :value="setting.default.value"/>
+            <input type="text" class="form-control" :value="work_setting.value"/>
         </div>
         <div v-if="setting.type == 'bool'">
-            <input type="checkbox" class="form-check-input" :checked="setting.default.value == 'true'"/>
+            <input type="checkbox" class="form-check-input" :checked="work_setting.value == 'true'"/>
         </div>
         <div v-if="setting.type == 'int' || setting.type == 'float'">
-            <input type="number" class="form-control" :value="setting.default.value" :min="setting.min" :max="setting.max"/>
+            <input type="number" class="form-control" :value="work_setting.value" :min="setting.min" :max="setting.max"/>
         </div>
         <div v-if="setting.type == 'enum'">
             <select class="form-control">
-                <option v-for="choice in setting.choices" :selected="choice == setting.default.value">{{choice}}</option>
+                <option v-for="choice in setting.choices" :selected="choice == work_setting.value">{{choice}}</option>
             </select>
         </div>
         <div v-if="setting.type == 'flags'">
@@ -38,48 +54,48 @@ const SettingRow = {
             <details>
                 <summary>3D Vector setting</summary>
                 <label>X</label>
-                <input type="text" class="form-control" :value="setting.default.x"/>
+                <input type="text" class="form-control" :value="work_setting.x"/>
                 <label>Y</label>
-                <input type="text" class="form-control" :value="setting.default.y"/>
+                <input type="text" class="form-control" :value="work_setting.y"/>
                 <label>Z</label>
-                <input type="text" class="form-control" :value="setting.default.z"/>
+                <input type="text" class="form-control" :value="work_setting.z"/>
             </details>
         </div>
         <div v-if="setting.type == 'noise_params_2d' || setting.type == 'noise_params_3d'">
             <details>
                 <summary>Noise parameter setting</summary>
                 <label>Offset</label>
-                <input type="number" class="form-control" :value="setting.default.offset"/>
+                <input type="number" class="form-control" :value="work_setting.offset"/>
                 <label>Scale</label>
-                <input type="number" class="form-control" :value="setting.default.scale"/>
+                <input type="number" class="form-control" :value="work_setting.scale"/>
                 <label>Spread X</label>
-                <input type="number" class="form-control" :value="setting.default.spread_x"/>
+                <input type="number" class="form-control" :value="work_setting.spread_x"/>
                 <label>Spread Y</label>
-                <input type="number" class="form-control" :value="setting.default.spread_y"/>
+                <input type="number" class="form-control" :value="work_setting.spread_y"/>
                 <label>Spread Z</label>
-                <input type="number" class="form-control" :value="setting.default.spread_z"/>
+                <input type="number" class="form-control" :value="work_setting.spread_z"/>
                 <label>Seed</label>
-                <input type="text" class="form-control" :value="setting.default.seed"/>
+                <input type="text" class="form-control" :value="work_setting.seed"/>
                 <label>Octaves</label>
-                <input type="number" class="form-control" :value="setting.default.octaves"/>
+                <input type="number" class="form-control" :value="work_setting.octaves"/>
                 <label>Persistence</label>
-                <input type="number" class="form-control" :value="setting.default.persistence"/>
+                <input type="number" class="form-control" :value="work_setting.persistence"/>
                 <label>Lacunarity</label>
-                <input type="number" class="form-control" :value="setting.default.lacunarity"/>
+                <input type="number" class="form-control" :value="work_setting.lacunarity"/>
             </details>
         </div>
     </td>
     <td>
-        <div class="btn-group" v-if="setting.type == 'string'">
-            <a class="btn btn-success">
+        <div class="btn-group">
+            <a class="btn btn-success" v-on:click="save">
                 <i class="fa fa-floppy-disk"></i>
                 Save
             </a>
-            <a class="btn btn-primary">
+            <a class="btn btn-primary" v-on:click="reset">
                 <i class="fa-solid fa-arrow-rotate-left"></i>
                 Reset
             </a>
-            <a class="btn btn-danger">
+            <a class="btn btn-danger" v-on:click="remove">
                 <i class="fa fa-trash"></i>
                 Delete
             </a>
