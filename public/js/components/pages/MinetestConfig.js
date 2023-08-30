@@ -94,34 +94,34 @@ const SettingRow = {
             <details>
                 <summary>3D Vector setting</summary>
                 <label>X</label>
-                <input type="text" class="form-control" v-model="work_setting.x"/>
+                <input type="text" class="form-control" v-model.number="work_setting.x"/>
                 <label>Y</label>
-                <input type="text" class="form-control" v-model="work_setting.y"/>
+                <input type="text" class="form-control" v-model.number="work_setting.y"/>
                 <label>Z</label>
-                <input type="text" class="form-control" v-model="work_setting.z"/>
+                <input type="text" class="form-control" v-model.number="work_setting.z"/>
             </details>
         </div>
         <div v-if="setting.type == 'noise_params_2d' || setting.type == 'noise_params_3d'">
             <details>
                 <summary>Noise parameter setting</summary>
                 <label>Offset</label>
-                <input type="number" class="form-control" v-model="work_setting.offset"/>
+                <input type="number" class="form-control" v-model.number="work_setting.offset"/>
                 <label>Scale</label>
-                <input type="number" class="form-control" v-model="work_setting.scale"/>
+                <input type="number" class="form-control" v-model.number="work_setting.scale"/>
                 <label>Spread X</label>
-                <input type="number" class="form-control" v-model="work_setting.spread_x"/>
+                <input type="number" class="form-control" v-model.number="work_setting.spread_x"/>
                 <label>Spread Y</label>
-                <input type="number" class="form-control" v-model="work_setting.spread_y"/>
+                <input type="number" class="form-control" v-model.number="work_setting.spread_y"/>
                 <label>Spread Z</label>
-                <input type="number" class="form-control" v-model="work_setting.spread_z"/>
+                <input type="number" class="form-control" v-model.number="work_setting.spread_z"/>
                 <label>Seed</label>
                 <input type="text" class="form-control" v-model="work_setting.seed"/>
                 <label>Octaves</label>
-                <input type="number" class="form-control" v-model="work_setting.octaves"/>
+                <input type="number" class="form-control" v-model.number="work_setting.octaves"/>
                 <label>Persistence</label>
-                <input type="number" class="form-control" v-model="work_setting.persistence"/>
+                <input type="number" class="form-control" v-model.number="work_setting.persistence"/>
                 <label>Lacunarity</label>
-                <input type="number" class="form-control" v-model="work_setting.lacunarity"/>
+                <input type="number" class="form-control" v-model.number="work_setting.lacunarity"/>
             </details>
         </div>
     </td>
