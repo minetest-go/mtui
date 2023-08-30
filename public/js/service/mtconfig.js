@@ -6,16 +6,17 @@ import { has_feature } from "./features.js";
 export const store = Vue.reactive({
     settingtypes: {},
     settings: {},
-    search: "",
-    only_configured: true
+    filtered_settings: {},
+    filtered_count: 0,
+    filtered_topics: []
 });
 
-export const ordered_settings = Vue.computed(() => {
+export function apply_filter(filter) {
     // link -> []setting
-    const ordered_settings = {};
+    const filtered_settings = {};
 
     Object.keys(store.settingtypes).forEach(key => {
-        if (store.only_configured && !store.settings[key]) {
+        if (filter.only_configured && !store.settings[key]) {
             // not configured, hide
             return;
         }
@@ -26,34 +27,30 @@ export const ordered_settings = Vue.computed(() => {
         st.current = store.settings[key];
         st.is_set = st.current != undefined;
 
-        if (store.search) {
+        if (filter.search) {
             // search enabled
             const str = `${key},${st.short_description},${st.long_description}`;
-            if (!str.includes(store.search)) {
+            if (!str.toLowerCase().includes(filter.search.toLowerCase())) {
                 return;
             }
         }
 
-        if (!ordered_settings[st.link]) {
-            ordered_settings[st.link] = [];
+        if (!filtered_settings[st.link]) {
+            filtered_settings[st.link] = [];
         }
-        ordered_settings[st.link].push(st);
+        filtered_settings[st.link].push(st);
     });
 
-    console.log(ordered_settings);
-    return ordered_settings;
-});
+    store.filtered_settings = filtered_settings;
+    store.filtered_count = Object
+        .keys(filtered_settings)
+        .map(key => filtered_settings[key].length)
+        .reduce((a,c) => a + c, 0);
+    store.filtered_topics = Object
+        .keys(filtered_settings)
+        .sort((a,b) => a > b);
 
-export const count = Vue.computed(() => Object
-    .keys(ordered_settings.value)
-    .map(key => ordered_settings.value[key].length)
-    .reduce((a,c) => a + c, 0)
-);
-
-export const topics = Vue.computed(() => Object
-    .keys(ordered_settings.value)
-    .sort((a,b) => a > b)
-);
+}
 
 events.on(EVENT_LOGGED_IN, function() {
     if (!has_priv("server") || !has_feature("minetest_config")){
@@ -78,5 +75,7 @@ events.on(EVENT_LOGGED_IN, function() {
                 }
             };
         });
+
+        apply_filter({ only_configured: true });
     });
 });
