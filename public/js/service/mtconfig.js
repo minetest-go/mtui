@@ -11,6 +11,10 @@ export const store = Vue.reactive({
     filtered_topics: []
 });
 
+export function save() {
+    //TODO
+}
+
 export function apply_filter(filter) {
     // link -> []setting
     const filtered_settings = {};
