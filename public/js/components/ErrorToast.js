@@ -7,6 +7,7 @@ export default {
         close: function() {
             this.message = "";
             this.title = "";
+            this.url = "";
             this.status = 0;
         }
     },
@@ -25,7 +26,12 @@ export default {
                 <button type="button" class="btn-close" v-on:click="close"></button>
             </div>
             <div class="toast-body">
-                {{message}}
+                <p>
+                    <b>Message:</b> {{message}}
+                </p>
+                <p>
+                    <b>URL:</b> {{url}}
+                </p>
             </div>
         </div>
     </div>

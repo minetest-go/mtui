@@ -30,39 +30,42 @@ client_unload_unused_data_timeout (Mapblock unload timeout) float 600.0 0.0
 `
 
 func TestSettingParserminetestSettings(t *testing.T) {
-	list, err := minetestconfig.ParseSettingTypes([]byte(minetest_setting))
+	sts, err := minetestconfig.ParseSettingTypes([]byte(minetest_setting))
 	assert.NoError(t, err)
-	assert.NotNil(t, list)
-	assert.Equal(t, 3, len(list))
+	assert.NotNil(t, sts)
+	assert.Equal(t, 3, len(sts))
 
-	assert.Equal(t, 3, len(list[0].Category))
-	assert.Equal(t, "General", list[0].Category[0])
-	assert.Equal(t, "Advanced", list[0].Category[1])
-	assert.Equal(t, "Networking", list[0].Category[2])
-	assert.Equal(t, "prometheus_listener_address", list[0].Key)
-	assert.Equal(t, "Prometheus listener address", list[0].ShortDescription)
-	assert.Equal(t, "127.0.0.1:30000", list[0].Default)
-	assert.Equal(t, "string", list[0].Type)
+	e := sts["prometheus_listener_address"]
+	assert.Equal(t, 3, len(e.Category))
+	assert.Equal(t, "General", e.Category[0])
+	assert.Equal(t, "Advanced", e.Category[1])
+	assert.Equal(t, "Networking", e.Category[2])
+	assert.Equal(t, "prometheus_listener_address", e.Key)
+	assert.Equal(t, "Prometheus listener address", e.ShortDescription)
+	assert.Equal(t, "127.0.0.1:30000", e.Default.Value)
+	assert.Equal(t, "string", e.Type)
 
-	assert.Equal(t, 3, len(list[1].Category))
-	assert.Equal(t, "General", list[1].Category[0])
-	assert.Equal(t, "Advanced", list[1].Category[1])
-	assert.Equal(t, "Networking", list[1].Category[2])
-	assert.Equal(t, "max_out_chat_queue_size", list[1].Key)
-	assert.Equal(t, "Maximum size of the out chat queue", list[1].ShortDescription)
-	assert.Equal(t, "20", list[1].Default)
-	assert.Equal(t, "int", list[1].Type)
-	assert.Equal(t, float64(-1), list[1].Min)
-	assert.Equal(t, float64(32767), list[1].Max)
+	e = sts["max_out_chat_queue_size"]
+	assert.Equal(t, 3, len(e.Category))
+	assert.Equal(t, "General", e.Category[0])
+	assert.Equal(t, "Advanced", e.Category[1])
+	assert.Equal(t, "Networking", e.Category[2])
+	assert.Equal(t, "max_out_chat_queue_size", e.Key)
+	assert.Equal(t, "Maximum size of the out chat queue", e.ShortDescription)
+	assert.Equal(t, "20", e.Default.Value)
+	assert.Equal(t, "int", e.Type)
+	assert.Equal(t, float64(-1), *e.Min)
+	assert.Equal(t, float64(32767), *e.Max)
 
-	assert.Equal(t, 3, len(list[2].Category))
-	assert.Equal(t, "General", list[2].Category[0])
-	assert.Equal(t, "Advanced", list[2].Category[1])
-	assert.Equal(t, "Networking", list[2].Category[2])
-	assert.Equal(t, "client_unload_unused_data_timeout", list[2].Key)
-	assert.Equal(t, "Mapblock unload timeout", list[2].ShortDescription)
-	assert.Equal(t, "float", list[2].Type)
-	assert.Equal(t, float64(0.0), list[2].Min)
+	e = sts["client_unload_unused_data_timeout"]
+	assert.Equal(t, 3, len(e.Category))
+	assert.Equal(t, "General", e.Category[0])
+	assert.Equal(t, "Advanced", e.Category[1])
+	assert.Equal(t, "Networking", e.Category[2])
+	assert.Equal(t, "client_unload_unused_data_timeout", e.Key)
+	assert.Equal(t, "Mapblock unload timeout", e.ShortDescription)
+	assert.Equal(t, "float", e.Type)
+	assert.Equal(t, float64(0.0), *e.Min)
 
 }
 
@@ -78,28 +81,31 @@ wrench.compress_data (Compress item metadata) bool true
 `
 
 func TestSettingParserMod(t *testing.T) {
-	list, err := minetestconfig.ParseSettingTypes([]byte(mod_settings))
+	sts, err := minetestconfig.ParseSettingTypes([]byte(mod_settings))
 	assert.NoError(t, err)
-	assert.NotNil(t, list)
-	assert.Equal(t, 3, len(list))
+	assert.NotNil(t, sts)
+	assert.Equal(t, 3, len(sts))
 
-	assert.Equal(t, 0, len(list[0].Category))
-	assert.Equal(t, "wrench.enable_crafting", list[0].Key)
-	assert.Equal(t, "Enable crafting recipe", list[0].ShortDescription)
-	assert.Equal(t, "bool", list[0].Type)
-	assert.Equal(t, "true", list[0].Default)
+	e := sts["wrench.enable_crafting"]
+	assert.Equal(t, 0, len(e.Category))
+	assert.Equal(t, "wrench.enable_crafting", e.Key)
+	assert.Equal(t, "Enable crafting recipe", e.ShortDescription)
+	assert.Equal(t, "bool", e.Type)
+	assert.Equal(t, "true", e.Default.Value)
 
-	assert.Equal(t, 0, len(list[1].Category))
-	assert.Equal(t, "wrench.tool_uses", list[1].Key)
-	assert.Equal(t, "Wrench uses", list[1].ShortDescription)
-	assert.Equal(t, "int", list[1].Type)
-	assert.Equal(t, "50", list[1].Default)
+	e = sts["wrench.tool_uses"]
+	assert.Equal(t, 0, len(e.Category))
+	assert.Equal(t, "wrench.tool_uses", e.Key)
+	assert.Equal(t, "Wrench uses", e.ShortDescription)
+	assert.Equal(t, "int", e.Type)
+	assert.Equal(t, "50", e.Default.Value)
 
-	assert.Equal(t, 0, len(list[2].Category))
-	assert.Equal(t, "wrench.compress_data", list[2].Key)
-	assert.Equal(t, "Compress item metadata", list[2].ShortDescription)
-	assert.Equal(t, "bool", list[2].Type)
-	assert.Equal(t, "true", list[2].Default)
+	e = sts["wrench.compress_data"]
+	assert.Equal(t, 0, len(e.Category))
+	assert.Equal(t, "wrench.compress_data", e.Key)
+	assert.Equal(t, "Compress item metadata", e.ShortDescription)
+	assert.Equal(t, "bool", e.Type)
+	assert.Equal(t, "true", e.Default.Value)
 
 }
 
@@ -124,56 +130,59 @@ hudbars_bar_type (HUD bars style) enum progress_bar progress_bar,statbar_classic
 `
 
 func TestEnumSetting(t *testing.T) {
-	list, err := minetestconfig.ParseSettingTypes([]byte(setting_with_enum))
+	sts, err := minetestconfig.ParseSettingTypes([]byte(setting_with_enum))
 	assert.NoError(t, err)
-	assert.NotNil(t, list)
-	assert.Equal(t, 1, len(list))
+	assert.NotNil(t, sts)
+	assert.Equal(t, 1, len(sts))
 
-	assert.Equal(t, 1, len(list[0].Category))
-	assert.Equal(t, "Appearance", list[0].Category[0])
-	assert.Equal(t, "hudbars_bar_type", list[0].Key)
-	assert.Equal(t, "HUD bars style", list[0].ShortDescription)
-	assert.Equal(t, "enum", list[0].Type)
-	assert.Equal(t, 3, len(list[0].Choices))
-	assert.Equal(t, "progress_bar", list[0].Choices[0])
-	assert.Equal(t, "statbar_classic", list[0].Choices[1])
-	assert.Equal(t, "statbar_modern", list[0].Choices[2])
+	e := sts["hudbars_bar_type"]
+	assert.Equal(t, 1, len(e.Category))
+	assert.Equal(t, "Appearance", e.Category[0])
+	assert.Equal(t, "hudbars_bar_type", e.Key)
+	assert.Equal(t, "HUD bars style", e.ShortDescription)
+	assert.Equal(t, "enum", e.Type)
+	assert.Equal(t, 3, len(e.Choices))
+	assert.Equal(t, "progress_bar", e.Choices[0])
+	assert.Equal(t, "statbar_classic", e.Choices[1])
+	assert.Equal(t, "statbar_modern", e.Choices[2])
 }
 
 func TestNoiseParams2D(t *testing.T) {
-	list, err := minetestconfig.ParseSettingTypes([]byte("mgfractal_np_seabed (Seabed noise) noise_params_2d -14, 9, (600, 601, 602), 41900, 5, 0.6, 2.0, eased"))
+	sts, err := minetestconfig.ParseSettingTypes([]byte("mgfractal_np_seabed (Seabed noise) noise_params_2d -14, 9, (600, 601, 602), 41900, 5, 0.6, 2.0, eased"))
 	assert.NoError(t, err)
-	assert.NotNil(t, list)
-	assert.Equal(t, 1, len(list))
+	assert.NotNil(t, sts)
+	assert.Equal(t, 1, len(sts))
 
-	assert.Equal(t, "mgfractal_np_seabed", list[0].Key)
-	assert.Equal(t, "Seabed noise", list[0].ShortDescription)
-	assert.Equal(t, "noise_params_2d", list[0].Type)
-	assert.Equal(t, -14.0, list[0].Offset)
-	assert.Equal(t, 9.0, list[0].Scale)
-	assert.Equal(t, 600.0, list[0].SpreadX)
-	assert.Equal(t, 601.0, list[0].SpreadY)
-	assert.Equal(t, 602.0, list[0].SpreadZ)
-	assert.Equal(t, "41900", list[0].Seed)
-	assert.Equal(t, 5.0, list[0].Octaves)
-	assert.Equal(t, 0.6, list[0].Persistence)
-	assert.Equal(t, 2.0, list[0].Lacunarity)
-	assert.Equal(t, 1, len(list[0].DefaultMGFlags))
-	assert.Equal(t, "eased", list[0].DefaultMGFlags[0])
+	e := sts["mgfractal_np_seabed"]
+	assert.Equal(t, "mgfractal_np_seabed", e.Key)
+	assert.Equal(t, "Seabed noise", e.ShortDescription)
+	assert.Equal(t, "noise_params_2d", e.Type)
+	assert.Equal(t, -14.0, e.Default.Offset)
+	assert.Equal(t, 9.0, e.Default.Scale)
+	assert.Equal(t, 600.0, e.Default.SpreadX)
+	assert.Equal(t, 601.0, e.Default.SpreadY)
+	assert.Equal(t, 602.0, e.Default.SpreadZ)
+	assert.Equal(t, "41900", e.Default.Seed)
+	assert.Equal(t, 5.0, e.Default.Octaves)
+	assert.Equal(t, 0.6, e.Default.Persistence)
+	assert.Equal(t, 2.0, e.Default.Lacunarity)
+	assert.Equal(t, 1, len(e.DefaultMGFlags))
+	assert.Equal(t, "eased", e.DefaultMGFlags[0])
 }
 
 func TestTypeV3F(t *testing.T) {
-	list, err := minetestconfig.ParseSettingTypes([]byte("mgfractal_scale (Scale) v3f (4096.0, 1024.0, 2048.0)"))
+	sts, err := minetestconfig.ParseSettingTypes([]byte("mgfractal_scale (Scale) v3f (4096.0, 1024.0, 2048.0)"))
 	assert.NoError(t, err)
-	assert.NotNil(t, list)
-	assert.Equal(t, 1, len(list))
+	assert.NotNil(t, sts)
+	assert.Equal(t, 1, len(sts))
 
-	assert.Equal(t, "Scale", list[0].ShortDescription)
-	assert.Equal(t, "mgfractal_scale", list[0].Key)
-	assert.Equal(t, "v3f", list[0].Type)
-	assert.Equal(t, 4096.0, list[0].X)
-	assert.Equal(t, 1024.0, list[0].Y)
-	assert.Equal(t, 2048.0, list[0].Z)
+	e := sts["mgfractal_scale"]
+	assert.Equal(t, "Scale", e.ShortDescription)
+	assert.Equal(t, "mgfractal_scale", e.Key)
+	assert.Equal(t, "v3f", e.Type)
+	assert.Equal(t, 4096.0, e.Default.X)
+	assert.Equal(t, 1024.0, e.Default.Y)
+	assert.Equal(t, 2048.0, e.Default.Z)
 }
 
 const nested_settings = `
@@ -195,21 +204,23 @@ x3 (desc3) string
 `
 
 func TestNestedSettings(t *testing.T) {
-	list, err := minetestconfig.ParseSettingTypes([]byte(nested_settings))
+	sts, err := minetestconfig.ParseSettingTypes([]byte(nested_settings))
 	assert.NoError(t, err)
-	assert.NotNil(t, list)
-	assert.Equal(t, 2, len(list))
+	assert.NotNil(t, sts)
+	assert.Equal(t, 2, len(sts))
 
-	assert.Equal(t, 2, len(list[0].Category))
-	assert.Equal(t, "x2", list[0].Key)
-	assert.Equal(t, "T1", list[0].Category[0])
-	assert.Equal(t, "T2", list[0].Category[1])
+	e := sts["x2"]
+	assert.Equal(t, 2, len(e.Category))
+	assert.Equal(t, "x2", e.Key)
+	assert.Equal(t, "T1", e.Category[0])
+	assert.Equal(t, "T2", e.Category[1])
 
-	assert.Equal(t, 3, len(list[1].Category))
-	assert.Equal(t, "x3", list[1].Key)
-	assert.Equal(t, "T1", list[1].Category[0])
-	assert.Equal(t, "T2", list[1].Category[1])
-	assert.Equal(t, "T3", list[1].Category[2])
+	e = sts["x3"]
+	assert.Equal(t, 3, len(e.Category))
+	assert.Equal(t, "x3", e.Key)
+	assert.Equal(t, "T1", e.Category[0])
+	assert.Equal(t, "T2", e.Category[1])
+	assert.Equal(t, "T3", e.Category[2])
 }
 
 func TestGetServerSettingTypes(t *testing.T) {
@@ -217,16 +228,13 @@ func TestGetServerSettingTypes(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, ss)
 
-	var mgv7_spflags *minetestconfig.SettingType
-	for _, s := range ss {
-		if s.Key == "mgv7_spflags" {
-			mgv7_spflags = s
-			break
-		}
-	}
-
+	mgv7_spflags := ss["mgv7_spflags"]
 	assert.NotNil(t, mgv7_spflags)
 	assert.Equal(t, 2, len(mgv7_spflags.Category))
 	assert.Equal(t, "Mapgen", mgv7_spflags.Category[0])
 	assert.Equal(t, "Mapgen V7", mgv7_spflags.Category[1])
+
+	bind_address := ss["bind_address"]
+	assert.NotNil(t, bind_address)
+	assert.Equal(t, "", bind_address.Default.Value)
 }

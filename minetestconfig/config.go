@@ -9,7 +9,11 @@ import (
 
 const multine_delimiter = "\"\"\""
 
-func (s MinetestConfig) Read(r io.Reader) error {
+func (s Settings) Read(r io.Reader, sts SettingTypes) error {
+	if sts == nil {
+		//default to empty settingtypes
+		sts = SettingTypes{}
+	}
 	sc := bufio.NewScanner(r)
 	linenum := 0
 	in_multiline := false
@@ -25,7 +29,9 @@ func (s MinetestConfig) Read(r io.Reader) error {
 			if line == multine_delimiter {
 				// end of multiline
 				in_multiline = false
-				s[multiline_key] = multiline_value
+				st := sts[multiline_key]
+				s.Add(multiline_key, multiline_value, st)
+
 			} else {
 				// continue with multiline
 				multiline_value += line + "\n"
@@ -41,7 +47,6 @@ func (s MinetestConfig) Read(r io.Reader) error {
 		if sepIndex < 0 {
 			continue
 		}
-		//TODO: multiline values with """
 
 		value := strings.Trim(line[sepIndex+1:], " ")
 		key := strings.Trim(line[:sepIndex], " ")
@@ -52,14 +57,29 @@ func (s MinetestConfig) Read(r io.Reader) error {
 			continue
 		}
 
-		s[key] = value
+		st := sts[key]
+		s.Add(key, value, st)
 	}
 	return nil
 }
 
-func (s MinetestConfig) Write(w io.Writer) error {
-	for key, value := range s {
-		_, err := w.Write([]byte(fmt.Sprintf("%s = %s\n", key, value)))
+func (s Settings) Write(w io.Writer, sts SettingTypes) error {
+	if sts == nil {
+		sts = SettingTypes{}
+	}
+
+	for key, setting := range s {
+		entry := fmt.Sprintf("%s = ", key)
+		value := setting.ToStringValue(sts[key])
+
+		if strings.Contains(value, "\n") {
+			// multiline value
+			entry += multine_delimiter + "\n" + value + "\n" + multine_delimiter
+		} else {
+			// simple value
+			entry += value + "\n"
+		}
+		_, err := w.Write([]byte(entry))
 		if err != nil {
 			return err
 		}
