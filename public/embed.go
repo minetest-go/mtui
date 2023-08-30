@@ -18,7 +18,7 @@ import (
 //go:embed node_modules/@fortawesome/fontawesome-free/webfonts/*
 //go:embed node_modules/@vuepic/vue-datepicker/dist/main.css
 //go:embed node_modules/@vuepic/vue-datepicker/dist/vue-datepicker.iife.js
-//go:ember node_modules/chart.js/dist/chart.umd.js
+//go:embed node_modules/chart.js/dist/chart.umd.js
 var Webapp embed.FS
 
 const DefaultCss = "node_modules/bootstrap/dist/css/bootstrap.min.css"
