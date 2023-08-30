@@ -10,7 +10,9 @@ import (
 //go:embed node_modules/bootswatch/dist/darkly/bootstrap.min.css
 //go:embed node_modules/bootswatch/dist/flatly/bootstrap.min.css
 //go:embed node_modules/bootswatch/dist/united/bootstrap.min.css
+//go:embed node_modules/vue/dist/vue.global.js
 //go:embed node_modules/vue/dist/vue.global.prod.js
+//go:embed node_modules/vue-router/dist/vue-router.global.js
 //go:embed node_modules/vue-router/dist/vue-router.global.prod.js
 //go:embed node_modules/@fortawesome/fontawesome-free/css/all.min.css
 //go:embed node_modules/@fortawesome/fontawesome-free/webfonts/*

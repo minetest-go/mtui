@@ -159,7 +159,7 @@ export default {
 							Logout
 						</button>
 					</div>
-				<div>
+				</div>
 			</div>
 		</nav>
 	`
