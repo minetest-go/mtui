@@ -40,6 +40,7 @@ export const ordered_settings = Vue.computed(() => {
         ordered_settings[st.link].push(st);
     });
 
+    console.log(ordered_settings);
     return ordered_settings;
 });
 

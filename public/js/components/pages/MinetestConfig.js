@@ -1,10 +1,10 @@
 import { store, ordered_settings, topics, count } from '../../service/mtconfig.js';
 
 const SettingRow = {
-    props: ["setting", "is_set"],
+    props: ["setting"],
     data: function() {
         return {
-            work_setting: this.is_set ? this.setting.current : this.setting.default
+            work_setting: this.setting.current ? this.setting.current : this.setting.default
         };
     },
     methods: {
@@ -21,12 +21,17 @@ const SettingRow = {
     template: /*html*/`
     <td>
         {{setting.key}}
-        <i class="fa fa-lg fa-square-check" style="color: green;" title="this setting is configured/set in the minetest.conf" v-if="is_set"></i>
+        <i class="fa fa-lg fa-square-check" style="color: green;" title="this setting is configured/set in the minetest.conf" v-if="setting.is_set"></i>
     </td>
     <td>
         <span class="badge bg-info">{{setting.type}}</span>
     </td>
-    <td>{{setting.short_description}}</td>
+    <td>
+        <details>
+            <summary>{{setting.short_description}}</summary>
+            {{setting.long_description}}
+        </details>
+    </td>
     <td>
         <div v-if="setting.type == 'string'">
             <input type="text" class="form-control" :value="work_setting.value"/>
@@ -85,7 +90,7 @@ const SettingRow = {
             </details>
         </div>
     </td>
-    <td>
+    <td class="text-end">
         <div class="btn-group">
             <a class="btn btn-success" v-on:click="save">
                 <i class="fa fa-floppy-disk"></i>
@@ -133,19 +138,19 @@ export default {
             </div>
             <div v-for="topic in topics">
                 <h4>{{topic}}</h4>
-                <table class="table table-striped table-condensed">
+                <table class="table table-striped table-sm">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Type</th>
-                            <th>Description</th>
-                            <th>Value</th>
-                            <th>Actions</th>
+                            <th style="width: 20%;">Name</th>
+                            <th style="width: 5%;">Type</th>
+                            <th style="width: 25%;">Description</th>
+                            <th style="width: 35%;">Value</th>
+                            <th style="width: 15%;" class="text-end">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="setting in ordered_settings[topic]" v-key="setting.key">
-                            <setting-row :setting="setting" :is_set="setting.is_set"/>
+                            <setting-row :setting="setting"/>
                         </tr>
                     </tbody>
                 </table>
