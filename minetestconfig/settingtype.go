@@ -9,7 +9,7 @@ type SettingType struct {
 	Type             string   `json:"type"`    // int, string, float, bool, enum
 	Choices          []string `json:"choices"` // enum choices
 	Default          *Setting `json:"default"`
-	Min              float64  `json:"min"`
-	Max              float64  `json:"max"`
+	Min              *float64 `json:"min"`
+	Max              *float64 `json:"max"`
 	DefaultMGFlags   []string `json:"default_mg_flags"`
 }

@@ -39,10 +39,12 @@ func (s *Setting) ParseStringValue(value string, st *SettingType) {
 			s.Value = parts[0]
 		}
 		if len(parts) >= 2 {
-			st.Min, _ = strconv.ParseFloat(parts[1], 64)
+			min, _ := strconv.ParseFloat(parts[1], 64)
+			st.Min = &min
 		}
 		if len(parts) >= 3 {
-			st.Max, _ = strconv.ParseFloat(parts[2], 64)
+			max, _ := strconv.ParseFloat(parts[2], 64)
+			st.Max = &max
 		}
 	case "enum", "flags":
 		parts := strings.Split(value, " ")

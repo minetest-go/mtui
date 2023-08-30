@@ -4,12 +4,19 @@ const SettingRow = {
     props: ["setting"],
     data: function() {
         return {
-            work_setting: this.setting.current ? this.setting.current : this.setting.default
+            old_setting: this.setting.current ? this.setting.current : this.setting.default,
+            work_setting: Object.assign({}, this.setting.current ? this.setting.current : this.setting.default)
         };
     },
     computed: {
         is_changed: function() {
-            return this.work_setting.value != this.setting.default.value;
+            switch (this.setting.type) {
+                case "string":
+                case "int":
+                case "float":
+                case "bool":
+                        return this.work_setting.value != this.old_setting.value;
+                }
         }
     },
     methods: {
@@ -36,13 +43,13 @@ const SettingRow = {
     </td>
     <td>
         <div v-if="setting.type == 'string'">
-            <input type="text" class="form-control" :value="work_setting.value"/>
+            <input type="text" class="form-control" v-model="work_setting.value"/>
         </div>
         <div v-if="setting.type == 'bool'">
             <input type="checkbox" class="form-check-input" :checked="work_setting.value == 'true'"/>
         </div>
         <div v-if="setting.type == 'int' || setting.type == 'float'">
-            <input type="number" class="form-control" :value="work_setting.value" :min="setting.min" :max="setting.max"/>
+            <input type="number" class="form-control" v-model="work_setting.value" :min="setting.min" :max="setting.max"/>
         </div>
         <div v-if="setting.type == 'enum'">
             <select class="form-control">
@@ -50,12 +57,15 @@ const SettingRow = {
             </select>
         </div>
         <div v-if="setting.type == 'flags'">
-            <ul>
-                <li v-for="choice in setting.choices">
-                    <input type="checkbox" class="form-check-input"/>
-                    {{choice}}
-                </li>
-            </ul>
+            <details>
+                <summary>Flags setting</summary>
+                <ul>
+                    <li v-for="choice in setting.choices">
+                        <input type="checkbox" class="form-check-input"/>
+                        {{choice}}
+                    </li>
+                </ul>
+            </details>
         </div>
         <div v-if="setting.type == 'v3f'">
             <details>

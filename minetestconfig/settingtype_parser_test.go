@@ -54,8 +54,8 @@ func TestSettingParserminetestSettings(t *testing.T) {
 	assert.Equal(t, "Maximum size of the out chat queue", e.ShortDescription)
 	assert.Equal(t, "20", e.Default.Value)
 	assert.Equal(t, "int", e.Type)
-	assert.Equal(t, float64(-1), e.Min)
-	assert.Equal(t, float64(32767), e.Max)
+	assert.Equal(t, float64(-1), *e.Min)
+	assert.Equal(t, float64(32767), *e.Max)
 
 	e = sts["client_unload_unused_data_timeout"]
 	assert.Equal(t, 3, len(e.Category))
@@ -65,7 +65,7 @@ func TestSettingParserminetestSettings(t *testing.T) {
 	assert.Equal(t, "client_unload_unused_data_timeout", e.Key)
 	assert.Equal(t, "Mapblock unload timeout", e.ShortDescription)
 	assert.Equal(t, "float", e.Type)
-	assert.Equal(t, float64(0.0), e.Min)
+	assert.Equal(t, float64(0.0), *e.Min)
 
 }
 
