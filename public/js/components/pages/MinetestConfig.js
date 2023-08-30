@@ -1,11 +1,13 @@
-import { store, apply_filter } from '../../service/mtconfig.js';
+import { store, apply_filter, save, unset } from '../../service/mtconfig.js';
 
 const SettingRow = {
     props: ["setting"],
     data: function() {
         return {
             old_setting: this.setting.current ? this.setting.current : this.setting.default,
-            work_setting: Object.assign({}, this.setting.current ? this.setting.current : this.setting.default)
+            work_setting: Object.assign({}, this.setting.current ? this.setting.current : this.setting.default),
+            busy: false,
+            is_set: this.setting.is_set
         };
     },
     computed: {
@@ -27,17 +29,31 @@ const SettingRow = {
     },
     methods: {
         save: function() {
+            this.busy = true;
+            save(this.setting.key, this.work_setting)
+            .then(() => {
+                this.is_set = true;
+                Object.assign(this.old_setting, this.work_setting);
+                this.busy = false;
+            });
         },
         reset: function() {
             Object.assign(this.work_setting, this.old_setting);
         },
         unset: function() {
+            this.busy = true;
+            unset(this.setting.key)
+            .then(() => {
+                this.is_set = false;
+                Object.apply(this.work_setting, this.setting.default);
+                this.busy = false;
+            });
         }
     },
     template: /*html*/`
     <td>
         {{setting.key}}
-        <i class="fa fa-lg fa-square-check" style="color: green;" title="this setting is configured/set in the minetest.conf" v-if="setting.is_set"></i>
+        <i class="fa fa-lg fa-square-check" style="color: green;" title="this setting is configured/set in the minetest.conf" v-if="is_set"></i>
     </td>
     <td>
         <span class="badge bg-info">{{setting.type}}</span>
@@ -110,6 +126,7 @@ const SettingRow = {
         </div>
     </td>
     <td class="text-end">
+        <i class="fa fa-spinner fa-spin" v-if="busy"></i>
         <div class="btn-group">
             <button class="btn btn-success" v-on:click="save" :disabled="!is_changed">
                 <i class="fa fa-floppy-disk"></i>
@@ -119,7 +136,7 @@ const SettingRow = {
                 <i class="fa-solid fa-arrow-rotate-left"></i>
                 Reset
             </button>
-            <button class="btn btn-danger" v-on:click="unset" :disabled="!setting.is_set">
+            <button class="btn btn-danger" v-on:click="unset" :disabled="!is_set">
                 <i class="fa fa-trash"></i>
                 Unset
             </button>

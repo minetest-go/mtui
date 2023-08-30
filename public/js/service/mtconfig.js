@@ -1,4 +1,4 @@
-import { get_all, get_settingtypes } from "../api/mtconfig.js";
+import { get_all, get_settingtypes, set, remove } from "../api/mtconfig.js";
 import events, { EVENT_LOGGED_IN } from "../events.js";
 import { has_priv } from "./login.js";
 import { has_feature } from "./features.js";
@@ -11,8 +11,14 @@ export const store = Vue.reactive({
     filtered_topics: []
 });
 
-export function save() {
-    //TODO
+export function save(key, setting) {
+    return set(key, setting)
+    .then(() => store.settings[key] = setting);
+}
+
+export function unset(key) {
+    return remove(key)
+    .then(() => delete store.settings[key]);
 }
 
 export function apply_filter(filter) {
