@@ -34,6 +34,8 @@ func Setup(a *app.App) error {
 	apir.HandleFunc("/features", api.GetFeatures).Methods(http.MethodGet)
 	apir.HandleFunc("/feature", api.SecurePriv(types.PRIV_SERVER, api.SetFeature)).Methods(http.MethodPost)
 
+	apir.HandleFunc("/export", api.SecurePriv(types.PRIV_SERVER, api.Export))
+
 	apir.HandleFunc("/login", api.DoLogout).Methods(http.MethodDelete)
 	apir.HandleFunc("/login", api.DoLogin).Methods(http.MethodPost)
 	apir.HandleFunc("/login", api.GetLogin).Methods(http.MethodGet)
