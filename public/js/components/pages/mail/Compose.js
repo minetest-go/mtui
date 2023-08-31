@@ -1,9 +1,18 @@
-import { check_recipient, send } from "../../api/mail.js";
-import mail_compose from "../../store/mail_compose.js";
-import { fetch_mails } from "../../service/mail.js";
+import { check_recipient, send } from "../../../api/mail.js";
+import { fetch_mails } from "../../../service/mail.js";
+
+export const store = Vue.reactive({
+    body: "",
+    subject: "",
+    add_recipient_name: "",
+    invalid_username: false,
+    recipients: [],
+    busy: false,
+    mail_sent: false
+});
 
 export default {
-    data: () => mail_compose,
+    data: () => store,
     methods: {
         remove_recipient: function(name){
             this.recipients = this.recipients.filter(r => r != name);

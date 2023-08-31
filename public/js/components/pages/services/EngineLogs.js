@@ -1,5 +1,4 @@
 import { get_logs } from "../../../api/service_engine.js";
-import { store as engine_store } from "../../../store/engine.js";
 
 const store = Vue.reactive({
     busy: false,
@@ -12,6 +11,7 @@ const store = Vue.reactive({
 });
 
 export default {
+    props: ["running"],
     data: function(){
         return store;
     },
@@ -37,7 +37,7 @@ export default {
             }
         },
         update_logs: function(){
-            if (!this.live || !engine_store.status || !engine_store.status.running) {
+            if (!this.live || !this.running) {
                 // skip log-fetching if not enabled or not live
                 return;
             }

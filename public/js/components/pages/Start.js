@@ -1,7 +1,10 @@
-import app_info from "../../store/app_info.js";
+import { get_servername, get_version } from "../../service/app_info.js";
 
 export default {
-	data: () => app_info,
+	computed: {
+		servername: get_servername,
+		version: get_version
+	},
 	template: /*html*/`
 	<div>
 		<div class="text-center">

@@ -1,17 +1,13 @@
-import { has_priv } from "../service/login.js";
+import { has_priv, is_logged_in, get_claims, logout } from "../service/login.js";
 import { has_feature } from "../service/features.js";
-import { logout } from '../service/login.js';
-import login_store from '../store/login.js';
 import stats_store from '../store/stats.js';
-import mail_store from '../store/mail.js';
+import { get_unread_count } from '../service/mail.js';
 import StatsDisplay from './StatsDisplay.js';
 
 export default {
 	data: function() {
 		return {
-			login: login_store,
 			stats: stats_store,
-			mail: mail_store,
 			admin_menu: false,
 			mod_menu: false,
 			services_menu: false
@@ -24,6 +20,11 @@ export default {
 			logout().then(() => this.$router.push("/login"));
 		}
 	},
+	computed: {
+		is_logged_in: is_logged_in,
+		get_claims: get_claims,
+		get_unread_count: get_unread_count
+	},
 	components: {
 		"stats-display": StatsDisplay
 	},
@@ -31,7 +32,7 @@ export default {
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 			<div class="container-fluid">
 				<router-link to="/" class="navbar-brand">Minetest Web UI</router-link>
-				<ul class="navbar-nav me-auto mb-2 mb-lg-0" v-if="login.loggedIn">
+				<ul class="navbar-nav me-auto mb-2 mb-lg-0" v-if="is_logged_in">
 					<li class="nav-item" v-if="has_priv('interact')">
 						<router-link to="/" class="nav-link">
 							<i class="fa fa-home"></i> Home
@@ -58,8 +59,8 @@ export default {
 					<li class="nav-item" v-if="has_feature('mail')">
 						<router-link to="/mail" class="nav-link">
 							<i class="fa-solid fa-envelope"></i> Mail
-							<span class="badge rounded-pill bg-info" v-if="mail.unread_count">
-								{{mail.unread_count}}
+							<span class="badge rounded-pill bg-info" v-if="get_unread_count">
+								{{get_unread_count}}
 							</span>
 						</router-link>
 					</li>
@@ -145,16 +146,16 @@ export default {
 				</ul>
 				<div class="d-flex">
 					<stats-display class="navbar-text" style="padding-right: 10px;"/>
-					<div class="btn-group">
-						<button class="btn btn-outline-secondary" v-if="login.claims">
+					<div class="btn-group" v-if="is_logged_in">
+						<button class="btn btn-outline-secondary">
 							<router-link to="/profile">
 								<i class="fas fa-user"></i>
 								<span>
-									Logged in as <b>{{login.claims.username}}</b>
+									Logged in as <b>{{get_claims.username}}</b>
 								</span>
 							</router-link>
 						</button>
-						<button class="btn btn-secondary" v-on:click="logout" v-if="login.loggedIn">
+						<button class="btn btn-secondary" v-on:click="logout">
 							<i class="fa-solid fa-right-from-bracket"></i>
 							Logout
 						</button>

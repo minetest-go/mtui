@@ -1,9 +1,9 @@
 import format_time from '../../../util/format_time.js';
 import { get_mail } from '../../../store/mail.js';
 import { mark_read, remove } from '../../../api/mail.js';
-import mail_compose from "../../../store/mail_compose.js";
+import { store as mail_compose_store } from './Compose.js';
 import { fetch_mails } from '../../../service/mail.js';
-import login_store from '../../../store/login.js';
+import { get_claims } from '../../../service/login.js';
 
 export default {
     computed: {
@@ -17,15 +17,15 @@ export default {
             return mail;
         },
         is_sent: function() {
-            return login_store.claims.username == this.mail.from;
+            return get_claims().username == this.mail.from;
         }
     },
     methods: {
         format_time: format_time,
         reply: function() {
-            mail_compose.recipients = [this.mail.from];
-            mail_compose.subject = "Re: " + this.mail.subject;
-            mail_compose.body = "\n---- Original message ----\n" + this.mail.body;
+            mail_compose_store.recipients = [this.mail.from];
+            mail_compose_store.subject = "Re: " + this.mail.subject;
+            mail_compose_store.body = "\n---- Original message ----\n" + this.mail.body;
             this.$router.push({ path:"/mail/compose" });
         },
         remove: function() {

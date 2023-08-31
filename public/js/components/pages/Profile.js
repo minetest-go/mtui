@@ -1,12 +1,14 @@
-import login_store from '../../store/login.js';
+import { get_claims } from '../../service/login.js';
 import Userprofile from "../Userprofile.js";
 
 export default {
-    data: () => login_store,
+    computed: {
+        get_claims: get_claims
+    },
     components: {
         "user-profile": Userprofile
     },
     template: /*html*/`
-        <user-profile :username="claims.username" v-if="claims"/>
+        <user-profile :username="get_claims.username" v-if="get_claims"/>
     `
 };

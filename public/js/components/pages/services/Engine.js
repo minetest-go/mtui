@@ -3,7 +3,13 @@ import EngineLogs from "./EngineLogs.js";
 import events, { EVENT_LOGGED_IN } from "../../../events.js";
 import { has_feature } from "../../../service/features.js";
 import { has_priv } from "../../../service/login.js";
-import { store } from "../../../store/engine.js";
+
+const store = Vue.reactive({
+	versions: null,
+	busy: false,
+	status: null,
+	version: ""
+});
 
 events.on(EVENT_LOGGED_IN, function() {
 	if (has_feature("docker") && has_priv("server")) {
@@ -107,7 +113,7 @@ export default {
 		&nbsp;
 		<div class="row">
 			<div class="col-md-12">
-				<engine-logs/>
+				<engine-logs :running="status && status.running"/>
 			</div>
 		</div>
 	`

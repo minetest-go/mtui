@@ -1,10 +1,10 @@
-
-import store from "../store/features.js";
 import { get_features, set_feature as set } from "../api/features.js";
+
+export const store = Vue.reactive({});
 
 export const check_features = () => {
     return get_features()
-    .then(f => Object.keys(f).forEach(k => store[k] = f[k]));
+    .then(f => Object.assign(store, f));
 };
 
 export const set_feature = (name, enabled) => {

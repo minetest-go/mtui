@@ -1,26 +1,25 @@
-import feature_store from '../../store/features.js';
-import { set_feature } from '../../service/features.js';
+import { set_feature, store } from '../../service/features.js';
 
 export default {
     data: function() {
         return {
-            features: feature_store
+            features: store
         };
     },
     methods: {
         getDescription: function(name) {
-            const h = feature_store[name];
+            const h = store[name];
             return h.description || "<no description>";
         },
         getMods: function(name) {
-            const h = feature_store[name];
+            const h = store[name];
             return h.mods || [];
         },
         set_feature: function(name, enabled) {
             set_feature(name, enabled);
         },
         is_experimental: function(name) {
-            const h = feature_store[name];
+            const h = store[name];
             return h.experimental;
         }
     },

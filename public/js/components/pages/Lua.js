@@ -1,8 +1,6 @@
 import { execute_lua } from "../../api/lua.js";
-import login_store from '../../store/login.js';
 
 const store = Vue.reactive({
-    login_store: login_store,
     code: "return minetest.features",
     success: false,
     error: false,
@@ -42,7 +40,7 @@ export default {
                 <textarea rows="5" v-model="code" class="form-control"></textarea>
             </div>
             <div class="col-md-2">
-                <button class="btn btn-outline-primary" type="submit" class="form-control" :disabled="!code">
+                <button class="btn btn-outline-primary w-100" type="submit" :disabled="!code">
                     Execute
                     &nbsp;
                     <i class="fa-solid fa-check" v-if="success" style="color: green;"></i>

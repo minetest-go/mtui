@@ -1,5 +1,4 @@
-import login_store from "../../store/login.js";
-import { login, logout } from "../../service/login.js";
+import { login, logout, is_logged_in } from "../../service/login.js";
 import { get_onboard_status } from "../../api/onboard.js";
 import { has_feature } from "../../service/features.js";
 
@@ -12,10 +11,10 @@ export default {
             busy: false,
             error_message: "",
             can_oboard: false,
-            login_store: login_store
         };
     },
     computed: {
+        is_logged_in: is_logged_in,
         validInput: function(){
             return this.username != "" && this.password != "";
         }
@@ -59,27 +58,27 @@ export default {
                     <input type="text"
                         class="form-control"
                         placeholder="Username"
-                        :disabled="login_store.loggedIn"
+                        :disabled="is_logged_in"
                         v-model="username"/>
                     <input type="password"
                         class="form-control"
                         placeholder="Password"
-                        :disabled="login_store.loggedIn"
+                        :disabled="is_logged_in"
                         v-model="password"/>
                     <input type="text"
                         maxlength="6"
                         class="form-control"
                         placeholder="OTP Code (optional)"
-                        :disabled="login_store.loggedIn"
+                        :disabled="is_logged_in"
                         v-if="has_feature('otp')"
                         v-model="otp_code"/>
-                    <button class="btn btn-primary w-100" v-if="!login_store.loggedIn" type="submit" :disabled="!validInput">
+                    <button class="btn btn-primary w-100" v-if="!is_logged_in" type="submit" :disabled="!validInput">
                         <i class="fa-solid fa-right-to-bracket"></i>
                         Login
                         <i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>
                         <span class="badge bg-danger">{{error_message}}</span>
                     </button>
-                    <a class="btn btn-secondary w-100" v-if="login_store.loggedIn" v-on:click="logout">
+                    <a class="btn btn-secondary w-100" v-if="is_logged_in" v-on:click="logout">
                         <i class="fa-solid fa-right-from-bracket"></i>
                         Logout
                         <i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>

@@ -8,7 +8,7 @@ import OnlinePlayers from './components/pages/OnlinePlayers.js';
 import PlayerSearch from './components/pages/PlayerSearch.js';
 import Mail from './components/pages/mail/Mail.js';
 import MailRead from './components/pages/mail/MailRead.js';
-import Compose from './components/pages/Compose.js';
+import Compose from './components/pages/mail/Compose.js';
 import Skin from './components/pages/Skin.js';
 import Features from './components/pages/Features.js';
 import Mediaserver from './components/pages/Mediaserver.js';

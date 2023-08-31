@@ -1,10 +1,8 @@
 import { execute_chatcommand } from "../../api/chatcommand.js";
-import login_store from '../../store/login.js';
-import { has_priv } from "../../service/login.js";
+import { has_priv, get_claims } from "../../service/login.js";
 import events, { EVENT_DIRECT_CHAT } from "../../events.js";
 
 const store = Vue.reactive({
-    login_store: login_store,
     command: "",
     success: false,
     error: false,
@@ -33,7 +31,7 @@ export default {
             this.delay = 0;
             const start = Date.now();
 
-            execute_chatcommand(this.login_store.claims.username, this.command)
+            execute_chatcommand(get_claims().username, this.command)
             .then(result => {
                 this.busy = false;
                 this.success = result.success;
@@ -46,6 +44,9 @@ export default {
             this.message = "";
         }
     },
+    computed: {
+        get_claims: get_claims
+    },
     template: /*html*/`
     <div>
         <form @submit.prevent="execute" class="row">
@@ -53,7 +54,7 @@ export default {
                 <input type="text" placeholder="Command" v-model="command" class="form-control"/>
             </div>
             <div class="col-md-2">
-                <button class="btn btn-outline-primary" type="submit" class="form-control" :disabled="!command">
+                <button class="btn btn-outline-primary w-100" type="submit" :disabled="!command">
                     Execute
                     &nbsp;
                     <i class="fa-solid fa-check" v-if="success" style="color: green;"></i>

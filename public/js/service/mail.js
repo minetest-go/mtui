@@ -3,6 +3,8 @@ import store from "../store/mail.js";
 import events, { EVENT_LOGGED_IN } from "../events.js";
 import { has_feature } from "./features.js";
 
+export const get_unread_count = () => store.inbox.filter(m => !m.read).length;
+
 export const fetch_mails = () =>
     list_inbox()
     .then(l => l || [])

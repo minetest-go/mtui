@@ -1,12 +1,11 @@
 import ChangePassword from './ChangePassword.js';
-import { has_priv } from "../service/login.js";
+import { has_priv, get_claims, is_logged_in } from "../service/login.js";
 import { has_feature } from "../service/features.js";
 import { get as get_playerinfo } from '../api/playerinfo.js';
 import { get_record } from '../api/xban.js';
 import format_time from '../util/format_time.js';
 import format_duration from '../util/format_duration.js';
 import format_count from '../util/format_count.js';
-import login_store from '../store/login.js';
 import { execute_chatcommand } from "../api/chatcommand.js";
 
 export default {
@@ -26,7 +25,7 @@ export default {
     },
     computed: {
         can_change_pw: function() {
-            return (login_store.claims && login_store.claims.username == this.username) || has_priv("password");
+            return (is_logged_in() && get_claims().username == this.username) || has_priv("password");
         },
         is_moderator: function() {
             return has_priv("ban");
@@ -49,11 +48,11 @@ export default {
         has_priv: has_priv,
         has_feature: has_feature,
         revoke_priv: function(priv) {
-            execute_chatcommand(login_store.claims.username, `revoke ${this.username} ${priv}`)
+            execute_chatcommand(get_claims().username, `revoke ${this.username} ${priv}`)
             .then(() => this.update_playerinfo());
         },
         grant_priv: function() {
-            execute_chatcommand(login_store.claims.username, `grant ${this.username} ${this.new_priv}`)
+            execute_chatcommand(get_claims().username, `grant ${this.username} ${this.new_priv}`)
             .then(() => {
                 this.new_priv = "";
                 this.update_playerinfo();

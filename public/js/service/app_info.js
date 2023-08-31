@@ -1,12 +1,13 @@
-import app_info from "../store/app_info.js";
 import { get_appinfo } from "../api/app_info.js";
 
-export const fetch_info = () => {
-    get_appinfo().then(i => {
-        Object.keys(i).forEach(k => app_info[k] = i[k]);
-    });
+const store = Vue.reactive({
+	version: "",
+	servername: ""
+});
 
-    if (app_info.servername) {
-        document.title = `${document.title} [${app_info.servername}]`;
-    }
+export const fetch_info = () => {
+    get_appinfo().then(i => Object.assign(store, i));
 };
+
+export const get_version = () => store.version;
+export const get_servername = () => store.servername;
