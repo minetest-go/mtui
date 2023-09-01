@@ -15,12 +15,8 @@ import (
 	"path"
 	"sync/atomic"
 
-	oautherrors "github.com/go-oauth2/oauth2/v4/errors"
-	"github.com/go-oauth2/oauth2/v4/generates"
 	"github.com/go-oauth2/oauth2/v4/manage"
 	"github.com/go-oauth2/oauth2/v4/server"
-	"github.com/go-oauth2/oauth2/v4/store"
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/minetest-go/mtdb"
 	"github.com/sirupsen/logrus"
 )
@@ -65,45 +61,44 @@ func Create(world_dir string) (*App, error) {
 		}
 	}
 
-	dbctx, err := mtdb.New(world_dir)
-	if err != nil {
-		return nil, err
+	cfg := &types.Config{
+		CookieDomain: os.Getenv("COOKIE_DOMAIN"),
+		CookieSecure: os.Getenv("COOKIE_SECURE") == "true",
+		CookiePath:   os.Getenv("COOKIE_PATH"),
+		APIKey:       os.Getenv("API_KEY"),
 	}
 
-	db_, err := db.Init(world_dir)
-	if err != nil {
-		return nil, err
+	app := &App{
+		WorldDir:        world_dir,
+		Bridge:          bridge.New(),
+		WSEvents:        eventbus.NewEventBus(),
+		Config:          cfg,
+		Mediaserver:     mediaserver.New(),
+		GeoipResolver:   NewGeoipResolver(world_dir),
+		Version:         Version,
+		MaintenanceMode: &atomic.Bool{},
 	}
 
-	err = db.Migrate(db_)
+	err = app.AttachDatabase()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not attach database: %v", err)
 	}
-
-	repos := db.NewRepositories(db_)
 
 	// admin user
 	admin_username := os.Getenv("ADMIN_USERNAME")
 	admin_password := os.Getenv("ADMIN_PASSWORD")
 	if admin_username != "" && admin_password != "" {
 		logrus.WithFields(logrus.Fields{"admin_user": admin_username}).Info("Creating admin-user")
-		err = CreateAdminUser(dbctx, admin_username, admin_password)
+		err = CreateAdminUser(app.DBContext, admin_username, admin_password)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	// features
-	err = PopulateFeatures(repos.FeatureRepository)
+	err = PopulateFeatures(app.Repos.FeatureRepository)
 	if err != nil {
 		return nil, err
-	}
-
-	cfg := &types.Config{
-		CookieDomain: os.Getenv("COOKIE_DOMAIN"),
-		CookieSecure: os.Getenv("COOKIE_SECURE") == "true",
-		CookiePath:   os.Getenv("COOKIE_PATH"),
-		APIKey:       os.Getenv("API_KEY"),
 	}
 
 	// config defaults
@@ -114,7 +109,7 @@ func Create(world_dir string) (*App, error) {
 		cfg.CookiePath = "/"
 	}
 
-	jwtKey, err := repos.ConfigRepo.GetByKey(types.ConfigJWTKey)
+	jwtKey, err := app.Repos.ConfigRepo.GetByKey(types.ConfigJWTKey)
 	if err != nil {
 		return nil, err
 	}
@@ -124,7 +119,7 @@ func Create(world_dir string) (*App, error) {
 			Key:   types.ConfigJWTKey,
 			Value: randSeq(16),
 		}
-		err = repos.ConfigRepo.Set(jwtKey)
+		err = app.Repos.ConfigRepo.Set(jwtKey)
 		if err != nil {
 			return nil, err
 		}
@@ -132,7 +127,7 @@ func Create(world_dir string) (*App, error) {
 	cfg.JWTKey = jwtKey.Value
 
 	if cfg.APIKey == "" {
-		apiKey, err := repos.ConfigRepo.GetByKey(types.ConfigApiKey)
+		apiKey, err := app.Repos.ConfigRepo.GetByKey(types.ConfigApiKey)
 		if err != nil {
 			return nil, err
 		}
@@ -142,7 +137,7 @@ func Create(world_dir string) (*App, error) {
 				Key:   types.ConfigApiKey,
 				Value: randSeq(16),
 			}
-			err = repos.ConfigRepo.Set(apiKey)
+			err = app.Repos.ConfigRepo.Set(apiKey)
 			if err != nil {
 				return nil, err
 			}
@@ -150,43 +145,8 @@ func Create(world_dir string) (*App, error) {
 		cfg.APIKey = apiKey.Value
 	}
 
-	// oauth setup
-
-	oauth_mgr := manage.NewDefaultManager()
-	oauth_mgr.MustTokenStorage(store.NewMemoryTokenStore())
-	oauth_mgr.MapClientStorage(&db.OAuthAppStore{Repo: repos.OauthAppRepo})
-	oauth_mgr.MapAccessGenerate(generates.NewJWTAccessGenerate("", []byte(cfg.JWTKey), jwt.SigningMethodHS512))
-
-	oauth_srv := server.NewDefaultServer(oauth_mgr)
-	oauth_srv.SetInternalErrorHandler(func(err error) (re *oautherrors.Response) {
-		logrus.WithFields(logrus.Fields{"err": re}).Error("Internal error")
-		return
-	})
-
-	oauth_srv.SetResponseErrorHandler(func(re *oautherrors.Response) {
-		logrus.WithFields(logrus.Fields{"err": re}).Error("Response error")
-	})
-
 	if Version == "" {
 		Version = "DEV"
-	}
-
-	app := &App{
-		WorldDir:        world_dir,
-		DBContext:       dbctx,
-		DB:              db_,
-		ModManager:      modmanager.New(world_dir, repos.ModRepo),
-		Repos:           repos,
-		Bridge:          bridge.New(),
-		WSEvents:        eventbus.NewEventBus(),
-		Mail:            mail.New(dbctx),
-		Config:          cfg,
-		Mediaserver:     mediaserver.New(),
-		GeoipResolver:   NewGeoipResolver(world_dir),
-		OAuthMgr:        oauth_mgr,
-		OAuthServer:     oauth_srv,
-		Version:         Version,
-		MaintenanceMode: &atomic.Bool{},
 	}
 
 	return app, nil
