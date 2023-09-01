@@ -13,6 +13,7 @@ import (
 	"mtui/types"
 	"os"
 	"path"
+	"sync/atomic"
 
 	oautherrors "github.com/go-oauth2/oauth2/v4/errors"
 	"github.com/go-oauth2/oauth2/v4/generates"
@@ -27,20 +28,21 @@ import (
 var Version string
 
 type App struct {
-	DBContext     *mtdb.Context
-	DB            *sql.DB
-	WorldDir      string
-	Repos         *db.Repositories
-	ModManager    *modmanager.ModManager
-	Bridge        *bridge.Bridge
-	WSEvents      *eventbus.EventBus
-	Mail          *mail.Mail
-	Config        *types.Config
-	Mediaserver   *mediaserver.MediaServer
-	GeoipResolver *GeoipResolver
-	Version       string
-	OAuthMgr      *manage.Manager
-	OAuthServer   *server.Server
+	DBContext       *mtdb.Context
+	DB              *sql.DB
+	WorldDir        string
+	Repos           *db.Repositories
+	ModManager      *modmanager.ModManager
+	Bridge          *bridge.Bridge
+	WSEvents        *eventbus.EventBus
+	Mail            *mail.Mail
+	Config          *types.Config
+	Mediaserver     *mediaserver.MediaServer
+	GeoipResolver   *GeoipResolver
+	Version         string
+	OAuthMgr        *manage.Manager
+	OAuthServer     *server.Server
+	MaintenanceMode *atomic.Bool // database detached, for backup and restores
 }
 
 const default_world_mt_content = `
@@ -170,20 +172,21 @@ func Create(world_dir string) (*App, error) {
 	}
 
 	app := &App{
-		WorldDir:      world_dir,
-		DBContext:     dbctx,
-		DB:            db_,
-		ModManager:    modmanager.New(world_dir, repos.ModRepo),
-		Repos:         repos,
-		Bridge:        bridge.New(),
-		WSEvents:      eventbus.NewEventBus(),
-		Mail:          mail.New(dbctx),
-		Config:        cfg,
-		Mediaserver:   mediaserver.New(),
-		GeoipResolver: NewGeoipResolver(world_dir),
-		OAuthMgr:      oauth_mgr,
-		OAuthServer:   oauth_srv,
-		Version:       Version,
+		WorldDir:        world_dir,
+		DBContext:       dbctx,
+		DB:              db_,
+		ModManager:      modmanager.New(world_dir, repos.ModRepo),
+		Repos:           repos,
+		Bridge:          bridge.New(),
+		WSEvents:        eventbus.NewEventBus(),
+		Mail:            mail.New(dbctx),
+		Config:          cfg,
+		Mediaserver:     mediaserver.New(),
+		GeoipResolver:   NewGeoipResolver(world_dir),
+		OAuthMgr:        oauth_mgr,
+		OAuthServer:     oauth_srv,
+		Version:         Version,
+		MaintenanceMode: &atomic.Bool{},
 	}
 
 	return app, nil

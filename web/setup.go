@@ -26,15 +26,21 @@ func Setup(a *app.App) error {
 		return err
 	}
 
+	// always on api
+	r.HandleFunc("/api/export", api.SecurePriv(types.PRIV_SERVER, api.Export)).Methods(http.MethodGet)
+	r.HandleFunc("/api/maintenance", api.SecurePriv(types.PRIV_SERVER, api.GetMaintenanceMode)).Methods(http.MethodGet)
+	r.HandleFunc("/api/maintenance", api.SecurePriv(types.PRIV_SERVER, api.EnableMaintenanceMode)).Methods(http.MethodPut)
+	r.HandleFunc("/api/maintenance", api.SecurePriv(types.PRIV_SERVER, api.DisableMaintenanceMode)).Methods(http.MethodDelete)
+
+	// maintenance mode middleware enabled routes below
 	apir := r.PathPrefix("/api").Subrouter()
+	apir.Use(MaintenanceModeCheck(a.MaintenanceMode))
 
 	apir.HandleFunc("/appinfo", api.GetAppInfo)
 	apir.HandleFunc("/themes", api.SecurePriv(types.PRIV_SERVER, api.GetThemes))
 
 	apir.HandleFunc("/features", api.GetFeatures).Methods(http.MethodGet)
 	apir.HandleFunc("/feature", api.SecurePriv(types.PRIV_SERVER, api.SetFeature)).Methods(http.MethodPost)
-
-	apir.HandleFunc("/export", api.SecurePriv(types.PRIV_SERVER, api.Export))
 
 	apir.HandleFunc("/login", api.DoLogout).Methods(http.MethodDelete)
 	apir.HandleFunc("/login", api.DoLogin).Methods(http.MethodPost)
