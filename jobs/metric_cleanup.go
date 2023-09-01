@@ -2,16 +2,15 @@ package jobs
 
 import (
 	"fmt"
-	"mtui/db"
-	"sync/atomic"
+	"mtui/app"
 	"time"
 )
 
-func metricCleanup(r *db.MetricRepository, maint_mode *atomic.Bool) {
+func metricCleanup(a *app.App) {
 	for {
-		if !maint_mode.Load() {
+		if !a.MaintenanceMode.Load() {
 			ts := time.Now().Add(time.Hour * -1)
-			err := r.DeleteBefore(ts.UnixMilli())
+			err := a.Repos.LogRepository.DeleteBefore(ts.UnixMilli())
 			if err != nil {
 				fmt.Printf("metric cleanup error: %s\n", err.Error())
 			}

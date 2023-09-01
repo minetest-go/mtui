@@ -5,11 +5,10 @@ import (
 	"fmt"
 	"mtui/app"
 	"mtui/bridge"
-	"mtui/db"
 	"mtui/types"
 )
 
-func logLoop(lr *db.LogRepository, geoipresolver *app.GeoipResolver, ch chan *bridge.CommandResponse) {
+func logLoop(a *app.App, geoipresolver *app.GeoipResolver, ch chan *bridge.CommandResponse) {
 	for cmd := range ch {
 		log := &types.Log{}
 		err := json.Unmarshal(cmd.Data, log)
@@ -27,7 +26,7 @@ func logLoop(lr *db.LogRepository, geoipresolver *app.GeoipResolver, ch chan *br
 			}
 		}
 
-		err = lr.Insert(log)
+		err = a.Repos.LogRepository.Insert(log)
 		if err != nil {
 			fmt.Printf("DB error: %s\n", err.Error())
 			return

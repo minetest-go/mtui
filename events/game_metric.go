@@ -1,9 +1,9 @@
 package events
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
+	"mtui/app"
 	"mtui/bridge"
 	"mtui/db"
 	"mtui/types"
@@ -11,8 +11,12 @@ import (
 	"time"
 )
 
-func metricLoop(DB *sql.DB, ch chan *bridge.CommandResponse) {
+func metricLoop(a *app.App, ch chan *bridge.CommandResponse) {
 	for cmd := range ch {
+		if a.MaintenanceMode.Load() {
+			continue
+		}
+
 		metrics := make([]*command.GameMetric, 0)
 		err := json.Unmarshal(cmd.Data, &metrics)
 		if err != nil {
@@ -20,7 +24,7 @@ func metricLoop(DB *sql.DB, ch chan *bridge.CommandResponse) {
 			return
 		}
 
-		tx, err := DB.Begin()
+		tx, err := a.DB.Begin()
 		if err != nil {
 			fmt.Printf("Tx begin error: %s\n", err.Error())
 			return

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"mtui/db"
 	"mtui/mail"
 	"mtui/modmanager"
@@ -16,6 +17,10 @@ import (
 )
 
 func (a *App) AttachDatabase() error {
+	logrus.WithFields(logrus.Fields{
+		"worlddir": a.WorldDir,
+	}).Info("Attaching database")
+
 	dbctx, err := mtdb.New(a.WorldDir)
 	if err != nil {
 		return err
@@ -26,6 +31,7 @@ func (a *App) AttachDatabase() error {
 	if err != nil {
 		return err
 	}
+	a.DB = db_
 
 	err = db.Migrate(db_)
 	if err != nil {
@@ -58,6 +64,19 @@ func (a *App) AttachDatabase() error {
 }
 
 func (a *App) DetachDatabase() error {
+	logrus.WithFields(logrus.Fields{
+		"worlddir": a.WorldDir,
+	}).Info("Detaching database")
 
+	a.OAuthServer = nil
+	a.OAuthMgr = nil
+	a.ModManager = nil
+	a.Mail = nil
+	a.Repos = nil
+	err := a.DB.Close()
+	if err != nil {
+		return fmt.Errorf("could not close database: %v", err)
+	}
+	a.DBContext.Close()
 	return nil
 }

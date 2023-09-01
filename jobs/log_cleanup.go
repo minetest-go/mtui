@@ -2,16 +2,15 @@ package jobs
 
 import (
 	"fmt"
-	"mtui/db"
-	"sync/atomic"
+	"mtui/app"
 	"time"
 )
 
-func logCleanup(r *db.LogRepository, maint_mode *atomic.Bool) {
+func logCleanup(a *app.App) {
 	for {
-		if !maint_mode.Load() {
+		if !a.MaintenanceMode.Load() {
 			ts := time.Now().AddDate(0, 0, -30)
-			err := r.DeleteBefore(ts.UnixMilli())
+			err := a.Repos.LogRepository.DeleteBefore(ts.UnixMilli())
 			if err != nil {
 				fmt.Printf("Log cleanup error: %s\n", err.Error())
 			}

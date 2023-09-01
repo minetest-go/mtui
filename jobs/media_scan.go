@@ -3,15 +3,14 @@ package jobs
 import (
 	"mtui/app"
 	"mtui/types"
-	"sync/atomic"
 	"time"
 
 	"github.com/sirupsen/logrus"
 )
 
-func mediaScan(a *app.App, maint_mode *atomic.Bool) {
+func mediaScan(a *app.App) {
 	for {
-		if !maint_mode.Load() {
+		if !a.MaintenanceMode.Load() {
 			f, err := a.Repos.FeatureRepository.GetByName(types.FEATURE_MEDIASERVER)
 			if err != nil {
 				logrus.Errorf("Mediascan getFeature error: %s", err.Error())
