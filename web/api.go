@@ -20,6 +20,7 @@ func (api *Api) Setup() error {
 	// start tan login listener
 	go api.TanSetListener(api.app.Bridge.AddHandler(command.COMMAND_TAN_SET))
 	go api.TanSetListener(api.app.Bridge.AddHandler(command.COMMAND_TAN_REMOVE))
+	go api.StatsEventListener(api.app.Bridge.AddHandler(command.COMMAND_STATS))
 
 	return nil
 }

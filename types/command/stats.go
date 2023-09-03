@@ -15,13 +15,13 @@ type PlayerStats struct {
 	HP     types.JsonInt `json:"hp"`
 	Breath types.JsonInt `json:"breath"`
 
-	Pos struct {
+	Pos *struct {
 		X types.JsonInt `json:"x"`
 		Y types.JsonInt `json:"y"`
 		Z types.JsonInt `json:"z"`
 	} `json:"pos"`
 
-	Info struct {
+	Info *struct {
 		Address              string        `json:"address"`
 		IPVersion            float64       `json:"ip_version"`
 		ConnectionUptime     float64       `json:"connection_uptime"`

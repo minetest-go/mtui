@@ -54,6 +54,23 @@ func (api *Api) Secure(fn SecureHandlerFunc) http.HandlerFunc {
 	}
 }
 
+// Optional login
+func (api *Api) OptionalSecure(fn SecureHandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		claims, err := api.GetClaims(r)
+		if err == err_unauthorized {
+			// not logged in
+			fn(w, r, nil)
+			return
+		} else if err != nil {
+			SendError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		// logged in
+		fn(w, r, claims)
+	}
+}
+
 type Check func(w http.ResponseWriter, r *http.Request) bool
 
 func (api *Api) PrivCheck(required_priv string) Check {

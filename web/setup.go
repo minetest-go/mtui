@@ -31,6 +31,7 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/maintenance", api.SecurePriv(types.PRIV_SERVER, api.GetMaintenanceMode)).Methods(http.MethodGet)
 	r.HandleFunc("/api/maintenance", api.SecurePriv(types.PRIV_SERVER, api.EnableMaintenanceMode)).Methods(http.MethodPut)
 	r.HandleFunc("/api/maintenance", api.SecurePriv(types.PRIV_SERVER, api.DisableMaintenanceMode)).Methods(http.MethodDelete)
+	r.HandleFunc("/api/stats", api.OptionalSecure(api.GetStats)).Methods(http.MethodGet)
 
 	// maintenance mode middleware enabled routes below
 	apir := r.PathPrefix("/api").Subrouter()

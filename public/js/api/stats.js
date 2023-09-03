@@ -1,0 +1,3 @@
+import { protected_fetch } from "./util.js";
+
+export const get_stats = () => protected_fetch("api/stats");
