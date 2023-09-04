@@ -11,7 +11,8 @@ const dev_scripts = [
 ];
 const common_scripts = [
     "node_modules/@vuepic/vue-datepicker/dist/vue-datepicker.iife.js",
-    "node_modules/chart.js/dist/chart.umd.js"
+    "node_modules/chart.js/dist/chart.umd.js",
+    "node_modules/codemirror/lib/codemirror.js"
 ];
 
 const scripts = [];
