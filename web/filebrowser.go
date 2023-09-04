@@ -11,7 +11,7 @@ import (
 )
 
 type BrowseItem struct {
-	Name  string `json:"string"`
+	Name  string `json:"name"`
 	Size  int64  `json:"size"`
 	IsDir bool   `json:"is_dir"`
 }
@@ -21,13 +21,13 @@ type BrowseResult struct {
 	Items []*BrowseItem `json:"items"`
 }
 
-func (a *Api) get_sanitized_dir(r *http.Request) (string, error) {
+func (a *Api) get_sanitized_dir(r *http.Request) (string, string, error) {
 	dir := r.URL.Query().Get("dir")
 	if strings.Contains(dir, "..") {
-		return "", fmt.Errorf("invalid dir: '%s'", dir)
+		return "", "", fmt.Errorf("invalid dir: '%s'", dir)
 	}
 
-	return path.Join(a.app.WorldDir, dir), nil
+	return dir, path.Join(a.app.WorldDir, dir), nil
 }
 
 func (a *Api) get_sanitized_filename(r *http.Request, query_param string) (string, error) {
@@ -40,20 +40,20 @@ func (a *Api) get_sanitized_filename(r *http.Request, query_param string) (strin
 }
 
 func (a *Api) BrowseFolder(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	dir, err := a.get_sanitized_dir(r)
+	reldir, absdir, err := a.get_sanitized_dir(r)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
-	entries, err := os.ReadDir(dir)
+	entries, err := os.ReadDir(absdir)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
 	result := &BrowseResult{
-		Dir:   dir,
+		Dir:   reldir,
 		Items: []*BrowseItem{},
 	}
 
@@ -70,7 +70,7 @@ func (a *Api) BrowseFolder(w http.ResponseWriter, r *http.Request, claims *types
 				IsDir: false,
 			}
 
-			fi, _ := os.Stat(path.Join(dir, entry.Name()))
+			fi, _ := os.Stat(path.Join(absdir, entry.Name()))
 			if fi != nil {
 				item.Size = fi.Size()
 			}

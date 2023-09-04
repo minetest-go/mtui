@@ -111,6 +111,11 @@ export default {
 							Administration
 						</a>		
 						<ul class="dropdown-menu" v-bind:class="{'show': admin_menu}">
+							<li>
+								<router-link to="/filebrowser/" class="dropdown-item">
+									<i class="fa-solid fa-folder"></i> Filebrowser
+								</router-link>
+							</li>
 							<li v-if="!maintenance">
 								<router-link to="/ui/settings" class="dropdown-item">
 									<i class="fa-solid fa-list-check"></i> UI Settings
