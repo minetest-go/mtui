@@ -38,9 +38,9 @@ type PlayerStats struct {
 
 // stats from the engine
 type StatsCommand struct {
-	Uptime      types.JsonInt `json:"uptime"`
-	MaxLag      float64       `json:"max_lag"`
-	TimeOfDay   float64       `json:"time_of_day"`
-	PlayerCount types.JsonInt `json:"player_count"`
-	Players     []*PlayerStats
+	Uptime      types.JsonInt  `json:"uptime"`
+	MaxLag      float64        `json:"max_lag"`
+	TimeOfDay   float64        `json:"time_of_day"`
+	PlayerCount types.JsonInt  `json:"player_count"`
+	Players     []*PlayerStats `json:"players"`
 }

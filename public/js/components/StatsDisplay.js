@@ -1,7 +1,7 @@
-import stats from "../store/stats.js";
+import { store } from "../service/stats.js";
 
 export default {
-    data: () => stats,
+    data: () => store,
     computed: {
         signalColor: function() {
             if (this.max_lag < 200) return "green";

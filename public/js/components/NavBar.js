@@ -1,13 +1,12 @@
 import { has_priv, is_logged_in, get_claims, logout } from "../service/login.js";
 import { has_feature } from "../service/features.js";
-import stats_store from '../store/stats.js';
+import { get_player_count } from "../service/stats.js";
 import { get_unread_count } from '../service/mail.js';
 import StatsDisplay from './StatsDisplay.js';
 
 export default {
 	data: function() {
 		return {
-			stats: stats_store,
 			admin_menu: false,
 			mod_menu: false,
 			services_menu: false
@@ -21,6 +20,7 @@ export default {
 		}
 	},
 	computed: {
+		get_player_count: get_player_count,
 		is_logged_in: is_logged_in,
 		get_claims: get_claims,
 		get_unread_count: get_unread_count
@@ -51,8 +51,8 @@ export default {
 					<li class="nav-item">
 						<router-link to="/online-players" class="nav-link">
 							<i class="fa fa-users"></i> Online players
-							<span class="badge rounded-pill bg-info" v-if="stats.player_count">
-								{{stats.player_count}}
+							<span class="badge rounded-pill bg-info">
+								{{get_player_count}}
 							</span>
 						</router-link>
 					</li>
