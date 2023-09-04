@@ -1,7 +1,11 @@
+import DefaultLayout from "../../layouts/DefaultLayout.js";
 
 export default {
+    components: {
+        "default-layout": DefaultLayout
+    },
     template: /*html*/`
-        <div>
-        </div>
+        <default-layout icon="folder" title="Filebrowser">
+        </default-layout>
     `
 };

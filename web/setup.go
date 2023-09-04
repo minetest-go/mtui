@@ -34,6 +34,12 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/stats", api.OptionalSecure(api.GetStats)).Methods(http.MethodGet)
 	r.HandleFunc("/api/login", api.GetLogin).Methods(http.MethodGet)
 
+	r.HandleFunc("/api/filebrowser/browse", api.SecurePriv(types.PRIV_SERVER, api.BrowseFolder)).Methods(http.MethodGet)
+	r.HandleFunc("/api/filebrowser/file", api.SecurePriv(types.PRIV_SERVER, api.DownloadFile)).Methods(http.MethodGet)
+	r.HandleFunc("/api/filebrowser/file", api.SecurePriv(types.PRIV_SERVER, api.UploadFile)).Methods(http.MethodPost)
+	r.HandleFunc("/api/filebrowser/file", api.SecurePriv(types.PRIV_SERVER, api.DeleteFile)).Methods(http.MethodDelete)
+	r.HandleFunc("/api/filebrowser/rename", api.SecurePriv(types.PRIV_SERVER, api.RenameFile)).Methods(http.MethodPost)
+
 	// maintenance mode middleware enabled routes below
 	apir := r.PathPrefix("/api").Subrouter()
 	apir.Use(MaintenanceModeCheck(a.MaintenanceMode))
