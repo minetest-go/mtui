@@ -3,6 +3,7 @@ import { has_feature } from "../service/features.js";
 import { get_player_count, get_maintenance } from "../service/stats.js";
 import { get_unread_count } from '../service/mail.js';
 import StatsDisplay from './StatsDisplay.js';
+import EngineStatus from "./pages/services/EngineStatus.js";
 
 export default {
 	data: function() {
@@ -27,7 +28,8 @@ export default {
 		maintenance: get_maintenance
 	},
 	components: {
-		"stats-display": StatsDisplay
+		"stats-display": StatsDisplay,
+		"engine-status": EngineStatus
 	},
 	template: /*html*/`
 		<nav class="navbar navbar-expand-lg navbar-dark" v-bind:class="{'bg-dark': !maintenance, 'bg-warning': maintenance}">
@@ -96,7 +98,9 @@ export default {
 						<ul class="dropdown-menu" v-bind:class="{'show': services_menu}">
 							<li>
 								<router-link to="/services/engine" class="dropdown-item">
-									<i class="fa fa-gear"></i> Minetest engine
+									<i class="fa fa-gear"></i>
+									Minetest engine
+									<engine-status/>
 								</router-link>
 							</li>
 						</ul>

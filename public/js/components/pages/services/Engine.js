@@ -3,13 +3,8 @@ import EngineLogs from "./EngineLogs.js";
 import events, { EVENT_LOGGED_IN } from "../../../events.js";
 import { has_feature } from "../../../service/features.js";
 import { has_priv } from "../../../service/login.js";
-
-const store = Vue.reactive({
-	versions: null,
-	busy: false,
-	status: null,
-	version: ""
-});
+import { store } from "../../../service/engine.js";
+import EngineStatus from "./EngineStatus.js";
 
 events.on(EVENT_LOGGED_IN, function() {
 	if (has_feature("docker") && has_priv("server")) {
@@ -20,7 +15,8 @@ events.on(EVENT_LOGGED_IN, function() {
 
 export default {
 	components: {
-		"engine-logs": EngineLogs
+		"engine-logs": EngineLogs,
+		"engine-status": EngineStatus
 	},
 	data: function(){
 		return store;
@@ -71,8 +67,7 @@ export default {
 				<div class="card">
 					<div class="card-header">
 						Engine
-						<i class="fa fa-play" v-if="status && status.running" style="color: green;"></i>
-						<i class="fa fa-stop" v-if="status && !status.running" style="color: red;"></i>
+						<engine-status/>
 						<i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>
 					</div>
 					<div class="card-body">
