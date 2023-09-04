@@ -13,9 +13,9 @@ export default {
     },
     template: /*html*/`
     <nav>
-        <ol class="breadcrumb bg-primary-subtle">
+        <ol class="breadcrumb text-bg-secondary" style="padding: 5px; border-radius: 5px;">
             <li class="breadcrumb-item" v-for="item in items">
-                <router-link :to="item.link" v-if="item.link">
+                <router-link class="link-light" :to="item.link" v-if="item.link">
                     <i v-bind:class="get_icon_class(item)" v-if="item.icon"></i>
                     {{item.name}}
                 </router-link>
