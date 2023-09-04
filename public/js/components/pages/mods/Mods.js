@@ -167,7 +167,7 @@ export default {
 						<td>
 						</td>
 						<td>
-							<router-link to="/cdb/browse" class="btn btn-success" :disabled="busy">
+							<router-link to="/cdb/browse" class="btn btn-success" :disabled="store.busy">
 								<i class="fa-solid fa-box-open"></i>
 								Add from ContentDB
 							</router-link>
