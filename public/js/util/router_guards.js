@@ -5,9 +5,15 @@ const LoginPath = { path: "/login" };
 
 export default function(router) {
     router.beforeEach((to) => {
+        if (!to.meta) {
+            return;
+        }
+
         if (get_maintenance()) {
             // maintenance mode enabled, only start and maintenance page available
-            if (is_logged_in() && to.meta && to.meta.maintenance_page) {
+            if (is_logged_in() && to.meta.maintenance_page) {
+                return;
+            } else if (to.meta.maintenance_page) {
                 return;
             } else {
                 return { path: "/" };

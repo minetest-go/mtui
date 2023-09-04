@@ -1,64 +1,35 @@
-import { create, remove, start, get_status, stop, get_versions } from "../../../api/service_engine.js";
+import { create, remove, start, stop } from "../../../api/service_engine.js";
 import EngineLogs from "./EngineLogs.js";
-import events, { EVENT_LOGGED_IN } from "../../../events.js";
-import { has_feature } from "../../../service/features.js";
-import { has_priv } from "../../../service/login.js";
-import { store } from "../../../service/engine.js";
+import { store, update_state } from "../../../service/engine.js";
 import EngineStatus from "./EngineStatus.js";
-
-events.on(EVENT_LOGGED_IN, function() {
-	if (has_feature("docker") && has_priv("server")) {
-		get_versions()
-		.then(v => store.versions = v);
-	}
-});
 
 export default {
 	components: {
 		"engine-logs": EngineLogs,
 		"engine-status": EngineStatus
 	},
-	data: function(){
-		return store;
-	},
-	created: function(){
-		this.update_state();
-	},
+	data: () => store,
 	methods: {
-		update_state(){
-			store.busy = true;
-			get_status()
-			.then(s => store.status = s)
-			.then(() => store.version = store.status.version)
-			.finally(() => store.busy = false);
-		},
+		update_state: update_state,
 		start: function(){
 			store.busy = true;
 			start()
-			.then(() => get_status())
-			.then(s => store.status = s)
-			.finally(() => store.busy = false);
+			.then(() => update_state());
 		},
 		stop: function(){
 			store.busy = true;
 			stop()
-			.then(() => get_status())
-			.then(s => store.status = s)
-			.finally(() => store.busy = false);
+			.then(() => update_state());
 		},
 		remove: function(){
 			store.busy = true;
 			remove()
-			.then(() => get_status())
-			.then(s => store.status = s)
-			.finally(() => store.busy = false);
+			.then(() => update_state());
 		},
 		create: function(){
 			store.busy = true;
 			create({version: store.version})
-			.then(() => get_status())
-			.then(s => store.status = s)
-			.finally(() => store.busy = false);
+			.then(() => update_state());
 		}
 	},
 	template: /*html*/`
