@@ -176,7 +176,6 @@ func Setup(a *app.App) error {
 	}
 
 	http.Handle("/", r)
-	http.HandleFunc("/api/ws", api.Websocket)
 
 	return nil
 }
