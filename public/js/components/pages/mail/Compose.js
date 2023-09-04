@@ -1,5 +1,7 @@
 import { check_recipient, send } from "../../../api/mail.js";
 import { fetch_mails } from "../../../service/mail.js";
+import DefaultLayout from '../../layouts/DefaultLayout.js';
+import { START, MAIL } from '../../Breadcrumb.js';
 
 export const store = Vue.reactive({
     body: "",
@@ -8,10 +10,18 @@ export const store = Vue.reactive({
     invalid_username: false,
     recipients: [],
     busy: false,
-    mail_sent: false
+    mail_sent: false,
+    breadcrumb: [START, MAIL, {
+        name: "Compose mail",
+        icon: "pen-to-square",
+        link: "/mail/compose"
+    }]
 });
 
 export default {
+    components: {
+        "default-layout": DefaultLayout
+    },
     data: () => store,
     methods: {
         remove_recipient: function(name){
@@ -66,11 +76,11 @@ export default {
         }
     },
     template: /*html*/`
-    <div>
-        <h3>
+    <default-layout icon="paper-plane" title="Compose mail" :breadcrumb="breadcrumb">
+        <h4>
             Mail <small class="text-muted">Compose</small>
             <i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>
-        </h3>
+        </h4>
         <form @submit.prevent="add_recipient" class="row">
             <div class="col-md-4">
                 <input type="text" placeholder="Recipient" v-model="add_recipient_name" :class="{'form-control':true,'is-invalid':invalid_username}"/>
@@ -118,6 +128,6 @@ export default {
                 </button>
             </div>
         </div>
-    </div>
+    </default-layout>
     `
 };

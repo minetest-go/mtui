@@ -1,10 +1,20 @@
-import { get_by_id, remove, save } from "../../api/oauth_app.js";
+import { get_by_id, remove, save } from "../../../api/oauth_app.js";
+import { START, ADMINISTRATION, OAUTH_APPS } from "../../Breadcrumb.js";
+import DefaultLayout from "../../layouts/DefaultLayout.js";
 
 export default {
+    components: {
+        "default-layout": DefaultLayout
+    },
     data: function() {
         return {
             app: null,
-            busy: false
+            busy: false,
+            breadcrumb: [START, ADMINISTRATION, OAUTH_APPS, {
+                name: "Edit OAuth app",
+                icon: "edit",
+                link: `/oauth-apps/${this.$route.params.id}`
+            }]
         };
     },
     computed: {
@@ -38,7 +48,7 @@ export default {
         this.update();
     },
     template: /*html*/`
-        <div v-if="app">
+        <default-layout v-if="app" icon="passport" title="OAuth app" :breadcrumb="breadcrumb">
             <div class="row">
                 <div class="col-md-2">
                 </div>
@@ -94,6 +104,6 @@ export default {
                 <div class="col-md-2">
                 </div>
             </div>
-        </div>
+        </default-layout>
     `
 };

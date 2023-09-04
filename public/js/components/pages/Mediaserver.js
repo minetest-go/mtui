@@ -1,13 +1,23 @@
 import { scan, stats } from "../../api/media.js";
 import format_count from "../../util/format_count.js";
 import format_size from "../../util/format_size.js";
+import DefaultLayout from "../layouts/DefaultLayout.js";
+import { START, ADMINISTRATION } from "../Breadcrumb.js";
 
 export default {
     data: function() {
         return {
             busy: false,
-            stats: null
+            stats: null,
+            breadcrumb: [START, ADMINISTRATION, {
+                icon: "photo-film",
+                name: "Media server",
+                link: "/mediaserver"
+            }]
         };
+    },
+    components: {
+        "default-layout": DefaultLayout
     },
     mounted: function() {
         this.update();
@@ -31,7 +41,7 @@ export default {
         }
     },
     template: /*html*/`
-    <div>
+    <default-layout icon="photo-film" title="Media server" :breadcrumb="breadcrumb">
         <button class="btn btn-primary" :disabled="busy" v-on:click="scan">
             <i class="fa fa-refresh"/>
             Scan
@@ -56,6 +66,6 @@ export default {
             URL for the "remote_media" setting:
             <b>{{ media_url() }}</b>
         </div>
-    </div>
+    </default-layout>
     `
 };

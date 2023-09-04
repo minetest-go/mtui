@@ -4,8 +4,13 @@ import { mark_read, remove } from '../../../api/mail.js';
 import { store as mail_compose_store } from './Compose.js';
 import { fetch_mails } from '../../../service/mail.js';
 import { get_claims } from '../../../service/login.js';
+import DefaultLayout from '../../layouts/DefaultLayout.js';
+import { START, MAIL } from '../../Breadcrumb.js';
 
 export default {
+    components: {
+        "default-layout": DefaultLayout
+    },
     computed: {
         mail: function() {
             const mail = get_mail(this.id);
@@ -35,26 +40,32 @@ export default {
         }
     },
     data: function() {
+        const id = this.$route.params.id;
         return {
-            id: this.$route.params.id
+            id: id,
+            breadcrumb: [START, MAIL, {
+                name: `Read mail`,
+                icon: "envelope-open",
+                link: `/mail/read/${id}`
+            }]
         };
     },
     template: /*html*/`
-    <div v-if="mail">
+    <default-layout v-if="mail" icon="envelope-open" title="Read mail" :breadcrumb="breadcrumb">
         <div class="row">
             <div class="col-md-10">
-                <h3 v-if="is_sent">
+                <h4 v-if="is_sent">
                     Mail sent to
                     <small class="text-muted">
                         {{mail.to}}
                     </small>
-                </h3>
-                <h3 v-else>
+                </h4>
+                <h4 v-else>
                     Mail from
                     <small class="text-muted">
                         {{mail.from}}
                     </small>
-                </h3>
+                </h4>
             </div>
             <div class="col-md-2 btn-group">
                 <a v-on:click="reply" class="btn btn-primary">
@@ -72,6 +83,6 @@ export default {
         Subject: <b>{{mail.subject}}</b>
         <hr>
         <pre>{{mail.body}}</pre>
-    </div>
+    </default-layout>
     `
 };

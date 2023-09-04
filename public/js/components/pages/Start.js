@@ -1,12 +1,22 @@
 import { get_servername, get_version } from "../../service/app_info.js";
+import DefaultLayout from "../layouts/DefaultLayout.js";
+import { START } from "../Breadcrumb.js";
 
 export default {
+	components: {
+		"default-layout": DefaultLayout
+	},
+	data: function() {
+		return {
+			breadcrumb: [START]
+		};
+	},
 	computed: {
 		servername: get_servername,
 		version: get_version
 	},
 	template: /*html*/`
-	<div>
+	<default-layout icon="home" title="Start" :breadcrumb="breadcrumb">
 		<div class="text-center">
 			<h3>
 				Minetest Web UI
@@ -28,6 +38,6 @@ export default {
 				<i class="fa-brands fa-github"></i> Source
 			</a>
 		</div>
-	</div>
+	</default-layout>
 	`
 };

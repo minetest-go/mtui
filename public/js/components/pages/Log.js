@@ -1,5 +1,7 @@
 import { count, search } from "../../api/log.js";
 import format_time from "../../util/format_time.js";
+import DefaultLayout from "../layouts/DefaultLayout.js";
+import { START, MODERATION } from "../Breadcrumb.js";
 
 const store = Vue.reactive({
     category: "minetest",
@@ -15,10 +17,18 @@ const store = Vue.reactive({
     busy: false,
     from: new Date(Date.now() - (3600*1000*2)),
     to: new Date(Date.now() + (3600*1000*1)),
-    logs: []
+    logs: [],
+    breadcrumb: [START, MODERATION, {
+        name: "Logs",
+        icon: "magnifying-glass",
+        link: "/log"
+    }]
 });
 
 export default {
+    components: {
+        "default-layout": DefaultLayout
+    },
     data: () => store,
     computed: {
         events: function() {
@@ -118,7 +128,7 @@ export default {
         this.update_count();
     },
     template: /*html*/`
-    <div>
+    <default-layout icon="magnifying-glass" title="Logs" :breadcrumb="breadcrumb">
         <div class="row">
             <div class="col-md-2">
                 <label>Category</label>
@@ -259,6 +269,6 @@ export default {
                 </tr>
             </tbody>
         </table>
-    </div>
+    </default-layout>
     `
 };

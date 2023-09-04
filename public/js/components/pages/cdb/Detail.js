@@ -1,19 +1,29 @@
 
-import { get_package, get_dependencies } from "../../api/cdb.js";
-import { add } from "../../service/mods.js";
-import store from '../../store/mods.js';
-import FeedbackButton from "../FeedbackButton.js";
+import { get_package, get_dependencies } from "../../../api/cdb.js";
+import { add } from "../../../service/mods.js";
+import store from '../../../store/mods.js';
+import FeedbackButton from "../../FeedbackButton.js";
+import DefaultLayout from "../../layouts/DefaultLayout.js";
+import { START, ADMINISTRATION, MODS, CDB } from "../../Breadcrumb.js";
 
 export default {
     components: {
-        "feedback-button": FeedbackButton
+        "feedback-button": FeedbackButton,
+        "default-layout": DefaultLayout
     },
     data: function() {
+        const author = this.$route.params.author;
+        const name = this.$route.params.name;
         return {
-            author: this.$route.params.author,
-            name: this.$route.params.name,
+            author: author,
+            name: name,
             pkg: null,
-            deps: null
+            deps: null,
+            breadcrumb: [START, ADMINISTRATION, MODS, CDB, {
+                name: `Package detail ${author}/${name}`,
+                icon: "box-open",
+                link: `/cdb/detail/${author}/${name}`
+            }]
         };
     },
     created: function() {
@@ -45,7 +55,7 @@ export default {
         }
     },
     template: /*html*/`
-    <div v-if="pkg">
+    <default-layout v-if="pkg" icon="box-open" title="Package detail" :breadcrumb="breadcrumb">
         <h4>
             {{pkg.title}}
             <small class="text-muted">by {{pkg.author}}</small>
@@ -98,6 +108,6 @@ export default {
                 </div>
             </div>
         </div>
-    </div>
+    </default-layout>
     `
 };

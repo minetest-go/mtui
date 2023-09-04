@@ -1,5 +1,7 @@
 import { execute_chatcommand } from "../../api/chatcommand.js";
 import { has_priv, get_claims } from "../../service/login.js";
+import DefaultLayout from "../layouts/DefaultLayout.js";
+import { START } from "../Breadcrumb.js";
 
 const store = Vue.reactive({
     command: "",
@@ -7,11 +9,15 @@ const store = Vue.reactive({
     error: false,
     busy: false,
     message: "",
-    delay: 0
+    delay: 0,
+    breadcrumb: [START, {icon: "terminal", name: "Shell", link: "/shell"}]
 });
 
 export default {
     data: () => store,
+    components: {
+		"default-layout": DefaultLayout
+	},
     methods: {
         has_priv: has_priv,
         predefined: function(cmd) {
@@ -43,7 +49,7 @@ export default {
         get_claims: get_claims
     },
     template: /*html*/`
-    <div>
+    <default-layout icon="terminal" title="Shell" :breadcrumb="breadcrumb">
         <form @submit.prevent="execute" class="row">
             <div class="col-md-10">
                 <input type="text" placeholder="Command" v-model="command" class="form-control"/>
@@ -79,6 +85,6 @@ export default {
                 <pre class="w-100" style="height: 300px; background-color: grey;">{{message}}</pre>
             </div>
         </div>
-    </div>
+    </default-layout>
     `
 };

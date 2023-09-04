@@ -1,16 +1,21 @@
-
 import { search, count } from "../../api/playerinfo.js";
 import format_time from '../../util/format_time.js';
+import DefaultLayout from "../layouts/DefaultLayout.js";
+import { START, PLAYER_SEARCH } from "../Breadcrumb.js";
 
 const store = Vue.reactive({
     busy: false,
-    count: 0,
+    result_count: 0,
     searchterm: "",
-    list: []
+    list: [],
+    breadcrumb: [START, PLAYER_SEARCH]
 });
 
 export default {
     data: () => store,
+	components: {
+		"default-layout": DefaultLayout
+	},
     methods: {
         format_time: format_time,
         getRole: function(player) {
@@ -38,16 +43,14 @@ export default {
             .finally(() => this.busy = false);
         },
         count: function() {
-            this.count = 0;
+            this.result_count = 0;
             this.list = [];
             if (this.searchterm == "")
                 return;
 
             this.busy = true;
             count(this.query())
-            .then(c => {
-                this.count = c;
-            })
+            .then(c => this.result_count = c)
             .finally(() => this.busy = false);
         }
     },
@@ -55,7 +58,7 @@ export default {
         searchterm: "count"
     },
     template: /*html*/`
-    <div>
+    <default-layout icon="magnifying-glass" title="Player search" :breadcrumb="breadcrumb">
         <div class="row">
             <div class="col-md-10">
                 <input type="text" placeholder="Player-name" class="form-control" v-model="searchterm"/>
@@ -65,7 +68,7 @@ export default {
                     <i class="fa fa-magnifying-glass" v-if="!busy"></i>
                     <i class="fa-solid fa-spinner fa-spin" v-else></i>
                     Search
-                    <span class="badge bg-secondary">{{count}}</span>
+                    <span class="badge bg-secondary">{{result_count}}</span>
                 </button>
             </div>
         </div>
@@ -104,6 +107,6 @@ export default {
                 </tr>
             </tbody>
         </table>
-    </div>
+    </default-layout>
     `
 };

@@ -1,4 +1,6 @@
-import { execute_lua } from "../../api/lua.js";
+import { execute_lua } from "../../../api/lua.js";
+import DefaultLayout from "../../layouts/DefaultLayout.js";
+import { START, ADMINISTRATION } from "../../Breadcrumb.js";
 
 const store = Vue.reactive({
     code: "return minetest.features",
@@ -7,10 +9,18 @@ const store = Vue.reactive({
     busy: false,
     result: "",
     message: "",
-    delay: 0
+    delay: 0,
+    breadcrumb: [START, ADMINISTRATION, {
+        name: "Lua",
+        icon: "terminal",
+        link: "/lua"
+    }]
 });
 
 export default {
+    components: {
+        "default-layout": DefaultLayout
+    },
     data: () => store,
     methods: {
         execute: function() {
@@ -34,7 +44,7 @@ export default {
         }
     },
     template: /*html*/`
-    <div>
+    <default-layout icon="terminal" title="Lua" :breadcrumb="breadcrumb">
         <form @submit.prevent="execute" class="row">
             <div class="col-md-10">
                 <textarea rows="5" v-model="code" class="form-control"></textarea>
@@ -63,6 +73,6 @@ export default {
                 <pre class="w-100" style="height: 500px; background-color: grey;">{{result}}</pre>
             </div>
         </div>
-    </div>
+    </default-layout>
     `
 };

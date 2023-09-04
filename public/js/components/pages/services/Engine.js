@@ -2,13 +2,25 @@ import { create, remove, start, stop } from "../../../api/service_engine.js";
 import EngineLogs from "./EngineLogs.js";
 import { store, update_state } from "../../../service/engine.js";
 import EngineStatus from "./EngineStatus.js";
+import DefaultLayout from "../../layouts/DefaultLayout.js";
+import { START, SERVICES } from "../../Breadcrumb.js";
 
 export default {
 	components: {
 		"engine-logs": EngineLogs,
-		"engine-status": EngineStatus
+		"engine-status": EngineStatus,
+		"default-layout": DefaultLayout
 	},
 	data: () => store,
+	computed: {
+		breadcrumb: function() {
+			return [START, SERVICES, {
+				name: "Minetest engine",
+				icon: "gear",
+				link: "/services/engine"
+			}];
+		}
+	},
 	methods: {
 		update_state: update_state,
 		start: function(){
@@ -33,6 +45,7 @@ export default {
 		}
 	},
 	template: /*html*/`
+	<default-layout icon="gear" title="Minetest engine" :breadcrumb="breadcrumb">
 		<div class="row">
 			<div class="col-md-12">
 				<div class="card">
@@ -82,5 +95,6 @@ export default {
 				<engine-logs :running="status && status.running"/>
 			</div>
 		</div>
+	</default-layout>
 	`
 };

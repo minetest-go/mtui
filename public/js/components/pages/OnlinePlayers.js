@@ -1,9 +1,19 @@
 import { store } from "../../service/stats.js";
 import format_seconds from "../../util/format_seconds.js";
 import { has_priv } from "../../service/login.js";
+import DefaultLayout from "../layouts/DefaultLayout.js";
+import { START } from "../Breadcrumb.js";
 
 export default {
     data: () => store,
+    components: {
+        "default-layout": DefaultLayout
+    },
+    computed: {
+        breadcrumb: function() {
+            return [START, {icon: "users", name: "Online players", link: "/online-players"}];
+        }
+    },
     methods: {
         has_priv: has_priv,
         format_seconds: format_seconds,
@@ -14,6 +24,7 @@ export default {
         }
     },
     template: /*html*/`
+    <default-layout icon="users" title="Online players" :breadcrumb="breadcrumb">
         <table class="table table-condensed table-striped">
             <thead>
                 <tr>
@@ -58,5 +69,6 @@ export default {
                 </tr>
             </tbody>
         </table>
+    </default-layout>
     `
 };
