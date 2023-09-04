@@ -38,13 +38,13 @@ function start(){
 	app.mount("#app");
 }
 
-check_features()
-.then(() => get_stats())
+get_stats()
 .then(stats => {
 	if (stats.maintenance) {
-		// skip login checking
+		// skip feature checking
 		return;
 	}
-	return check_login();
+	return check_features();
 })
+.then(() => check_login())
 .then(() => start());

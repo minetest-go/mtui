@@ -18,6 +18,9 @@ func (a *Api) EnableMaintenanceMode(w http.ResponseWriter, r *http.Request, c *t
 		SendError(w, 500, "already in maintenance mode")
 	}
 	a.app.MaintenanceMode.Store(true)
+	// clear current stats
+	current_stats.Store(nil)
+	// detach database
 	err := a.app.DetachDatabase()
 	if err != nil {
 		logrus.WithFields(logrus.Fields{

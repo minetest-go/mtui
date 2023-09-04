@@ -18,7 +18,7 @@ export default {
     },
     template: /*html*/`
         <span>
-            <span v-if="max_lag > 0">
+            <span v-if="max_lag">
                 <i class="fa-solid fa-signal" v-bind:style="{'color': signalColor}"></i>
                 {{ Math.floor(max_lag*1000) }} ms
                 <i class="fa-solid fa-users"></i>
@@ -28,8 +28,8 @@ export default {
                 <i class="fa-solid fa-sun" style="color: yellow;" v-if="hour >= 6 && hour < 18"></i>
                 <i class="fa-solid fa-moon" style="color: lightblue;" v-else></i>
             </span>
-            <span v-else>
-                <i class="fa-solid fa-spinner fa-spin"></i>
+            <span class="badge bg-danger" v-if="maintenance">
+                Maintenance mode
             </span>
         </span>
     `

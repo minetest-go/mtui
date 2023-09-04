@@ -32,6 +32,7 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/maintenance", api.SecurePriv(types.PRIV_SERVER, api.EnableMaintenanceMode)).Methods(http.MethodPut)
 	r.HandleFunc("/api/maintenance", api.SecurePriv(types.PRIV_SERVER, api.DisableMaintenanceMode)).Methods(http.MethodDelete)
 	r.HandleFunc("/api/stats", api.OptionalSecure(api.GetStats)).Methods(http.MethodGet)
+	r.HandleFunc("/api/login", api.GetLogin).Methods(http.MethodGet)
 
 	// maintenance mode middleware enabled routes below
 	apir := r.PathPrefix("/api").Subrouter()
@@ -45,7 +46,6 @@ func Setup(a *app.App) error {
 
 	apir.HandleFunc("/login", api.DoLogout).Methods(http.MethodDelete)
 	apir.HandleFunc("/login", api.DoLogin).Methods(http.MethodPost)
-	apir.HandleFunc("/login", api.GetLogin).Methods(http.MethodGet)
 
 	apir.HandleFunc("/onboard", api.GetOnboardStatus).Methods(http.MethodGet)
 	apir.HandleFunc("/onboard", api.CreateOnboardUser).Methods(http.MethodPost)

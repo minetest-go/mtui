@@ -26,15 +26,18 @@ func (a *Api) GetIndex(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	entry, err := a.app.Repos.ConfigRepo.GetByKey(types.ConfigThemeKey)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
 	css_url := public.ThemeMap["default"]
-	if entry != nil && public.ThemeMap[entry.Value] != "" {
-		css_url = public.ThemeMap[entry.Value]
+
+	if !a.app.MaintenanceMode.Load() {
+		entry, err := a.app.Repos.ConfigRepo.GetByKey(types.ConfigThemeKey)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+
+		if entry != nil && public.ThemeMap[entry.Value] != "" {
+			css_url = public.ThemeMap[entry.Value]
+		}
 	}
 
 	m := &IndexModel{
