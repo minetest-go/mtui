@@ -254,7 +254,7 @@ export default {
                             ASN:
                             <i class="fa fa-magnifying-glass" v-on:click="search_specific('geo_asn', log.geo_asn)"></i>
                             {{log.geo_asn}}
-                        <span>
+                        </span>
                     </td>
                 </tr>
             </tbody>

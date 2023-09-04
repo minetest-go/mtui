@@ -2,16 +2,18 @@ package jobs
 
 import (
 	"fmt"
-	"mtui/db"
+	"mtui/app"
 	"time"
 )
 
-func metricCleanup(r *db.MetricRepository) {
+func metricCleanup(a *app.App) {
 	for {
-		ts := time.Now().Add(time.Hour * -1)
-		err := r.DeleteBefore(ts.UnixMilli())
-		if err != nil {
-			fmt.Printf("metric cleanup error: %s\n", err.Error())
+		if !a.MaintenanceMode.Load() {
+			ts := time.Now().Add(time.Hour * -1)
+			err := a.Repos.LogRepository.DeleteBefore(ts.UnixMilli())
+			if err != nil {
+				fmt.Printf("metric cleanup error: %s\n", err.Error())
+			}
 		}
 
 		// re-schedule every minute

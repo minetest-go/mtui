@@ -26,7 +26,17 @@ func Setup(a *app.App) error {
 		return err
 	}
 
+	// always on api
+	r.HandleFunc("/api/export", api.SecurePriv(types.PRIV_SERVER, api.Export)).Methods(http.MethodGet)
+	r.HandleFunc("/api/maintenance", api.SecurePriv(types.PRIV_SERVER, api.GetMaintenanceMode)).Methods(http.MethodGet)
+	r.HandleFunc("/api/maintenance", api.SecurePriv(types.PRIV_SERVER, api.EnableMaintenanceMode)).Methods(http.MethodPut)
+	r.HandleFunc("/api/maintenance", api.SecurePriv(types.PRIV_SERVER, api.DisableMaintenanceMode)).Methods(http.MethodDelete)
+	r.HandleFunc("/api/stats", api.OptionalSecure(api.GetStats)).Methods(http.MethodGet)
+	r.HandleFunc("/api/login", api.GetLogin).Methods(http.MethodGet)
+
+	// maintenance mode middleware enabled routes below
 	apir := r.PathPrefix("/api").Subrouter()
+	apir.Use(MaintenanceModeCheck(a.MaintenanceMode))
 
 	apir.HandleFunc("/appinfo", api.GetAppInfo)
 	apir.HandleFunc("/themes", api.SecurePriv(types.PRIV_SERVER, api.GetThemes))
@@ -36,7 +46,6 @@ func Setup(a *app.App) error {
 
 	apir.HandleFunc("/login", api.DoLogout).Methods(http.MethodDelete)
 	apir.HandleFunc("/login", api.DoLogin).Methods(http.MethodPost)
-	apir.HandleFunc("/login", api.GetLogin).Methods(http.MethodGet)
 
 	apir.HandleFunc("/onboard", api.GetOnboardStatus).Methods(http.MethodGet)
 	apir.HandleFunc("/onboard", api.CreateOnboardUser).Methods(http.MethodPost)
@@ -167,7 +176,6 @@ func Setup(a *app.App) error {
 	}
 
 	http.Handle("/", r)
-	http.HandleFunc("/api/ws", api.Websocket)
 
 	return nil
 }

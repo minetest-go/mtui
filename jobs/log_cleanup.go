@@ -2,16 +2,18 @@ package jobs
 
 import (
 	"fmt"
-	"mtui/db"
+	"mtui/app"
 	"time"
 )
 
-func logCleanup(r *db.LogRepository) {
+func logCleanup(a *app.App) {
 	for {
-		ts := time.Now().AddDate(0, 0, -30)
-		err := r.DeleteBefore(ts.UnixMilli())
-		if err != nil {
-			fmt.Printf("Log cleanup error: %s\n", err.Error())
+		if !a.MaintenanceMode.Load() {
+			ts := time.Now().AddDate(0, 0, -30)
+			err := a.Repos.LogRepository.DeleteBefore(ts.UnixMilli())
+			if err != nil {
+				fmt.Printf("Log cleanup error: %s\n", err.Error())
+			}
 		}
 
 		// re-schedule every minute

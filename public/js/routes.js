@@ -20,6 +20,7 @@ import OauthAppEdit from './components/pages/OauthAppEdit.js';
 import MinetestConfig from './components/pages/MinetestConfig.js';
 import EngineService from './components/pages/services/Engine.js';
 import UISettings from './components/pages/UISettings.js';
+import Maintenance from './components/pages/Maintenance.js';
 
 import Mods from './components/pages/mods/Mods.js';
 import ContentBrowse from './components/cdb/Browse.js';
@@ -27,7 +28,10 @@ import ContentdbDetail from './components/cdb/Detail.js';
 
 export default [{
 	path: "/", component: Start,
-	meta: { requiredPriv: "interact" }
+	meta: { requiredPriv: "interact", maintenance_page: true }
+}, {
+	path: "/maintenance", component: Maintenance,
+	meta: { requiredPriv: "server", maintenance_page: true }
 }, {
 	path: "/login", component: Login
 }, {

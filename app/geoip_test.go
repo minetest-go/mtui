@@ -1,7 +1,6 @@
 package app_test
 
 import (
-	"io/ioutil"
 	"mtui/app"
 	"os"
 	"path"
@@ -11,12 +10,12 @@ import (
 )
 
 func copy(src string, dst string) error {
-	data, err := ioutil.ReadFile(src)
+	data, err := os.ReadFile(src)
 	if err != nil {
 		return err
 	}
 
-	return ioutil.WriteFile(dst, data, 0644)
+	return os.WriteFile(dst, data, 0644)
 }
 
 func TestGeoipResolve(t *testing.T) {

@@ -1,11 +1,27 @@
 import { get_claims, is_logged_in } from '../service/login.js';
+import { get_maintenance } from '../service/stats.js';
 
 const LoginPath = { path: "/login" };
 
 export default function(router) {
     router.beforeEach((to) => {
+        if (!to.meta) {
+            return;
+        }
+
+        if (get_maintenance()) {
+            // maintenance mode enabled, only start and maintenance page available
+            if (is_logged_in() && to.meta.maintenance_page) {
+                return;
+            } else if (to.meta.maintenance_page) {
+                return;
+            } else {
+                return { path: "/" };
+            }
+        }
+
         if (to.meta.loggedIn && !is_logged_in()) {
-            return { path: '/login' };
+                return LoginPath;
         }
 
         if (to.meta.requiredPriv) {

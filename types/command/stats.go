@@ -15,13 +15,13 @@ type PlayerStats struct {
 	HP     types.JsonInt `json:"hp"`
 	Breath types.JsonInt `json:"breath"`
 
-	Pos struct {
+	Pos *struct {
 		X types.JsonInt `json:"x"`
 		Y types.JsonInt `json:"y"`
 		Z types.JsonInt `json:"z"`
 	} `json:"pos"`
 
-	Info struct {
+	Info *struct {
 		Address              string        `json:"address"`
 		IPVersion            float64       `json:"ip_version"`
 		ConnectionUptime     float64       `json:"connection_uptime"`
@@ -38,9 +38,9 @@ type PlayerStats struct {
 
 // stats from the engine
 type StatsCommand struct {
-	Uptime      types.JsonInt `json:"uptime"`
-	MaxLag      float64       `json:"max_lag"`
-	TimeOfDay   float64       `json:"time_of_day"`
-	PlayerCount types.JsonInt `json:"player_count"`
-	Players     []*PlayerStats
+	Uptime      types.JsonInt  `json:"uptime"`
+	MaxLag      float64        `json:"max_lag"`
+	TimeOfDay   float64        `json:"time_of_day"`
+	PlayerCount types.JsonInt  `json:"player_count"`
+	Players     []*PlayerStats `json:"players"`
 }

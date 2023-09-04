@@ -16,6 +16,7 @@ export default {
         return store;
     },
     created: function(){
+        this.update_logs();
         this.log_update_handle = setInterval(this.update_logs.bind(this), 1000);
     },
     unmounted: function() {

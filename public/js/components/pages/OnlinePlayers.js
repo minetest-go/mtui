@@ -1,9 +1,9 @@
-import onlineplayers_store from "../../store/onlineplayers.js";
+import { store } from "../../service/stats.js";
 import format_seconds from "../../util/format_seconds.js";
 import { has_priv } from "../../service/login.js";
 
 export default {
-    data: () => onlineplayers_store,
+    data: () => store,
     methods: {
         has_priv: has_priv,
         format_seconds: format_seconds,
