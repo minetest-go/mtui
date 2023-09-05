@@ -1,5 +1,5 @@
 import DefaultLayout from "../../layouts/DefaultLayout.js";
-import { browse, get_zip_url, get_download_url, mkdir, remove, upload, rename } from "../../../api/filebrowser.js";
+import { browse, get_zip_url, get_download_url, mkdir, remove, upload, upload_zip, rename } from "../../../api/filebrowser.js";
 import format_size from "../../../util/format_size.js";
 import format_time from "../../../util/format_time.js";
 import { START, FILEBROWSER } from "../../Breadcrumb.js";
@@ -15,6 +15,8 @@ export default {
             mkfile_name: "",
             move_name: "",
             move_target: "",
+            upload_busy: false,
+            upload_zip_busy: false,
             prepare_delete: null
         };
     },
@@ -35,6 +37,7 @@ export default {
         },
         upload: function() {
             const files = Array.from(this.$refs.input_upload.files);
+            this.upload_busy = true;
 
             const promises = files.map(file => {
                 return file.arrayBuffer()
@@ -43,6 +46,22 @@ export default {
 
             Promise.all(promises).then(() => {
                 this.$refs.input_upload.value = null;
+                this.upload_busy = false;
+                this.browse_dir();
+            });
+        },
+        upload_zip: function() {
+            if (this.$refs.input_upload_zip.files.length == 0) {
+                return;
+            }
+            this.upload_zip_busy = true;
+
+            const file = this.$refs.input_upload_zip.files[0];
+            file.arrayBuffer()
+            .then(buf => upload_zip(this.result.dir, buf))
+            .then(() => {
+                this.$refs.input_upload_zip.value = null;
+                this.upload_zip_busy = false;
                 this.browse_dir();
             });
         },
@@ -150,10 +169,19 @@ export default {
                         <button class="btn btn-secondary" v-on:click="upload">
                             <i class="fa fa-upload"></i>
                             Upload file
+                            <i class="fa fa-spinner fa-spin" v-if="upload_busy"></i>
                         </button>
                     </div>
                 </div>
                 <div class="col-2">
+                    <div class="input-group">
+                        <input ref="input_upload_zip" type="file" class="form-control" accept=".zip"/>
+                        <button class="btn btn-secondary" v-on:click="upload_zip">
+                            <i class="fa fa-upload"></i>
+                            Upload zip
+                            <i class="fa fa-spinner fa-spin" v-if="upload_zip_busy"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="col-2">
                 </div>
