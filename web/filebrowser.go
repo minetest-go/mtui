@@ -170,6 +170,66 @@ func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.
 	}
 }
 
+func (a *Api) UploadZip(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	_, absdir, err := a.get_sanitized_dir(r)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	tf, err := os.CreateTemp(os.TempDir(), "mtui-zip-upload")
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+	defer os.Remove(tf.Name())
+
+	_, err = io.Copy(tf, r.Body)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	zr, err := zip.OpenReader(tf.Name())
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+	defer zr.Close()
+
+	for _, f := range zr.File {
+		targetfile := path.Join(absdir, f.Name)
+		dirname := path.Dir(targetfile)
+		err = os.MkdirAll(dirname, 0644)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+
+		targetf, err := os.OpenFile(targetfile, os.O_RDWR|os.O_CREATE, 0644)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+
+		zipfile, err := f.Open()
+		if err != nil {
+			targetf.Close()
+			SendError(w, 500, err.Error())
+			return
+		}
+
+		_, err = io.Copy(targetf, zipfile)
+		targetf.Close()
+		zipfile.Close()
+
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+	}
+}
+
 func (a *Api) UploadFile(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	filename, err := a.get_sanitized_filename(r, "filename")
 	if err != nil {
