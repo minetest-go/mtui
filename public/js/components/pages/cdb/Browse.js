@@ -1,12 +1,15 @@
 
-import { search_packages } from "../../api/cdb.js";
+import { search_packages } from "../../../api/cdb.js";
 import Preview from "./Preview.js";
+import DefaultLayout from "../../layouts/DefaultLayout.js";
+import { START, ADMINISTRATION, MODS, CDB } from "../../Breadcrumb.js";
 
 const store = Vue.reactive({
     busy: false,
     packages: null,
     query: "",
-    type: "mod"
+    type: "mod",
+    breadcrumb: [START, ADMINISTRATION, MODS, CDB]
 });
 
 export default {
@@ -17,7 +20,8 @@ export default {
         }
     },
     components: {
-        "package-preview": Preview
+        "package-preview": Preview,
+        "default-layout": DefaultLayout
     },
     watch: {
         "type": function() {
@@ -40,7 +44,7 @@ export default {
         }
     },
     template: /*html*/`
-    <div>
+    <default-layout icon="box-open" title="ContentDB" :breadcrumb="breadcrumb">
         <h3>Browse cdb</h3>
         <div class="row">
             <div class="col-2">
@@ -69,6 +73,6 @@ export default {
         <div style="display: flex; flex-wrap: wrap;">
             <package-preview v-for="pkg in packages" v-if="packages" :pkg="pkg"></package-preview>
         </div>
-    </div>
+    </default-layout>
     `
 };

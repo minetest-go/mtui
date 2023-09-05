@@ -4,8 +4,22 @@ import { check_features } from "../../service/features.js";
 import { is_running } from "../../service/engine.js";
 import events, { EVENT_LOGGED_IN} from "../../events.js";
 import { get_claims } from "../../service/login.js";
+import DefaultLayout from "../layouts/DefaultLayout.js";
+import { START, ADMINISTRATION } from "../Breadcrumb.js";
 
 export default {
+    data: function() {
+        return {
+            breadcrumb: [START, ADMINISTRATION, {
+                icon: "wrench",
+                name: "Maintenance",
+                link: "/maintenance"
+            }]
+        };
+    },
+    components: {
+        "default-layout": DefaultLayout
+    },
     computed: {
         maintenance: get_maintenance,
         is_engine_running: is_running
@@ -22,7 +36,8 @@ export default {
         }
     },
     template: /*html*/`
-        <h3>Maintenance</h3>
+    <default-layout icon="wrench" title="Maintenance" :breadcrumb="breadcrumb">
+        <h4>Maintenance</h4>
         <table class="table">
             <tbody>
                 <tr>
@@ -54,5 +69,6 @@ export default {
             <i class="fa-solid fa-triangle-exclamation"></i>
             The <router-link to="/services/engine">minetest engine</router-link> is still running, please stop it to enable the maintenance mode
         </div>
+    </default-layout>
     `
 };

@@ -1,12 +1,23 @@
-
 import SkinSlot from "../SkinSlot.js";
+import DefaultLayout from "../layouts/DefaultLayout.js";
+import { START } from "../Breadcrumb.js";
 
 export default {
+    data: function() {
+        return {
+            breadcrumb: [START, {
+                icon: "user-astronaut",
+                name: "Skin",
+                link: "/skin"
+            }]
+        };
+    },
     components: {
-        "skin-slot": SkinSlot
+        "skin-slot": SkinSlot,
+        "default-layout": DefaultLayout
     },
     template: /*html*/`
-        <div>
+        <default-layout icon="user-astronaut" title="Skin" :breadcrumb="breadcrumb">
             <h3>
                 Skin
                 <small class="text-muted">manager</small>
@@ -40,6 +51,6 @@ export default {
                     </div>
                 </div>
             </div>
-        </div>
+        </default-layout>
     `
 };

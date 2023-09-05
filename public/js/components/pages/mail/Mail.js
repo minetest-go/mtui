@@ -1,10 +1,18 @@
 import mail_store from '../../../store/mail.js';
 import { fetch_mails } from '../../../service/mail.js';
 import BoxList from './BoxList.js';
+import DefaultLayout from '../../layouts/DefaultLayout.js';
+import { START, MAIL } from '../../Breadcrumb.js';
 
 export default {
+    data: function() {
+        return {
+            breadcrumb: [START, MAIL]
+        };
+    },
     components: {
-        "box-list": BoxList
+        "box-list": BoxList,
+        "default-layout": DefaultLayout
     },
     computed: {
         busy: () => mail_store.busy,
@@ -23,13 +31,13 @@ export default {
         }
     },
     template: /*html*/`
-    <div>
+    <default-layout icon="envelope" title="Mail" :breadcrumb="breadcrumb">
         <div class="row">
             <div class="col-md-8">
-                <h3>
+                <h4>
                     Mail <small class="text-muted">Overview</small>
                     <i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>
-                </h3>
+                </h4>
             </div>
             <div class="col-md-4 btn-group">
                 <router-link to="/mail/compose" class="btn btn-primary">
@@ -56,6 +64,6 @@ export default {
         </ul>
         &nbsp;
         <box-list :mails="mails"/>
-    </div>
+    </default-layout>
     `
 };

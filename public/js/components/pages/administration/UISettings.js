@@ -1,12 +1,22 @@
-import { get_themes } from "../../api/themes.js";
-import { get_config, set_config } from "../../api/config.js";
+import { get_themes } from "../../../api/themes.js";
+import { get_config, set_config } from "../../../api/config.js";
+import DefaultLayout from "../../layouts/DefaultLayout.js";
+import { START, ADMINISTRATION } from "../../Breadcrumb.js";
 
 const store = Vue.reactive({
     themes: null,
-    current_theme: ""
+    current_theme: "",
+    breadcrumb: [START, ADMINISTRATION, {
+        name: "UI Settings",
+        icon: "list-check",
+        link: "/ui/settings"
+    }]
 });
 
 export default {
+    components: {
+        "default-layout": DefaultLayout
+    },
     data: () => store,
     created: function() {
         if (!store.themes) {
@@ -18,11 +28,7 @@ export default {
         set_config: set_config
     },
     template: /*html*/`
-    <div>
-        <h3>
-            UI
-            <small class="text-muted">settings</small>
-        </h3>
+    <default-layout icon="list-check" title="UI Settings" :breadcrumb="breadcrumb">
         <table class="table table-striped" v-if="themes">
             <tr>
                 <th>Setting</th>
@@ -45,6 +51,6 @@ export default {
                 </td>
             </tr>
         </table>
-    </div>
+    </default-layout>
     `
 };

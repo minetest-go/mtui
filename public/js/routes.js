@@ -3,28 +3,30 @@ import Login from './components/pages/Login.js';
 import PlayerInfo from './components/pages/PlayerInfo.js';
 import Profile from './components/pages/Profile.js';
 import Shell from './components/pages/Shell.js';
-import Lua from './components/pages/Lua.js';
+import Lua from './components/pages/administration/Lua.js';
 import OnlinePlayers from './components/pages/OnlinePlayers.js';
 import PlayerSearch from './components/pages/PlayerSearch.js';
 import Mail from './components/pages/mail/Mail.js';
 import MailRead from './components/pages/mail/MailRead.js';
 import Compose from './components/pages/mail/Compose.js';
 import Skin from './components/pages/Skin.js';
-import Features from './components/pages/Features.js';
+import Features from './components/pages/administration/Features.js';
 import Mediaserver from './components/pages/Mediaserver.js';
 import Log from './components/pages/Log.js';
 import Onboard from './components/pages/Onboard.js';
 import Xban from './components/pages/Xban.js';
-import OauthApps from './components/pages/OauthApps.js';
-import OauthAppEdit from './components/pages/OauthAppEdit.js';
-import MinetestConfig from './components/pages/MinetestConfig.js';
+import OauthApps from './components/pages/oauth/OauthApps.js';
+import OauthAppEdit from './components/pages/oauth/OauthAppEdit.js';
+import MinetestConfig from './components/pages/administration/MinetestConfig.js';
 import EngineService from './components/pages/services/Engine.js';
-import UISettings from './components/pages/UISettings.js';
+import UISettings from './components/pages/administration/UISettings.js';
 import Maintenance from './components/pages/Maintenance.js';
+import Filebrowser from './components/pages/filebrowser/Filebrowser.js';
+import FileEdit from './components/pages/filebrowser/FileEdit.js';
 
 import Mods from './components/pages/mods/Mods.js';
-import ContentBrowse from './components/cdb/Browse.js';
-import ContentdbDetail from './components/cdb/Detail.js';
+import ContentBrowse from './components/pages/cdb/Browse.js';
+import ContentdbDetail from './components/pages/cdb/Detail.js';
 
 export default [{
 	path: "/", component: Start,
@@ -101,4 +103,10 @@ export default [{
 }, {
 	path:"/ui/settings", component: UISettings,
 	meta: { requiredPriv: "server" }
+}, {
+	path: "/filebrowser/:pathMatch(.*)", component: Filebrowser,
+	meta: { requiredPriv: "server", maintenance_page: true }
+}, {
+	path: "/fileedit/:pathMatch(.*)", component: FileEdit,
+	meta: { requiredPriv: "server", maintenance_page: true }
 }];

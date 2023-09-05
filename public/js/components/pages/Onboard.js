@@ -1,5 +1,7 @@
 import { create_initial_user } from "../../api/onboard.js";
 import { login } from "../../service/login.js";
+import DefaultLayout from "../layouts/DefaultLayout.js";
+import { START } from "../Breadcrumb.js";
 
 export default {
     data: function() {
@@ -7,8 +9,16 @@ export default {
             username: "",
             password: "",
             busy: false,
-            error_message: ""
+            error_message: "",
+            breadcrumb: [START, {
+                name: "Onboard",
+                icon: "plus",
+                link: "/onboard"
+            }]
         };
+    },
+    components: {
+        "default-layout": DefaultLayout
     },
     computed: {
         validInput: function(){
@@ -31,6 +41,7 @@ export default {
         }
     },
     template: /*html*/`
+    <default-layout icon="plus" title="Onboard" :breadcrumb="breadcrumb">
         <div class="row">
             <div class="col-md-4"></div>
             <div class="col-md-4 card" style="padding: 20px;">
@@ -57,5 +68,6 @@ export default {
 
             </div>
         </div>
+    </default-layout>
     `
 };

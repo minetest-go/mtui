@@ -1,11 +1,13 @@
 import store from '../../../store/mods.js';
-
 import { add, remove } from '../../../service/mods.js';
 import FeedbackButton from '../../FeedbackButton.js';
+import DefaultLayout from '../../layouts/DefaultLayout.js';
+import { START, ADMINISTRATION, MODS } from '../../Breadcrumb.js';
 
 export default {
 	components: {
-		"feedback-button": FeedbackButton
+		"feedback-button": FeedbackButton,
+		"default-layout": DefaultLayout
 	},
 	data: () => {
 		return {
@@ -14,7 +16,8 @@ export default {
 			add_source_type: "git",
 			add_url: "",
 			add_version: "",
-			store: store
+			store: store,
+			breadcrumb: [START, ADMINISTRATION, MODS]
 		};
 	},
 	methods: {
@@ -45,11 +48,11 @@ export default {
 		remove: remove
 	},
 	template: /*html*/`
-		<div>
-			<h3>
+		<default-layout icon="cubes" title="Mods" :breadcrumb="breadcrumb">
+			<h4>
 				Mod management
 				<i class="fa-solid fa-spinner fa-spin" v-if="store.busy"></i>
-			</h3>
+			</h4>
 			<div class="alert alert-warning" v-if="store.list && !store.has_mtui_mod">
 				<div class="row">
 					<div class="col-12">
@@ -175,6 +178,6 @@ export default {
 					</tr>
 				</tbody>
 			</table>
-		</div>
+		</default-layout>
 	`
 };

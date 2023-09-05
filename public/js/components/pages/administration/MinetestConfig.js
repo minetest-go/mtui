@@ -1,4 +1,6 @@
-import { store, apply_filter, save, unset } from '../../service/mtconfig.js';
+import { store, apply_filter, save, unset } from '../../../service/mtconfig.js';
+import DefaultLayout from '../../layouts/DefaultLayout.js';
+import { START, ADMINISTRATION } from '../../Breadcrumb.js';
 
 const SettingRow = {
     props: ["setting"],
@@ -147,13 +149,19 @@ const SettingRow = {
 
 export default {
     components: {
-        "setting-row": SettingRow
+        "setting-row": SettingRow,
+        "default-layout": DefaultLayout
     },
     data: function() {
         return {
             store: store,
             search: "",
-            only_configured: true
+            only_configured: true,
+            breadcrumb: [START, ADMINISTRATION, {
+                name: "Minetest config",
+                icon: "cog",
+                link: "/minetest-config"
+            }]
         };
     },
     methods: {
@@ -169,7 +177,7 @@ export default {
         "only_configured": "apply_filter"
     },
     template: /*html*/`
-        <div>
+        <default-layout icon="cog" title="Minetest config" :breadcrumb="breadcrumb">
             <div class="row">
                 <div class="col-6">
                     <input type="text" class="form-control" v-model="search" placeholder="Search settings"/>
@@ -201,6 +209,6 @@ export default {
                     </tbody>
                 </table>
             </div>
-        </div>
+        </default-layout>
     `
 };

@@ -34,6 +34,17 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/stats", api.OptionalSecure(api.GetStats)).Methods(http.MethodGet)
 	r.HandleFunc("/api/login", api.GetLogin).Methods(http.MethodGet)
 
+	fbr := r.PathPrefix("/api/filebrowser").Subrouter()
+	fbr.Use(SecureHandler(api.FeatureCheck(types.FEATURE_FILEBROWSER)))
+	fbr.HandleFunc("/browse", api.SecurePriv(types.PRIV_SERVER, api.BrowseFolder)).Methods(http.MethodGet)
+	fbr.HandleFunc("/zip", api.SecurePriv(types.PRIV_SERVER, api.DownloadZip)).Methods(http.MethodGet)
+	fbr.HandleFunc("/zip", api.SecurePriv(types.PRIV_SERVER, api.UploadZip)).Methods(http.MethodPost)
+	fbr.HandleFunc("/mkdir", api.SecurePriv(types.PRIV_SERVER, api.Mkdir)).Methods(http.MethodPost)
+	fbr.HandleFunc("/file", api.SecurePriv(types.PRIV_SERVER, api.DownloadFile)).Methods(http.MethodGet)
+	fbr.HandleFunc("/file", api.SecurePriv(types.PRIV_SERVER, api.UploadFile)).Methods(http.MethodPost)
+	fbr.HandleFunc("/file", api.SecurePriv(types.PRIV_SERVER, api.DeleteFile)).Methods(http.MethodDelete)
+	fbr.HandleFunc("/rename", api.SecurePriv(types.PRIV_SERVER, api.RenameFile)).Methods(http.MethodPost)
+
 	// maintenance mode middleware enabled routes below
 	apir := r.PathPrefix("/api").Subrouter()
 	apir.Use(MaintenanceModeCheck(a.MaintenanceMode))

@@ -66,6 +66,8 @@ func Create(world_dir string) (*App, error) {
 		CookieSecure: os.Getenv("COOKIE_SECURE") == "true",
 		CookiePath:   os.Getenv("COOKIE_PATH"),
 		APIKey:       os.Getenv("API_KEY"),
+		Webdev:       os.Getenv("WEBDEV") == "true",
+		Servername:   os.Getenv("SERVER_NAME"),
 	}
 
 	app := &App{

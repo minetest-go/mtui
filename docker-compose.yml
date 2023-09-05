@@ -16,7 +16,7 @@ services:
    API_KEY: "mykey"
    LOGLEVEL: debug
    SERVER_NAME: "dev-server"
-   ENABLE_FEATURES: "shell,luashell,minetest_config,docker,modmanagement"
+   ENABLE_FEATURES: "shell,luashell,minetest_config,docker,modmanagement,filebrowser"
    MINETEST_CONFIG: "/etc/minetest/minetest.conf"
    DOCKER_MINETEST_CONFIG: "${PWD}/minetest.conf"
    DOCKER_MINETEST_PORT: 30000

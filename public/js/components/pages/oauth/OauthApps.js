@@ -1,13 +1,19 @@
-import { get_all, save } from "../../api/oauth_app.js";
+import { get_all, save } from "../../../api/oauth_app.js";
+import { START, ADMINISTRATION, OAUTH_APPS } from "../../Breadcrumb.js";
+import DefaultLayout from "../../layouts/DefaultLayout.js";
 
 export default {
+    components: {
+        "default-layout": DefaultLayout
+    },
     data: function() {
         return {
             apps: [],
             new_app: {
                 name: "",
                 domain: ""
-            }
+            },
+            breadcrumb: [START, ADMINISTRATION, OAUTH_APPS]
         };
     },
     computed: {
@@ -31,7 +37,7 @@ export default {
         this.update();
     },
     template: /*html*/`
-        <div>
+        <default-layout icon="passport" title="OAuth apps" :breadcrumb="breadcrumb">
             <table class="table table-condensed table-striped">
                 <thead>
                     <tr>
@@ -78,6 +84,6 @@ export default {
                     </tr>
                 </tbody>
             </table>
-        </div>
+        </default-layout>
     `
 };

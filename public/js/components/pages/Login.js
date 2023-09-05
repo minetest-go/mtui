@@ -1,6 +1,8 @@
 import { login, logout, is_logged_in } from "../../service/login.js";
 import { get_onboard_status } from "../../api/onboard.js";
 import { has_feature } from "../../service/features.js";
+import DefaultLayout from "../layouts/DefaultLayout.js";
+import { START } from "../Breadcrumb.js";
 
 export default {
     data: function() {
@@ -11,7 +13,15 @@ export default {
             busy: false,
             error_message: "",
             can_oboard: false,
+            breadcrumb: [START, {
+                name: "Login",
+                icon: "user",
+                link: "/login"
+            }]
         };
+    },
+    components: {
+        "default-layout": DefaultLayout
     },
     computed: {
         is_logged_in: is_logged_in,
@@ -50,6 +60,7 @@ export default {
         }
     },
     template: /*html*/`
+    <default-layout icon="user" title="Login" :breadcrumb="breadcrumb">
         <div class="row">
             <div class="col-md-4"></div>
             <div class="col-md-4 card" style="padding: 20px;">
@@ -97,5 +108,6 @@ export default {
             </div>
             <div class="col-md-4"></div>
         </div>
+    </default-layout>
     `
 };

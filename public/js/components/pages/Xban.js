@@ -1,12 +1,19 @@
 
 import { get_status, cleanup, get_records } from "../../api/xban.js";
 import format_time from "../../util/format_time.js";
+import DefaultLayout from "../layouts/DefaultLayout.js";
+import { START, MODERATION } from "../Breadcrumb.js";
 
 const store = Vue.reactive({
     status: null,
     busy: false,
     cleanup_result: null,
-    banned_records: []
+    banned_records: [],
+    breadcrumb: [START, MODERATION, {
+        icon: "ban",
+        name: "XBan",
+        link: "/xban"
+    }]
 });
 
 export default {
@@ -15,6 +22,9 @@ export default {
         if (!this.banned_records || this.banned_records.length == 0){
             this.update();
         }
+    },
+    components: {
+        "default-layout": DefaultLayout
     },
     methods: {
         format_time: format_time,
@@ -37,13 +47,13 @@ export default {
         }
     },
     template: /*html*/`
-    <div>
+    <default-layout icon="ban" title="XBan" :breadcrumb="breadcrumb">
         <div class="row">
             <div class="col-md-10">
-                <h3>
+                <h4>
                     XBan database management
                     <i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>
-                </h3>
+                </h4>
             </div>
             <div class="col-md-2 btn-group">
                 <a class="btn btn-success" v-on:click="update">
@@ -110,6 +120,6 @@ export default {
                 </tr>
             </tbody>
         </table>
-    </div>
+    </default-layout>
     `
 };
