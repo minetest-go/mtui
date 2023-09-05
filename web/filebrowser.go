@@ -106,8 +106,8 @@ func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types
 	defer f.Close()
 
 	header := make([]byte, 512)
-	_, err = f.Read(header)
-	if err != nil {
+	header_size, err := f.Read(header)
+	if err != nil && err != io.EOF {
 		SendError(w, 500, err.Error())
 		return
 	}
@@ -118,7 +118,7 @@ func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types
 		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", path.Base(filename)))
 	}
 
-	_, err = w.Write(header)
+	_, err = w.Write(header[:header_size])
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -255,7 +255,7 @@ func (a *Api) UploadFile(w http.ResponseWriter, r *http.Request, claims *types.C
 		return
 	}
 
-	f, err := os.Open(filename)
+	f, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return

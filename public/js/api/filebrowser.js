@@ -3,6 +3,8 @@ export const browse = dir => fetch(`api/filebrowser/browse?dir=${dir}`).then(r =
 
 export const download = filename => fetch(`api/filebrowser/file?filename=${filename}`).then(r => r.blob());
 
+export const download_text = filename => fetch(`api/filebrowser/file?filename=${filename}`).then(r => r.text());
+
 export const get_download_url = filename => `api/filebrowser/file?filename=${filename}&download=true`;
 
 export const get_zip_url = dir => `api/filebrowser/zip?dir=${dir}`;

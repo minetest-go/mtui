@@ -10,6 +10,12 @@
 		<link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/all.min.css"/>
 		<link rel="stylesheet" href="node_modules/@vuepic/vue-datepicker/dist/main.css"/>
 		<link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css"/>
+		<style>
+			.CodeMirror {
+				border: 1px solid #eee;
+				height: auto;
+			}
+		</style>
 
 		<title>Minetest Web UI {{if .ServerName}}[{{.ServerName}}]{{end}}</title>
 	</head>
@@ -28,6 +34,8 @@
 		<script src="node_modules/@vuepic/vue-datepicker/dist/vue-datepicker.iife.js"></script>
 		<script src="node_modules/chart.js/dist/chart.umd.js"></script>
 		<script src="node_modules/codemirror/lib/codemirror.js"></script>
+		<script src="node_modules/codemirror/mode/lua/lua.js"></script>
+		<script src="node_modules/codemirror/mode/javascript/javascript.js"></script>
 		{{if .Webdev}}
 		<script src="js/main.js" type="module"></script>
 		{{else}}

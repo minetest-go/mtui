@@ -20,6 +20,8 @@ import (
 //go:embed node_modules/@vuepic/vue-datepicker/dist/vue-datepicker.iife.js
 //go:embed node_modules/chart.js/dist/chart.umd.js
 //go:embed node_modules/codemirror/lib/codemirror.*
+//go:embed node_modules/codemirror/mode/lua/lua.js
+//go:embed node_modules/codemirror/mode/javascript/javascript.js
 var Webapp embed.FS
 
 const DefaultCss = "node_modules/bootstrap/dist/css/bootstrap.min.css"

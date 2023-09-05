@@ -1,5 +1,5 @@
 import DefaultLayout from "../../layouts/DefaultLayout.js";
-import { browse, get_zip_url, get_download_url, mkdir, remove } from "../../../api/filebrowser.js";
+import { browse, get_zip_url, get_download_url, mkdir, remove, upload } from "../../../api/filebrowser.js";
 import format_size from "../../../util/format_size.js";
 import format_time from "../../../util/format_time.js";
 import { START, FILEBROWSER } from "../../Breadcrumb.js";
@@ -12,6 +12,7 @@ export default {
         return {
             result: null,
             mkdir_name: "",
+            mkfile_name: "",
             prepare_delete: null
         };
     },
@@ -20,10 +21,15 @@ export default {
         format_time: format_time,
         get_zip_url: get_zip_url,
         get_download_url: get_download_url,
-        mkdir: function(name) {
-            mkdir(this.result.dir + "/" + name)
+        mkdir: function() {
+            mkdir(this.result.dir + "/" + this.mkdir_name)
             .then(() => this.browse_dir())
             .then(() => this.mkdir_name = "");
+        },
+        mkfile: function() {
+            upload(this.result.dir + "/" + this.mkfile_name, "")
+            .then(() => this.browse_dir())
+            .then(() => this.mkfile_name = "");
         },
         confirm_delete: function() {
             remove(this.result.dir + "/" + this.prepare_delete)
@@ -98,7 +104,7 @@ export default {
                 <div class="col-2">
                     <div class="input-group">
                         <input type="text" v-model="mkdir_name" class="form-control" placeholder="Directory name"/>
-                        <button class="btn btn-secondary" v-on:click="mkdir(mkdir_name)">
+                        <button class="btn btn-secondary" v-on:click="mkdir">
                             <i class="fa fa-folder"></i>
                             <i class="fa fa-plus"></i>
                             Create directory
@@ -106,6 +112,14 @@ export default {
                     </div>
                 </div>
                 <div class="col-2">
+                    <div class="input-group">
+                        <input type="text" v-model="mkfile_name" class="form-control" placeholder="Filename"/>
+                        <button class="btn btn-secondary" v-on:click="mkfile">
+                            <i class="fa fa-file"></i>
+                            <i class="fa fa-plus"></i>
+                            Create file
+                        </button>
+                    </div>
                 </div>
                 <div class="col-2">
                 </div>
