@@ -17,6 +17,6 @@ func logCleanup(a *app.App) {
 		}
 
 		// re-schedule every minute
-		time.Sleep(time.Minute)
+		time.Sleep(time.Second * 10)
 	}
 }
