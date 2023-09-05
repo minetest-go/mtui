@@ -1,5 +1,5 @@
 import DefaultLayout from "../../layouts/DefaultLayout.js";
-import { browse, get_zip_url, get_download_url, mkdir, remove, upload } from "../../../api/filebrowser.js";
+import { browse, get_zip_url, get_download_url, mkdir, remove, upload, rename } from "../../../api/filebrowser.js";
 import format_size from "../../../util/format_size.js";
 import format_time from "../../../util/format_time.js";
 import { START, FILEBROWSER } from "../../Breadcrumb.js";
@@ -13,6 +13,8 @@ export default {
             result: null,
             mkdir_name: "",
             mkfile_name: "",
+            move_name: "",
+            move_target: "",
             prepare_delete: null
         };
     },
@@ -48,6 +50,14 @@ export default {
             remove(this.result.dir + "/" + this.prepare_delete)
             .then(() => this.prepare_delete = null)
             .then(() => this.browse_dir());
+        },
+        confirm_move: function() {
+            rename(this.result.dir + "/" + this.move_name, this.result.dir + "/" + this.move_target)
+            .then(() => {
+                this.move_name = "";
+                this.move_target = "";
+                this.browse_dir();
+            });
         },
         browse_dir: function() {
             const dir = "/" + this.$route.params.pathMatch;
@@ -204,6 +214,9 @@ export default {
                                 <a class="btn btn-sm btn-secondary" :href="get_download_url(result.dir + '/' + item.name)" v-bind:class="{disabled:item.is_dir}">
                                     <i class="fa fa-download"></i>
                                 </a>
+                                <button class="btn btn-sm btn-warning" v-on:click="move_name = item.name; move_target = item.name">
+                                    <i class="fa fa-shuffle"></i>
+                                </button>
                                 <button class="btn btn-sm btn-danger" v-on:click="prepare_delete = item.name">
                                     <i class="fa fa-trash"></i>
                                 </button>
@@ -223,10 +236,31 @@ export default {
                         Confirm deletion of <i>{{prepare_delete}}</i>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" v-on:click="prepare_delete = null">Close</button>
+                        <button type="button" class="btn btn-success" v-on:click="prepare_delete = null">Abort</button>
                         <button type="button" class="btn btn-danger" v-on:click="confirm_delete">
                             <i class="fa fa-trash"></i>
                             Confirm deletion
+                        </button>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal show" style="display: block;" tabindex="-1" v-show="move_name">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5">Rename file</h1>
+                        <button type="button" class="btn-close" v-on:click="move_name = null"></button>
+                    </div>
+                    <div class="modal-body">
+                        Move file <i>{{move_name}}</i>
+                        <input type="text" class="form-control" placeholder="New name" v-model="move_target"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" v-on:click="move_name = null">Abort</button>
+                        <button type="button" class="btn btn-warning" v-on:click="confirm_move" :disabled="!move_target || move_target == move_name">
+                            <i class="fa fa-shuffle"></i>
+                            Confirm rename
                         </button>
                     </div>
                     </div>
