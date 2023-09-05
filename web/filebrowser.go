@@ -1,12 +1,14 @@
 package web
 
 import (
+	"archive/zip"
 	"fmt"
 	"io"
 	"mtui/types"
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 )
 
@@ -116,6 +118,52 @@ func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types
 	}
 
 	_, err = io.Copy(w, f)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+}
+
+func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	reldir, absdir, err := a.get_sanitized_dir(r)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	zipfilename := path.Base(absdir)
+	if reldir == "/" {
+		zipfilename = "world"
+	}
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\".zip", zipfilename))
+	w.Header().Set("Content-Type", "application/zip")
+
+	zw := zip.NewWriter(w)
+	defer zw.Close()
+
+	err = filepath.Walk(absdir, func(filePath string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		relPath := strings.TrimPrefix(filePath, absdir)
+		zipFile, err := zw.Create(relPath)
+		if err != nil {
+			return err
+		}
+		fsFile, err := os.Open(filePath)
+		if err != nil {
+			return err
+		}
+		_, err = io.Copy(zipFile, fsFile)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return

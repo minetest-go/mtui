@@ -5,6 +5,8 @@ export const download = filename => fetch(`api/filebrowser/file?filename=${filen
 
 export const get_download_url = filename => `api/filebrowser/file?filename=${filename}?download=true`;
 
+export const get_zip_url = dir => `api/filebrowser/zip?dir=${dir}`;
+
 export const upload = (filename, data) => fetch(`api/filebrowser/file?filename=${filename}`, {
     method: "POST",
     body: data

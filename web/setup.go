@@ -35,6 +35,7 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/login", api.GetLogin).Methods(http.MethodGet)
 
 	r.HandleFunc("/api/filebrowser/browse", api.SecurePriv(types.PRIV_SERVER, api.BrowseFolder)).Methods(http.MethodGet)
+	r.HandleFunc("/api/filebrowser/zip", api.SecurePriv(types.PRIV_SERVER, api.DownloadZip)).Methods(http.MethodGet)
 	r.HandleFunc("/api/filebrowser/file", api.SecurePriv(types.PRIV_SERVER, api.DownloadFile)).Methods(http.MethodGet)
 	r.HandleFunc("/api/filebrowser/file", api.SecurePriv(types.PRIV_SERVER, api.UploadFile)).Methods(http.MethodPost)
 	r.HandleFunc("/api/filebrowser/file", api.SecurePriv(types.PRIV_SERVER, api.DeleteFile)).Methods(http.MethodDelete)
