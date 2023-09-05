@@ -31,6 +31,20 @@ export default {
             .then(() => this.browse_dir())
             .then(() => this.mkfile_name = "");
         },
+        upload: function() {
+            const files = this.$refs.input_upload.files;
+            const promises = [];
+            for (let i=0; i<files.length; i++) {
+                const file = files[i];
+                const p = file.arrayBuffer()
+                .then(buf => upload(this.result.dir + "/" + file.name, buf))
+                promises.push(p);
+            }
+            Promise.all(promises).then(() => {
+                this.$refs.input_upload.value = null;
+                this.browse_dir();
+            });
+        },
         confirm_delete: function() {
             remove(this.result.dir + "/" + this.prepare_delete)
             .then(() => this.prepare_delete = null)
@@ -104,7 +118,7 @@ export default {
                 <div class="col-2">
                     <div class="input-group">
                         <input type="text" v-model="mkdir_name" class="form-control" placeholder="Directory name"/>
-                        <button class="btn btn-secondary" v-on:click="mkdir">
+                        <button class="btn btn-secondary" v-on:click="mkdir" :disabled="!mkdir_name">
                             <i class="fa fa-folder"></i>
                             <i class="fa fa-plus"></i>
                             Create directory
@@ -114,7 +128,7 @@ export default {
                 <div class="col-2">
                     <div class="input-group">
                         <input type="text" v-model="mkfile_name" class="form-control" placeholder="Filename"/>
-                        <button class="btn btn-secondary" v-on:click="mkfile">
+                        <button class="btn btn-secondary" v-on:click="mkfile" :disabled="!mkfile_name">
                             <i class="fa fa-file"></i>
                             <i class="fa fa-plus"></i>
                             Create file
@@ -122,13 +136,20 @@ export default {
                     </div>
                 </div>
                 <div class="col-2">
+                    <div class="input-group">
+                        <input ref="input_upload" type="file" class="form-control" multiple/>
+                        <button class="btn btn-secondary" v-on:click="upload">
+                            <i class="fa fa-upload"></i>
+                            Upload file
+                        </button>
+                    </div>
                 </div>
                 <div class="col-2">
                 </div>
                 <div class="col-2">
                 </div>
                 <div class="col-2" v-if="result">
-                    <a class="btn btn-secondary" :href="get_zip_url(result.dir)">
+                    <a class="btn btn-secondary w-100" :href="get_zip_url(result.dir)">
                         <i class="fa fa-download"></i>
                         Download as zip
                     </a>
@@ -178,10 +199,10 @@ export default {
                         </td>
                         <td>
                             <div class="btn-group">
-                                <router-link :to="'/fileedit/' + result.dir + '/' + item.name" class="btn btn-sm btn-primary" v-if="can_edit(item.name)">
+                                <router-link :to="'/fileedit/' + result.dir + '/' + item.name" class="btn btn-sm btn-primary" v-bind:class="{disabled:!can_edit(item.name)}">
                                     <i class="fa fa-edit"></i>
                                 </router-link>
-                                <a class="btn btn-sm btn-secondary" :href="get_download_url(result.dir + '/' + item.name)" v-if="!item.is_dir">
+                                <a class="btn btn-sm btn-secondary" :href="get_download_url(result.dir + '/' + item.name)" v-bind:class="{disabled:item.is_dir}">
                                     <i class="fa fa-download"></i>
                                 </a>
                                 <button class="btn btn-sm btn-danger" v-on:click="prepare_delete = item.name">
