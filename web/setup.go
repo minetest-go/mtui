@@ -34,13 +34,15 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/stats", api.OptionalSecure(api.GetStats)).Methods(http.MethodGet)
 	r.HandleFunc("/api/login", api.GetLogin).Methods(http.MethodGet)
 
-	r.HandleFunc("/api/filebrowser/browse", api.SecurePriv(types.PRIV_SERVER, api.BrowseFolder)).Methods(http.MethodGet)
-	r.HandleFunc("/api/filebrowser/zip", api.SecurePriv(types.PRIV_SERVER, api.DownloadZip)).Methods(http.MethodGet)
-	r.HandleFunc("/api/filebrowser/zip", api.SecurePriv(types.PRIV_SERVER, api.UploadZip)).Methods(http.MethodPost)
-	r.HandleFunc("/api/filebrowser/file", api.SecurePriv(types.PRIV_SERVER, api.DownloadFile)).Methods(http.MethodGet)
-	r.HandleFunc("/api/filebrowser/file", api.SecurePriv(types.PRIV_SERVER, api.UploadFile)).Methods(http.MethodPost)
-	r.HandleFunc("/api/filebrowser/file", api.SecurePriv(types.PRIV_SERVER, api.DeleteFile)).Methods(http.MethodDelete)
-	r.HandleFunc("/api/filebrowser/rename", api.SecurePriv(types.PRIV_SERVER, api.RenameFile)).Methods(http.MethodPost)
+	fbr := r.PathPrefix("/api/filebrowser").Subrouter()
+	fbr.Use(SecureHandler(api.FeatureCheck(types.FEATURE_FILEBROWSER)))
+	fbr.HandleFunc("/browse", api.SecurePriv(types.PRIV_SERVER, api.BrowseFolder)).Methods(http.MethodGet)
+	fbr.HandleFunc("/zip", api.SecurePriv(types.PRIV_SERVER, api.DownloadZip)).Methods(http.MethodGet)
+	fbr.HandleFunc("/zip", api.SecurePriv(types.PRIV_SERVER, api.UploadZip)).Methods(http.MethodPost)
+	fbr.HandleFunc("/file", api.SecurePriv(types.PRIV_SERVER, api.DownloadFile)).Methods(http.MethodGet)
+	fbr.HandleFunc("/file", api.SecurePriv(types.PRIV_SERVER, api.UploadFile)).Methods(http.MethodPost)
+	fbr.HandleFunc("/file", api.SecurePriv(types.PRIV_SERVER, api.DeleteFile)).Methods(http.MethodDelete)
+	fbr.HandleFunc("/rename", api.SecurePriv(types.PRIV_SERVER, api.RenameFile)).Methods(http.MethodPost)
 
 	// maintenance mode middleware enabled routes below
 	apir := r.PathPrefix("/api").Subrouter()

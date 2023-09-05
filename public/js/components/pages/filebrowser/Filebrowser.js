@@ -1,5 +1,5 @@
 import DefaultLayout from "../../layouts/DefaultLayout.js";
-import { browse } from "../../../api/filebrowser.js";
+import { browse, get_zip_url, get_download_url } from "../../../api/filebrowser.js";
 import format_size from "../../../util/format_size.js";
 
 export default {
@@ -13,6 +13,8 @@ export default {
     },
     methods: {
         format_size: format_size,
+        get_zip_url: get_zip_url,
+        get_download_url: get_download_url,
         browse_dir: function() {
             const dir = "/" + this.$route.params.pathMatch;
             browse(dir)
@@ -32,6 +34,18 @@ export default {
     },
     template: /*html*/`
         <default-layout icon="folder" title="Filebrowser">
+            <div class="row">
+                <div class="col-4">
+                </div>
+                <div class="col-4">
+                </div>
+                <div class="col-4" v-if="result">
+                    <a class="btn btn-sm btn-secondary" :href="get_zip_url(result.dir)">
+                        <i class="fa fa-download"></i>
+                        Download as zip
+                    </a>
+                </div>
+            </div>
             <table class="table" v-if="result">
                 <thead>
                     <tr>
@@ -59,9 +73,9 @@ export default {
                         </td>
                         <td>
                             <div class="btn-group">
-                                <button class="btn btn-sm btn-secondary">
+                                <a class="btn btn-sm btn-secondary" :href="get_download_url(result.dir + '/' + item.name)">
                                     <i class="fa fa-download"></i>
-                                </button>
+                                </a>
                                 <button class="btn btn-sm btn-secondary">
                                     <i class="fa fa-edit"></i>
                                 </button>
