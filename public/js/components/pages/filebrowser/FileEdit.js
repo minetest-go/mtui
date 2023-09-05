@@ -19,7 +19,7 @@ export default {
         .then(t => this.text = t)
         .then(() => {
 
-            const mode = {}
+            const mode = {};
             if (this.path.match(/.*(lua)$/i)) {
                 mode.name = "lua";
             } else if (this.path.match(/.*(js|json)$/i)) {

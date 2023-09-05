@@ -32,14 +32,13 @@ export default {
             .then(() => this.mkfile_name = "");
         },
         upload: function() {
-            const files = this.$refs.input_upload.files;
-            const promises = [];
-            for (let i=0; i<files.length; i++) {
-                const file = files[i];
-                const p = file.arrayBuffer()
-                .then(buf => upload(this.result.dir + "/" + file.name, buf))
-                promises.push(p);
-            }
+            const files = Array.from(this.$refs.input_upload.files);
+
+            const promises = files.map(file => {
+                return file.arrayBuffer()
+                .then(buf => upload(this.result.dir + "/" + file.name, buf));
+            });
+
             Promise.all(promises).then(() => {
                 this.$refs.input_upload.value = null;
                 this.browse_dir();
