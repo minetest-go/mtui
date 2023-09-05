@@ -22,6 +22,7 @@ import EngineService from './components/pages/services/Engine.js';
 import UISettings from './components/pages/administration/UISettings.js';
 import Maintenance from './components/pages/Maintenance.js';
 import Filebrowser from './components/pages/filebrowser/Filebrowser.js';
+import FileEdit from './components/pages/filebrowser/FileEdit.js';
 
 import Mods from './components/pages/mods/Mods.js';
 import ContentBrowse from './components/pages/cdb/Browse.js';
@@ -104,5 +105,8 @@ export default [{
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/filebrowser/:pathMatch(.*)", component: Filebrowser,
+	meta: { requiredPriv: "server", maintenance_page: true }
+}, {
+	path: "/fileedit/:pathMatch(.*)", component: FileEdit,
 	meta: { requiredPriv: "server", maintenance_page: true }
 }];

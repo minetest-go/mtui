@@ -1,5 +1,5 @@
 import DefaultLayout from "../../layouts/DefaultLayout.js";
-import { browse, get_zip_url, get_download_url, mkdir } from "../../../api/filebrowser.js";
+import { browse, get_zip_url, get_download_url, mkdir, remove } from "../../../api/filebrowser.js";
 import format_size from "../../../util/format_size.js";
 import format_time from "../../../util/format_time.js";
 import { START, FILEBROWSER } from "../../Breadcrumb.js";
@@ -11,7 +11,8 @@ export default {
     data: function() {
         return {
             result: null,
-            mkdir_name: ""
+            mkdir_name: "",
+            prepare_delete: null
         };
     },
     methods: {
@@ -21,6 +22,12 @@ export default {
         get_download_url: get_download_url,
         mkdir: function(name) {
             mkdir(this.result.dir + "/" + name)
+            .then(() => this.browse_dir())
+            .then(() => this.mkdir_name = "");
+        },
+        confirm_delete: function() {
+            remove(this.result.dir + "/" + this.prepare_delete)
+            .then(() => this.prepare_delete = null)
             .then(() => this.browse_dir());
         },
         browse_dir: function() {
@@ -144,10 +151,6 @@ export default {
                                 <i v-bind:class="get_icon_class(item)"></i>
                                 {{item.name}}
                             </span>
-                            &nbsp;
-                            <button class="btn btn-sm btn-secondary" v-if="can_edit(item.name)">
-                                <i class="fa fa-edit"></i>
-                            </button>
                         </td>
                         <td>
                             <span v-if="!item.is_dir">
@@ -161,10 +164,13 @@ export default {
                         </td>
                         <td>
                             <div class="btn-group">
-                                <a class="btn btn-sm btn-secondary" :href="get_download_url(result.dir + '/' + item.name)">
+                                <router-link :to="'/fileedit/' + result.dir + '/' + item.name" class="btn btn-sm btn-primary" v-if="can_edit(item.name)">
+                                    <i class="fa fa-edit"></i>
+                                </router-link>
+                                <a class="btn btn-sm btn-secondary" :href="get_download_url(result.dir + '/' + item.name)" v-if="!item.is_dir">
                                     <i class="fa fa-download"></i>
                                 </a>
-                                <button class="btn btn-sm btn-danger">
+                                <button class="btn btn-sm btn-danger" v-on:click="prepare_delete = item.name">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </div>
@@ -172,6 +178,26 @@ export default {
                     </tr>
                 </tbody>
             </table>
+            <div class="modal show" style="display: block;" tabindex="-1" v-show="prepare_delete">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5">Confirm deletion</h1>
+                        <button type="button" class="btn-close" v-on:click="prepare_delete = null"></button>
+                    </div>
+                    <div class="modal-body">
+                        Confirm deletion of <i>{{prepare_delete}}</i>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" v-on:click="prepare_delete = null">Close</button>
+                        <button type="button" class="btn btn-danger" v-on:click="confirm_delete">
+                            <i class="fa fa-trash"></i>
+                            Confirm deletion
+                        </button>
+                    </div>
+                    </div>
+                </div>
+            </div>
         </default-layout>
     `
 };

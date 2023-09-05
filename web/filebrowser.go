@@ -276,7 +276,7 @@ func (a *Api) DeleteFile(w http.ResponseWriter, r *http.Request, claims *types.C
 		return
 	}
 
-	err = os.Remove(filename)
+	err = os.RemoveAll(filename)
 	Send(w, true, err)
 }
 
