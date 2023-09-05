@@ -6,4 +6,6 @@ type Config struct {
 	CookieDomain string
 	CookieSecure bool
 	CookiePath   string
+	Webdev       bool
+	Servername   string
 }

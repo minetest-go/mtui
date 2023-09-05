@@ -18,6 +18,20 @@
 		<app id="app"></app>
 
 		<!-- app bootstrap -->
-		<script src="js/bootstrap.js"></script>
+		{{if .Webdev}}
+		<script src="node_modules/vue/dist/vue.global.js"></script>
+		<script src="node_modules/vue-router/dist/vue-router.global.js"></script>
+		{{else}}
+		<script src="node_modules/vue/dist/vue.global.prod.js"></script>
+		<script src="node_modules/vue-router/dist/vue-router.global.prod.js"></script>
+		{{end}}
+		<script src="node_modules/@vuepic/vue-datepicker/dist/vue-datepicker.iife.js"></script>
+		<script src="node_modules/chart.js/dist/chart.umd.js"></script>
+		<script src="node_modules/codemirror/lib/codemirror.js"></script>
+		{{if .Webdev}}
+		<script src="js/main.js" type="module"></script>
+		{{else}}
+		<script src="js/bundle.js"></script>
+		{{end}}
 	</body>
 </html>

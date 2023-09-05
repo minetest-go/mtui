@@ -5,12 +5,12 @@ import (
 	"mtui/public"
 	"mtui/types"
 	"net/http"
-	"os"
 )
 
 type IndexModel struct {
 	BootstrapCSSUrl string
 	ServerName      string
+	Webdev          bool
 }
 
 func (a *Api) GetIndex(w http.ResponseWriter, r *http.Request) {
@@ -42,7 +42,8 @@ func (a *Api) GetIndex(w http.ResponseWriter, r *http.Request) {
 
 	m := &IndexModel{
 		BootstrapCSSUrl: css_url,
-		ServerName:      os.Getenv("SERVER_NAME"),
+		ServerName:      a.app.Config.Servername,
+		Webdev:          a.app.Config.Webdev,
 	}
 	t.Execute(w, m)
 }
