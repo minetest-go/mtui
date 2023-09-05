@@ -61,15 +61,7 @@ func Create(world_dir string) (*App, error) {
 		}
 	}
 
-	cfg := &types.Config{
-		CookieDomain: os.Getenv("COOKIE_DOMAIN"),
-		CookieSecure: os.Getenv("COOKIE_SECURE") == "true",
-		CookiePath:   os.Getenv("COOKIE_PATH"),
-		APIKey:       os.Getenv("API_KEY"),
-		Webdev:       os.Getenv("WEBDEV") == "true",
-		Servername:   os.Getenv("SERVER_NAME"),
-	}
-
+	cfg := types.NewConfig()
 	app := &App{
 		WorldDir:        world_dir,
 		Bridge:          bridge.New(),

@@ -153,9 +153,9 @@ func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types
 		return
 	}
 
-	world_dir := os.Getenv("DOCKER_WORLD_DIR")
+	world_dir := a.app.Config.DockerWorlddir
 	world_dir_container := "/world"
-	minetest_config := os.Getenv("DOCKER_MINETEST_CONFIG")
+	minetest_config := a.app.Config.DockerMinetestConfig
 	minetest_config_container := "/minetest.conf"
 	if minetest_config == "" {
 		SendError(w, 500, "minetest config not found")
@@ -169,8 +169,8 @@ func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types
 		return
 	}
 
-	network_names := strings.Split(os.Getenv("DOCKER_NETWORK"), ",")
-	container_name := os.Getenv("DOCKER_MINETEST_CONTAINER")
+	network_names := strings.Split(a.app.Config.DockerNetwork, ",")
+	container_name := a.app.Config.DockerMinetestContainer
 
 	logrus.WithFields(logrus.Fields{
 		"world_dir":       world_dir,
@@ -182,6 +182,8 @@ func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types
 		"network_names":   network_names,
 		"container_name":  container_name,
 	}).Info("Creating minetest engine service")
+
+	portbinding := fmt.Sprintf("%d/udp", a.app.Config.DockerMinetestPort)
 
 	// prefix world and config with /data inside container to prevent filename collisions
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
@@ -206,7 +208,7 @@ func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types
 			},
 		},
 		PortBindings: nat.PortMap{
-			"30000/udp": []nat.PortBinding{
+			nat.Port(portbinding): []nat.PortBinding{
 				{
 					HostIP:   "0.0.0.0",
 					HostPort: fmt.Sprintf("%d", port),
