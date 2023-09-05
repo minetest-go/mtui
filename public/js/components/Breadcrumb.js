@@ -38,3 +38,4 @@ export const ADMINISTRATION = { icon: "screwdriver-wrench", name: "Administratio
 export const OAUTH_APPS = { icon: "passport", name: "OAuth apps", link: "/oauth-apps" };
 export const MODS = { name: "Mods", icon: "cubes", link: "/mods" };
 export const CDB = { name: "ContentDB", icon: "box-open", link: "/cdb/browse" };
+export const FILEBROWSER = { name: "Filebrowser", icon: "folder", link: "/filebrowser/" };

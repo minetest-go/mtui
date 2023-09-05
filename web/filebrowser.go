@@ -13,14 +13,16 @@ import (
 )
 
 type BrowseItem struct {
-	Name  string `json:"name"`
-	Size  int64  `json:"size"`
-	IsDir bool   `json:"is_dir"`
+	Name    string `json:"name"`
+	Size    int64  `json:"size"`
+	IsDir   bool   `json:"is_dir"`
+	ModTime int64  `json:"mtime"`
 }
 
 type BrowseResult struct {
-	Dir   string        `json:"dir"`
-	Items []*BrowseItem `json:"items"`
+	Dir       string        `json:"dir"`
+	ParentDir string        `json:"parent_dir"`
+	Items     []*BrowseItem `json:"items"`
 }
 
 func (a *Api) get_sanitized_dir(r *http.Request) (string, string, error) {
@@ -59,6 +61,10 @@ func (a *Api) BrowseFolder(w http.ResponseWriter, r *http.Request, claims *types
 		Items: []*BrowseItem{},
 	}
 
+	if reldir != "/" {
+		result.ParentDir = path.Dir(reldir)
+	}
+
 	for _, entry := range entries {
 
 		if entry.IsDir() {
@@ -75,6 +81,7 @@ func (a *Api) BrowseFolder(w http.ResponseWriter, r *http.Request, claims *types
 			fi, _ := os.Stat(path.Join(absdir, entry.Name()))
 			if fi != nil {
 				item.Size = fi.Size()
+				item.ModTime = fi.ModTime().Unix()
 			}
 
 			result.Items = append(result.Items, item)
@@ -228,6 +235,17 @@ func (a *Api) UploadZip(w http.ResponseWriter, r *http.Request, claims *types.Cl
 			return
 		}
 	}
+}
+
+func (a *Api) Mkdir(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	_, absdir, err := a.get_sanitized_dir(r)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	err = os.MkdirAll(absdir, 0644)
+	Send(w, true, nil)
 }
 
 func (a *Api) UploadFile(w http.ResponseWriter, r *http.Request, claims *types.Claims) {

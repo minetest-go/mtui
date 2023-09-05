@@ -17,6 +17,10 @@ export const upload_zip = (dir, data) => fetch(`api/filebrowser/zip?dir=${dir}`,
     body: data
 });
 
+export const mkdir = dir => fetch(`api/filebrowser/mkdir?dir=${dir}`, {
+    method: "POST"
+});
+
 export const remove = filename => fetch(`api/filebrowser/file?filename=${filename}`, {
     method: "DELETE"
 });

@@ -39,6 +39,7 @@ func Setup(a *app.App) error {
 	fbr.HandleFunc("/browse", api.SecurePriv(types.PRIV_SERVER, api.BrowseFolder)).Methods(http.MethodGet)
 	fbr.HandleFunc("/zip", api.SecurePriv(types.PRIV_SERVER, api.DownloadZip)).Methods(http.MethodGet)
 	fbr.HandleFunc("/zip", api.SecurePriv(types.PRIV_SERVER, api.UploadZip)).Methods(http.MethodPost)
+	fbr.HandleFunc("/mkdir", api.SecurePriv(types.PRIV_SERVER, api.Mkdir)).Methods(http.MethodPost)
 	fbr.HandleFunc("/file", api.SecurePriv(types.PRIV_SERVER, api.DownloadFile)).Methods(http.MethodGet)
 	fbr.HandleFunc("/file", api.SecurePriv(types.PRIV_SERVER, api.UploadFile)).Methods(http.MethodPost)
 	fbr.HandleFunc("/file", api.SecurePriv(types.PRIV_SERVER, api.DeleteFile)).Methods(http.MethodDelete)

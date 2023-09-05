@@ -1,6 +1,8 @@
 import DefaultLayout from "../../layouts/DefaultLayout.js";
-import { browse, get_zip_url, get_download_url } from "../../../api/filebrowser.js";
+import { browse, get_zip_url, get_download_url, mkdir } from "../../../api/filebrowser.js";
 import format_size from "../../../util/format_size.js";
+import format_time from "../../../util/format_time.js";
+import { START, FILEBROWSER } from "../../Breadcrumb.js";
 
 export default {
     components: {
@@ -8,13 +10,19 @@ export default {
     },
     data: function() {
         return {
-            result: null
+            result: null,
+            mkdir_name: ""
         };
     },
     methods: {
         format_size: format_size,
+        format_time: format_time,
         get_zip_url: get_zip_url,
         get_download_url: get_download_url,
+        mkdir: function(name) {
+            mkdir(this.result.dir + "/" + name)
+            .then(() => this.browse_dir());
+        },
         browse_dir: function() {
             const dir = "/" + this.$route.params.pathMatch;
             browse(dir)
@@ -24,6 +32,51 @@ export default {
                     this.result.dir = "";
                 }
             });
+        },
+        can_edit: function(filename) {
+            return filename.match(/.*(js|lua|txt|conf|cfg|json|md)$/i);
+        },
+        get_icon: function(item) {
+            if (item.is_dir) {
+                return "folder";
+            } else if (item.name.match(/.*(txt|conf|cfg|md)$/i)) {
+                return "file-lines";
+            } else if (item.name.match(/.*(js|lua|json)$/i)) {
+                return "file-code";
+            } else if (item.name.match(/.*(sqlite)$/i)) {
+                return "database";
+            } else {
+                return "file";
+            }
+        },
+        get_icon_class: function(item) {
+            const icon = this.get_icon(item);
+            return {fa:true, ["fa-"+icon]: true};
+        }
+    },
+    computed: {
+        breadcrumb: function() {
+            const bc = [START, FILEBROWSER];
+            const parts = this.$route.params.pathMatch.split("/");
+
+            let path = "";
+            parts
+            .filter(p => p != "")
+            .forEach(p => {
+                if (path == "") {
+                    path = p;
+                } else {
+                    path = path + "/" + p;
+                }
+
+                bc.push({
+                    name: p,
+                    icon: "folder-open",
+                    link: "/filebrowser/" + path
+                });
+            });
+
+            return bc;
         }
     },
     mounted: function() {
@@ -33,38 +86,68 @@ export default {
         "$route.params.pathMatch": "browse_dir"
     },
     template: /*html*/`
-        <default-layout icon="folder" title="Filebrowser">
+        <default-layout icon="folder" title="Filebrowser" :breadcrumb="breadcrumb">
             <div class="row">
-                <div class="col-4">
+                <div class="col-2">
+                    <div class="input-group">
+                        <input type="text" v-model="mkdir_name" class="form-control" placeholder="Directory name"/>
+                        <button class="btn btn-secondary" v-on:click="mkdir(mkdir_name)">
+                            <i class="fa fa-folder"></i>
+                            <i class="fa fa-plus"></i>
+                            Create directory
+                        </button>
+                    </div>
                 </div>
-                <div class="col-4">
+                <div class="col-2">
                 </div>
-                <div class="col-4" v-if="result">
-                    <a class="btn btn-sm btn-secondary" :href="get_zip_url(result.dir)">
+                <div class="col-2">
+                </div>
+                <div class="col-2">
+                </div>
+                <div class="col-2">
+                </div>
+                <div class="col-2" v-if="result">
+                    <a class="btn btn-secondary" :href="get_zip_url(result.dir)">
                         <i class="fa fa-download"></i>
                         Download as zip
                     </a>
                 </div>
             </div>
-            <table class="table" v-if="result">
+            <table class="table table-striped table-condensed" v-if="result">
                 <thead>
                     <tr>
                         <th>Name</th>
                         <th>Size</th>
+                        <th>Modification time</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
+                    <tr v-if="result.parent_dir">
+                        <td>
+                            <router-link :to="'/filebrowser' + result.parent_dir">
+                                <i class="fa fa-folder-open"></i>
+                                Parent dir
+                            </router-link>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
                     <tr v-for="item in result.items">
                         <td>
                             <router-link :to="'/filebrowser' + result.dir + '/' + item.name" v-if="item.is_dir">
-                                <i class="fa fa-folder"></i>
+                                <i v-bind:class="get_icon_class(item)"></i>
                                 {{item.name}}
                             </router-link>
                             <span v-if="!item.is_dir">
-                                <i class="fa fa-file"></i>
+                                <i v-bind:class="get_icon_class(item)"></i>
                                 {{item.name}}
                             </span>
+                            &nbsp;
+                            <button class="btn btn-sm btn-secondary" v-if="can_edit(item.name)">
+                                <i class="fa fa-edit"></i>
+                            </button>
                         </td>
                         <td>
                             <span v-if="!item.is_dir">
@@ -72,13 +155,15 @@ export default {
                             </span>
                         </td>
                         <td>
+                            <span v-if="!item.is_dir">
+                                {{format_time(item.mtime)}}
+                            </span>
+                        </td>
+                        <td>
                             <div class="btn-group">
                                 <a class="btn btn-sm btn-secondary" :href="get_download_url(result.dir + '/' + item.name)">
                                     <i class="fa fa-download"></i>
                                 </a>
-                                <button class="btn btn-sm btn-secondary">
-                                    <i class="fa fa-edit"></i>
-                                </button>
                                 <button class="btn btn-sm btn-danger">
                                     <i class="fa fa-trash"></i>
                                 </button>
