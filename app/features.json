@@ -47,8 +47,5 @@
         "name": "docker",
         "description": "docker container management for other services",
         "experimental": true
-    },{
-        "name": "filebrowser",
-        "description": "Online filebrowser and editor"
     }
 ]
