@@ -89,7 +89,7 @@ export default {
             });
         },
         can_edit: function(filename) {
-            return filename.match(/.*(js|lua|txt|conf|cfg|json|md)$/i);
+            return filename.match(/.*(js|lua|txt|conf|cfg|json|md|mt)$/i);
         },
         get_icon: function(item) {
             if (item.is_dir) {
