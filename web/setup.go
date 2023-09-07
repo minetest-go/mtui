@@ -49,6 +49,7 @@ func Setup(a *app.App) error {
 	apir := r.PathPrefix("/api").Subrouter()
 	apir.Use(MaintenanceModeCheck(a.MaintenanceMode))
 
+	apir.HandleFunc("/healthcheck", api.HealthCheck)
 	apir.HandleFunc("/appinfo", api.GetAppInfo)
 	apir.HandleFunc("/themes", api.SecurePriv(types.PRIV_SERVER, api.GetThemes))
 
