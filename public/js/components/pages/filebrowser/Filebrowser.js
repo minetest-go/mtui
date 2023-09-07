@@ -3,6 +3,7 @@ import { browse, get_zip_url, get_download_url, mkdir, remove, upload, upload_zi
 import format_size from "../../../util/format_size.js";
 import format_time from "../../../util/format_time.js";
 import { START, FILEBROWSER } from "../../Breadcrumb.js";
+import { get_maintenance } from "../../../service/stats.js";
 
 export default {
     components: {
@@ -11,7 +12,6 @@ export default {
     data: function() {
         return {
             result: null,
-            mkdir_name: "",
             mkfile_name: "",
             move_name: "",
             move_target: "",
@@ -21,14 +21,15 @@ export default {
         };
     },
     methods: {
+        get_maintenance: get_maintenance,
         format_size: format_size,
         format_time: format_time,
         get_zip_url: get_zip_url,
         get_download_url: get_download_url,
         mkdir: function() {
-            mkdir(this.result.dir + "/" + this.mkdir_name)
+            mkdir(this.result.dir + "/" + this.mkfile_name)
             .then(() => this.browse_dir())
-            .then(() => this.mkdir_name = "");
+            .then(() => this.mkfile_name = "");
         },
         mkfile: function() {
             upload(this.result.dir + "/" + this.mkfile_name, "")
@@ -91,6 +92,9 @@ export default {
         can_edit: function(filename) {
             return filename.match(/.*(js|lua|txt|conf|cfg|json|md|mt)$/i);
         },
+        is_database: function(filename) {
+            return filename.match(/.*(sqlite|sqlite-shm|sqlite-wal)$/i);
+        },
         get_icon: function(item) {
             if (item.is_dir) {
                 return "folder";
@@ -143,19 +147,14 @@ export default {
     template: /*html*/`
         <default-layout icon="folder" title="Filebrowser" :breadcrumb="breadcrumb">
             <div class="row">
-                <div class="col-2">
+                <div class="col-4">
                     <div class="input-group">
-                        <input type="text" v-model="mkdir_name" class="form-control" placeholder="Directory name"/>
-                        <button class="btn btn-secondary" v-on:click="mkdir" :disabled="!mkdir_name">
+                        <input type="text" v-model="mkfile_name" class="form-control" placeholder="Directory name"/>
+                        <button class="btn btn-secondary" v-on:click="mkdir" :disabled="!mkfile_name">
                             <i class="fa fa-folder"></i>
                             <i class="fa fa-plus"></i>
                             Create directory
                         </button>
-                    </div>
-                </div>
-                <div class="col-2">
-                    <div class="input-group">
-                        <input type="text" v-model="mkfile_name" class="form-control" placeholder="Filename"/>
                         <button class="btn btn-secondary" v-on:click="mkfile" :disabled="!mkfile_name">
                             <i class="fa fa-file"></i>
                             <i class="fa fa-plus"></i>
@@ -163,7 +162,7 @@ export default {
                         </button>
                     </div>
                 </div>
-                <div class="col-2">
+                <div class="col-3">
                     <div class="input-group">
                         <input ref="input_upload" type="file" class="form-control" multiple/>
                         <button class="btn btn-secondary" v-on:click="upload">
@@ -173,17 +172,16 @@ export default {
                         </button>
                     </div>
                 </div>
-                <div class="col-2">
+                <div class="col-3">
                     <div class="input-group">
                         <input ref="input_upload_zip" type="file" class="form-control" accept=".zip"/>
                         <button class="btn btn-secondary" v-on:click="upload_zip">
                             <i class="fa fa-upload"></i>
                             Upload zip
+                            <i class="fa-solid fa-triangle-exclamation" style="color: orange;" title="The contents of the zip-file will overwrite files with the same name!"></i>
                             <i class="fa fa-spinner fa-spin" v-if="upload_zip_busy"></i>
                         </button>
                     </div>
-                </div>
-                <div class="col-2">
                 </div>
                 <div class="col-2" v-if="result">
                     <a class="btn btn-secondary w-100" :href="get_zip_url(result.dir)">
@@ -213,7 +211,7 @@ export default {
                         <td></td>
                         <td></td>
                     </tr>
-                    <tr v-for="item in result.items">
+                    <tr v-for="item in result.items" v-bind:class="{'table-warning': is_database(item.name) && !get_maintenance()}">
                         <td>
                             <router-link :to="'/filebrowser' + result.dir + '/' + item.name" v-if="item.is_dir">
                                 <i v-bind:class="get_icon_class(item)"></i>
@@ -222,6 +220,7 @@ export default {
                             <span v-if="!item.is_dir">
                                 <i v-bind:class="get_icon_class(item)"></i>
                                 {{item.name}}
+                                <i class="fa-solid fa-triangle-exclamation" v-if="is_database(item.name) && !get_maintenance()" title="Database might be inconsistent when downloading without maintenance-mode enabled!"></i>
                             </span>
                         </td>
                         <td>
