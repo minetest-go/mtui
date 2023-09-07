@@ -20,7 +20,7 @@ import OauthAppEdit from './components/pages/oauth/OauthAppEdit.js';
 import MinetestConfig from './components/pages/administration/MinetestConfig.js';
 import EngineService from './components/pages/services/Engine.js';
 import UISettings from './components/pages/administration/UISettings.js';
-import Maintenance from './components/pages/Maintenance.js';
+import Maintenance from './components/pages/administration/Maintenance.js';
 import Filebrowser from './components/pages/filebrowser/Filebrowser.js';
 import FileEdit from './components/pages/filebrowser/FileEdit.js';
 

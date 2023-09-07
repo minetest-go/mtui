@@ -1,8 +1,8 @@
-import { get_maintenance, get_stats } from "../../service/stats.js";
-import { enable_maintenance, disable_maintenance } from "../../api/maintenance.js";
-import { is_running } from "../../service/engine.js";
-import DefaultLayout from "../layouts/DefaultLayout.js";
-import { START, ADMINISTRATION } from "../Breadcrumb.js";
+import { get_maintenance, get_stats } from "../../../service/stats.js";
+import { enable_maintenance, disable_maintenance } from "../../../api/maintenance.js";
+import { is_running } from "../../../service/engine.js";
+import DefaultLayout from "../../layouts/DefaultLayout.js";
+import { START, ADMINISTRATION } from "../../Breadcrumb.js";
 
 export default {
     data: function() {
@@ -59,7 +59,7 @@ export default {
         </table>
         <div class="alert alert-info">
             <i class="fa fa-info"></i>
-            The maintenance mode shuts down any database-related service (ui and engine) in order to create and download consistent backups
+            The maintenance mode shuts down any database access in order to create and download consistent backups
         </div>
         <div class="alert alert-warning" v-if="is_engine_running && !maintenance">
             <i class="fa-solid fa-triangle-exclamation"></i>
