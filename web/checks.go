@@ -47,6 +47,7 @@ func (api *Api) Secure(fn SecureHandlerFunc) http.HandlerFunc {
 			SendError(w, http.StatusUnauthorized, "unauthorized")
 			return
 		} else if err != nil {
+			api.RemoveClaims(w)
 			SendError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
@@ -63,6 +64,7 @@ func (api *Api) OptionalSecure(fn SecureHandlerFunc) http.HandlerFunc {
 			fn(w, r, nil)
 			return
 		} else if err != nil {
+			api.RemoveClaims(w)
 			SendError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
@@ -80,6 +82,7 @@ func (api *Api) PrivCheck(required_priv string) Check {
 			SendError(w, http.StatusUnauthorized, "unauthorized")
 			return false
 		} else if err != nil {
+			api.RemoveClaims(w)
 			SendError(w, http.StatusInternalServerError, err.Error())
 			return false
 		}
