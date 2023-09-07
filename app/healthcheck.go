@@ -14,9 +14,11 @@ func (a *App) Healthcheck() error {
 	}
 
 	// minetest db
-	_, err = a.DBContext.ModStorage.Count()
-	if err != nil {
-		return fmt.Errorf("modstorage db error: %v", err)
+	if a.DBContext.ModStorage != nil {
+		_, err = a.DBContext.ModStorage.Count()
+		if err != nil {
+			return fmt.Errorf("modstorage db error: %v", err)
+		}
 	}
 	_, err = a.DBContext.Player.Count()
 	if err != nil {
