@@ -1,9 +1,6 @@
 import { get_maintenance, get_stats } from "../../service/stats.js";
 import { enable_maintenance, disable_maintenance } from "../../api/maintenance.js";
-import { check_features } from "../../service/features.js";
 import { is_running } from "../../service/engine.js";
-import events, { EVENT_LOGGED_IN} from "../../events.js";
-import { get_claims } from "../../service/login.js";
 import DefaultLayout from "../layouts/DefaultLayout.js";
 import { START, ADMINISTRATION } from "../Breadcrumb.js";
 
@@ -31,8 +28,7 @@ export default {
         },
         disable_maintenance: function() {
             disable_maintenance()
-            .then(() => Promise.all([get_stats(), check_features()]))
-            .then(() => events.emit(EVENT_LOGGED_IN, get_claims()));
+            .then(() => window.location.reload());
         }
     },
     template: /*html*/`

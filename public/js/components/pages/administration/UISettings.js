@@ -25,7 +25,14 @@ export default {
         }
     },
     methods: {
-        set_config: set_config
+        set_config: function(key, value, reload) {
+            set_config(key, value)
+            .then(() => {
+                if (reload) {
+                    window.location.reload();
+                }
+            });
+        }
     },
     template: /*html*/`
     <default-layout icon="list-check" title="UI Settings" :breadcrumb="breadcrumb">
@@ -45,7 +52,7 @@ export default {
                     </select>
                 </td>
                 <td>
-                    <a class="btn btn-success w-100" v-on:click="set_config('theme', current_theme)">
+                    <a class="btn btn-success w-100" v-on:click="set_config('theme', current_theme, true)">
                         <i class="fa fa-save"></i> Save
                     </a>
                 </td>
