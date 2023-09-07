@@ -245,7 +245,7 @@ func (a *Api) Mkdir(w http.ResponseWriter, r *http.Request, claims *types.Claims
 	}
 
 	err = os.MkdirAll(absdir, 0644)
-	Send(w, true, nil)
+	Send(w, true, err)
 }
 
 func (a *Api) UploadFile(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
