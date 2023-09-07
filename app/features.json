@@ -35,17 +35,17 @@
     },{
         "name": "monitoring",
         "description": "monitoring integration",
-        "mods": ["monitoring"]
+        "mods": ["monitoring"],
+        "experimental": true
     },{
         "name": "otp",
         "description": "Enable otp login"
     },{
         "name": "minetest_config",
-        "description": "minetest configuration management",
-        "experimental": true
+        "description": "minetest configuration management"
     },{
         "name": "docker",
-        "description": "docker container management for other services",
+        "description": "docker container management for external services",
         "experimental": true
     }
 ]
