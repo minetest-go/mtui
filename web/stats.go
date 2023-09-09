@@ -18,7 +18,7 @@ func (a *Api) StatsEventListener(c chan *bridge.CommandResponse) {
 		sc := &command.StatsCommand{}
 		err := json.Unmarshal(cmd.Data, sc)
 		if err != nil {
-			fmt.Printf("Tan-listener-error: %s\n", err.Error())
+			fmt.Printf("Stats-listener-error: %s\n", err.Error())
 			continue
 		}
 		current_stats.Store(sc)
