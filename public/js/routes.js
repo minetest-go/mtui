@@ -23,6 +23,7 @@ import UISettings from './components/pages/administration/UISettings.js';
 import Maintenance from './components/pages/administration/Maintenance.js';
 import Filebrowser from './components/pages/filebrowser/Filebrowser.js';
 import FileEdit from './components/pages/filebrowser/FileEdit.js';
+import Signup from './components/pages/Signup.js';
 
 import Mods from './components/pages/mods/Mods.js';
 import ContentBrowse from './components/pages/cdb/Browse.js';
@@ -38,6 +39,8 @@ export default [{
 	path: "/login", component: Login
 }, {
 	path: "/onboard", component: Onboard
+}, {
+	path: "/signup", component: Signup
 }, {
 	path: "/xban", component: Xban,
 	meta: { requiredPriv: "ban" }

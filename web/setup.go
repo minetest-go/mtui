@@ -6,7 +6,9 @@ import (
 	"mtui/types"
 	"net/http"
 	"os"
+	"time"
 
+	"github.com/dchest/captcha"
 	"github.com/go-oauth2/oauth2/v4"
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/gorilla/mux"
@@ -34,6 +36,10 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/api/stats", api.OptionalSecure(api.GetStats)).Methods(http.MethodGet)
 	r.HandleFunc("/api/login", api.GetLogin).Methods(http.MethodGet)
 
+	// captcha store and http handler
+	captcha.SetCustomStore(captcha.NewMemoryStore(50, 10*time.Minute))
+	r.PathPrefix("/api/captcha/").Handler(captcha.Server(350, 250))
+
 	fbr := r.PathPrefix("/api/filebrowser").Subrouter()
 	fbr.Use(SecureHandler(api.PrivCheck(types.PRIV_SERVER)))
 	fbr.HandleFunc("/browse", api.Secure(api.BrowseFolder)).Methods(http.MethodGet)
@@ -58,6 +64,9 @@ func Setup(a *app.App) error {
 
 	apir.HandleFunc("/login", api.DoLogout).Methods(http.MethodDelete)
 	apir.HandleFunc("/login", api.DoLogin).Methods(http.MethodPost)
+
+	apir.HandleFunc("/signup", api.Feature(types.FEATURE_SIGNUP, api.Signup))
+	apir.HandleFunc("/signup/captcha", api.Feature(types.FEATURE_SIGNUP, api.SignupCaptcha))
 
 	apir.HandleFunc("/onboard", api.GetOnboardStatus).Methods(http.MethodGet)
 	apir.HandleFunc("/onboard", api.CreateOnboardUser).Methods(http.MethodPost)

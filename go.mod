@@ -27,6 +27,7 @@ require (
 
 require (
 	dario.cat/mergo v1.0.0 // indirect
+	github.com/dchest/captcha v1.0.0 // indirect
 	github.com/docker/distribution v2.8.2+incompatible // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
