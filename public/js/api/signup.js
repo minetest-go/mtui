@@ -1,7 +1,7 @@
-export const signup = (username, password) => fetch("api/signup", {
+export const signup = data => fetch("api/signup", {
     method: "POST",
-    body: JSON.stringify({
-        username: username,
-        password: password
-    })
+    body: JSON.stringify(data)
 }).then(r => r.text());
+
+
+export const signup_captcha = () => fetch("api/signup/captcha").then(r => r.text());

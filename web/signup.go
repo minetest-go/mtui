@@ -6,12 +6,19 @@ import (
 	"mtui/auth"
 	"net/http"
 
+	"github.com/dchest/captcha"
 	dbauth "github.com/minetest-go/mtdb/auth"
 )
 
 type SignupRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+	CaptchaID string `json:"captcha_id"`
+	Captcha   string `json:"captcha"`
+}
+
+func (a *Api) SignupCaptcha(w http.ResponseWriter, r *http.Request) {
+	SendText(w, captcha.New())
 }
 
 func (a *Api) Signup(w http.ResponseWriter, r *http.Request) {
@@ -19,6 +26,11 @@ func (a *Api) Signup(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(sr)
 	if err != nil {
 		SendError(w, 500, err.Error())
+		return
+	}
+
+	if !captcha.VerifyString(sr.CaptchaID, sr.Captcha) {
+		SendError(w, 401, "captcha invalid")
 		return
 	}
 
