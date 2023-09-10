@@ -84,12 +84,12 @@ export default {
                 {{ playerinfo.name }}
             </small>
         </h3>
-        <div class="alert alert-danger" v-if="!playerinfo.auth_entry || !playerinfo.player_entry">
+        <div class="alert alert-warning" v-if="!playerinfo.auth_entry || !playerinfo.player_entry">
             <i class="fa fa-triangle-exclamation"></i>
             <b>Warning:</b>
             <ul>
                 <li v-if="!playerinfo.auth_entry">no entry in the auth-database found!</li>
-                <li v-if="!playerinfo.player_entry">no entry in the player-database found!</li>
+                <li v-if="!playerinfo.player_entry">no entry in the player-database found! (the player hasn't logged in ingame yet)</li>
             </ul>
         </div>
         <div class="row">

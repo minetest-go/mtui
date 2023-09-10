@@ -61,4 +61,16 @@ func (a *Api) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO: configurable privs
+	for _, priv := range []string{"interact", "shout"} {
+		err = a.app.DBContext.Privs.Create(&dbauth.PrivilegeEntry{
+			ID:        *auth_entry.ID,
+			Privilege: priv,
+		})
+
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+	}
 }

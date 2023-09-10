@@ -100,9 +100,17 @@ export default {
                     <b>Note:</b> you can also use <mark>/mtui_tan</mark> ingame to create a temporary password
                 </div>
                 <div class="alert alert-success" v-if="can_oboard">
+                    <i class="fa fa-user"></i>
                     <b>Onboarding:</b>
                     Please set up an initial admin-user on the
                     <router-link to="/onboard">Onboarding</router-link>
+                    page
+                </div>
+                <div class="alert alert-success" v-if="has_feature('signup') && !can_oboard">
+                    <i class="fa fa-user"></i>
+                    <b>Signup:</b>
+                    You can create a new account on the
+                    <router-link to="/signup">signup</router-link>
                     page
                 </div>
             </div>
