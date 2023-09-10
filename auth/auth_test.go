@@ -93,12 +93,13 @@ func TestValidateUsername(t *testing.T) {
 		"<",
 		"*",
 		".",
+		"|",
 	}
 
 	for _, str := range valid {
-		assert.NoError(t, ValidateUsername(str))
+		assert.NoError(t, ValidateUsername(str), "string was not valid: '%s'", str)
 	}
 	for _, str := range invalid {
-		assert.Error(t, ValidateUsername(str))
+		assert.Error(t, ValidateUsername(str), "string was not invalid: '%s'", str)
 	}
 }

@@ -1,6 +1,13 @@
 package web
 
-import "net/http"
+import (
+	"encoding/json"
+	"fmt"
+	"mtui/auth"
+	"net/http"
+
+	dbauth "github.com/minetest-go/mtdb/auth"
+)
 
 type SignupRequest struct {
 	Username string `json:"username"`
@@ -8,5 +15,50 @@ type SignupRequest struct {
 }
 
 func (a *Api) Signup(w http.ResponseWriter, r *http.Request) {
+	sr := &SignupRequest{}
+	err := json.NewDecoder(r.Body).Decode(sr)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	err = auth.ValidateUsername(sr.Username)
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("Username validation failed: %v", err))
+		return
+	}
+
+	if sr.Password == "" {
+		SendError(w, 500, "empty password")
+		return
+	}
+
+	auth_entry, err := a.app.DBContext.Auth.GetByUsername(sr.Username)
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("auth-db error: '%v'", err))
+		return
+	}
+
+	if auth_entry != nil {
+		SendError(w, 500, fmt.Sprintf("player already exists: '%s'", sr.Username))
+		return
+	}
+
+	salt, verifier, err := auth.CreateAuth(sr.Username, sr.Password)
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("create-auth failed: %v", err))
+		return
+	}
+
+	dbstr := auth.CreateDBPassword(salt, verifier)
+	auth_entry = &dbauth.AuthEntry{
+		Name:     sr.Username,
+		Password: dbstr,
+	}
+	err = a.app.DBContext.Auth.Create(auth_entry)
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("authdb insert failed: %v", err))
+		return
+	}
 
 }

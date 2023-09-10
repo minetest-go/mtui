@@ -78,7 +78,7 @@ func CreateAuth(username, password string) (salt, verifier []byte, err error) {
 	return srp.NewClient([]byte(strings.ToLower(username)), []byte(password))
 }
 
-var ValidPlayernameRegex = regexp.MustCompile(`(a-z|A-Z|0-9|\-|_)*`)
+var ValidPlayernameRegex = regexp.MustCompile(`^[a-zA-Z0-9\-_]*$`)
 
 func ValidateUsername(username string) error {
 	if len(username) == 0 {

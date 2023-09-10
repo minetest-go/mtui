@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"mtui/auth"
 	"net/http"
 	"sync/atomic"
@@ -74,6 +75,12 @@ func (a *Api) CreateOnboardUser(w http.ResponseWriter, r *http.Request) {
 	err = json.NewDecoder(r.Body).Decode(obr)
 	if err != nil {
 		SendError(w, 500, err.Error())
+		return
+	}
+
+	err = auth.ValidateUsername(obr.Username)
+	if err != nil {
+		SendError(w, 500, fmt.Sprintf("username invalid: %v", err))
 		return
 	}
 
