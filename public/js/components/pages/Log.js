@@ -161,7 +161,8 @@ export default {
                     <i class="fa fa-magnifying-glass" v-if="!busy"></i>
                     <i class="fa-solid fa-spinner fa-spin" v-else></i>
                     Search
-                    <span class="badge bg-secondary">{{count}}</span>
+                    <span class="badge bg-secondary" v-if="count <= 1000">{{count}}</span>
+                    <span class="badge bg-warning" v-else>{{count}}</span>
                 </a>
             </div>
         </div>
