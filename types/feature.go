@@ -13,6 +13,7 @@ const (
 	FEATURE_MINETEST_CONFIG = "minetest_config"
 	FEATURE_OTP             = "otp"
 	FEATURE_DOCKER          = "docker"
+	FEATURE_SIGNUP          = "signup"
 )
 
 type Feature struct {

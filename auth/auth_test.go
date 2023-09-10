@@ -73,3 +73,32 @@ func TestLagacyAuth(t *testing.T) {
 	success = VerifyLegacyPassword("BuckarooBanzai", "blah", "vTELhF7/I72pH9rsz79yU/1hZ5A")
 	assert.False(t, success)
 }
+
+func TestValidateUsername(t *testing.T) {
+	valid := []string{
+		"my_user01",
+		"somedude",
+		"_",
+		"-",
+		"01234567890123456789",
+	}
+	invalid := []string{
+		"",
+		" ",
+		"012345678901234567890",
+		"my name",
+		" x",
+		"x ",
+		"%",
+		"<",
+		"*",
+		".",
+	}
+
+	for _, str := range valid {
+		assert.NoError(t, ValidateUsername(str))
+	}
+	for _, str := range invalid {
+		assert.Error(t, ValidateUsername(str))
+	}
+}

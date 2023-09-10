@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/HimbeerserverDE/srp"
@@ -75,4 +76,19 @@ func VerifyLegacyPassword(username, password, b64_verifier string) bool {
 
 func CreateAuth(username, password string) (salt, verifier []byte, err error) {
 	return srp.NewClient([]byte(strings.ToLower(username)), []byte(password))
+}
+
+var ValidPlayernameRegex = regexp.MustCompile(`(a-z|A-Z|0-9|\-|_)*`)
+
+func ValidateUsername(username string) error {
+	if len(username) == 0 {
+		return fmt.Errorf("playername empty")
+	}
+	if len(username) > 20 {
+		return fmt.Errorf("playername too long")
+	}
+	if !ValidPlayernameRegex.Match([]byte(username)) {
+		return fmt.Errorf("playername can only contain chars a to z, A to Z, 0 to 9 and -, _")
+	}
+	return nil
 }
