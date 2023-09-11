@@ -28,6 +28,7 @@ import Signup from './components/pages/Signup.js';
 import Mods from './components/pages/mods/Mods.js';
 import ContentBrowse from './components/pages/cdb/Browse.js';
 import ContentdbDetail from './components/pages/cdb/Detail.js';
+import InstallCDB from './components/pages/cdb/Install.js';
 
 export default [{
 	path: "/", component: Start,
@@ -73,6 +74,9 @@ export default [{
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/cdb/detail/:author/:name", component: ContentdbDetail,
+	meta: { requiredPriv: "server" }
+}, {
+	path: "/cdb/install/:author/:name", component: InstallCDB,
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/mediaserver", component: Mediaserver,

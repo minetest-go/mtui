@@ -1,0 +1,108 @@
+import DefaultLayout from "../../layouts/DefaultLayout.js";
+import { add } from "../../../service/mods.js";
+import { get_dependencies, get_package } from "../../../service/cdb.js";
+import { validate } from "../../../api/mods.js";
+import { START, ADMINISTRATION, MODS, CDB, CDB_DETAIL } from "../../Breadcrumb.js";
+import CDBPackageLink from "../../CDBPackageLink.js";
+
+export default {
+    components: {
+        "default-layout": DefaultLayout,
+        "cdb-package-link": CDBPackageLink
+    },
+    data: function() {
+        const author = this.$route.params.author;
+        const name = this.$route.params.name;
+
+        return {
+            author: author,
+            name: name,
+            pkg: null,
+            deps: [],
+            installed_mods: {}, // modname => true
+            breadcrumb: [START, ADMINISTRATION, MODS, CDB, CDB_DETAIL(author, name), {
+                name: `Install package '${author}/${name}'`,
+                icon: "plus",
+                link: `/cdb/install/${author}/${name}`
+            }]
+        };
+    },
+    created: function() {
+        get_package(this.author, this.name)
+        .then(p => this.pkg = p);
+
+        validate()
+        .then(r => r.installed.forEach(modname => this.installed_mods[modname] = true))
+        .then(this.resolve_deps(this.author, this.name));
+    },
+    methods: {
+        resolve_deps: function(author, name) {
+            const key = `${author}/${name}`;
+
+            // fetch dependency info
+            get_dependencies(author, name)
+            .then(deps => {
+                deps[key]
+                .filter(dep => !dep.is_optional) // not-optional
+                .filter(dep => !this.installed_mods[dep.name]) // not installed
+                .forEach(dep => {
+                    // fetch all package infos
+                    const pl = dep.packages.map(p => {
+                        const parts = p.split("/");
+                        return get_package(parts[0], parts[1]);
+                    });
+
+                    Promise.all(pl)
+                    .then(package_choices => package_choices.filter(pc => pc.type == "mod"))
+                    .then(package_choices => {
+                        package_choices.forEach(pc => {
+                            this.deps.push({
+                                name: dep.name,
+                                choices: pc
+                            });
+                        });
+                    });
+                });
+            });
+        },
+        install: function() {
+            return add({
+				name: this.pkg.name,
+                author: this.pkg.author,
+				mod_type: this.pkg.type,
+				source_type: "cdb"
+			});
+        }
+    },
+    template: /*html*/`
+        <default-layout :breadcrumb="breadcrumb" title="Install package" icon="plus">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Modname</th>
+                        <th>Provided by package</th>
+                        <th>Installed</th>
+                    </tr>
+                </thead>
+                <tbody v-if="pkg">
+                    <tr>
+                        <td>{{pkg.name}}</td>
+                        <td>
+                            <cdb-package-link :pkg="pkg"/>
+                        </td>
+                        <td></td>
+                    </tr>
+                </tbody>
+                <tbody v-for="dep in deps">
+                    <tr>
+                        <td>{{dep.name}}</td>
+                        <td></td>
+                        <td>
+                            <i class="fa fa-check"></i>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </default-layout>
+    `
+};
