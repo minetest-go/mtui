@@ -90,6 +90,12 @@ func (c *CDBClient) SearchPackages(q *PackageQuery) ([]*Package, error) {
 	if q.Order != "" {
 		params.Add("order", string(q.Order))
 	}
+	if q.ProtocolVersion > 0 {
+		params.Add("protocol_version", fmt.Sprintf("%d", q.ProtocolVersion))
+	}
+	if q.EngineVersion != "" {
+		params.Add("engine_version", q.EngineVersion)
+	}
 
 	err := c.get("api/packages", &pkgs, params)
 	return pkgs, err

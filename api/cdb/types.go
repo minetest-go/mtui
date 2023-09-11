@@ -25,13 +25,15 @@ const (
 )
 
 type PackageQuery struct {
-	Type   []PackageType        `json:"type"`
-	Query  string               `json:"query"`
-	Author string               `json:"author"`
-	Limit  int                  `json:"limit"`
-	Hide   []ContentWarning     `json:"hide"`
-	Sort   PackageSortType      `json:"sort"`
-	Order  PackageSortOrderType `json:"order"`
+	Type            []PackageType        `json:"type"`
+	Query           string               `json:"query"`
+	Author          string               `json:"author"`
+	Limit           int                  `json:"limit"`
+	Hide            []ContentWarning     `json:"hide"`
+	Sort            PackageSortType      `json:"sort"`
+	Order           PackageSortOrderType `json:"order"`
+	ProtocolVersion int                  `json:"protocol_version"`
+	EngineVersion   string               `json:"engine_version"`
 }
 
 type Package struct {
