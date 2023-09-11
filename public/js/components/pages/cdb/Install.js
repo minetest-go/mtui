@@ -39,7 +39,7 @@ export default {
 
         validate()
         .then(r => r.installed.forEach(modname => this.installed_mods[modname] = true))
-        .then(() =>  this.packages.length == 0 ? search_packages({ type: ["mod"] }) : this.packages)
+        .then(() =>  packages.length == 0 ? search_packages({ type: ["mod"] }) : packages)
         .then(pkgs => { this.packages = pkgs; packages = pkgs; })
         .then(this.resolve_deps(this.author, this.name));
     },
@@ -61,6 +61,7 @@ export default {
             // fetch dependency info
             get_dependencies(author, name)
             .then(deps => {
+                console.log(deps[key])
                 deps[key]
                 .filter(dep => !dep.is_optional) // not-optional
                 .filter(dep => !this.installed_mods[dep.name]) // not installed
@@ -71,6 +72,7 @@ export default {
                             name: deps.name,
                             installed: true
                         });
+                        return;
                     }
 
                     // fetch all package infos and provide package choices
@@ -78,6 +80,7 @@ export default {
                     dep.packages.forEach(pkg => {
                         const parts = pkg.split("/");
                         const detail = this.packages.find(pkg => pkg.author == parts[0] && pkg.name == parts[1]);
+                        console.log(pkg, detail)
                         if (detail && detail.type == "mod") {
                             choices.push(pkg);
                         }
@@ -123,7 +126,6 @@ export default {
                         <td>{{dep.name}}</td>
                         <td>
                             <select class="form-control" v-on:change="select_dep(dep.name, $event.target.value)">
-                                <option></option>
                                 <option v-for="choice in dep.choices" :selected="selected_deps[dep.name] == choice">{{choice}}</option>
                             </select>
                         </td>
