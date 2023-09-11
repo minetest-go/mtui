@@ -18,6 +18,7 @@ export default {
             author: author,
             name: name,
             pkg: null,
+            selected_deps: {}, // modname => {author,name}
             deps: [],
             installed_mods: {}, // modname => true
             breadcrumb: [START, ADMINISTRATION, MODS, CDB, CDB_DETAIL(author, name), {
@@ -36,6 +37,17 @@ export default {
         .then(this.resolve_deps(this.author, this.name));
     },
     methods: {
+        select_dep: function(modname, dep) {
+            if (modname == "") {
+                delete this.selected_deps[modname];
+            } else {
+                const parts = dep.split("/");
+                this.selected_deps[modname] = {
+                    author: parts[0],
+                    name: parts[1]
+                };
+            }
+        },
         resolve_deps: function(author, name) {
             const key = `${author}/${name}`;
 
@@ -103,8 +115,9 @@ export default {
                     <tr>
                         <td>{{dep.name}}</td>
                         <td>
-                            <select class="form-control">
-                                <option v-for="choice in dep.choices">{{choice}}</option>
+                            <select class="form-control" v-on:change="select_dep(dep.name, $event.target.value)">
+                                <option></option>
+                                <option v-for="choice in dep.choices" :selected="selected_deps[dep.name] == choice">{{choice}}</option>
                             </select>
                         </td>
                         <td>
