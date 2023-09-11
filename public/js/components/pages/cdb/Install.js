@@ -46,7 +46,15 @@ export default {
                 .filter(dep => !dep.is_optional) // not-optional
                 .filter(dep => !this.installed_mods[dep.name]) // not installed
                 .forEach(dep => {
-                    // fetch all package infos
+                    if (this.installed_mods[dep.name]) {
+                        // already installed
+                        this.deps.push({
+                            name: deps.name,
+                            installed: true
+                        });
+                    }
+
+                    // fetch all package infos and provide package choices
                     const pl = dep.packages.map(p => {
                         const parts = p.split("/");
                         return get_package(parts[0], parts[1]);
@@ -55,11 +63,9 @@ export default {
                     Promise.all(pl)
                     .then(package_choices => package_choices.filter(pc => pc.type == "mod"))
                     .then(package_choices => {
-                        package_choices.forEach(pc => {
-                            this.deps.push({
-                                name: dep.name,
-                                choices: pc
-                            });
+                        this.deps.push({
+                            name: dep.name,
+                            choices: package_choices.map(p => `${p.author}/${p.name}`)
                         });
                     });
                 });
@@ -96,9 +102,13 @@ export default {
                 <tbody v-for="dep in deps">
                     <tr>
                         <td>{{dep.name}}</td>
-                        <td></td>
                         <td>
-                            <i class="fa fa-check"></i>
+                            <select class="form-control">
+                                <option v-for="choice in dep.choices">{{choice}}</option>
+                            </select>
+                        </td>
+                        <td>
+                            <i class="fa fa-check" v-if="dep.installed"></i>
                         </td>
                     </tr>
                 </tbody>
