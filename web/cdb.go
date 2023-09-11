@@ -6,12 +6,18 @@ import (
 	"mtui/api/cdb"
 	"mtui/types"
 	"net/http"
-	"sync"
+	"time"
 
+	cache "github.com/Code-Hex/go-generics-cache"
 	"github.com/gorilla/mux"
 )
 
 var cdbcli = cdb.New()
+
+// simple, aggressive query-, package- and dependency-cache
+var cdb_search_cache = cache.New[string, []*cdb.Package]()
+var cdb_package_cache = cache.New[string, *cdb.PackageDetails]()
+var cdb_package_dependency_cache = cache.New[string, cdb.PackageDependency]()
 
 func (a *Api) SearchCDBPackages(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	q := &cdb.PackageQuery{}
@@ -21,14 +27,14 @@ func (a *Api) SearchCDBPackages(w http.ResponseWriter, r *http.Request, claims *
 		return
 	}
 
-	packages, err := cdbcli.SearchPackages(q)
+	key := q.Params().Encode()
+	packages, ok := cdb_search_cache.Get(key)
+	if !ok {
+		packages, err = cdbcli.SearchPackages(q)
+		cdb_search_cache.Set(key, packages, cache.WithExpiration(time.Hour*6))
+	}
 	Send(w, packages, err)
 }
-
-// simple, aggressive package- and dependency-cache
-var cdb_package_cache = map[string]*cdb.PackageDetails{}
-var cdb_package_dependency_cache = map[string]cdb.PackageDependency{}
-var cdb_lock = sync.RWMutex{}
 
 func (a *Api) GetCDBPackage(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	vars := mux.Vars(r)
@@ -36,19 +42,12 @@ func (a *Api) GetCDBPackage(w http.ResponseWriter, r *http.Request, claims *type
 	name := vars["name"]
 	key := fmt.Sprintf("%s/%s", author, name)
 
-	cdb_lock.RLock()
-	details := cdb_package_cache[key]
-	cdb_lock.RUnlock()
-
-	if details != nil {
-		Send(w, details, nil)
-		return
+	var err error
+	details, ok := cdb_package_cache.Get(key)
+	if !ok {
+		details, err = cdbcli.GetDetails(vars["author"], vars["name"])
+		cdb_package_cache.Set(key, details, cache.WithExpiration(6*time.Hour))
 	}
-
-	details, err := cdbcli.GetDetails(vars["author"], vars["name"])
-	cdb_lock.Lock()
-	cdb_package_cache[key] = details
-	cdb_lock.Unlock()
 	Send(w, details, err)
 }
 
@@ -58,18 +57,11 @@ func (a *Api) GetCDBPackageDependencies(w http.ResponseWriter, r *http.Request, 
 	name := vars["name"]
 	key := fmt.Sprintf("%s/%s", author, name)
 
-	cdb_lock.RLock()
-	deps := cdb_package_dependency_cache[key]
-	cdb_lock.RUnlock()
-
-	if deps != nil {
-		Send(w, deps, nil)
-		return
+	var err error
+	deps, ok := cdb_package_dependency_cache.Get(key)
+	if !ok {
+		deps, err = cdbcli.GetDependencies(vars["author"], vars["name"])
+		cdb_package_dependency_cache.Set(key, deps, cache.WithExpiration(6*time.Hour))
 	}
-
-	deps, err := cdbcli.GetDependencies(author, name)
-	cdb_lock.Lock()
-	cdb_package_dependency_cache[key] = deps
-	cdb_lock.Unlock()
 	Send(w, deps, err)
 }

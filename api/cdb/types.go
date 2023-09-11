@@ -1,5 +1,10 @@
 package cdb
 
+import (
+	"fmt"
+	"net/url"
+)
+
 type PackageType string
 
 const (
@@ -34,6 +39,38 @@ type PackageQuery struct {
 	Order           PackageSortOrderType `json:"order"`
 	ProtocolVersion int                  `json:"protocol_version"`
 	EngineVersion   string               `json:"engine_version"`
+}
+
+func (q *PackageQuery) Params() url.Values {
+	params := url.Values{}
+	for _, t := range q.Type {
+		params.Add("type", string(t))
+	}
+	if q.Query != "" {
+		params.Add("q", q.Query)
+	}
+	if q.Author != "" {
+		params.Add("author", q.Author)
+	}
+	if q.Limit > 0 {
+		params.Add("limit", fmt.Sprintf("%d", q.Limit))
+	}
+	for _, cw := range q.Hide {
+		params.Add("hide", cw.Name)
+	}
+	if q.Sort != "" {
+		params.Add("sort", string(q.Sort))
+	}
+	if q.Order != "" {
+		params.Add("order", string(q.Order))
+	}
+	if q.ProtocolVersion > 0 {
+		params.Add("protocol_version", fmt.Sprintf("%d", q.ProtocolVersion))
+	}
+	if q.EngineVersion != "" {
+		params.Add("engine_version", q.EngineVersion)
+	}
+	return params
 }
 
 type Package struct {
