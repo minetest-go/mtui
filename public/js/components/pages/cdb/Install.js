@@ -1,7 +1,6 @@
 import DefaultLayout from "../../layouts/DefaultLayout.js";
 import { add } from "../../../service/mods.js";
-import { get_dependencies, get_package } from "../../../service/cdb.js";
-import { search_packages, resolve_package } from "../../../api/cdb.js";
+import { resolve_package } from "../../../api/cdb.js";
 import { validate } from "../../../api/mods.js";
 import { START, ADMINISTRATION, MODS, CDB, CDB_DETAIL } from "../../Breadcrumb.js";
 import CDBPackageLink from "../../CDBPackageLink.js";
@@ -13,18 +12,29 @@ const DependencyInstallRow = {
             console.log("selected", modname, dep);
         },
     },
+    computed: {
+        no_candidate: function(){
+            return this.dep.choices.length == 0 && !this.dep.installed;
+        },
+        is_installed: function(){
+            return this.dep.choices.length == 0 && this.dep.installed;
+        },
+        has_choices: function() {
+            return this.dep.choices.length > 0;
+        }
+    },
     template: /*html*/`
-    <tr>
+    <tr v-bind:class="{'table-warning': no_candidate}">
         <td>{{dep.name}}</td>
         <td>
-            <select class="form-control" v-on:change="select_dep(dep.name, $event.target.value)" v-if="dep.choices.length > 0">
+            <select class="form-control" v-on:change="select_dep(dep.name, $event.target.value)" v-if="has_choices">
                 <option v-for="choice in dep.choices" :selected="selected_dep == choice">{{choice}}</option>
             </select>
-            <span class="badge bg-danger" v-if="dep.choices.length == 0 && !dep.installed">
+            <span class="badge bg-danger" v-if="no_candidate">
                 <i class="fa-solid fa-triangle-exclamation"></i>
                 No installation candidate found!
             </span>
-            <span class="badge bg-success" v-if="dep.choices.length == 0 && dep.installed">
+            <span class="badge bg-success" v-if="is_installed">
                 <i class="fa fa-check"></i>
                 Already installed
             </span>
@@ -64,10 +74,7 @@ export default {
                 selected_packages: this.selected_packages
             });
         })
-        .then(deps => {
-            this.deps = deps;
-            console.log(deps);
-        });
+        .then(deps => this.deps = deps);
     },
     methods: {
         install: function() {
@@ -90,14 +97,14 @@ export default {
                 </thead>
                 <tbody v-if="author">
                     <tr>
-                        <td>{{author}}/{{name}}</td>
+                        <td>{{name}}</td>
                         <td>
                             <cdb-package-link :author="author" :name="name"/>
                         </td>
                     </tr>
                 </tbody>
                 <tbody v-for="dep in deps">
-                    <dependency-install-row :dep="dep" selected_dep=""/>
+                    <dependency-install-row :dep="dep" :selected_dep="dep.selected"/>
                 </tbody>
             </table>
         </default-layout>
