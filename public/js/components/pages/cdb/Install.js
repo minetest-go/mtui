@@ -140,7 +140,7 @@ export default {
 
                         this.selected_deps[dep.name] = choice;
                         const author_name = this.get_author_name(choice);
-                        this.fetch_dependencies(author_name[0], author_name[1]);
+                        this.resolve_deps(author_name[0], author_name[1]);
                     }
                 });
             });
