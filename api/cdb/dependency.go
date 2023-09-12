@@ -7,6 +7,7 @@ import (
 type ResolvedDependency struct {
 	Name      string   `json:"name"`
 	Choices   []string `json:"choices"`
+	Selected  string   `json:"selected"`
 	Installed bool     `json:"installed"`
 }
 
@@ -45,6 +46,7 @@ func ResolveDependencies(cc *CachedCDBClient, required_pkg string, selected_pkgs
 		if processed_deps[pkgname] {
 			return nil
 		}
+		processed_deps[pkgname] = true
 
 		dep := resolved_dep_infos[pkgname]
 		author, name := GetAuthorName(pkgname)
@@ -68,7 +70,8 @@ func ResolveDependencies(cc *CachedCDBClient, required_pkg string, selected_pkgs
 		}
 
 		for _, di := range dep {
-			if di.IsOptional {
+			if di.IsOptional || processed_deps[di.Name] {
+				// optional or already processed
 				continue
 			}
 
@@ -86,13 +89,25 @@ func ResolveDependencies(cc *CachedCDBClient, required_pkg string, selected_pkgs
 				continue
 			}
 
+			var selected_pkgname string
 			for _, dep_pkgname := range di.Packages {
 				if mod_map[dep_pkgname] == nil {
 					// not of "mod"-type
 					continue
 				}
 
-				err = resolve(dep_pkgname)
+				d.Choices = append(d.Choices, dep_pkgname)
+				_, name := GetAuthorName(dep_pkgname)
+				if (selected_pkgname == "" && name == di.Name) || selected_pkg_map[dep_pkgname] {
+					// exact match found or manually selected
+					selected_pkgname = dep_pkgname
+				}
+			}
+
+			if selected_pkgname != "" {
+				d.Selected = selected_pkgname
+				// resolve selected sub-package
+				err = resolve(selected_pkgname)
 				if err != nil {
 					return err
 				}
