@@ -28,13 +28,14 @@ const DependencyInstallRow = {
             <select class="form-control" v-on:change="select_dep(dep.name, $event.target.value)" v-if="dep.choices.length > 0">
                 <option v-for="choice in dep.choices" :selected="selected_dep == choice">{{choice}}</option>
             </select>
-            <span class="badge bg-danger" v-else>
+            <span class="badge bg-danger" v-if="dep.choices.length == 0 && !dep.installed">
                 <i class="fa-solid fa-triangle-exclamation"></i>
                 No installation candidate found!
             </span>
-        </td>
-        <td>
-            <i class="fa fa-check" v-if="dep.installed"></i>
+            <span class="badge bg-success" v-if="dep.choices.length == 0 && dep.installed">
+                <i class="fa fa-check"></i>
+                Already installed
+            </span>
         </td>
     </tr>
     `
@@ -100,12 +101,12 @@ export default {
             .then(deps => {
                 deps
                 .filter(dep => !dep.is_optional) // not-optional
-                .filter(dep => !this.installed_mods[dep.name]) // not installed
                 .forEach(dep => {
                     if (this.installed_mods[dep.name]) {
                         // already installed
                         this.deps.push({
-                            name: deps.name,
+                            name: dep.name,
+                            choices: [],
                             installed: true
                         });
                         return;
@@ -127,9 +128,18 @@ export default {
                     });
 
                     if (choices.length > 0) {
-                        // select first choice
-                        this.selected_deps[dep.name] = choices[0];
-                        const author_name = this.get_author_name(choices[0]);
+                        // select first choice as fallback
+                        let choice = choices[0];
+                        choices.forEach(c => {
+                            const author_name = this.get_author_name(c);
+                            if (author_name[1] == dep.name) {
+                                // exact match
+                                choice = c;
+                            }
+                        });
+
+                        this.selected_deps[dep.name] = choice;
+                        const author_name = this.get_author_name(choice);
                         this.fetch_dependencies(author_name[0], author_name[1]);
                     }
                 });
@@ -151,7 +161,6 @@ export default {
                     <tr>
                         <th>Modname</th>
                         <th>Provided by package</th>
-                        <th>Installed</th>
                     </tr>
                 </thead>
                 <tbody v-if="pkg">
@@ -160,11 +169,10 @@ export default {
                         <td>
                             <cdb-package-link :pkg="pkg"/>
                         </td>
-                        <td></td>
                     </tr>
                 </tbody>
                 <tbody v-for="dep in deps">
-                    <dependency-install-row :dep="dep" :select_dep="selected_deps[dep.name]"/>
+                    <dependency-install-row :dep="dep" :selected_dep="selected_deps[dep.name]"/>
                 </tbody>
             </table>
         </default-layout>
