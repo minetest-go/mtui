@@ -40,5 +40,5 @@ export const MODS = { name: "Mods", icon: "cubes", link: "/mods" };
 export const CDB = { name: "ContentDB", icon: "box-open", link: "/cdb/browse" };
 export const FILEBROWSER = { name: "Filebrowser", icon: "folder", link: "/filebrowser/" };
 export const CDB_DETAIL = (author, name) => {
-    return { name: `Package detail '${author}/${name}'`, icon: "box-open", link: `/cdb/detail/${author}/${name}` };
+    return { name: `'${author}/${name}'`, icon: "box-open", link: `/cdb/detail/${author}/${name}` };
 };

@@ -6,43 +6,8 @@ import { validate } from "../../../api/mods.js";
 import { START, ADMINISTRATION, MODS, CDB, CDB_DETAIL } from "../../Breadcrumb.js";
 import CDBPackageLink from "../../CDBPackageLink.js";
 
-// all cdb packages (mods, without details)
-let packages = [];
-
-export default {
-    components: {
-        "default-layout": DefaultLayout,
-        "cdb-package-link": CDBPackageLink
-    },
-    data: function() {
-        const author = this.$route.params.author;
-        const name = this.$route.params.name;
-
-        return {
-            author: author,
-            name: name,
-            pkg: null,
-            selected_deps: {}, // modname => {author,name}
-            deps: [],
-            packages: packages,
-            installed_mods: {}, // modname => true
-            breadcrumb: [START, ADMINISTRATION, MODS, CDB, CDB_DETAIL(author, name), {
-                name: `Install package '${author}/${name}'`,
-                icon: "plus",
-                link: `/cdb/install/${author}/${name}`
-            }]
-        };
-    },
-    created: function() {
-        get_package(this.author, this.name)
-        .then(p => this.pkg = p);
-
-        validate()
-        .then(r => r.installed.forEach(modname => this.installed_mods[modname] = true))
-        .then(() =>  packages.length == 0 ? search_packages({ type: ["mod"] }) : packages)
-        .then(pkgs => { this.packages = pkgs; packages = pkgs; })
-        .then(this.resolve_deps(this.author, this.name));
-    },
+const DependencyInstallRow = {
+    props: ["dep", "selected_dep"],
     methods: {
         select_dep: function(modname, dep) {
             if (modname == "") {
@@ -55,14 +20,85 @@ export default {
                 };
             }
         },
-        resolve_deps: function(author, name) {
-            const key = `${author}/${name}`;
+    },
+    template: /*html*/`
+    <tr>
+        <td>{{dep.name}}</td>
+        <td>
+            <select class="form-control" v-on:change="select_dep(dep.name, $event.target.value)" v-if="dep.choices.length > 0">
+                <option v-for="choice in dep.choices" :selected="selected_dep == choice">{{choice}}</option>
+            </select>
+            <span class="badge bg-danger" v-else>
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                No installation candidate found!
+            </span>
+        </td>
+        <td>
+            <i class="fa fa-check" v-if="dep.installed"></i>
+        </td>
+    </tr>
+    `
+};
 
+export default {
+    components: {
+        "default-layout": DefaultLayout,
+        "cdb-package-link": CDBPackageLink,
+        "dependency-install-row": DependencyInstallRow
+    },
+    data: function() {
+        const author = this.$route.params.author;
+        const name = this.$route.params.name;
+
+        return {
+            author: author,
+            name: name,
+            pkg: null,
+            selected_deps: {}, // modname => {author,name}
+            deps: [],
+            packages: [],
+            installed_mods: {}, // modname => true
+            breadcrumb: [START, ADMINISTRATION, MODS, CDB, CDB_DETAIL(author, name), {
+                name: `Install`,
+                icon: "plus",
+                link: `/cdb/install/${author}/${name}`
+            }]
+        };
+    },
+    created: function() {
+        get_package(this.author, this.name)
+        .then(p => this.pkg = p);
+
+        validate()
+        .then(r => r.installed.forEach(modname => this.installed_mods[modname] = true))
+        .then(() => search_packages({ type: ["mod"] }))
+        .then(pkgs => this.packages = pkgs)
+        .then(() => this.resolve_deps(this.author, this.name));
+    },
+    methods: {
+        get_key: function(author, name) {
+            return `${author}/${name}`;
+        },
+        get_author_name: function(pgkname) {
+            return pgkname.split("/");
+        },
+        fetch_dependencies: function(author, name) {
+            const key = this.get_key(author, name);
+            if (this.deps[key]) {
+                // already fetched
+                return Promise.resolve(this.deps[key]);
+            } else {
+                // fetch
+                return get_dependencies(author, name)
+                .then(deps => Object.keys(deps).forEach(k => this.deps[k] = deps[k]))
+                .then(() => this.deps[key]);
+            }
+        },
+        resolve_deps: function(author, name) {
             // fetch dependency info
-            get_dependencies(author, name)
+            this.fetch_dependencies(author, name)
             .then(deps => {
-                console.log(deps[key])
-                deps[key]
+                deps
                 .filter(dep => !dep.is_optional) // not-optional
                 .filter(dep => !this.installed_mods[dep.name]) // not installed
                 .forEach(dep => {
@@ -77,12 +113,11 @@ export default {
 
                     // fetch all package infos and provide package choices
                     const choices = [];
-                    dep.packages.forEach(pkg => {
-                        const parts = pkg.split("/");
-                        const detail = this.packages.find(pkg => pkg.author == parts[0] && pkg.name == parts[1]);
-                        console.log(pkg, detail)
-                        if (detail && detail.type == "mod") {
-                            choices.push(pkg);
+                    dep.packages.forEach(pkgname => {
+                        const detail = this.packages.find(p => this.get_key(p.author, p.name) == pkgname);
+                        if (detail) {
+                            // mod found
+                            choices.push(pkgname);
                         }
                     });
 
@@ -90,6 +125,13 @@ export default {
                         name: dep.name,
                         choices: choices
                     });
+
+                    if (choices.length > 0) {
+                        // select first choice
+                        this.selected_deps[dep.name] = choices[0];
+                        const author_name = this.get_author_name(choices[0]);
+                        this.fetch_dependencies(author_name[0], author_name[1]);
+                    }
                 });
             });
         },
@@ -122,17 +164,7 @@ export default {
                     </tr>
                 </tbody>
                 <tbody v-for="dep in deps">
-                    <tr>
-                        <td>{{dep.name}}</td>
-                        <td>
-                            <select class="form-control" v-on:change="select_dep(dep.name, $event.target.value)">
-                                <option v-for="choice in dep.choices" :selected="selected_deps[dep.name] == choice">{{choice}}</option>
-                            </select>
-                        </td>
-                        <td>
-                            <i class="fa fa-check" v-if="dep.installed"></i>
-                        </td>
-                    </tr>
+                    <dependency-install-row :dep="dep" :select_dep="selected_deps[dep.name]"/>
                 </tbody>
             </table>
         </default-layout>
