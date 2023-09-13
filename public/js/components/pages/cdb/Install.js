@@ -22,7 +22,7 @@ const DependencyInstallRow = {
     <tr v-bind:class="{'table-warning': no_candidate}">
         <td>{{dep.name}}</td>
         <td>
-            <select class="form-control" v-on:change="$emit('select_dep', dep.name, $event.target.value)" v-if="has_choices">
+            <select class="form-control" v-on:change="$emit('select_dep', $event.target.value)" v-if="has_choices">
                 <option v-for="choice in dep.choices" :selected="selected_dep == choice">{{choice}}</option>
             </select>
             <span class="badge bg-danger" v-if="no_candidate">
@@ -52,6 +52,7 @@ export default {
             author: author,
             name: name,
             selected_packages: [],
+            installed_mods: [],
             deps: [],
             breadcrumb: [START, ADMINISTRATION, MODS, CDB, CDB_DETAIL(author, name), {
                 name: `Install`,
@@ -62,16 +63,18 @@ export default {
     },
     created: function() {
         validate()
-        .then(r => {
-            return resolve_package({
-                package: `${this.author}/${this.name}`,
-                installed_mods: r.installed,
-                selected_packages: this.selected_packages
-            });
-        })
-        .then(deps => this.deps = deps);
+        .then(r => this.installed_mods = r.installed)
+        .then(() => this.fetch_dependencies());
     },
     methods: {
+        fetch_dependencies: function() {
+            return resolve_package({
+                package: `${this.author}/${this.name}`,
+                installed_mods: this.installed_mods,
+                selected_packages: this.selected_packages
+            })
+            .then(deps => this.deps = deps);
+        },
         install: function() {
             return add({
 				name: this.pkg.name,
@@ -80,8 +83,11 @@ export default {
 				source_type: "cdb"
 			});
         },
-        select_dep: function(modname, dep) {
-            console.log("selected", modname, dep);
+        select_dep: function(dep) {
+            if (!this.installed_mods.find(m => m == dep)) {
+                this.installed_mods.push(dep);
+            }
+            this.fetch_dependencies();
         }
     },
     template: /*html*/`
