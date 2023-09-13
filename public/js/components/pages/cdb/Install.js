@@ -7,11 +7,6 @@ import CDBPackageLink from "../../CDBPackageLink.js";
 
 const DependencyInstallRow = {
     props: ["dep", "selected_dep"],
-    methods: {
-        select_dep: function(modname, dep) {
-            console.log("selected", modname, dep);
-        },
-    },
     computed: {
         no_candidate: function(){
             return this.dep.choices.length == 0 && !this.dep.installed;
@@ -27,7 +22,7 @@ const DependencyInstallRow = {
     <tr v-bind:class="{'table-warning': no_candidate}">
         <td>{{dep.name}}</td>
         <td>
-            <select class="form-control" v-on:change="select_dep(dep.name, $event.target.value)" v-if="has_choices">
+            <select class="form-control" v-on:change="$emit('select_dep', dep.name, $event.target.value)" v-if="has_choices">
                 <option v-for="choice in dep.choices" :selected="selected_dep == choice">{{choice}}</option>
             </select>
             <span class="badge bg-danger" v-if="no_candidate">
@@ -84,6 +79,9 @@ export default {
 				mod_type: this.pkg.type,
 				source_type: "cdb"
 			});
+        },
+        select_dep: function(modname, dep) {
+            console.log("selected", modname, dep);
         }
     },
     template: /*html*/`
@@ -104,7 +102,7 @@ export default {
                     </tr>
                 </tbody>
                 <tbody v-for="dep in deps">
-                    <dependency-install-row :dep="dep" :selected_dep="dep.selected"/>
+                    <dependency-install-row :dep="dep" :selected_dep="dep.selected" v-on:select_dep="select_dep"/>
                 </tbody>
             </table>
         </default-layout>
