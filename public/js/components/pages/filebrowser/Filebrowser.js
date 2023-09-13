@@ -6,6 +6,7 @@ import { START, FILEBROWSER } from "../../Breadcrumb.js";
 import { get_maintenance } from "../../../service/stats.js";
 
 export default {
+    props: ["pathMatch"],
     components: {
         "default-layout": DefaultLayout
     },
@@ -80,7 +81,7 @@ export default {
             });
         },
         browse_dir: function() {
-            const dir = "/" + this.$route.params.pathMatch;
+            const dir = "/" + this.pathMatch;
             browse(dir)
             .then(r => this.result = r)
             .then(() => {
@@ -116,7 +117,7 @@ export default {
     computed: {
         breadcrumb: function() {
             const bc = [START, FILEBROWSER];
-            const parts = this.$route.params.pathMatch.split("/");
+            const parts = this.pathMatch.split("/");
 
             let path = "";
             parts
@@ -142,7 +143,7 @@ export default {
         this.browse_dir();
     },
     watch: {
-        "$route.params.pathMatch": "browse_dir"
+        "pathMatch": "browse_dir"
     },
     template: /*html*/`
         <default-layout icon="folder" title="Filebrowser" :breadcrumb="breadcrumb">

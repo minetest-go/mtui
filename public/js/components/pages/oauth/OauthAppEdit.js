@@ -3,6 +3,7 @@ import { START, ADMINISTRATION, OAUTH_APPS } from "../../Breadcrumb.js";
 import DefaultLayout from "../../layouts/DefaultLayout.js";
 
 export default {
+    props: ["id"],
     components: {
         "default-layout": DefaultLayout
     },
@@ -13,7 +14,7 @@ export default {
             breadcrumb: [START, ADMINISTRATION, OAUTH_APPS, {
                 name: "Edit OAuth app",
                 icon: "edit",
-                link: `/oauth-apps/${this.$route.params.id}`
+                link: `/oauth-apps/${this.id}`
             }]
         };
     },
@@ -24,7 +25,7 @@ export default {
     },
     methods: {
         update: function() {
-            get_by_id(this.$route.params.id)
+            get_by_id(this.id)
             .then(app => this.app = app);
         },
         save: function() {

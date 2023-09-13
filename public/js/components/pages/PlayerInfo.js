@@ -3,12 +3,13 @@ import DefaultLayout from '../layouts/DefaultLayout.js';
 import { START, PLAYER_SEARCH } from '../Breadcrumb.js';
 
 export default {
+    props: ["name"],
 	data: function() {
         return {
             breadcrumb: [START, PLAYER_SEARCH, {
-                name: `Player profile for ${this.$route.params.name}`,
+                name: `Player profile for ${this.name}`,
                 icon: "user",
-                link: `/profile/${this.$route.params.name}`
+                link: `/profile/${this.name}`
             }]
         };
     },
@@ -18,7 +19,7 @@ export default {
     },
 	template: /*html*/`
 	<default-layout icon="user" title="Player profile" :breadcrumb="breadcrumb">
-		<user-profile :username="$route.params.name"/>
+		<user-profile :username="name"/>
 	</default-layout>
 	`
 };

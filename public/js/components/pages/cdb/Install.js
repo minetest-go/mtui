@@ -39,25 +39,21 @@ const DependencyInstallRow = {
 };
 
 export default {
+    props: ["author", "name"],
     components: {
         "default-layout": DefaultLayout,
         "cdb-package-link": CDBPackageLink,
         "dependency-install-row": DependencyInstallRow
     },
     data: function() {
-        const author = this.$route.params.author;
-        const name = this.$route.params.name;
-
         return {
-            author: author,
-            name: name,
             selected_packages: [],
             installed_mods: [],
             deps: [],
-            breadcrumb: [START, ADMINISTRATION, MODS, CDB, CDB_DETAIL(author, name), {
+            breadcrumb: [START, ADMINISTRATION, MODS, CDB, CDB_DETAIL(this.author, this.name), {
                 name: `Install`,
                 icon: "plus",
-                link: `/cdb/install/${author}/${name}`
+                link: `/cdb/install/${this.author}/${this.name}`
             }]
         };
     },
