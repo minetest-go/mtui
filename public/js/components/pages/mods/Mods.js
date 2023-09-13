@@ -79,6 +79,57 @@ export default {
 					</tr>
 				</thead>
 				<tbody>
+					<tr>
+						<td>
+							<select class="form-control" v-model="add_mod_type">
+								<option value="mod">Mod</option>
+								<option value="game">Game</option>
+								<option value="txp" v-if="false">Textures</option>
+							</select>
+						</td>
+						<td>
+							<input class="form-control" type="text" placeholder="Mod name" v-model="add_name"/>
+						</td>
+						<td>
+							<span class="badge bg-success">
+								<i class="fa-brands fa-git-alt"></i>
+								Git
+							</span>
+						</td>
+						<td>
+							<input class="form-control" type="text" placeholder="Source url" v-model="add_url"/>
+						</td>
+						<td>
+							<input class="form-control" type="text" placeholder="Version" v-model="add_version"/>
+						</td>
+						<td>
+						</td>
+						<td>
+							<feedback-button type="success" :fn="add">
+								<i class="fa-brands fa-git-alt"></i>
+								Add from git
+							</feedback-button>
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td></td>
+						<td>
+							<span class="badge bg-success">
+								<i class="fa-solid fa-box-open"></i>
+								ContentDB
+							</span>
+						</td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td>
+							<router-link to="/cdb/browse" class="btn btn-success" :disabled="store.busy">
+								<i class="fa-solid fa-box-open"></i>
+								Add from ContentDB
+							</router-link>
+						</td>
+					</tr>
 					<tr v-for="mod in store.list">
 						<td>
 							<span class="badge bg-secondary">{{mod.mod_type}}</span>
@@ -118,62 +169,6 @@ export default {
 									Remove
 								</a>
 							</div>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<select class="form-control" v-model="add_mod_type">
-								<option value="mod">Mod</option>
-								<option value="game">Game</option>
-								<option value="txp" v-if="false">Textures</option>
-							</select>
-						</td>
-						<td>
-							<input class="form-control" type="text" placeholder="Mod name" v-model="add_name"/>
-						</td>
-						<td>
-							<span class="badge bg-success">
-								<i class="fa-brands fa-git-alt"></i>
-								Git
-							</span>
-						</td>
-						<td>
-							<input class="form-control" type="text" placeholder="Source url" v-model="add_url"/>
-						</td>
-						<td>
-							<input class="form-control" type="text" placeholder="Version" v-model="add_version"/>
-						</td>
-						<td>
-						</td>
-						<td>
-							<feedback-button type="success" :fn="add">
-								<i class="fa-brands fa-git-alt"></i>
-								Add from git
-							</feedback-button>
-						</td>
-					</tr>
-					<tr>
-						<td>
-						</td>
-						<td>
-						</td>
-						<td>
-							<span class="badge bg-success">
-								<i class="fa-solid fa-box-open"></i>
-								ContentDB
-							</span>
-						</td>
-						<td>
-						</td>
-						<td>
-						</td>
-						<td>
-						</td>
-						<td>
-							<router-link to="/cdb/browse" class="btn btn-success" :disabled="store.busy">
-								<i class="fa-solid fa-box-open"></i>
-								Add from ContentDB
-							</router-link>
 						</td>
 					</tr>
 				</tbody>

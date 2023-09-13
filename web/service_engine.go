@@ -280,6 +280,10 @@ func (a *Api) StopEngine(w http.ResponseWriter, r *http.Request, claims *types.C
 
 	ctx := context.Background()
 	err = cli.ContainerStop(ctx, c.ID, container.StopOptions{})
+
+	// remove stats
+	current_stats.Store(nil)
+
 	Send(w, true, err)
 }
 
