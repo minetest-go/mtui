@@ -17,6 +17,7 @@ require (
 )
 
 require (
+	github.com/Code-Hex/go-generics-cache v1.3.1
 	github.com/dchest/captcha v1.0.0
 	github.com/docker/docker v24.0.6+incompatible
 	github.com/docker/go-connections v0.4.0
@@ -28,8 +29,6 @@ require (
 
 require (
 	dario.cat/mergo v1.0.0 // indirect
-	github.com/Code-Hex/go-generics-cache v1.3.1 // indirect
-	github.com/dchest/captcha v1.0.0 // indirect
 	github.com/cyphar/filepath-securejoin v0.2.4 // indirect
 	github.com/docker/distribution v2.8.2+incompatible // indirect
 	github.com/docker/go-units v0.5.0 // indirect
