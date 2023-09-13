@@ -22,7 +22,7 @@ const DependencyInstallRow = {
     <tr v-bind:class="{'table-warning': no_candidate}">
         <td>{{dep.name}}</td>
         <td>
-            <select class="form-control" v-on:change="$emit('select_dep', $event.target.value)" v-if="has_choices">
+            <select class="form-control" v-on:change="$emit('select_dep', dep.name, $event.target.value)" v-if="has_choices">
                 <option v-for="choice in dep.choices" :selected="selected_dep == choice">{{choice}}</option>
             </select>
             <span class="badge bg-danger" v-if="no_candidate">
@@ -47,7 +47,9 @@ export default {
     },
     data: function() {
         return {
-            selected_packages: [],
+            busy: false,
+            missing_dep: false,
+            selected_package_map: {}, // modname -> packagename
             installed_mods: [],
             deps: [],
             breadcrumb: [START, ADMINISTRATION, MODS, CDB, CDB_DETAIL(this.author, this.name), {
@@ -64,31 +66,59 @@ export default {
     },
     methods: {
         fetch_dependencies: function() {
+            this.missing_dep = false;
+            this.busy = true;
+
+            const selected_packages = [];
+            Object.keys(this.selected_package_map)
+            .forEach(modname => {
+                selected_packages.push(this.selected_package_map[modname]);
+            });
+
             return resolve_package({
                 package: `${this.author}/${this.name}`,
                 installed_mods: this.installed_mods,
-                selected_packages: this.selected_packages
+                selected_packages: selected_packages
             })
-            .then(deps => this.deps = deps);
+            .then(deps => this.deps = deps)
+            .then(() => {
+                this.busy = false;
+                this.deps.forEach(d => {
+                    if (!d.installed && d.choices.length == 0) {
+                        // not installed and no installation candidate
+                        this.missing_dep = true;
+                    }
+                });
+            });
         },
-        install: function() {
-            return add({
-				name: this.pkg.name,
-                author: this.pkg.author,
-				mod_type: this.pkg.type,
-				source_type: "cdb"
-			});
-        },
-        select_dep: function(dep) {
-            if (!this.installed_mods.find(m => m == dep)) {
-                this.installed_mods.push(dep);
+        install_next: function() {
+            const next_dep = this.deps.find(d => !d.installed);
+            if (!next_dep) {
+                return;
             }
+            const parts = next_dep.selected.split("/");
+
+            add({
+                author: parts[0],
+				name: parts[1],
+				mod_type: "mod",
+				source_type: "cdb"
+			})
+            .then(() => next_dep.installed = true)
+            .then(() => this.install_next());
+        },
+        select_dep: function(modname, dep) {
+            this.selected_package_map[modname] = dep;
             this.fetch_dependencies();
         }
     },
     template: /*html*/`
         <default-layout :breadcrumb="breadcrumb" title="Install package" icon="plus">
-            <table class="table table-striped">
+            <div class="alert alert-primary" v-if="busy">
+                <i class="fa fa-spinner fa-spin"></i>
+                Calculating dependency-tree...
+            </div>
+            <table class="table table-striped" v-if="!busy">
                 <thead>
                     <tr>
                         <th>Modname</th>
@@ -107,6 +137,16 @@ export default {
                     <dependency-install-row :dep="dep" :selected_dep="dep.selected" v-on:select_dep="select_dep"/>
                 </tbody>
             </table>
+            <div class="row">
+                <div class="col-4"></div>
+                <div class="col-4"></div>
+                <div class="col-4">
+                    <button class="btn btn-success w-100" :disabled="busy || missing_dep" v-on:click="install_next">
+                        <i class="fa fa-plus"></i>
+                        Install
+                    </button>
+                </div>
+            </div>
         </default-layout>
     `
 };

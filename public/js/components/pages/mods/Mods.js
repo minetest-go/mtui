@@ -105,7 +105,7 @@ export default {
 						<td>
 						</td>
 						<td>
-							<feedback-button type="success" :fn="add">
+							<feedback-button type="success" :fn="add" :disabled="!add_name || !add_url">
 								<i class="fa-brands fa-git-alt"></i>
 								Add from git
 							</feedback-button>

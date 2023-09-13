@@ -9,7 +9,7 @@ export default {
     template: /*html*/`
     <div class="card" style="width: 16rem; margin: 5px; flex: 0 0 auto;">
         <router-link :to="'/cdb/detail/' + pkg.author + '/' + pkg.name">
-            <img :src="thumbnail" class="card-img-top"/>
+            <img :src="thumbnail" class="card-img-top" style="height: 180px;"/>
         </router-link>
         <div class="card-body">
             <h5 class="card-title">
