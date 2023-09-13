@@ -8,9 +8,11 @@ import (
 	"mtui/types/command"
 	"net/http"
 	"sync/atomic"
+	"time"
 )
 
 var current_stats atomic.Pointer[command.StatsCommand]
+var current_stats_updated atomic.Int64
 
 func (a *Api) StatsEventListener(c chan *bridge.CommandResponse) {
 	for {
@@ -22,6 +24,7 @@ func (a *Api) StatsEventListener(c chan *bridge.CommandResponse) {
 			continue
 		}
 		current_stats.Store(sc)
+		current_stats_updated.Store(time.Now().Unix())
 	}
 }
 
@@ -37,8 +40,11 @@ func (a *Api) GetStats(w http.ResponseWriter, r *http.Request, claims *types.Cla
 	}
 	sc.Maintenance = a.app.MaintenanceMode.Load()
 
+	last_updated := current_stats_updated.Load()
+	seconds_ago := time.Now().Unix() - last_updated
+
 	cs := current_stats.Load()
-	if cs != nil {
+	if cs != nil && seconds_ago < 10 {
 		sc.MaxLag = cs.MaxLag
 		sc.PlayerCount = cs.PlayerCount
 		sc.TimeOfDay = cs.TimeOfDay

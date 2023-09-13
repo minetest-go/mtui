@@ -151,6 +151,7 @@ func Setup(a *app.App) error {
 	cdbapi := apir.PathPrefix("/cdb").Subrouter()
 	cdbapi.Use(SecureHandler(api.FeatureCheck(types.FEATURE_MODMANAGEMENT), api.PrivCheck("server")))
 	cdbapi.HandleFunc("/search", api.Secure(api.SearchCDBPackages)).Methods(http.MethodPost)
+	cdbapi.HandleFunc("/resolve", api.Secure(api.ResolveCDBPackageDependencies)).Methods(http.MethodPost)
 	cdbapi.HandleFunc("/detail/{author}/{name}", api.Secure(api.GetCDBPackage)).Methods(http.MethodGet)
 	cdbapi.HandleFunc("/detail/{author}/{name}/dependencies", api.Secure(api.GetCDBPackageDependencies)).Methods(http.MethodGet)
 

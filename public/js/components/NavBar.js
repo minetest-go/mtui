@@ -2,17 +2,12 @@ import { has_priv, is_logged_in, get_claims, logout } from "../service/login.js"
 import { has_feature } from "../service/features.js";
 import { get_player_count, get_maintenance } from "../service/stats.js";
 import { get_unread_count } from '../service/mail.js';
+
 import StatsDisplay from './StatsDisplay.js';
 import EngineStatus from "./pages/services/EngineStatus.js";
+import NavDropdown from "./NavDropdown.js";
 
 export default {
-	data: function() {
-		return {
-			admin_menu: false,
-			mod_menu: false,
-			services_menu: false
-		};
-	},
 	methods: {
 		has_priv: has_priv,
 		has_feature: has_feature,
@@ -29,7 +24,8 @@ export default {
 	},
 	components: {
 		"stats-display": StatsDisplay,
-		"engine-status": EngineStatus
+		"engine-status": EngineStatus,
+		"nav-dropdown": NavDropdown
 	},
 	template: /*html*/`
 		<nav class="navbar navbar-expand-lg navbar-dark" v-bind:class="{'bg-dark': !maintenance, 'bg-warning': maintenance}">
@@ -72,92 +68,74 @@ export default {
 							<i class="fa-solid fa-user-astronaut"></i> Skin
 						</router-link>
 					</li>
-					<li class="nav-item dropdown" v-if="has_priv('ban') && !maintenance" v-on:mouseleave="mod_menu = false">
-						<a class="nav-link dropdown-toggle" v-on:click="mod_menu = true" v-on:mouseover="mod_menu = true">
-							<i class="fa-solid fa-hammer"></i>
-							Moderation
-						</a>		
-						<ul class="dropdown-menu" v-bind:class="{'show': mod_menu}">
-							<li v-if="has_feature('xban')">
-								<router-link to="/xban" class="dropdown-item">
-									<i class="fa fa-ban"></i> XBan
-								</router-link>
-							</li>
-							<li>
-								<router-link to="/log" class="dropdown-item">
-									<i class="fa fa-magnifying-glass"></i> Logs
-								</router-link>
-							</li>	
-						</ul>
-					</li>
-					<li class="nav-item dropdown" v-if="has_feature('docker') && !maintenance" v-on:mouseleave="services_menu = false">
-						<a class="nav-link dropdown-toggle" v-on:click="services_menu = true" v-on:mouseover="services_menu = true">
-							<i class="fa-solid fa-gears"></i>
-							Services
-						</a>		
-						<ul class="dropdown-menu" v-bind:class="{'show': services_menu}">
-							<li>
-								<router-link to="/services/engine" class="dropdown-item">
-									<i class="fa fa-gear"></i>
-									Minetest engine
-									<engine-status/>
-								</router-link>
-							</li>
-						</ul>
-					</li>
-					<li class="nav-item dropdown" v-if="has_priv('server')" v-on:mouseleave="admin_menu = false">
-						<a class="nav-link dropdown-toggle" v-on:click="admin_menu = true" v-on:mouseover="admin_menu = true">
-							<i class="fa-solid fa-screwdriver-wrench"></i>
-							Administration
-						</a>		
-						<ul class="dropdown-menu" v-bind:class="{'show': admin_menu}">
-							<li>
-								<router-link to="/filebrowser/" class="dropdown-item">
-									<i class="fa-solid fa-folder"></i> Filebrowser
-								</router-link>
-							</li>
-							<li v-if="!maintenance">
-								<router-link to="/ui/settings" class="dropdown-item">
-									<i class="fa-solid fa-list-check"></i> UI Settings
-								</router-link>
-							</li>
-							<li v-if="!maintenance">
-								<router-link to="/features" class="dropdown-item">
-									<i class="fa fa-tags"></i> Features
-								</router-link>
-							</li>
-							<li v-if="!maintenance">
-								<router-link to="/oauth-apps" class="dropdown-item">
-									<i class="fa fa-passport"></i> OAuth apps
-								</router-link>
-							</li>
-							<li v-if="has_feature('luashell') && !maintenance">
-								<router-link to="/lua" class="dropdown-item">
-									<i class="fa-solid fa-terminal"></i> Lua
-								</router-link>
-							</li>
-							<li v-if="has_feature('minetest_config') && !maintenance">
-								<router-link to="/minetest-config" class="dropdown-item">
-									<i class="fa fa-cog"></i> Minetest config
-								</router-link>
-							</li>
-							<li v-if="has_feature('modmanagement') && !maintenance">
-								<router-link to="/mods" class="dropdown-item">
-									<i class="fa fa-cubes"></i> Mods
-								</router-link>
-							</li>
-							<li v-if="has_feature('mediaserver') && !maintenance">
-								<router-link to="/mediaserver" class="dropdown-item">
-									<i class="fa fa-photo-film"></i> Mediaserver
-								</router-link>
-							</li>
-							<li>
-								<router-link to="/maintenance" class="dropdown-item">
-									<i class="fa fa-wrench"></i> Maintenance
-								</router-link>
-							</li>
-						</ul>
-					</li>
+					<nav-dropdown v-if="has_priv('ban') && !maintenance" icon="hammer" name="Moderation">
+						<li v-if="has_feature('xban')">
+							<router-link to="/xban" class="dropdown-item">
+								<i class="fa fa-ban"></i> XBan
+							</router-link>
+						</li>
+						<li>
+							<router-link to="/log" class="dropdown-item">
+								<i class="fa fa-magnifying-glass"></i> Logs
+							</router-link>
+						</li>	
+					</nav-dropdown>
+					<nav-dropdown v-if="has_feature('docker') && !maintenance" icon="gears" name="Services">
+						<li>
+							<router-link to="/services/engine" class="dropdown-item">
+								<i class="fa fa-gear"></i>
+								Minetest engine
+								<engine-status/>
+							</router-link>
+						</li>
+					</nav-dropdown>
+					<nav-dropdown v-if="has_priv('server')" icon="screwdriver-wrench" name="Administration">
+						<li>
+							<router-link to="/filebrowser/" class="dropdown-item">
+								<i class="fa-solid fa-folder"></i> Filebrowser
+							</router-link>
+						</li>
+						<li v-if="!maintenance">
+							<router-link to="/ui/settings" class="dropdown-item">
+								<i class="fa-solid fa-list-check"></i> UI Settings
+							</router-link>
+						</li>
+						<li v-if="!maintenance">
+							<router-link to="/features" class="dropdown-item">
+								<i class="fa fa-tags"></i> Features
+							</router-link>
+						</li>
+						<li v-if="!maintenance">
+							<router-link to="/oauth-apps" class="dropdown-item">
+								<i class="fa fa-passport"></i> OAuth apps
+							</router-link>
+						</li>
+						<li v-if="has_feature('luashell') && !maintenance">
+							<router-link to="/lua" class="dropdown-item">
+								<i class="fa-solid fa-terminal"></i> Lua
+							</router-link>
+						</li>
+						<li v-if="has_feature('minetest_config') && !maintenance">
+							<router-link to="/minetest-config" class="dropdown-item">
+								<i class="fa fa-cog"></i> Minetest config
+							</router-link>
+						</li>
+						<li v-if="has_feature('modmanagement') && !maintenance">
+							<router-link to="/mods" class="dropdown-item">
+								<i class="fa fa-cubes"></i> Mods
+							</router-link>
+						</li>
+						<li v-if="has_feature('mediaserver') && !maintenance">
+							<router-link to="/mediaserver" class="dropdown-item">
+								<i class="fa fa-photo-film"></i> Mediaserver
+							</router-link>
+						</li>
+						<li>
+							<router-link to="/maintenance" class="dropdown-item">
+								<i class="fa fa-wrench"></i> Maintenance
+							</router-link>
+						</li>
+					</nav-dropdown>
 				</ul>
 				<div class="d-flex">
 					<stats-display class="navbar-text" style="padding-right: 10px;"/>

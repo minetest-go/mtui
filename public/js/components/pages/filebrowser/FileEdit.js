@@ -3,26 +3,26 @@ import DefaultLayout from "../../layouts/DefaultLayout.js";
 import { download_text, upload } from "../../../api/filebrowser.js";
 
 export default {
+    props: ["pathMatch"],
     components: {
         "default-layout": DefaultLayout
     },
     data: function() {
         return {
-            path: this.$route.params.pathMatch,
             text: "",
             cm: null,
             success: false
         };
     },
     mounted: function() {
-        download_text(this.path)
+        download_text(this.pathMatch)
         .then(t => this.text = t)
         .then(() => {
 
             const mode = {};
-            if (this.path.match(/.*(lua)$/i)) {
+            if (this.pathMatch.match(/.*(lua)$/i)) {
                 mode.name = "lua";
-            } else if (this.path.match(/.*(js|json)$/i)) {
+            } else if (this.pathMatch.match(/.*(js|json)$/i)) {
                 mode.name = "javascript";
             }
 
@@ -35,14 +35,14 @@ export default {
     },
     methods: {
         save: function() {
-            upload(this.path, this.cm.getValue())
+            upload(this.pathMatch, this.cm.getValue())
             .then(() => this.success = true);
         }
     },
     computed: {
         breadcrumb: function() {
             const bc = [START, FILEBROWSER];
-            const parts = this.path.split("/");
+            const parts = this.pathMatch.split("/");
 
             let path = "";
             parts

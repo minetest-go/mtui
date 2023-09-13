@@ -28,6 +28,7 @@ import Signup from './components/pages/Signup.js';
 import Mods from './components/pages/mods/Mods.js';
 import ContentBrowse from './components/pages/cdb/Browse.js';
 import ContentdbDetail from './components/pages/cdb/Detail.js';
+import InstallCDB from './components/pages/cdb/Install.js';
 
 export default [{
 	path: "/", component: Start,
@@ -53,7 +54,7 @@ export default [{
 }, {
 	path: "/online-players", component: OnlinePlayers
 }, {
-	path: "/profile/:name", component: PlayerInfo
+	path: "/profile/:name", component: PlayerInfo, props: true,
 }, {
 	path: "/playersearch", component: PlayerSearch
 }, {
@@ -72,7 +73,10 @@ export default [{
 	path: "/cdb/browse", component: ContentBrowse,
 	meta: { requiredPriv: "server" }
 }, {
-	path: "/cdb/detail/:author/:name", component: ContentdbDetail,
+	path: "/cdb/detail/:author/:name", component: ContentdbDetail, props: true,
+	meta: { requiredPriv: "server" }
+}, {
+	path: "/cdb/install/:author/:name", component: InstallCDB, props: true,
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/mediaserver", component: Mediaserver,
@@ -83,7 +87,7 @@ export default [{
 	path: "/mail/box/:boxname", component: Mail,
 	meta: { requiredPriv: "interact" }
 }, {
-	path: "/mail/read/:id", component: MailRead,
+	path: "/mail/read/:id", component: MailRead, props: true,
 	meta: { requiredPriv: "interact" }
 }, {
 	path: "/mail/compose", component: Compose,
@@ -95,7 +99,7 @@ export default [{
 	path: "/oauth-apps", component: OauthApps,
 	meta: { requiredPriv: "server" }
 }, {
-	path: "/oauth-apps/:id", component: OauthAppEdit,
+	path: "/oauth-apps/:id", component: OauthAppEdit, props: true,
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/minetest-config", component: MinetestConfig,
@@ -107,9 +111,9 @@ export default [{
 	path:"/ui/settings", component: UISettings,
 	meta: { requiredPriv: "server" }
 }, {
-	path: "/filebrowser/:pathMatch(.*)", component: Filebrowser,
+	path: "/filebrowser/:pathMatch(.*)", component: Filebrowser, props: true,
 	meta: { requiredPriv: "server", maintenance_page: true }
 }, {
-	path: "/fileedit/:pathMatch(.*)", component: FileEdit,
+	path: "/fileedit/:pathMatch(.*)", component: FileEdit, props: true,
 	meta: { requiredPriv: "server", maintenance_page: true }
 }];

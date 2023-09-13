@@ -8,6 +8,7 @@ import DefaultLayout from '../../layouts/DefaultLayout.js';
 import { START, MAIL } from '../../Breadcrumb.js';
 
 export default {
+    props: ["id"],
     components: {
         "default-layout": DefaultLayout
     },
@@ -40,13 +41,11 @@ export default {
         }
     },
     data: function() {
-        const id = this.$route.params.id;
         return {
-            id: id,
             breadcrumb: [START, MAIL, {
                 name: `Read mail`,
                 icon: "envelope-open",
-                link: `/mail/read/${id}`
+                link: `/mail/read/${this.id}`
             }]
         };
     },

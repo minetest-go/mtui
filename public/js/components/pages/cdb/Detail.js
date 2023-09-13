@@ -1,29 +1,20 @@
-
-import { get_package, get_dependencies } from "../../../api/cdb.js";
-import { add } from "../../../service/mods.js";
-import store from '../../../store/mods.js';
+import { get_dependencies, get_package } from "../../../service/cdb.js";
+import { get_cdb_mod, get_game } from "../../../service/mods.js";
 import FeedbackButton from "../../FeedbackButton.js";
 import DefaultLayout from "../../layouts/DefaultLayout.js";
-import { START, ADMINISTRATION, MODS, CDB } from "../../Breadcrumb.js";
+import { START, ADMINISTRATION, MODS, CDB, CDB_DETAIL } from "../../Breadcrumb.js";
 
 export default {
+    props: ["author", "name"],
     components: {
         "feedback-button": FeedbackButton,
         "default-layout": DefaultLayout
     },
     data: function() {
-        const author = this.$route.params.author;
-        const name = this.$route.params.name;
         return {
-            author: author,
-            name: name,
             pkg: null,
             deps: null,
-            breadcrumb: [START, ADMINISTRATION, MODS, CDB, {
-                name: `Package detail ${author}/${name}`,
-                icon: "box-open",
-                link: `/cdb/detail/${author}/${name}`
-            }]
+            breadcrumb: [START, ADMINISTRATION, MODS, CDB, CDB_DETAIL(this.author, this.name)]
         };
     },
     created: function() {
@@ -40,18 +31,8 @@ export default {
         cdb_link: function() {
             return `https://content.minetest.net/packages/${this.pkg.author}/${this.pkg.name}/`;
         },
-        is_installed: function() {
-            return store.list && store.list.find(m => m.name == this.name && m.author == this.author);
-        }
-    },
-    methods: {
-        install: function() {
-            return add({
-				name: this.pkg.name,
-                author: this.pkg.author,
-				mod_type: this.pkg.type,
-				source_type: "cdb"
-			});
+        install_disabled: function() {
+            return get_cdb_mod(this.author, this.name) || (this.pkg && this.pkg.type == "game" && get_game());
         }
     },
     template: /*html*/`
@@ -68,12 +49,12 @@ export default {
                     </div>
                     <div class="card-body">
                         <div>
-                            <img v-for="screenshot in thumbnails" class="img-thumbnail" :src="screenshot"/>
+                            <img v-for="screenshot in thumbnails" :src="screenshot" style="margin: 5px;"/>
                         </div>
                         <span v-for="tag in pkg.tags" style="margin: 2px;" class="badge bg-success">{{tag}}</span>
                         <hr>
                         <h4>Description</h4>
-                        <pre>{{pkg.long_description}}</pre>
+                        <pre>{{pkg.long_description || pkg.short_description}}</pre>
                         <h4>Dependencies</h4>
                         <ul v-if="deps">
                             <li v-for="dep in deps">
@@ -90,20 +71,20 @@ export default {
                         Actions
                     </div>
                     <div class="card-body">
-                        <a :href="cdb_link" class="btn btn-secondary" target="new">
+                        <a :href="cdb_link" class="btn btn-secondary" target="_blank">
                             <i class="fa-solid fa-box-open"></i>
                             View on ContentDB
                         </a>
                         <hr>
-                        <a :href="pkg.repo" class="btn btn-secondary" target="new" v-if="pkg.repo">
+                        <a :href="pkg.repo" class="btn btn-secondary" target="_blank" v-if="pkg.repo">
                             <i class="fa-brands fa-git-alt"></i>
                             View source
                         </a>
                         <hr>
-                        <feedback-button type="success" :fn="install" :disabled="is_installed">
+                        <router-link class="btn btn-success" :to="'/cdb/install/' + pkg.author + '/' + pkg.name" v-if="!install_disabled">
                             <i class="fa-solid fa-plus"></i>
                             Install
-                        </feedback-button>
+                        </router-link>
                     </div>
                 </div>
             </div>
