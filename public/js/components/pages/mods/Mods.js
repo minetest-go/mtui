@@ -1,13 +1,14 @@
-import store from '../../../store/mods.js';
-import { add, remove } from '../../../service/mods.js';
+import { add, remove, get_all, is_busy, get_git_mod } from '../../../service/mods.js';
 import FeedbackButton from '../../FeedbackButton.js';
 import DefaultLayout from '../../layouts/DefaultLayout.js';
+import CDBPackageLink from '../../CDBPackageLink.js';
 import { START, ADMINISTRATION, MODS } from '../../Breadcrumb.js';
 
 export default {
 	components: {
 		"feedback-button": FeedbackButton,
-		"default-layout": DefaultLayout
+		"default-layout": DefaultLayout,
+		"cdb-package-link": CDBPackageLink
 	},
 	data: () => {
 		return {
@@ -16,7 +17,6 @@ export default {
 			add_source_type: "git",
 			add_url: "",
 			add_version: "",
-			store: store,
 			breadcrumb: [START, ADMINISTRATION, MODS]
 		};
 	},
@@ -45,21 +45,26 @@ export default {
 				branch: "refs/heads/master"
 			});
 		},
-		remove: remove
+		remove: remove,
+		get_mods: get_all,
+		get_git_mod: get_git_mod
+	},
+	computed: {
+		busy: is_busy
 	},
 	template: /*html*/`
 		<default-layout icon="cubes" title="Mods" :breadcrumb="breadcrumb">
 			<h4>
 				Mod management
-				<i class="fa-solid fa-spinner fa-spin" v-if="store.busy"></i>
+				<i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>
 			</h4>
-			<div class="alert alert-warning" v-if="store.list && !store.has_mtui_mod">
+			<div class="alert alert-warning" v-if="!get_git_mod('mtui')">
 				<div class="row">
 					<div class="col-12">
 						<i class="fa-solid fa-triangle-exclamation"></i>
 						<b>Warning:</b>
 						The <i>mtui</i> mod is not installed, some features may not work properly
-						<button class="btn btn-primary float-end" :disabled="store.busy" v-on:click="add_mtui_mod">
+						<button class="btn btn-primary float-end" :disabled="busy" v-on:click="add_mtui_mod">
 							<i class="fa fa-plus"></i>
 							Install "mtui" mod
 						</button>
@@ -124,17 +129,20 @@ export default {
 						<td></td>
 						<td></td>
 						<td>
-							<router-link to="/cdb/browse" class="btn btn-success" :disabled="store.busy">
+							<router-link to="/cdb/browse" class="btn btn-success" :disabled="busy">
 								<i class="fa-solid fa-box-open"></i>
 								Add from ContentDB
 							</router-link>
 						</td>
 					</tr>
-					<tr v-for="mod in store.list">
+					<tr v-for="mod in get_mods()">
 						<td>
 							<span class="badge bg-secondary">{{mod.mod_type}}</span>
 						</td>
-						<td>{{mod.name}}</td>
+						<td>
+							<cdb-package-link v-if="mod.source_type == 'cdb'" :author="mod.author" :name="mod.name"/>
+							<span v-else>{{mod.name}}</span>
+						</td>
 						<td>
 							<span class="badge bg-success">
 								<i class="fa-solid fa-box-open" v-if="mod.source_type == 'cdb'"></i>
@@ -165,7 +173,7 @@ export default {
 									Edit
 								</a>
 								<a class="btn btn-danger" v-on:click="remove(mod.id)">
-									<i class="fa fa-times"></i>
+									<i class="fa fa-trash"></i>
 									Remove
 								</a>
 							</div>

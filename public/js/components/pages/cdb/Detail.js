@@ -1,6 +1,5 @@
-
 import { get_dependencies, get_package } from "../../../service/cdb.js";
-import store from '../../../store/mods.js';
+import { get_cdb_mod, get_game } from "../../../service/mods.js";
 import FeedbackButton from "../../FeedbackButton.js";
 import DefaultLayout from "../../layouts/DefaultLayout.js";
 import { START, ADMINISTRATION, MODS, CDB, CDB_DETAIL } from "../../Breadcrumb.js";
@@ -32,8 +31,8 @@ export default {
         cdb_link: function() {
             return `https://content.minetest.net/packages/${this.pkg.author}/${this.pkg.name}/`;
         },
-        is_installed: function() {
-            return store.list && store.list.find(m => m.name == this.name && m.author == this.author);
+        install_disabled: function() {
+            return get_cdb_mod(this.author, this.name) || (this.pkg && this.pkg.type == "game" && get_game());
         }
     },
     template: /*html*/`
@@ -82,7 +81,7 @@ export default {
                             View source
                         </a>
                         <hr>
-                        <router-link class="btn btn-success" :to="'/cdb/install/' + pkg.author + '/' + pkg.name" :disabled="is_installed">
+                        <router-link class="btn btn-success" :to="'/cdb/install/' + pkg.author + '/' + pkg.name" v-if="!install_disabled">
                             <i class="fa-solid fa-plus"></i>
                             Install
                         </router-link>

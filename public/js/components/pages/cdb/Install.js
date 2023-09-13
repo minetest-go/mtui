@@ -1,6 +1,6 @@
 import DefaultLayout from "../../layouts/DefaultLayout.js";
-import { add } from "../../../service/mods.js";
-import { resolve_package } from "../../../api/cdb.js";
+import { add, get_cdb_mod } from "../../../service/mods.js";
+import { resolve_package, get_package } from "../../../api/cdb.js";
 import { validate } from "../../../api/mods.js";
 import { START, ADMINISTRATION, MODS, CDB, CDB_DETAIL } from "../../Breadcrumb.js";
 import CDBPackageLink from "../../CDBPackageLink.js";
@@ -12,10 +12,10 @@ const DependencyInstallRow = {
             return this.dep.choices.length == 0 && !this.dep.installed;
         },
         is_installed: function(){
-            return this.dep.choices.length == 0 && this.dep.installed;
+            return this.dep.installed;
         },
         has_choices: function() {
-            return this.dep.choices.length > 0;
+            return this.dep.choices.length > 0 && !this.dep.installed;
         }
     },
     template: /*html*/`
@@ -51,6 +51,7 @@ export default {
             missing_dep: false,
             selected_package_map: {}, // modname -> packagename
             installed_mods: [],
+            pkg: null,
             deps: [],
             breadcrumb: [START, ADMINISTRATION, MODS, CDB, CDB_DETAIL(this.author, this.name), {
                 name: `Install`,
@@ -60,9 +61,18 @@ export default {
         };
     },
     created: function() {
-        validate()
-        .then(r => this.installed_mods = r.installed)
-        .then(() => this.fetch_dependencies());
+        get_package(this.author, this.name)
+        .then(pkg => {
+            const mod = get_cdb_mod(pkg.author, pkg.name);
+            pkg.installed = !!mod;
+            if (pkg.type == "mod") {
+                // resolve mod dependencies
+                validate()
+                .then(r => this.installed_mods = r.installed)
+                .then(() => this.fetch_dependencies());
+            }
+            this.pkg = pkg;
+        });
     },
     methods: {
         fetch_dependencies: function() {
@@ -93,9 +103,21 @@ export default {
         },
         install_next: function() {
             const next_dep = this.deps.find(d => !d.installed);
+            if (!next_dep && !this.pkg.installed) {
+                // install root dep
+                add({
+                    author: this.pkg.author,
+                    name: this.pkg.name,
+                    mod_type: this.pkg.type,
+                    source_type: "cdb"
+                })
+                .then(() => this.pkg.installed = true);
+            }
+
             if (!next_dep) {
                 return;
             }
+
             const parts = next_dep.selected.split("/");
 
             add({
@@ -125,16 +147,15 @@ export default {
                         <th>Provided by package</th>
                     </tr>
                 </thead>
-                <tbody v-if="author">
-                    <tr>
+                <tbody>
+                    <tr v-if="pkg">
                         <td>{{name}}</td>
                         <td>
                             <cdb-package-link :author="author" :name="name"/>
+                            <i class="fa fa-check" v-if="pkg.installed"></i>
                         </td>
                     </tr>
-                </tbody>
-                <tbody v-for="dep in deps">
-                    <dependency-install-row :dep="dep" :selected_dep="dep.selected" v-on:select_dep="select_dep"/>
+                    <dependency-install-row v-for="dep in deps" :dep="dep" :key="dep.name" :selected_dep="dep.selected" v-on:select_dep="select_dep"/>
                 </tbody>
             </table>
             <div class="row">
