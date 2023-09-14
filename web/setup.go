@@ -187,7 +187,7 @@ func Setup(a *app.App) error {
 	r.HandleFunc("/index.html", api.GetIndex)
 
 	// static files
-	if os.Getenv("WEBDEV") == "true" {
+	if a.Config.Webdev {
 		logrus.WithFields(logrus.Fields{"dir": "public"}).Info("Using live mode")
 		fs := http.FileServer(http.FS(os.DirFS("public")))
 		r.PathPrefix("/").HandlerFunc(fs.ServeHTTP)

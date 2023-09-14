@@ -3,6 +3,7 @@ package types
 import (
 	"os"
 	"strconv"
+	"strings"
 )
 
 // env provided configuration flags
@@ -14,6 +15,9 @@ type Config struct {
 	CookiePath              string
 	Webdev                  bool
 	Servername              string
+	EnabledFeatures         []string
+	AdminUsername           string
+	AdminPassword           string
 	MinetestConfig          string
 	DockerMinetestConfig    string
 	DockerMinetestPort      int
@@ -33,6 +37,9 @@ func NewConfig() *Config {
 		APIKey:                  os.Getenv("API_KEY"),
 		Webdev:                  os.Getenv("WEBDEV") == "true",
 		Servername:              os.Getenv("SERVER_NAME"),
+		EnabledFeatures:         strings.Split(os.Getenv("ENABLE_FEATURES"), ","),
+		AdminUsername:           os.Getenv("ADMIN_USERNAME"),
+		AdminPassword:           os.Getenv("ADMIN_PASSWORD"),
 		MinetestConfig:          os.Getenv("MINETEST_CONFIG"),
 		DockerMinetestConfig:    os.Getenv("DOCKER_MINETEST_CONFIG"),
 		DockerMinetestPort:      int(port),

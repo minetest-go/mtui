@@ -79,18 +79,16 @@ func Create(world_dir string) (*App, error) {
 	}
 
 	// admin user
-	admin_username := os.Getenv("ADMIN_USERNAME")
-	admin_password := os.Getenv("ADMIN_PASSWORD")
-	if admin_username != "" && admin_password != "" {
-		logrus.WithFields(logrus.Fields{"admin_user": admin_username}).Info("Creating admin-user")
-		err = CreateAdminUser(app.DBContext, admin_username, admin_password)
+	if cfg.AdminUsername != "" && cfg.AdminPassword != "" {
+		logrus.WithFields(logrus.Fields{"admin_user": cfg.AdminUsername}).Info("Creating admin-user")
+		err = CreateAdminUser(app.DBContext, cfg.AdminUsername, cfg.AdminPassword)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	// features
-	err = PopulateFeatures(app.Repos.FeatureRepository)
+	err = PopulateFeatures(app.Repos.FeatureRepository, cfg.EnabledFeatures)
 	if err != nil {
 		return nil, err
 	}

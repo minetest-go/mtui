@@ -2,7 +2,6 @@ package web
 
 import (
 	"net/http"
-	"os"
 )
 
 type AppInfo struct {
@@ -13,7 +12,7 @@ type AppInfo struct {
 func (a *Api) GetAppInfo(w http.ResponseWriter, r *http.Request) {
 	ai := &AppInfo{
 		Version:    a.app.Version,
-		Servername: os.Getenv("SERVER_NAME"),
+		Servername: a.app.Config.Servername,
 	}
 
 	SendJson(w, ai)

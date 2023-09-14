@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"mtui/db"
 	"mtui/types"
-	"os"
-	"strings"
 )
 
 type AvailableFeature struct {
@@ -30,14 +28,12 @@ func GetAvailableFeatures() ([]*AvailableFeature, error) {
 	return available_features, err
 }
 
-func PopulateFeatures(repo *db.FeatureRepository) error {
+func PopulateFeatures(repo *db.FeatureRepository, enabled_features []string) error {
 
 	available_features, err := GetAvailableFeatures()
 	if err != nil {
 		return err
 	}
-
-	enabled_features := strings.Split(os.Getenv("ENABLE_FEATURES"), ",")
 
 	for _, available_feature := range available_features {
 		feature, err := repo.GetByName(available_feature.Name)
