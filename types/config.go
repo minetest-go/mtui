@@ -17,6 +17,8 @@ type Config struct {
 	Webdev                  bool
 	Servername              string
 	EnabledFeatures         []string
+	LogStreamURL            string
+	LogStreamAuthorization  string
 	AdminUsername           string
 	AdminPassword           string
 	MinetestConfig          string
@@ -40,6 +42,8 @@ func NewConfig() *Config {
 		Webdev:                  os.Getenv("WEBDEV") == "true",
 		Servername:              os.Getenv("SERVER_NAME"),
 		EnabledFeatures:         strings.Split(os.Getenv("ENABLE_FEATURES"), ","),
+		LogStreamURL:            os.Getenv("LOG_STREAM_URL"),
+		LogStreamAuthorization:  os.Getenv("LOG_STREAM_AUTHORIZATION"),
 		AdminUsername:           os.Getenv("ADMIN_USERNAME"),
 		AdminPassword:           os.Getenv("ADMIN_PASSWORD"),
 		MinetestConfig:          os.Getenv("MINETEST_CONFIG"),
