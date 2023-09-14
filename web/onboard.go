@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"mtui/auth"
+	"mtui/types"
 	"net/http"
 	"sync/atomic"
 
@@ -113,4 +114,11 @@ func (a *Api) CreateOnboardUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	// create log entry
+	a.CreateUILogEntry(&types.Log{
+		Username: obr.Username,
+		Event:    "signup",
+		Message:  fmt.Sprintf("User '%s' signed up successfully as admin", obr.Username),
+	}, r)
 }

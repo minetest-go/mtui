@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"mtui/app"
 	"mtui/types"
 	"net/http"
@@ -44,4 +45,15 @@ func (a *Api) SetFeature(w http.ResponseWriter, r *http.Request, claims *types.C
 
 	err = a.app.Repos.FeatureRepository.Set(feature)
 	Send(w, feature, err)
+
+	// create log entry
+	action := "disables"
+	if feature.Enabled {
+		action = "enables"
+	}
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "feature",
+		Message:  fmt.Sprintf("User '%s' %s the feature '%s'", claims.Username, action, feature.Name),
+	}, r)
 }

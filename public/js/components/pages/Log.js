@@ -56,7 +56,21 @@ export default {
                     "logfile-verbose"
                 ];
             } else {
-                return [];
+                return [
+                    "login",
+                    "signup",
+                    "skin",
+                    "settings",
+                    "filebrowser",
+                    "maintenance",
+                    "lua",
+                    "chatcommand",
+                    "feature",
+                    "system",
+                    "engine",
+                    "mods",
+                    "oauth"
+                ];
             }
         }
     },
@@ -113,6 +127,7 @@ export default {
         format_time: format_time
     },
     watch: {
+        "category": "update_count",
         "event": "update_count",
         "from": "update_count",
         "to": "update_count",
@@ -134,6 +149,7 @@ export default {
                 <label>Category</label>
                 <select class="form-control" v-model="category">
                     <option value="minetest">Minetest</option>
+                    <option value="ui">UI</option>
                 </select>
             </div>
             <div class="col-md-2">

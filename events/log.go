@@ -8,7 +8,7 @@ import (
 	"mtui/types"
 )
 
-func logLoop(a *app.App, geoipresolver *app.GeoipResolver, ch chan *bridge.CommandResponse) {
+func logLoop(a *app.App, ch chan *bridge.CommandResponse) {
 	for cmd := range ch {
 		log := &types.Log{}
 		err := json.Unmarshal(cmd.Data, log)
@@ -17,15 +17,7 @@ func logLoop(a *app.App, geoipresolver *app.GeoipResolver, ch chan *bridge.Comma
 			return
 		}
 
-		if log.IPAddress != nil {
-			geoip := geoipresolver.Resolve(*log.IPAddress)
-			if geoip != nil {
-				log.GeoCity = &geoip.City
-				log.GeoCountry = &geoip.ISOCountry
-				log.GeoASN = &geoip.ASN
-			}
-		}
-
+		a.ResolveLogGeoIP(log, nil)
 		err = a.Repos.LogRepository.Insert(log)
 		if err != nil {
 			fmt.Printf("DB error: %s\n", err.Error())

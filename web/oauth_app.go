@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"mtui/types"
 	"net/http"
 
@@ -29,10 +30,24 @@ func (a *Api) SetOauthApp(w http.ResponseWriter, r *http.Request, claims *types.
 
 	err = a.app.Repos.OauthAppRepo.Set(app)
 	Send(w, app, err)
+
+	// create log entry
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "oauth",
+		Message:  fmt.Sprintf("User '%s' updates the oauth app '%s'", claims.Username, app.ID),
+	}, r)
 }
 
 func (a *Api) DeleteOauthApp(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	vars := mux.Vars(r)
 	err := a.app.Repos.OauthAppRepo.Delete(vars["id"])
 	Send(w, true, err)
+
+	// create log entry
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "oauth",
+		Message:  fmt.Sprintf("User '%s' deletes the oauth app '%s'", claims.Username, vars["id"]),
+	}, r)
 }

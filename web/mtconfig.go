@@ -137,16 +137,23 @@ func (a *Api) SetMTConfig(w http.ResponseWriter, r *http.Request, claims *types.
 		return
 	}
 
-	if strings.HasPrefix(key, "secure.") {
-		// skip runtime change for secure settings
-		Send(w, true, nil)
-		return
-	}
-
 	st := sts[key]
 	if st == nil {
 		// default to string type
 		st = &minetestconfig.SettingType{Type: "string"}
+	}
+
+	// create log entry
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "settings",
+		Message:  fmt.Sprintf("User '%s' changed the setting '%s' of type '%s' to '%s'", claims.Username, key, st.Type, s.Value),
+	}, r)
+
+	if strings.HasPrefix(key, "secure.") {
+		// skip runtime change for secure settings
+		Send(w, true, nil)
+		return
 	}
 
 	if runtime_set_allowed_types[st.Type] {
@@ -191,15 +198,22 @@ func (a *Api) DeleteMTConfig(w http.ResponseWriter, r *http.Request, claims *typ
 		return
 	}
 
+	st := sts[key]
+	if st == nil {
+		st = &minetestconfig.SettingType{Type: "string"}
+	}
+
+	// create log entry
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "settings",
+		Message:  fmt.Sprintf("User '%s' removed the setting '%s' of type '%s'", claims.Username, key, st.Type),
+	}, r)
+
 	if strings.HasPrefix(key, "secure.") {
 		// skip runtime change for secure settings
 		Send(w, true, nil)
 		return
-	}
-
-	st := sts[key]
-	if st == nil {
-		st = &minetestconfig.SettingType{Type: "string"}
 	}
 
 	if runtime_set_allowed_types[st.Type] {

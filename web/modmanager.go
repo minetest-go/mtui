@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"mtui/minetestconfig/depanalyzer"
 	"mtui/types"
 	"net/http"
@@ -40,6 +41,13 @@ func (a *Api) UpdateModVersion(w http.ResponseWriter, r *http.Request, claims *t
 	m.Version = version
 
 	SendJson(w, m)
+
+	// create log entry
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "mods",
+		Message:  fmt.Sprintf("User '%s' updated the %s '%s' (%s) to version '%s'", claims.Username, m.ModType, m.Name, m.SourceType, m.Version),
+	}, r)
 }
 
 func (a *Api) CreateMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
@@ -51,6 +59,13 @@ func (a *Api) CreateMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 	}
 
 	Send(w, m, a.app.ModManager.Create(m))
+
+	// create log entry
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "mods",
+		Message:  fmt.Sprintf("User '%s' creates the %s '%s' (%s) in version '%s'", claims.Username, m.ModType, m.Name, m.SourceType, m.Version),
+	}, r)
 }
 
 func (a *Api) DeleteMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
@@ -71,6 +86,13 @@ func (a *Api) DeleteMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 	if err != nil {
 		SendError(w, 500, err.Error())
 	}
+
+	// create log entry
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "mods",
+		Message:  fmt.Sprintf("User '%s' deletes the %s '%s' (%s)", claims.Username, m.ModType, m.Name, m.SourceType),
+	}, r)
 }
 
 func (a *Api) ModsCheckUpdates(w http.ResponseWriter, r *http.Request, claims *types.Claims) {

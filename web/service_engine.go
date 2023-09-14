@@ -237,6 +237,14 @@ func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types
 		Running: false,
 		Version: cer.Version,
 	})
+
+	// create log entry
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "engine",
+		Message:  fmt.Sprintf("User '%s' created the minetest engine with version '%s'", claims.Username, cer.Version),
+	}, r)
+
 }
 
 func (a *Api) StartEngine(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
@@ -259,6 +267,13 @@ func (a *Api) StartEngine(w http.ResponseWriter, r *http.Request, claims *types.
 	ctx := context.Background()
 	err = cli.ContainerStart(ctx, c.ID, dockertypes.ContainerStartOptions{})
 	Send(w, true, err)
+
+	// create log entry
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "engine",
+		Message:  fmt.Sprintf("User '%s' started the minetest engine", claims.Username),
+	}, r)
 }
 
 func (a *Api) StopEngine(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
@@ -285,6 +300,13 @@ func (a *Api) StopEngine(w http.ResponseWriter, r *http.Request, claims *types.C
 	current_stats.Store(nil)
 
 	Send(w, true, err)
+
+	// create log entry
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "engine",
+		Message:  fmt.Sprintf("User '%s' stopped the minetest engine", claims.Username),
+	}, r)
 }
 
 func (a *Api) RemoveEngine(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
@@ -307,6 +329,13 @@ func (a *Api) RemoveEngine(w http.ResponseWriter, r *http.Request, claims *types
 	ctx := context.Background()
 	err = cli.ContainerRemove(ctx, c.ID, dockertypes.ContainerRemoveOptions{})
 	Send(w, true, err)
+
+	// create log entry
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "engine",
+		Message:  fmt.Sprintf("User '%s' removed the minetest engine", claims.Username),
+	}, r)
 }
 
 type ServiceLogResponse struct {

@@ -2,6 +2,7 @@ package web
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"mtui/types"
 	"net/http"
@@ -53,4 +54,12 @@ func (a *Api) SetConfig(w http.ResponseWriter, r *http.Request, c *types.Claims)
 		SendError(w, 500, err.Error())
 		return
 	}
+
+	// create log entry
+	a.CreateUILogEntry(&types.Log{
+		Username: c.Username,
+		Event:    "lua",
+		Message:  fmt.Sprintf("User '%s' sets the config '%s' to '%s'", c.Username, key, e.Value),
+	}, r)
+
 }

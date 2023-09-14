@@ -74,6 +74,13 @@ func (a *Api) SetSkin(w http.ResponseWriter, r *http.Request, claims *types.Clai
 	resp := &command.LuaResponse{}
 	err = a.app.Bridge.ExecuteCommand(command.COMMAND_LUA, req, resp, time.Second*5)
 	SendLuaResponse(w, err, resp)
+
+	// create log entry
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "skin",
+		Message:  fmt.Sprintf("User '%s' uploaded a new skin in slot %d with %d bytes", claims.Username, skin_id, len(b)),
+	}, r)
 }
 
 func (a *Api) RemoveSkin(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
@@ -82,4 +89,11 @@ func (a *Api) RemoveSkin(w http.ResponseWriter, r *http.Request, claims *types.C
 
 	err := os.Remove(getPlayerSkinFile(a.app.WorldDir, claims.Username, skin_id))
 	Send(w, true, err)
+
+	// create log entry
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "skin",
+		Message:  fmt.Sprintf("User '%s' removed the skin in slot %d", claims.Username, skin_id),
+	}, r)
 }

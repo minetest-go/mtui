@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"mtui/types"
 	"net/http"
 
@@ -18,6 +19,14 @@ func (a *Api) EnableMaintenanceMode(w http.ResponseWriter, r *http.Request, c *t
 		SendError(w, 500, "already in maintenance mode")
 	}
 	a.app.MaintenanceMode.Store(true)
+
+	// create log entry
+	a.CreateUILogEntry(&types.Log{
+		Username: c.Username,
+		Event:    "maintenance",
+		Message:  fmt.Sprintf("User '%s' enables the maintenance mode", c.Username),
+	}, r)
+
 	// clear current stats
 	current_stats.Store(nil)
 	// detach database
@@ -42,5 +51,13 @@ func (a *Api) DisableMaintenanceMode(w http.ResponseWriter, r *http.Request, c *
 			"err": err,
 		}).Error("Attach database failed")
 	}
+
+	// create log entry
+	a.CreateUILogEntry(&types.Log{
+		Username: c.Username,
+		Event:    "maintenance",
+		Message:  fmt.Sprintf("User '%s' disabled the maintenance mode", c.Username),
+	}, r)
+
 	Send(w, false, err)
 }

@@ -34,13 +34,13 @@ func (a *Api) get_sanitized_dir(r *http.Request) (string, string, error) {
 	return dir, path.Join(a.app.WorldDir, dir), nil
 }
 
-func (a *Api) get_sanitized_filename(r *http.Request, query_param string) (string, error) {
+func (a *Api) get_sanitized_filename(r *http.Request, query_param string) (string, string, error) {
 	filename := r.URL.Query().Get(query_param)
 	if strings.Contains(filename, "..") {
-		return "", fmt.Errorf("invalid filename: '%s'", filename)
+		return "", "", fmt.Errorf("invalid filename: '%s'", filename)
 	}
 
-	return path.Join(a.app.WorldDir, filename), nil
+	return filename, path.Join(a.app.WorldDir, filename), nil
 }
 
 func (a *Api) BrowseFolder(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
@@ -92,7 +92,7 @@ func (a *Api) BrowseFolder(w http.ResponseWriter, r *http.Request, claims *types
 }
 
 func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	filename, err := a.get_sanitized_filename(r, "filename")
+	rel_filename, filename, err := a.get_sanitized_filename(r, "filename")
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -124,11 +124,17 @@ func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types
 		return
 	}
 
-	_, err = io.Copy(w, f)
+	count, err := io.Copy(w, f)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
+
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "filebrowser",
+		Message:  fmt.Sprintf("User '%s' downloaded the file '%s' with %d bytes", claims.Username, rel_filename, count),
+	}, r)
 }
 
 func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
@@ -148,6 +154,7 @@ func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.
 	zw := zip.NewWriter(w)
 	defer zw.Close()
 
+	count := int64(0)
 	err = filepath.Walk(absdir, func(filePath string, info os.FileInfo, err error) error {
 		if info.IsDir() {
 			return nil
@@ -164,10 +171,11 @@ func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.
 		if err != nil {
 			return err
 		}
-		_, err = io.Copy(zipFile, fsFile)
+		fc, err := io.Copy(zipFile, fsFile)
 		if err != nil {
 			return err
 		}
+		count += fc
 		return nil
 	})
 
@@ -175,10 +183,16 @@ func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.
 		SendError(w, 500, err.Error())
 		return
 	}
+
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "filebrowser",
+		Message:  fmt.Sprintf("User '%s' downloaded the directory '%s' with %d bytes (uncompressed)", claims.Username, reldir, count),
+	}, r)
 }
 
 func (a *Api) UploadZip(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	_, absdir, err := a.get_sanitized_dir(r)
+	reldir, absdir, err := a.get_sanitized_dir(r)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -204,6 +218,7 @@ func (a *Api) UploadZip(w http.ResponseWriter, r *http.Request, claims *types.Cl
 	}
 	defer zr.Close()
 
+	count := int64(0)
 	for _, f := range zr.File {
 		targetfile := path.Join(absdir, f.Name)
 		dirname := path.Dir(targetfile)
@@ -226,7 +241,8 @@ func (a *Api) UploadZip(w http.ResponseWriter, r *http.Request, claims *types.Cl
 			return
 		}
 
-		_, err = io.Copy(targetf, zipfile)
+		fc, err := io.Copy(targetf, zipfile)
+		count += fc
 		targetf.Close()
 		zipfile.Close()
 
@@ -235,10 +251,16 @@ func (a *Api) UploadZip(w http.ResponseWriter, r *http.Request, claims *types.Cl
 			return
 		}
 	}
+
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "filebrowser",
+		Message:  fmt.Sprintf("User '%s' uploaded a zip to the directory '%s' with %d bytes (uncompressed)", claims.Username, reldir, count),
+	}, r)
 }
 
 func (a *Api) Mkdir(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	_, absdir, err := a.get_sanitized_dir(r)
+	reldir, absdir, err := a.get_sanitized_dir(r)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -246,10 +268,16 @@ func (a *Api) Mkdir(w http.ResponseWriter, r *http.Request, claims *types.Claims
 
 	err = os.MkdirAll(absdir, 0644)
 	Send(w, true, err)
+
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "filebrowser",
+		Message:  fmt.Sprintf("User '%s' created the directory '%s'", claims.Username, reldir),
+	}, r)
 }
 
 func (a *Api) UploadFile(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	filename, err := a.get_sanitized_filename(r, "filename")
+	rel_filename, filename, err := a.get_sanitized_filename(r, "filename")
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -262,15 +290,21 @@ func (a *Api) UploadFile(w http.ResponseWriter, r *http.Request, claims *types.C
 	}
 	defer f.Close()
 
-	_, err = io.Copy(f, r.Body)
+	count, err := io.Copy(f, r.Body)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
+
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "filebrowser",
+		Message:  fmt.Sprintf("User '%s' uploaded the file '%s' with %d bytes (uncompressed)", claims.Username, rel_filename, count),
+	}, r)
 }
 
 func (a *Api) DeleteFile(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	filename, err := a.get_sanitized_filename(r, "filename")
+	rel_filename, filename, err := a.get_sanitized_filename(r, "filename")
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -278,16 +312,22 @@ func (a *Api) DeleteFile(w http.ResponseWriter, r *http.Request, claims *types.C
 
 	err = os.RemoveAll(filename)
 	Send(w, true, err)
+
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "filebrowser",
+		Message:  fmt.Sprintf("User '%s' deleted the file '%s'", claims.Username, rel_filename),
+	}, r)
 }
 
 func (a *Api) RenameFile(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	src, err := a.get_sanitized_filename(r, "src")
+	rel_src, src, err := a.get_sanitized_filename(r, "src")
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
-	dst, err := a.get_sanitized_filename(r, "dst")
+	rel_dst, dst, err := a.get_sanitized_filename(r, "dst")
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -295,4 +335,10 @@ func (a *Api) RenameFile(w http.ResponseWriter, r *http.Request, claims *types.C
 
 	err = os.Rename(src, dst)
 	Send(w, true, err)
+
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "filebrowser",
+		Message:  fmt.Sprintf("User '%s' moved the file '%s' to '%s'", claims.Username, rel_src, rel_dst),
+	}, r)
 }

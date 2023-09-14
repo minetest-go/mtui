@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"mtui/auth"
+	"mtui/types"
 	"net/http"
 
 	"github.com/dchest/captcha"
@@ -85,4 +86,11 @@ func (a *Api) Signup(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	// create log entry
+	a.CreateUILogEntry(&types.Log{
+		Username: sr.Username,
+		Event:    "signup",
+		Message:  fmt.Sprintf("User '%s' signed up successfully", sr.Username),
+	}, r)
 }
