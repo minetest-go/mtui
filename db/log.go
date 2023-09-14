@@ -114,7 +114,12 @@ func (r *LogRepository) buildWhereClause(s *types.LogSearch) (string, []interfac
 	if s.Limit != nil && *s.Limit < limit {
 		limit = *s.Limit
 	}
-	q += fmt.Sprintf(" order by timestamp desc limit %d", limit)
+
+	sort := "desc"
+	if s.SortAscending {
+		sort = "asc"
+	}
+	q += fmt.Sprintf(" order by timestamp %s limit %d", sort, limit)
 
 	return q, args
 }

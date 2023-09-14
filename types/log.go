@@ -41,6 +41,7 @@ type LogSearch struct {
 	PosY          *int         `json:"posy"`
 	PosZ          *int         `json:"posz"`
 	Nodename      *string      `json:"nodename"`
+	SortAscending bool         `json:"sort_ascending"`
 }
 
 func (m *Log) Columns(action string) []string {
