@@ -9,7 +9,13 @@ export const create_mod = mod => protected_fetch("api/mods", {
     body: JSON.stringify(mod)
 });
 
-export const update_mod = (mod, version) => protected_fetch(`api/mods/${mod.id}/update/${version}`, {
+
+export const update_mod = mod => protected_fetch(`api/mods/${mod.id}`, {
+    method: "POST",
+    body: JSON.stringify(mod)
+});
+
+export const update_mod_version = (mod, version) => protected_fetch(`api/mods/${mod.id}/update/${version}`, {
     method: "POST"
 });
 

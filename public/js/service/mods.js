@@ -1,4 +1,4 @@
-import { list_mods, create_mod, remove_mod, update_mod as api_update_mod, check_updates as api_check_updates } from '../api/mods.js';
+import { list_mods, create_mod, remove_mod, update_mod as api_update_mod, update_mod_version as api_update_mod_version, check_updates as api_check_updates } from '../api/mods.js';
 
 const store = Vue.reactive({
     list: [],
@@ -15,9 +15,15 @@ export const update = () => {
     .finally(() => store.busy = false);
 };
 
-export const update_mod = (m, v) => {
+export const update_mod = m => {
     store.busy = true;
-    api_update_mod(m, v)
+    api_update_mod(m)
+    .then(() => update());
+};
+
+export const update_mod_version = (m, v) => {
+    store.busy = true;
+    api_update_mod_version(m, v)
     .then(() => update());
 };
 

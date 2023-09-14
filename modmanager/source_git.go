@@ -49,7 +49,26 @@ func (h *GitModHandler) Create(ctx *HandlerContext, mod *types.Mod) error {
 				Mode:   git.HardReset,
 			})
 		}
-	} else if mod.Version != "" {
+	} else {
+		// default to master or main
+		rem := git.NewRemote(memory.NewStorage(), &config.RemoteConfig{
+			Name: "origin",
+			URLs: []string{mod.URL},
+		})
+		refs, err := rem.List(&git.ListOptions{})
+		if err != nil {
+			return fmt.Errorf("git error: %v", err)
+		}
+		for _, ref := range refs {
+			if ref.Name() == plumbing.ReferenceName("refs/heads/master") {
+				mod.Branch = "refs/heads/master"
+			} else if ref.Name() == plumbing.ReferenceName("refs/heads/main") {
+				mod.Branch = "refs/heads/main"
+			}
+		}
+	}
+
+	if mod.Version != "" {
 		// check out specified version (no tracking branch)
 		err = w.Checkout(&git.CheckoutOptions{
 			Hash: plumbing.NewHash(mod.Version),
@@ -124,8 +143,9 @@ func (h *GitModHandler) CheckUpdate(ctx *HandlerContext, mod *types.Mod) (bool, 
 	for _, ref := range refs {
 		if ref.Name() == plumbing.ReferenceName(mod.Branch) {
 			mod.LatestVersion = ref.Hash().String()
+			return true, nil
 		}
 	}
 
-	return mod.LatestVersion != mod.Version, nil
+	return false, nil
 }

@@ -1,4 +1,4 @@
-import { add, remove, get_all, is_busy, get_git_mod, update_mod, check_updates } from '../../../service/mods.js';
+import { add, remove, get_all, is_busy, get_git_mod, update_mod, update_mod_version, check_updates } from '../../../service/mods.js';
 import FeedbackButton from '../../FeedbackButton.js';
 import DefaultLayout from '../../layouts/DefaultLayout.js';
 import CDBPackageLink from '../../CDBPackageLink.js';
@@ -45,7 +45,11 @@ export default {
 				branch: "refs/heads/master"
 			});
 		},
-		update_mod: update_mod,
+		toggle_autoupdate: function(mod) {
+			mod.auto_update = !mod.auto_update;
+			update_mod(mod);
+		},
+		update_mod_version: update_mod_version,
 		remove: remove,
 		get_mods: get_all,
 		get_git_mod: get_git_mod,
@@ -172,18 +176,18 @@ export default {
 							<span class="badge bg-secondary" v-if="mod.latest_version">{{mod.latest_version}}</span>
 						</td>
 						<td>
-							<a class="btn btn-success" v-if="mod.auto_update">
+							<button class="btn btn-success" v-if="mod.auto_update" v-on:click="toggle_autoupdate(mod)" :disabled="busy">
 								<i class="fa fa-check"></i>
 								Enabled
-							</a>
-							<a class="btn btn-secondary" v-if="!mod.auto_update">
+							</button>
+							<button class="btn btn-secondary" v-if="!mod.auto_update" v-on:click="toggle_autoupdate(mod)" :disabled="busy">
 								<i class="fa fa-times"></i>
 								Disabled
-							</a>
+							</button>
 						</td>
 						<td>
 							<div class="btn-group">
-								<button class="btn btn-primary" v-on:click="update_mod(mod, mod.latest_version)" :disabled="mod.version == mod.latest_version">
+								<button class="btn btn-primary" v-on:click="update_mod_version(mod, mod.latest_version)" :disabled="mod.version == mod.latest_version">
 									<i class="fa fa-download"></i>
 									Update
 								</button>

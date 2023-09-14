@@ -70,6 +70,7 @@ func TestCheckoutHash(t *testing.T) {
 
 	mod, err = app.Repos.ModRepo.GetByID(mod.ID)
 	assert.NoError(t, err)
+	assert.NotEqual(t, "", mod.LatestVersion)
 	assert.NotEqual(t, "fe34e3f3cd3e066ba0be76f9df46c11e66411496", mod.LatestVersion)
 
 	// update

@@ -68,6 +68,36 @@ func (a *Api) CreateMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 	}, r)
 }
 
+func (a *Api) UpdateMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	m, err := a.app.ModManager.Mod(id)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+	if m == nil {
+		SendError(w, 404, "not found")
+		return
+	}
+
+	err = json.NewDecoder(r.Body).Decode(m)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	Send(w, m, a.app.Repos.ModRepo.Update(m))
+
+	// create log entry
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "mods",
+		Message:  fmt.Sprintf("User '%s' updates the metadata of  %s '%s' (%s)", claims.Username, m.ModType, m.Name, m.SourceType),
+	}, r)
+}
+
 func (a *Api) DeleteMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	vars := mux.Vars(r)
 	id := vars["id"]
