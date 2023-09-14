@@ -133,7 +133,7 @@ func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types
 	a.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "filebrowser",
-		Message:  fmt.Sprintf("User '%s' downloaded the file '%s' with %d bytes", claims.Username, rel_filename, count),
+		Message:  fmt.Sprintf("User '%s' downloaded the file '%s' with %d bytes", claims.Username, rel_filename, count+int64(header_size)),
 	}, r)
 }
 
@@ -299,7 +299,7 @@ func (a *Api) UploadFile(w http.ResponseWriter, r *http.Request, claims *types.C
 	a.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "filebrowser",
-		Message:  fmt.Sprintf("User '%s' uploaded the file '%s' with %d bytes (uncompressed)", claims.Username, rel_filename, count),
+		Message:  fmt.Sprintf("User '%s' uploaded the file '%s' with %d bytes", claims.Username, rel_filename, count),
 	}, r)
 }
 
