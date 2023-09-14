@@ -16,6 +16,7 @@ services:
    API_KEY: "mykey"
    LOGLEVEL: debug
    SERVER_NAME: "dev-server"
+   DEFAULT_THEME: "darkly"
    ENABLE_FEATURES: "shell,luashell,minetest_config,docker,modmanagement,signup"
    MINETEST_CONFIG: "/etc/minetest/minetest.conf"
    DOCKER_MINETEST_CONFIG: "${PWD}/minetest.conf"
