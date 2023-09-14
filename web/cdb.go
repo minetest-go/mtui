@@ -10,7 +10,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var cdbcli = cdb.New()
 var cached_cdbcli = cdb.NewCachedClient(cdb.New(), time.Hour*6)
 
 func (a *Api) SearchCDBPackages(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
