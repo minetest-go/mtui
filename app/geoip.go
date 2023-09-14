@@ -84,25 +84,25 @@ func (r *GeoipResolver) Resolve(ipstr string) *GeoipResult {
 	return result
 }
 
-func (a *App) ResolveLogGeoIP(l *types.Log, r *http.Request) {
-	if r == nil {
+func (r *GeoipResolver) ResolveLogGeoIP(l *types.Log, req *http.Request) {
+	if req == nil {
 		// nothing to work with
 		return
 	}
 
-	fwdfor := r.Header.Get("X-Forwarded-For")
+	fwdfor := req.Header.Get("X-Forwarded-For")
 	if fwdfor != "" {
 		// behind reverse proxy
 		parts := strings.Split(fwdfor, ",")
 		l.IPAddress = &parts[0]
 	} else {
 		// direct access
-		parts := strings.Split(r.RemoteAddr, ":")
+		parts := strings.Split(req.RemoteAddr, ":")
 		l.IPAddress = &parts[0]
 	}
 
-	if a.GeoipResolver != nil && l.IPAddress != nil {
-		geoip := a.GeoipResolver.Resolve(*l.IPAddress)
+	if l.IPAddress != nil {
+		geoip := r.Resolve(*l.IPAddress)
 		if geoip != nil {
 			l.GeoCity = &geoip.City
 			l.GeoCountry = &geoip.ISOCountry

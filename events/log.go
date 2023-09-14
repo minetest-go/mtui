@@ -17,7 +17,7 @@ func logLoop(a *app.App, ch chan *bridge.CommandResponse) {
 			return
 		}
 
-		a.ResolveLogGeoIP(log, nil)
+		a.GeoipResolver.ResolveLogGeoIP(log, nil)
 		err = a.Repos.LogRepository.Insert(log)
 		if err != nil {
 			fmt.Printf("DB error: %s\n", err.Error())
