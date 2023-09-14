@@ -65,20 +65,15 @@ func TestCheckoutHash(t *testing.T) {
 	assert.Equal(t, 1, len(mods))
 
 	// check remote status
-	status, err := mm.Status(mod)
+	err = mm.CheckUpdates()
 	assert.NoError(t, err)
-	assert.NotNil(t, status)
-	assert.Equal(t, "fe34e3f3cd3e066ba0be76f9df46c11e66411496", status.CurrentVersion)
-	assert.True(t, status.LatestVersion != "")
-	assert.True(t, status.LatestVersion != status.CurrentVersion)
+
+	mod, err = app.Repos.ModRepo.GetByID(mod.ID)
+	assert.NoError(t, err)
+	assert.NotEqual(t, "fe34e3f3cd3e066ba0be76f9df46c11e66411496", mod.LatestVersion)
 
 	// update
-	assert.NoError(t, mm.Update(mod, status.LatestVersion))
-	status2, err := mm.Status(mod)
-	assert.NoError(t, err)
-	assert.NotNil(t, status2)
-	assert.Equal(t, status.LatestVersion, status2.CurrentVersion)
-	assert.Equal(t, status.LatestVersion, status2.LatestVersion)
+	assert.NoError(t, mm.Update(mod, mod.LatestVersion))
 
 	// remove
 	assert.NoError(t, mm.Remove(mod))

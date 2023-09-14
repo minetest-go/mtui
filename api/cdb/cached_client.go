@@ -13,6 +13,8 @@ type CachedCDBClient struct {
 	search_cache     *cache.Cache[string, []*Package]
 	dependency_cache *cache.Cache[string, PackageDependency]
 	detail_cache     *cache.Cache[string, *PackageDetails]
+	updates          PackageUpdates
+	updates_time     time.Time
 }
 
 func NewCachedClient(client *CDBClient, ttl time.Duration) *CachedCDBClient {
@@ -68,4 +70,16 @@ func (c *CachedCDBClient) GetDetails(author, name string) (*PackageDetails, erro
 		c.detail_cache.Set(key, res, cache.WithExpiration(c.ttl))
 	}
 	return res, nil
+}
+
+func (c *CachedCDBClient) GetUpdates() (PackageUpdates, error) {
+	last_update := time.Since(c.updates_time)
+	if last_update > c.ttl || c.updates == nil {
+		var err error
+		c.updates, err = c.client.GetUpdates()
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.updates, nil
 }

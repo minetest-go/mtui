@@ -1,4 +1,4 @@
-import { list_mods, create_mod, remove_mod } from '../api/mods.js';
+import { list_mods, create_mod, remove_mod, update_mod as api_update_mod, check_updates as api_check_updates } from '../api/mods.js';
 
 const store = Vue.reactive({
     list: [],
@@ -15,6 +15,12 @@ export const update = () => {
     .finally(() => store.busy = false);
 };
 
+export const update_mod = (m, v) => {
+    store.busy = true;
+    api_update_mod(m, v)
+    .then(() => update());
+};
+
 export const is_busy = () => store.busy;
 
 export const add = m => create_mod(m).then(update);
@@ -28,3 +34,10 @@ export const get_cdb_mod = (author, name) => store.list.find(m => m.name == name
 export const get_git_mod = name => store.list.find(m => m.name == name);
 
 export const get_game = () => store.list.find(m => m.mod_type == "game");
+
+export const check_updates = () => {
+    store.busy = true;
+    api_check_updates()
+    .then(() => update());
+};
+

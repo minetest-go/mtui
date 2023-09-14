@@ -1,4 +1,4 @@
-import { add, remove, get_all, is_busy, get_git_mod } from '../../../service/mods.js';
+import { add, remove, get_all, is_busy, get_git_mod, update_mod, check_updates } from '../../../service/mods.js';
 import FeedbackButton from '../../FeedbackButton.js';
 import DefaultLayout from '../../layouts/DefaultLayout.js';
 import CDBPackageLink from '../../CDBPackageLink.js';
@@ -45,9 +45,11 @@ export default {
 				branch: "refs/heads/master"
 			});
 		},
+		update_mod: update_mod,
 		remove: remove,
 		get_mods: get_all,
-		get_git_mod: get_git_mod
+		get_git_mod: get_git_mod,
+		check_updates: check_updates
 	},
 	computed: {
 		busy: is_busy
@@ -71,6 +73,15 @@ export default {
 					</div>
 				</div>
 			</div>
+			<div class="row">
+				<div class="col-10"></div>
+				<div class="col-2">
+					<button class="btn btn-primary w-100" v-on:click="check_updates" :disabled="busy">
+						<i class="fa fa-refresh"></i>
+						Check for updates
+					</button>
+				</div>
+			</div>
 			<table class="table table-condensed table-striped">
 				<thead>
 					<tr>
@@ -79,6 +90,7 @@ export default {
 						<th>Source-Type</th>
 						<th>Source</th>
 						<th>Version</th>
+						<th>Latest Version</th>
 						<th>Auto-update</th>
 						<th>Actions</th>
 					</tr>
@@ -135,7 +147,7 @@ export default {
 							</router-link>
 						</td>
 					</tr>
-					<tr v-for="mod in get_mods()">
+					<tr v-for="mod in get_mods()" :key="mod.id">
 						<td>
 							<span class="badge bg-secondary">{{mod.mod_type}}</span>
 						</td>
@@ -157,6 +169,9 @@ export default {
 							<span class="badge bg-secondary" v-if="mod.version">{{mod.version}}</span>
 						</td>
 						<td>
+							<span class="badge bg-secondary" v-if="mod.latest_version">{{mod.latest_version}}</span>
+						</td>
+						<td>
 							<a class="btn btn-success" v-if="mod.auto_update">
 								<i class="fa fa-check"></i>
 								Enabled
@@ -168,14 +183,14 @@ export default {
 						</td>
 						<td>
 							<div class="btn-group">
-								<a class="btn btn-primary">
-									<i class="fa fa-edit"></i>
-									Edit
-								</a>
-								<a class="btn btn-danger" v-on:click="remove(mod.id)">
+								<button class="btn btn-primary" v-on:click="update_mod(mod, mod.latest_version)" :disabled="mod.version == mod.latest_version">
+									<i class="fa fa-download"></i>
+									Update
+								</button>
+								<button class="btn btn-danger" v-on:click="remove(mod.id)">
 									<i class="fa fa-trash"></i>
 									Remove
-								</a>
+								</button>
 							</div>
 						</td>
 					</tr>

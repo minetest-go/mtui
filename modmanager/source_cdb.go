@@ -9,9 +9,11 @@ import (
 	"path"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var cli = cdb.New()
+var cached_cli = cdb.NewCachedClient(cli, time.Hour)
 
 type ContentDBModHandler struct{}
 
@@ -69,7 +71,6 @@ func (h *ContentDBModHandler) installMod(ctx *HandlerContext, mod *types.Mod, re
 		default:
 			return fmt.Errorf("mod type not supported: %s", mod.ModType)
 		}
-		fmt.Printf("Fullpath: '%s' entry: '%s'\n", fullpath, f.Name)
 
 		// create basedir if it does not exist
 		basedir := path.Dir(fullpath)
@@ -150,20 +151,6 @@ func (h *ContentDBModHandler) Create(ctx *HandlerContext, mod *types.Mod) error 
 	return ctx.Repo.Create(mod)
 }
 
-func (h *ContentDBModHandler) Status(ctx *HandlerContext, mod *types.Mod) (*ModStatus, error) {
-	release, err := h.getLatestRelease(ctx, mod)
-	if err != nil {
-		return nil, fmt.Errorf("could not fetch latest release: %v", err)
-	}
-
-	s := &ModStatus{
-		CurrentVersion: mod.Version,
-		LatestVersion:  fmt.Sprintf("%d", release.ID),
-	}
-
-	return s, nil
-}
-
 func (h *ContentDBModHandler) Update(ctx *HandlerContext, mod *types.Mod, version string) error {
 
 	release_id, err := strconv.Atoi(version)
@@ -195,4 +182,19 @@ func (h *ContentDBModHandler) Remove(ctx *HandlerContext, mod *types.Mod) error 
 	}
 
 	return ctx.Repo.Delete(mod.ID)
+}
+
+func (h *ContentDBModHandler) CheckUpdate(ctx *HandlerContext, mod *types.Mod) (bool, error) {
+	updates, err := cached_cli.GetUpdates()
+	if err != nil {
+		return false, fmt.Errorf("could not get updates: %v", err)
+	}
+
+	v := updates[fmt.Sprintf("%s/%s", mod.Author, mod.Name)]
+	if v > 0 {
+		mod.LatestVersion = fmt.Sprintf("%d", v)
+		return true, nil
+	}
+
+	return false, nil
 }

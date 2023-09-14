@@ -70,40 +70,6 @@ func (h *GitModHandler) Create(ctx *HandlerContext, mod *types.Mod) error {
 	return ctx.Repo.Create(mod)
 }
 
-func (h *GitModHandler) Status(ctx *HandlerContext, mod *types.Mod) (*ModStatus, error) {
-	status := &ModStatus{}
-
-	dir := getDir(ctx.WorldDir, mod)
-
-	r, err := git.PlainOpen(dir)
-	if err != nil {
-		return status, err
-	}
-
-	heah, err := r.Head()
-	if err != nil {
-		return status, err
-	}
-	status.CurrentVersion = heah.Hash().String()
-
-	rem := git.NewRemote(memory.NewStorage(), &config.RemoteConfig{
-		Name: "origin",
-		URLs: []string{mod.URL},
-	})
-
-	refs, err := rem.List(&git.ListOptions{})
-	if err != nil {
-		return status, err
-	}
-	for _, ref := range refs {
-		if ref.Name() == plumbing.ReferenceName(mod.Branch) {
-			status.LatestVersion = ref.Hash().String()
-		}
-	}
-
-	return status, nil
-}
-
 func (h *GitModHandler) Update(ctx *HandlerContext, mod *types.Mod, version string) error {
 	dir := getDir(ctx.WorldDir, mod)
 
@@ -122,9 +88,16 @@ func (h *GitModHandler) Update(ctx *HandlerContext, mod *types.Mod, version stri
 		return err
 	}
 
-	return w.Checkout(&git.CheckoutOptions{
+	err = w.Checkout(&git.CheckoutOptions{
 		Hash: plumbing.NewHash(version),
 	})
+	if err != nil {
+		return err
+	}
+
+	mod.Version = version
+	return ctx.Repo.Update(mod)
+
 }
 
 func (h *GitModHandler) Remove(ctx *HandlerContext, mod *types.Mod) error {
@@ -136,4 +109,23 @@ func (h *GitModHandler) Remove(ctx *HandlerContext, mod *types.Mod) error {
 	}
 
 	return ctx.Repo.Delete(mod.ID)
+}
+
+func (h *GitModHandler) CheckUpdate(ctx *HandlerContext, mod *types.Mod) (bool, error) {
+	rem := git.NewRemote(memory.NewStorage(), &config.RemoteConfig{
+		Name: "origin",
+		URLs: []string{mod.URL},
+	})
+
+	refs, err := rem.List(&git.ListOptions{})
+	if err != nil {
+		return false, fmt.Errorf("git error: %v", err)
+	}
+	for _, ref := range refs {
+		if ref.Name() == plumbing.ReferenceName(mod.Branch) {
+			mod.LatestVersion = ref.Hash().String()
+		}
+	}
+
+	return mod.LatestVersion != mod.Version, nil
 }

@@ -133,6 +133,8 @@ type DependencyInfo struct {
 
 type PackageDependency map[string][]*DependencyInfo
 
+type PackageUpdates map[string]int
+
 type MinetestVersion struct {
 	IsDev           bool   `json:"is_dev"`
 	Name            string `json:"name"`

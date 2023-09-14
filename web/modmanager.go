@@ -73,17 +73,9 @@ func (a *Api) DeleteMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 	}
 }
 
-func (a *Api) ModStatus(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	vars := mux.Vars(r)
-	id := vars["id"]
-
-	m, err := a.app.ModManager.Mod(id)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-	status, err := a.app.ModManager.Status(m)
-	Send(w, status, err)
+func (a *Api) ModsCheckUpdates(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	err := a.app.ModManager.CheckUpdates()
+	Send(w, true, err)
 }
 
 func (a *Api) ModsValidate(w http.ResponseWriter, r *http.Request, claims *types.Claims) {

@@ -17,7 +17,7 @@ func TestLatestCDBRelease(t *testing.T) {
 		Name:       "blockexchange",
 		ModType:    types.ModTypeMod,
 		SourceType: types.SourceTypeCDB,
-		Author:     "buckaroobanzay",
+		Author:     "BuckarooBanzay",
 	}
 	assert.NoError(t, mm.Create(mod))
 	assert.True(t, mod.Version != "")
@@ -27,13 +27,14 @@ func TestLatestCDBRelease(t *testing.T) {
 	assert.NotNil(t, mods)
 	assert.Equal(t, 1, len(mods))
 
-	status, err := mm.Status(mod)
+	err = mm.CheckUpdates()
 	assert.NoError(t, err)
-	assert.NotNil(t, status)
-	assert.Equal(t, mod.Version, status.CurrentVersion)
-	assert.Equal(t, mod.Version, status.LatestVersion)
 
-	err = mm.Update(mod, mod.Version)
+	mod, err = app.Repos.ModRepo.GetByID(mod.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, mod.Version, mod.LatestVersion)
+
+	err = mm.Update(mod, mod.LatestVersion)
 	assert.NoError(t, err)
 
 	err = mm.Remove(mod)

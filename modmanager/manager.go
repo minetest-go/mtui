@@ -36,11 +36,6 @@ func (m *ModManager) Create(mod *types.Mod) error {
 	return handler.Create(m.handlercontext, mod)
 }
 
-func (m *ModManager) Status(mod *types.Mod) (*ModStatus, error) {
-	handler := m.handlers[mod.SourceType]
-	return handler.Status(m.handlercontext, mod)
-}
-
 func (m *ModManager) Update(mod *types.Mod, version string) error {
 	handler := m.handlers[mod.SourceType]
 	return handler.Update(m.handlercontext, mod, version)

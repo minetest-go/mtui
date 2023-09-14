@@ -109,6 +109,12 @@ func (c *CDBClient) GetRelease(author, name string, id int) (*PackageRelease, er
 	return pr, err
 }
 
+func (c *CDBClient) GetUpdates() (PackageUpdates, error) {
+	pu := PackageUpdates{}
+	err := c.get("api/updates", &pu, nil)
+	return pu, err
+}
+
 func (c *CDBClient) GetScreenshots(author, name string) ([]*PackageScreenshot, error) {
 	ps := []*PackageScreenshot{}
 	err := c.get(fmt.Sprintf("api/packages/%s/%s/screenshots", author, name), &ps, nil)
