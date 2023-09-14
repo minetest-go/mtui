@@ -4,6 +4,7 @@ import (
 	"mtui/types"
 	"net"
 	"net/http"
+	"os"
 	"path"
 	"strings"
 
@@ -16,24 +17,37 @@ type GeoipResolver struct {
 	asndb  *geoip2.Reader
 }
 
+const CITY_MMDB_NAME = "GeoLite2-City.mmdb"
+const ASN_MMDB_NAME = "GeoLite2-ASN.mmdb"
+
 func NewGeoipResolver(basedir string) *GeoipResolver {
-	citydb, err := geoip2.Open(path.Join(basedir, "GeoLite2-City.mmdb"))
-	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"reason": err.Error(),
-		}).Info("Skipping geoip resolver setup (missing city db)")
+	resolver := &GeoipResolver{}
+	var err error
+
+	citydb_name := path.Join(basedir, CITY_MMDB_NAME)
+	fs, _ := os.Stat(citydb_name)
+	if fs == nil {
 		return &GeoipResolver{}
 	}
 
-	asndb, err := geoip2.Open(path.Join(basedir, "GeoLite2-ASN.mmdb"))
+	resolver.citydb, err = geoip2.Open(citydb_name)
 	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"reason": err.Error(),
-		}).Info("Skipping geoip resolver setup (missing asn db)")
+		panic(err)
+	}
+
+	asndb_name := path.Join(basedir, ASN_MMDB_NAME)
+	fs, _ = os.Stat(asndb_name)
+	if fs == nil {
 		return &GeoipResolver{}
 	}
 
-	return &GeoipResolver{citydb: citydb, asndb: asndb}
+	resolver.asndb, err = geoip2.Open(asndb_name)
+	if err != nil {
+		panic(err)
+	}
+
+	logrus.Info("geoip database setup successfully")
+	return resolver
 }
 
 type GeoipResult struct {
