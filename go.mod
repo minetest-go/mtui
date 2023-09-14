@@ -23,7 +23,6 @@ require (
 	github.com/docker/go-connections v0.4.0
 	github.com/go-oauth2/oauth2/v4 v4.5.2
 	github.com/golang-jwt/jwt/v4 v4.4.2
-	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/minetest-go/areasparser v1.0.4
 )
