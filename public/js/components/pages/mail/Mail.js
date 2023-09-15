@@ -1,10 +1,10 @@
-import mail_store from '../../../store/mail.js';
-import { fetch_mails } from '../../../service/mail.js';
+import { fetch_mails, is_busy, get_mailbox } from '../../../service/mail.js';
 import BoxList from './BoxList.js';
 import DefaultLayout from '../../layouts/DefaultLayout.js';
 import { START, MAIL } from '../../Breadcrumb.js';
 
 export default {
+    props: ["boxname"],
     data: function() {
         return {
             breadcrumb: [START, MAIL]
@@ -15,20 +15,13 @@ export default {
         "default-layout": DefaultLayout
     },
     computed: {
-        busy: () => mail_store.busy,
-        boxname: function() {
-            return this.$route.params.boxname;
-        },
+        busy: is_busy,
         mails: function() {
-            return mail_store[this.boxname];
+            return get_mailbox(this.boxname);
         }
     },
     methods: {
-        refresh: function() {
-            mail_store.busy = true;
-            fetch_mails()
-            .then(() => mail_store.busy = false);
-        }
+        fetch_mails: fetch_mails
     },
     template: /*html*/`
     <default-layout icon="envelope" title="Mail" :breadcrumb="breadcrumb">
@@ -44,7 +37,7 @@ export default {
                     <i class="fa-solid fa-pen-to-square"></i>
                     Compose
                 </router-link>
-                <a class="btn btn-success" v-on:click="refresh">
+                <a class="btn btn-success" v-on:click="fetch_mails">
                     <i class="fa-solid fa-rotate"></i>
                     Refresh
                 </a>

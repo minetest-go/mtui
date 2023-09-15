@@ -1,11 +1,11 @@
-import mail_store from '../../../store/mail.js';
 import { fetch_mails } from '../../../service/mail.js';
 import { remove } from '../../../api/mail.js';
 import format_time from '../../../util/format_time.js';
 
 const store = Vue.reactive({
     sortfield: "time",
-    sortdirection: "asc"
+    sortdirection: "asc",
+    sorted_mails: []
 });
 
 export default {
@@ -19,20 +19,18 @@ export default {
     methods: {
         format_time: format_time,
         delete_mail: function(msg){
-            mail_store.busy = true;
             remove(msg)
             .then(() => fetch_mails())
-            .then(() => this.sort(this.sortfield, this.sortdirection))
-            .then(() => mail_store.busy = false);
+            .then(() => this.sort(this.sortfield, this.sortdirection));
         },
         sort: function(field, direction) {
             this.sortfield = field || this.sortfield;
             this.sortdirection = direction || this.sortdirection;
 
             if (this.sortdirection == "asc"){
-                this.mails.sort((a, b) => a[this.sortfield] < b[this.sortfield]);
+                this.sorted_mails = this.mails.sort((a, b) => a[this.sortfield] < b[this.sortfield]);
             } else if (this.sortdirection == "desc") {
-                this.mails.sort((a, b) => a[this.sortfield] > b[this.sortfield]);
+                this.sorted_mails = this.mails.sort((a, b) => a[this.sortfield] > b[this.sortfield]);
             }
         },
         chevron_style: function(field, direction) {
@@ -45,10 +43,10 @@ export default {
     },
     template: /*html*/`
     <div>
-        <div class="alert alert-primary" v-if="mails.length == 0">
+        <div class="alert alert-primary" v-if="sorted_mails.length == 0">
             No mails
         </div>
-        <table class="table table-condensed" v-if="mails.length > 0">
+        <table class="table table-condensed" v-if="sorted_mails.length > 0">
             <thead>
                 <tr>
                     <th>
@@ -70,7 +68,7 @@ export default {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(mail, index) in mails" :key="index" :class="{'table-info': !mail.read}">
+                <tr v-for="(mail, index) in sorted_mails" :key="index" :class="{'table-info': !mail.read}">
                     <td>
                         <router-link :to="'/profile/' + mail.from">
                             {{mail.from}}

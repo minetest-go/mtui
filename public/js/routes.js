@@ -84,7 +84,7 @@ export default [{
 }, {
 	path: "/mail", redirect: '/mail/box/inbox'
 }, {
-	path: "/mail/box/:boxname", component: Mail,
+	path: "/mail/box/:boxname", component: Mail, props: true,
 	meta: { requiredPriv: "interact" }
 }, {
 	path: "/mail/read/:id", component: MailRead, props: true,

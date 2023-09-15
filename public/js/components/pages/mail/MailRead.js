@@ -1,8 +1,7 @@
 import format_time from '../../../util/format_time.js';
-import { get_mail } from '../../../store/mail.js';
 import { mark_read, remove } from '../../../api/mail.js';
 import { store as mail_compose_store } from './Compose.js';
-import { fetch_mails } from '../../../service/mail.js';
+import { fetch_mails, get_mail } from '../../../service/mail.js';
 import { get_claims } from '../../../service/login.js';
 import DefaultLayout from '../../layouts/DefaultLayout.js';
 import { START, MAIL } from '../../Breadcrumb.js';
