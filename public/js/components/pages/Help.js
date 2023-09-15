@@ -57,7 +57,7 @@ export default {
                     <h4>Checklist</h4>
                     <ul>
                         <li v-if="has_feature('docker')">
-                            <i class="fa-regular fa-square-check" v-if="is_running"></i>
+                            <i class="fa-regular fa-square-check" v-if="is_running()"></i>
                             <i class="fa-regular fa-square" v-else></i>
                             Create and start the <router-link to="/services/engine">minetest-engine</router-link>
                         </li>

@@ -33,7 +33,9 @@ func (api *Api) Setup() error {
 }
 
 func (api *Api) CreateUILogEntry(l *types.Log, r *http.Request) {
-	l.Category = types.CategoryUI
-	api.app.GeoipResolver.ResolveLogGeoIP(l, r)
-	api.app.Repos.LogRepository.Insert(l)
+	if !api.app.MaintenanceMode.Load() {
+		l.Category = types.CategoryUI
+		api.app.GeoipResolver.ResolveLogGeoIP(l, r)
+		api.app.Repos.LogRepository.Insert(l)
+	}
 }
