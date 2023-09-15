@@ -1,6 +1,7 @@
 import { get_servername, get_version } from "../../service/app_info.js";
 import DefaultLayout from "../layouts/DefaultLayout.js";
 import { START } from "../Breadcrumb.js";
+import { has_priv } from "../../service/login.js";
 
 export default {
 	components: {
@@ -10,6 +11,9 @@ export default {
 		return {
 			breadcrumb: [START]
 		};
+	},
+	methods: {
+		has_priv: has_priv
 	},
 	computed: {
 		servername: get_servername,
@@ -26,12 +30,16 @@ export default {
 				Version: <span class="badge bg-primary">{{ version }}</span>
 			</span>
 			<hr/>
-			<router-link to="/shell" class="btn btn-primary">
+			<router-link to="/shell" class="btn btn-primary" v-if="has_priv('interact')">
 				<i class="fa-solid fa-terminal"></i> Shell
 			</router-link>
 			&nbsp;
 			<router-link to="/profile" class="btn btn-primary">
 				<i class="fa fa-user"></i> Profile
+			</router-link>
+			&nbsp;
+			<router-link to="/help" class="btn btn-primary" v-if="has_priv('server')">
+				<i class="fa-solid fa-circle-question"></i> Help
 			</router-link>
 			&nbsp;
 			<a class="btn btn-secondary" href="https://github.com/minetest-go/mtui" target="new">

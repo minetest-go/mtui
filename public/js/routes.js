@@ -24,6 +24,7 @@ import Maintenance from './components/pages/administration/Maintenance.js';
 import Filebrowser from './components/pages/filebrowser/Filebrowser.js';
 import FileEdit from './components/pages/filebrowser/FileEdit.js';
 import Signup from './components/pages/Signup.js';
+import Help from './components/pages/Help.js';
 
 import Mods from './components/pages/mods/Mods.js';
 import ContentBrowse from './components/pages/cdb/Browse.js';
@@ -35,6 +36,9 @@ export default [{
 	meta: { requiredPriv: "interact", maintenance_page: true }
 }, {
 	path: "/maintenance", component: Maintenance,
+	meta: { requiredPriv: "server", maintenance_page: true }
+}, {
+	path: "/help", component: Help,
 	meta: { requiredPriv: "server", maintenance_page: true }
 }, {
 	path: "/login", component: Login

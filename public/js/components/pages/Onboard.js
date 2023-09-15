@@ -36,7 +36,7 @@ export default {
                     this.error_message = err_msg;
                 } else {
                     login(this.username, this.password)
-                    .then(() => this.$router.push("/profile"));
+                    .then(() => this.$router.push("/help"));
                 }
             });
         }

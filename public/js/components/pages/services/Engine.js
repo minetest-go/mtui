@@ -1,15 +1,17 @@
-import { create, remove, start, stop } from "../../../api/service_engine.js";
-import EngineLogs from "./EngineLogs.js";
-import { store, update_state } from "../../../service/engine.js";
+import { store, update_state, start, stop, create, remove } from "../../../service/engine.js";
+import { START, SERVICES } from "../../Breadcrumb.js";
+
 import EngineStatus from "./EngineStatus.js";
 import DefaultLayout from "../../layouts/DefaultLayout.js";
-import { START, SERVICES } from "../../Breadcrumb.js";
+import EngineLogs from "./EngineLogs.js";
+import HelpPopup from "../../HelpPopup.js";
 
 export default {
 	components: {
 		"engine-logs": EngineLogs,
 		"engine-status": EngineStatus,
-		"default-layout": DefaultLayout
+		"default-layout": DefaultLayout,
+		"help-popup": HelpPopup
 	},
 	data: () => store,
 	computed: {
@@ -23,26 +25,10 @@ export default {
 	},
 	methods: {
 		update_state: update_state,
-		start: function(){
-			store.busy = true;
-			start()
-			.then(() => update_state());
-		},
-		stop: function(){
-			store.busy = true;
-			stop()
-			.then(() => update_state());
-		},
-		remove: function(){
-			store.busy = true;
-			remove()
-			.then(() => update_state());
-		},
-		create: function(){
-			store.busy = true;
-			create({version: store.version})
-			.then(() => update_state());
-		}
+		start: start,
+		stop: stop,
+		remove: remove,
+		create: create
 	},
 	template: /*html*/`
 	<default-layout icon="gear" title="Minetest engine" :breadcrumb="breadcrumb">
@@ -76,6 +62,19 @@ export default {
 										<i class="fa fa-stop"></i> Stop
 									</button>
 								</div>
+								<help-popup title="Installing a minetest engine">
+									<p>
+										Here you can choose which minetest-version you want to install.
+										The engine can be up- or down-graded at any time (you have to stop it first).
+										There is no data stored in the engine, it is just a process running in the background.
+									</p>
+									<p>
+										Setting up a new engine: Select your desired minetest-version in the selection-box.
+										Hit the "Install" button and wait for it to be downloaded and installed.
+										Start the server with the "Start" button, there might be some errors
+										in the console below if no game is installed yet.
+									</p>
+								</help-popup>
 							</div>
 							<div class="col-md-4" v-if="status">
 								Status:
