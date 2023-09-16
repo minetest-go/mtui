@@ -80,7 +80,7 @@ export default {
 							</router-link>
 						</li>	
 					</nav-dropdown>
-					<nav-dropdown v-if="has_feature('docker') && !maintenance" icon="gears" name="Services">
+					<nav-dropdown v-if="has_feature('docker') && has_priv('server') && !maintenance" icon="gears" name="Services">
 						<li>
 							<router-link to="/services/engine" class="dropdown-item">
 								<i class="fa fa-gear"></i>
