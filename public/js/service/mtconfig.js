@@ -59,15 +59,10 @@ export function apply_filter(filter) {
     store.filtered_topics = Object
         .keys(filtered_settings)
         .sort((a,b) => a > b);
-
 }
 
-events.on(EVENT_LOGGED_IN, function() {
-    if (!has_priv("server") || !has_feature("minetest_config")){
-        return;
-    }
-
-    Promise.all([get_all(), get_settingtypes()])
+export function update_settings() {
+    return Promise.all([get_all(), get_settingtypes()])
     .then(result => {
         store.settings = result[0];
         store.settingtypes = result[1];
@@ -88,4 +83,12 @@ events.on(EVENT_LOGGED_IN, function() {
 
         apply_filter({ only_configured: true });
     });
+}
+
+events.on(EVENT_LOGGED_IN, function() {
+    if (!has_priv("server") || !has_feature("minetest_config")){
+        return;
+    }
+
+    update_settings();
 });

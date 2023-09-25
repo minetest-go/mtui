@@ -17,7 +17,14 @@ type DependencyAnalysis struct {
 }
 
 func scanDir(dir string, ctx *dependencycontext) error {
+	// look for "modpack.conf"
 	stat, _ := os.Stat(path.Join(dir, "modpack.conf"))
+	if stat != nil && !stat.IsDir() {
+		return scanDirs(dir, ctx)
+	}
+
+	// look for "modpack.txt"
+	stat, _ = os.Stat(path.Join(dir, "modpack.txt"))
 	if stat != nil && !stat.IsDir() {
 		return scanDirs(dir, ctx)
 	}

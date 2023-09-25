@@ -1,9 +1,11 @@
 import DefaultLayout from "../../layouts/DefaultLayout.js";
+import CDBPackageLink from "../../CDBPackageLink.js";
+
 import { add, get_cdb_mod } from "../../../service/mods.js";
+import { update_settings } from "../../../service/mtconfig.js";
 import { resolve_package, get_package } from "../../../api/cdb.js";
 import { validate } from "../../../api/mods.js";
 import { START, ADMINISTRATION, MODS, CDB, CDB_DETAIL } from "../../Breadcrumb.js";
-import CDBPackageLink from "../../CDBPackageLink.js";
 
 const DependencyInstallRow = {
     props: ["dep", "selected_dep"],
@@ -25,6 +27,7 @@ const DependencyInstallRow = {
             <select class="form-control" v-on:change="$emit('select_dep', dep.name, $event.target.value)" v-if="has_choices">
                 <option v-for="choice in dep.choices" :selected="selected_dep == choice">{{choice}}</option>
             </select>
+            <i class="fa fa-spinner fa-spin" v-if="dep.busy"></i>
             <span class="badge bg-danger" v-if="no_candidate">
                 <i class="fa-solid fa-triangle-exclamation"></i>
                 No installation candidate found!
@@ -47,6 +50,7 @@ export default {
     },
     data: function() {
         return {
+            install_busy: false,
             busy: false,
             missing_dep: false,
             selected_package_map: {}, // modname -> packagename
@@ -90,19 +94,22 @@ export default {
                 installed_mods: this.installed_mods,
                 selected_packages: selected_packages
             })
-            .then(deps => this.deps = deps)
-            .then(() => {
-                this.busy = false;
-                this.deps.forEach(d => {
+            .then(deps => {
+                deps.forEach(d => {
+                    d.busy = false;
                     if (!d.installed && d.choices.length == 0) {
                         // not installed and no installation candidate
                         this.missing_dep = true;
                     }
                 });
+                this.deps = deps;
+                this.busy = false;
             });
         },
         install_next: function() {
+            this.install_busy = true;
             const next_dep = this.deps.find(d => !d.installed);
+
             if (!next_dep && !this.pkg.installed) {
                 // install root dep
                 add({
@@ -111,14 +118,24 @@ export default {
                     mod_type: this.pkg.type,
                     source_type: "cdb"
                 })
-                .then(() => this.pkg.installed = true);
+                .then(() => {
+                    this.install_busy = false;
+                    this.pkg.installed = true;
+                });
+
+                update_settings();
+                return;
             }
 
             if (!next_dep) {
+                // no more packages
+                this.install_busy = false;
+                update_settings();
                 return;
             }
 
             const parts = next_dep.selected.split("/");
+            next_dep.busy = true;
 
             add({
                 author: parts[0],
@@ -126,8 +143,11 @@ export default {
 				mod_type: "mod",
 				source_type: "cdb"
 			})
-            .then(() => next_dep.installed = true)
-            .then(() => this.install_next());
+            .then(() => {
+                next_dep.installed = true;
+                next_dep.busy = false;
+                this.install_next();
+            });
         },
         select_dep: function(modname, dep) {
             this.selected_package_map[modname] = dep;
@@ -162,9 +182,10 @@ export default {
                 <div class="col-4"></div>
                 <div class="col-4"></div>
                 <div class="col-4">
-                    <button class="btn btn-success w-100" :disabled="busy || missing_dep" v-on:click="install_next">
+                    <button class="btn btn-success w-100" :disabled="busy || install_busy || missing_dep" v-on:click="install_next">
                         <i class="fa fa-plus"></i>
                         Install
+                        <i class="fa fa-spinner fa-spin" v-if="install_busy"></i>
                     </button>
                 </div>
             </div>
