@@ -1,6 +1,7 @@
 import { START, FILEBROWSER } from "../../Breadcrumb.js";
 import DefaultLayout from "../../layouts/DefaultLayout.js";
 import { download_text, upload } from "../../../api/filebrowser.js";
+import { get_mode_name } from "./common.js";
 
 export default {
     props: ["pathMatch"],
@@ -18,18 +19,12 @@ export default {
         download_text(this.pathMatch)
         .then(t => this.text = t)
         .then(() => {
-
-            const mode = {};
-            if (this.pathMatch.match(/.*(lua)$/i)) {
-                mode.name = "lua";
-            } else if (this.pathMatch.match(/.*(js|json)$/i)) {
-                mode.name = "javascript";
-            }
-
             this.cm = CodeMirror.fromTextArea(this.$refs.textarea, {
                 lineNumbers: true,
                 viewportMargin: Infinity,
-                mode: mode
+                mode: {
+                    name: get_mode_name(this.pathMatch)
+                }
             });
         });
     },

@@ -4,6 +4,7 @@ import format_size from "../../../util/format_size.js";
 import format_time from "../../../util/format_time.js";
 import { START, FILEBROWSER } from "../../Breadcrumb.js";
 import { get_maintenance } from "../../../service/stats.js";
+import { can_edit } from "./common.js";
 
 export default {
     props: ["pathMatch"],
@@ -90,18 +91,14 @@ export default {
                 }
             });
         },
-        can_edit: function(filename) {
-            return filename.match(/.*(js|lua|txt|conf|cfg|json|md|mt)$/i);
-        },
+        can_edit: can_edit,
         is_database: function(filename) {
             return filename.match(/.*(sqlite|sqlite-shm|sqlite-wal)$/i);
         },
         get_icon: function(item) {
             if (item.is_dir) {
                 return "folder";
-            } else if (item.name.match(/.*(txt|conf|cfg|md)$/i)) {
-                return "file-lines";
-            } else if (item.name.match(/.*(js|lua|json)$/i)) {
+            } else if (can_edit(item.name)) {
                 return "file-code";
             } else if (item.name.match(/.*(sqlite)$/i)) {
                 return "database";

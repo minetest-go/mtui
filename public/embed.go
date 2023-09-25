@@ -22,6 +22,9 @@ import (
 //go:embed node_modules/codemirror/lib/codemirror.*
 //go:embed node_modules/codemirror/mode/lua/lua.js
 //go:embed node_modules/codemirror/mode/javascript/javascript.js
+//go:embed node_modules/codemirror/mode/htmlmixed/htmlmixed.js
+//go:embed node_modules/codemirror/mode/xml/xml.js
+//go:embed node_modules/codemirror/mode/css/css.js
 var Webapp embed.FS
 
 const DefaultCss = "node_modules/bootstrap/dist/css/bootstrap.min.css"
