@@ -9,6 +9,9 @@ export const create_mod = mod => protected_fetch("api/mods", {
     body: JSON.stringify(mod)
 });
 
+export const create_mtui_mod = () => protected_fetch("api/mods/create_mtui", {
+    method: "POST"
+});
 
 export const update_mod = mod => protected_fetch(`api/mods/${mod.id}`, {
     method: "POST",

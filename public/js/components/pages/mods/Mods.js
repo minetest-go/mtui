@@ -1,4 +1,6 @@
-import { add, remove, get_all, is_busy, get_git_mod, update_mod, update_mod_version, check_updates } from '../../../service/mods.js';
+import { add, remove, get_all, is_busy, get_git_mod, update_mod, update_mod_version, check_updates, add_mtui } from '../../../service/mods.js';
+import { update_settings } from '../../../service/mtconfig.js';
+
 import FeedbackButton from '../../FeedbackButton.js';
 import DefaultLayout from '../../layouts/DefaultLayout.js';
 import CDBPackageLink from '../../CDBPackageLink.js';
@@ -37,13 +39,7 @@ export default {
 			});
 		},
 		add_mtui_mod: function() {
-			add({
-				name: "mtui",
-				mod_type: "mod",
-				source_type: "git",
-				url: "https://github.com/minetest-go/mtui_mod.git",
-				branch: "refs/heads/master"
-			});
+			add_mtui().then(update_settings);
 		},
 		toggle_autoupdate: function(mod) {
 			mod.auto_update = !mod.auto_update;

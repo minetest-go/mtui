@@ -3,6 +3,7 @@ package web
 import (
 	"encoding/json"
 	"fmt"
+	"mtui/minetestconfig"
 	"mtui/minetestconfig/depanalyzer"
 	"mtui/types"
 	"net/http"
@@ -66,6 +67,70 @@ func (a *Api) CreateMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 		Event:    "mods",
 		Message:  fmt.Sprintf("User '%s' creates the %s '%s' (%s) in version '%s'", claims.Username, m.ModType, m.Name, m.SourceType, m.Version),
 	}, r)
+}
+
+func (a *Api) CreateMTUIMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	m := &types.Mod{
+		Name:       "mtui",
+		ModType:    types.ModTypeMod,
+		SourceType: types.SourceTypeGIT,
+		URL:        "https://github.com/minetest-go/mtui_mod.git",
+		Branch:     "refs/heads/master",
+	}
+	err := a.app.ModManager.Create(m)
+	if err != nil {
+		Send(w, 500, err)
+		return
+	}
+
+	// create log entry
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "mods",
+		Message:  fmt.Sprintf("User '%s' creates the %s '%s' (%s) in version '%s'", claims.Username, m.ModType, m.Name, m.SourceType, m.Version),
+	}, r)
+
+	// settings for mtui key/url
+	if a.app.Config.DockerHostname == "" {
+		return
+	}
+
+	for _, fname := range []string{types.FEATURE_DOCKER, types.FEATURE_MINETEST_CONFIG} {
+		feature, err := a.app.Repos.FeatureRepository.GetByName(fname)
+		if err != nil {
+			SendError(w, 500, err.Error())
+			return
+		}
+		if !feature.Enabled {
+			return
+		}
+	}
+
+	sts, err := getSettingTypes(a.app.WorldDir)
+	if err != nil {
+		Send(w, 500, err)
+		return
+	}
+
+	cfg, err := readMTConfig(a.app.WorldDir, sts)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	cfg["mtui.url"] = &minetestconfig.Setting{
+		Value: fmt.Sprintf("http://%s:8080", a.app.Config.DockerHostname),
+	}
+	cfg["mtui.key"] = &minetestconfig.Setting{
+		Value: a.app.Config.APIKey,
+	}
+
+	err = writeMTConfig(cfg, sts)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
 }
 
 func (a *Api) UpdateMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {

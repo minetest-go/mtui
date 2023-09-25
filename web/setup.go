@@ -145,6 +145,7 @@ func Setup(a *app.App) error {
 	modsapi.HandleFunc("", api.Secure(api.CreateMod)).Methods(http.MethodPost)
 	modsapi.HandleFunc("/validate", api.Secure(api.ModsValidate)).Methods(http.MethodGet)
 	modsapi.HandleFunc("/checkupdates", api.Secure(api.ModsCheckUpdates)).Methods(http.MethodPost)
+	modsapi.HandleFunc("/create_mtui", api.Secure(api.CreateMTUIMod)).Methods(http.MethodPost)
 	modsapi.HandleFunc("/{id}", api.Secure(api.UpdateMod)).Methods(http.MethodPost)
 	modsapi.HandleFunc("/{id}/update/{version}", api.Secure(api.UpdateModVersion)).Methods(http.MethodPost)
 	modsapi.HandleFunc("/{id}", api.Secure(api.DeleteMod)).Methods(http.MethodDelete)

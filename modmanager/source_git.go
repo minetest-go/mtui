@@ -85,6 +85,7 @@ func (h *GitModHandler) Create(ctx *HandlerContext, mod *types.Mod) error {
 	}
 
 	mod.Version = ref.Hash().String()
+	mod.LatestVersion = mod.Version
 
 	return ctx.Repo.Create(mod)
 }

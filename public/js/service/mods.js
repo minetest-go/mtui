@@ -1,4 +1,4 @@
-import { list_mods, create_mod, remove_mod, update_mod as api_update_mod, update_mod_version as api_update_mod_version, check_updates as api_check_updates } from '../api/mods.js';
+import { list_mods, create_mod, remove_mod, update_mod as api_update_mod, update_mod_version as api_update_mod_version, check_updates as api_check_updates, create_mtui_mod } from '../api/mods.js';
 
 const store = Vue.reactive({
     list: [],
@@ -30,6 +30,8 @@ export const update_mod_version = (m, v) => {
 export const is_busy = () => store.busy;
 
 export const add = m => create_mod(m).then(update);
+
+export const add_mtui = () => create_mtui_mod().then(update);
 
 export const remove = id => remove_mod(id).then(update);
 
