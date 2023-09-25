@@ -36,6 +36,10 @@ export default {
                 store.logs += l.err;
                 store.linecount += l.err.split("\n").length;
             }
+            this.scroll_to_bottom();
+        },
+        scroll_to_bottom: function() {
+            this.$refs.log_pre.scrollTop = this.$refs.log_pre.scrollTopMax;
         },
         update_logs: function(){
             if (!this.live || !this.running) {
@@ -80,9 +84,11 @@ export default {
                     <label>Live logs</label>
                     <button class="btn btn-outline-secondary w-100" v-on:click="live = true" v-if="!live">
                         Disabled
+                        <i class="fa fa-pause"></i>
                     </button>
                     <button class="btn btn-success w-100" v-on:click="live = false" v-if="live">
                         Enabled
+                        <i class="fa fa-play"></i>
                     </button>
                 </div>
                 <div class="col-2">
@@ -99,7 +105,7 @@ export default {
                 </div>
             </div>
             <hr>
-            <pre style="height: 400px; background: lightgray;">{{logs}}</pre>
+            <pre ref="log_pre" style="height: 400px; background: lightgray;">{{logs}}</pre>
         </div>
     </div>
 	`
