@@ -9,7 +9,6 @@ import (
 	"time"
 )
 
-// fetch("api/bridge/lua", { method: "POST", body: JSON.stringify({ code: "return 123" })}).then(r => r.json()).then(res => console.log(res));
 func (a *Api) ExecuteLua(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	req := &command.LuaRequest{}
 	err := json.NewDecoder(r.Body).Decode(req)

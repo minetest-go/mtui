@@ -1,4 +1,4 @@
-import { store, apply_filter, save, unset } from '../../../service/mtconfig.js';
+import { store, apply_filter, save, unset, update_settings } from '../../../service/mtconfig.js';
 import DefaultLayout from '../../layouts/DefaultLayout.js';
 import { START, ADMINISTRATION } from '../../Breadcrumb.js';
 
@@ -11,6 +11,9 @@ const SettingRow = {
             busy: false,
             is_set: this.setting.is_set
         };
+    },
+    created: function() {
+        update_settings();
     },
     computed: {
         is_changed: function() {

@@ -70,10 +70,11 @@ func writeMTConfig(cfg minetestconfig.Settings, sts minetestconfig.SettingTypes)
 	defer mtconfig_mutex.Unlock()
 
 	mtconfig_file := os.Getenv("MINETEST_CONFIG")
-	f, err := os.OpenFile(mtconfig_file, os.O_RDWR, 0755)
+	f, err := os.OpenFile(mtconfig_file, os.O_RDWR|os.O_TRUNC, 0755)
 	if err != nil {
 		return fmt.Errorf("could not open minetest config file '%s': %v", mtconfig_file, err)
 	}
+	defer f.Close()
 
 	err = cfg.Write(f, sts)
 	if err != nil {

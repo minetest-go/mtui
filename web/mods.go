@@ -8,6 +8,7 @@ import (
 	"mtui/types"
 	"net/http"
 	"path"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -125,12 +126,34 @@ func (a *Api) CreateMTUIMod(w http.ResponseWriter, r *http.Request, claims *type
 		Value: a.app.Config.APIKey,
 	}
 
+	http_mods := cfg["secure.http_mods"]
+	if http_mods == nil || http_mods.Value == "" {
+		// create new
+		http_mods = &minetestconfig.Setting{
+			Value: "mtui",
+		}
+		cfg["secure.http_mods"] = http_mods
+	} else {
+		// append if not in list
+		is_in_http_list := false
+		for _, mod := range strings.Split(http_mods.Value, ",") {
+			if strings.TrimSpace(mod) == "mtui" {
+				is_in_http_list = true
+				break
+			}
+		}
+		if !is_in_http_list {
+			http_mods.Value += ",mtui"
+		}
+	}
+
 	err = writeMTConfig(cfg, sts)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
+	Send(w, m, nil)
 }
 
 func (a *Api) UpdateMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {

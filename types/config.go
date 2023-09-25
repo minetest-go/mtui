@@ -17,6 +17,7 @@ type Config struct {
 	Webdev                  bool
 	Servername              string
 	EnabledFeatures         []string
+	InstallMtuiMod          bool
 	LogStreamURL            string
 	LogStreamAuthorization  string
 	AdminUsername           string
@@ -42,6 +43,7 @@ func NewConfig() *Config {
 		Webdev:                  os.Getenv("WEBDEV") == "true",
 		Servername:              os.Getenv("SERVER_NAME"),
 		EnabledFeatures:         strings.Split(os.Getenv("ENABLE_FEATURES"), ","),
+		InstallMtuiMod:          os.Getenv("INSTALL_MTUI_MOD") == "true",
 		LogStreamURL:            os.Getenv("LOG_STREAM_URL"),
 		LogStreamAuthorization:  os.Getenv("LOG_STREAM_AUTHORIZATION"),
 		AdminUsername:           os.Getenv("ADMIN_USERNAME"),

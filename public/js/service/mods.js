@@ -1,4 +1,8 @@
 import { list_mods, create_mod, remove_mod, update_mod as api_update_mod, update_mod_version as api_update_mod_version, check_updates as api_check_updates, create_mtui_mod } from '../api/mods.js';
+import events, { EVENT_LOGGED_IN } from '../events.js';
+import { get_install_mtui_mod } from './app_info.js';
+import { has_priv } from './login.js';
+import { has_feature } from './features.js';
 
 const store = Vue.reactive({
     list: [],
@@ -9,7 +13,7 @@ const store = Vue.reactive({
 
 export const update = () => {
     store.busy = true;
-    list_mods()
+    return list_mods()
     .then(l => store.list = l)
     .then(() => store.has_mtui_mod = store.list.find(m => m.name == "mtui"))
     .finally(() => store.busy = false);
@@ -49,3 +53,16 @@ export const check_updates = () => {
     .then(() => update());
 };
 
+events.on(EVENT_LOGGED_IN, function() {
+    if (!has_priv("server") || !has_feature("modmanagement") || !get_install_mtui_mod()){
+        return;
+    }
+
+    update()
+    .then(() => {
+        if (!get_git_mod("mtui")) {
+            // install mtui mod
+            add_mtui();
+        }
+    });
+});

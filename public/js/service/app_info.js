@@ -11,3 +11,4 @@ export const fetch_info = () => {
 
 export const get_version = () => store.version;
 export const get_servername = () => store.servername;
+export const get_install_mtui_mod = () => store.install_mtui_mod;

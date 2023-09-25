@@ -79,6 +79,7 @@ func (s Settings) Write(w io.Writer, sts SettingTypes) error {
 			// simple value
 			entry += value + "\n"
 		}
+		fmt.Printf("Writing '%s' value='%s'\n", entry, value)
 		_, err := w.Write([]byte(entry))
 		if err != nil {
 			return err

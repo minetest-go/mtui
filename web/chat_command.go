@@ -9,7 +9,6 @@ import (
 	"time"
 )
 
-// fetch("api/bridge/execute_chatcommand", { method: "POST", body: JSON.stringify({ playername: "test", command: "status" })}).then(r => r.json()).then(res => console.log(res));
 func (a *Api) ExecuteChatcommand(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	req := &command.ExecuteChatCommandRequest{}
 	err := json.NewDecoder(r.Body).Decode(req)
