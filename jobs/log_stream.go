@@ -74,6 +74,9 @@ func uploadLogs(a *app.App) error {
 	if err != nil {
 		return err
 	}
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("unexpected status-code: %d", resp.StatusCode)
+	}
 	defer resp.Body.Close()
 
 	// set new value
