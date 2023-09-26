@@ -9,6 +9,7 @@ import (
 	"mtui/types"
 	"net/http"
 	"os"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -162,12 +163,8 @@ func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types
 		return
 	}
 
-	port_str := os.Getenv("DOCKER_MINETEST_PORT")
-	port, _ := strconv.ParseInt(port_str, 10, 64)
-	if port == 0 {
-		SendError(w, 500, fmt.Sprintf("invalid port: '%s'", port_str))
-		return
-	}
+	// ensure that there is a "textures" folder inside the world-dir
+	os.MkdirAll(path.Join(a.app.WorldDir, "textures"), 0777)
 
 	network_names := strings.Split(a.app.Config.DockerNetwork, ",")
 	container_name := a.app.Config.DockerMinetestContainer
@@ -177,7 +174,7 @@ func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types
 		"minetest_config": minetest_config,
 		"version":         cer.Version,
 		"image":           image,
-		"port":            port,
+		"port":            a.app.Config.DockerMinetestPort,
 		"uid":             os.Getuid(),
 		"network_names":   network_names,
 		"container_name":  container_name,
@@ -205,13 +202,17 @@ func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types
 				Type:   mount.TypeBind,
 				Source: minetest_config,
 				Target: minetest_config_container,
+			}, {
+				Type:   mount.TypeBind,
+				Source: path.Join(world_dir, "textures"),
+				Target: "/root/.minetest/textures/server", //TODO: only works in uid=0 case
 			},
 		},
 		PortBindings: nat.PortMap{
 			nat.Port(portbinding): []nat.PortBinding{
 				{
 					HostIP:   "0.0.0.0",
-					HostPort: fmt.Sprintf("%d", port),
+					HostPort: fmt.Sprintf("%d", a.app.Config.DockerMinetestPort),
 				},
 			},
 		},

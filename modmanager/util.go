@@ -12,7 +12,7 @@ func getDir(world_dir string, mod *types.Mod) string {
 	case types.ModTypeMod:
 		return path.Join(world_dir, "worldmods", mod.Name)
 	case types.ModTypeTexturepack:
-		return path.Join(world_dir, "textures", mod.Name) // TODO: verify
+		return path.Join(world_dir, "textures", mod.Name)
 	default:
 		return ""
 	}

@@ -8,6 +8,7 @@ import (
 
 // env provided configuration flags
 type Config struct {
+	WorldDir                string
 	JWTKey                  string
 	APIKey                  string
 	CookieDomain            string
@@ -35,6 +36,7 @@ func NewConfig() *Config {
 	port, _ := strconv.ParseInt(os.Getenv("DOCKER_MINETEST_PORT"), 10, 64)
 
 	return &Config{
+		WorldDir:                os.Getenv("WORLD_DIR"),
 		CookieDomain:            os.Getenv("COOKIE_DOMAIN"),
 		CookieSecure:            os.Getenv("COOKIE_SECURE") == "true",
 		CookiePath:              os.Getenv("COOKIE_PATH"),

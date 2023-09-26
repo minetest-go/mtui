@@ -56,7 +56,7 @@ func (h *ContentDBModHandler) installMod(ctx *HandlerContext, mod *types.Mod, re
 		// the target file to extract to
 		var fullpath string
 		switch mod.ModType {
-		case types.ModTypeMod:
+		case types.ModTypeMod, types.ModTypeTexturepack:
 			if strip_basedir {
 				fullpath = path.Join(path.Dir(dir), f.Name)
 			} else {
