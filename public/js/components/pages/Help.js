@@ -56,11 +56,6 @@ export default {
                     </p>
                     <h4>Checklist</h4>
                     <ul>
-                        <li v-if="has_feature('docker')">
-                            <i class="fa-regular fa-square-check" v-if="is_running()"></i>
-                            <i class="fa-regular fa-square" v-else></i>
-                            Create and start the <router-link to="/services/engine">minetest-engine</router-link>
-                        </li>
                         <li v-if="has_feature('modmanagement')">
                             <i class="fa-regular fa-square-check" v-if="get_all_mods().find(m => m.mod_type == 'game')"></i>
                             <i class="fa-regular fa-square" v-else></i>
@@ -70,6 +65,11 @@ export default {
                             <i class="fa-regular fa-square-check" v-if="get_all_mods().find(m => m.mod_type == 'mod')"></i>
                             <i class="fa-regular fa-square" v-else></i>
                             Add some <router-link to="/mods">mods</router-link>
+                        </li>
+                        <li v-if="has_feature('docker')">
+                            <i class="fa-regular fa-square-check" v-if="is_running()"></i>
+                            <i class="fa-regular fa-square" v-else></i>
+                            Create and start the <router-link to="/services/engine">minetest-engine</router-link>
                         </li>
                     </ul>
                 </div>
