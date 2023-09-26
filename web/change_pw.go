@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"mtui/auth"
 	"mtui/types"
 	"net/http"
@@ -80,4 +81,11 @@ func (a *Api) ChangePassword(w http.ResponseWriter, r *http.Request, claims *typ
 		SendError(w, 500, err.Error())
 		return
 	}
+
+	// create log entry
+	a.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "password",
+		Message:  fmt.Sprintf("User '%s' set the passowrd of %s", claims.Username, req.Username),
+	}, r)
 }

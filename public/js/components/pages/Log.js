@@ -69,7 +69,8 @@ export default {
                     "system",
                     "engine",
                     "mods",
-                    "oauth"
+                    "oauth",
+                    "password"
                 ];
             }
         }
