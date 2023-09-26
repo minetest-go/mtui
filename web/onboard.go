@@ -103,7 +103,7 @@ func (a *Api) CreateOnboardUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, priv := range []string{"server", "interact", "privs"} {
+	for _, priv := range []string{"server", "interact", "privs", "ban"} {
 		err = a.app.DBContext.Privs.Create(&dbauth.PrivilegeEntry{
 			ID:        *auth_entry.ID,
 			Privilege: priv,
