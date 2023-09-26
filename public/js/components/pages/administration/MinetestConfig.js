@@ -12,9 +12,6 @@ const SettingRow = {
             is_set: this.setting.is_set
         };
     },
-    created: function() {
-        update_settings();
-    },
     computed: {
         is_changed: function() {
             const w = this.work_setting;
@@ -154,6 +151,9 @@ export default {
     components: {
         "setting-row": SettingRow,
         "default-layout": DefaultLayout
+    },
+    created: function() {
+        update_settings();
     },
     data: function() {
         return {
