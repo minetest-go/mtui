@@ -101,22 +101,24 @@ func Create(world_dir string) (*App, error) {
 		cfg.CookiePath = "/"
 	}
 
-	jwtKey, err := app.Repos.ConfigRepo.GetByKey(types.ConfigJWTKey)
-	if err != nil {
-		return nil, err
-	}
-	if jwtKey == nil {
-		// create key
-		jwtKey = &types.ConfigEntry{
-			Key:   types.ConfigJWTKey,
-			Value: randSeq(16),
-		}
-		err = app.Repos.ConfigRepo.Set(jwtKey)
+	if cfg.JWTKey == "" {
+		jwtKey, err := app.Repos.ConfigRepo.GetByKey(types.ConfigJWTKey)
 		if err != nil {
 			return nil, err
 		}
+		if jwtKey == nil {
+			// create key
+			jwtKey = &types.ConfigEntry{
+				Key:   types.ConfigJWTKey,
+				Value: randSeq(16),
+			}
+			err = app.Repos.ConfigRepo.Set(jwtKey)
+			if err != nil {
+				return nil, err
+			}
+		}
+		cfg.JWTKey = jwtKey.Value
 	}
-	cfg.JWTKey = jwtKey.Value
 
 	if cfg.APIKey == "" {
 		apiKey, err := app.Repos.ConfigRepo.GetByKey(types.ConfigApiKey)

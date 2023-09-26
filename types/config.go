@@ -42,6 +42,7 @@ func NewConfig() *Config {
 		CookiePath:              os.Getenv("COOKIE_PATH"),
 		DefaultTheme:            os.Getenv("DEFAULT_THEME"),
 		APIKey:                  os.Getenv("API_KEY"),
+		JWTKey:                  os.Getenv("JWT_KEY"),
 		Webdev:                  os.Getenv("WEBDEV") == "true",
 		Servername:              os.Getenv("SERVER_NAME"),
 		EnabledFeatures:         strings.Split(os.Getenv("ENABLE_FEATURES"), ","),
