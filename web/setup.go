@@ -64,6 +64,7 @@ func Setup(a *app.App) error {
 
 	apir.HandleFunc("/login", api.DoLogout).Methods(http.MethodDelete)
 	apir.HandleFunc("/login", api.DoLogin).Methods(http.MethodPost)
+	apir.HandleFunc("/loginadmin/{username}", api.AdminLogin).Methods(http.MethodGet)
 
 	apir.HandleFunc("/signup", api.Feature(types.FEATURE_SIGNUP, api.Signup))
 	apir.HandleFunc("/signup/captcha", api.Feature(types.FEATURE_SIGNUP, api.SignupCaptcha))
