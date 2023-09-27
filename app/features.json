@@ -49,7 +49,6 @@
         "experimental": true
     },{
         "name": "signup",
-        "description": "Allow account-signup on the web-interface",
-        "experimental": true
+        "description": "Allow account-signup on the web-interface"
     }
 ]
