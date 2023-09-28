@@ -109,5 +109,5 @@ func (a *Api) AdminLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// redirect to main page
-	http.Redirect(w, r, a.app.Config.CookiePath, http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("%s#/help", a.app.Config.CookiePath), http.StatusSeeOther)
 }
