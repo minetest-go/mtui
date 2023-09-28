@@ -54,13 +54,13 @@ export const check_updates = () => {
 };
 
 events.on(EVENT_LOGGED_IN, function() {
-    if (!has_priv("server") || !has_feature("modmanagement") || !get_install_mtui_mod()){
+    if (!has_priv("server") || !has_feature("modmanagement")){
         return;
     }
 
     update()
     .then(() => {
-        if (!get_git_mod("mtui")) {
+        if (!get_git_mod("mtui") && get_install_mtui_mod()) {
             // install mtui mod
             add_mtui();
         }

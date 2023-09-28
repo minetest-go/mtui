@@ -47,12 +47,12 @@ export default {
 		},
 		update_mod_version: update_mod_version,
 		remove: remove,
-		get_mods: get_all,
 		get_git_mod: get_git_mod,
 		check_updates: check_updates
 	},
 	computed: {
-		busy: is_busy
+		busy: is_busy,
+		mods: get_all
 	},
 	template: /*html*/`
 		<default-layout icon="cubes" title="Mods" :breadcrumb="breadcrumb">
@@ -147,7 +147,7 @@ export default {
 							</router-link>
 						</td>
 					</tr>
-					<tr v-for="mod in get_mods()" :key="mod.id">
+					<tr v-for="mod in mods" :key="mod.id">
 						<td>
 							<span class="badge bg-secondary">{{mod.mod_type}}</span>
 						</td>
