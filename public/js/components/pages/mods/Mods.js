@@ -141,7 +141,7 @@ export default {
 						<td></td>
 						<td></td>
 						<td>
-							<router-link to="/cdb/browse" class="btn btn-success" :disabled="busy">
+							<router-link to="/cdb/browse" class="btn btn-success">
 								<i class="fa-solid fa-box-open"></i>
 								Add from ContentDB
 							</router-link>
@@ -183,11 +183,11 @@ export default {
 						</td>
 						<td>
 							<div class="btn-group">
-								<button class="btn btn-primary" v-on:click="update_mod_version(mod, mod.latest_version)" :disabled="mod.version == mod.latest_version">
+								<button class="btn btn-primary" v-on:click="update_mod_version(mod, mod.latest_version)" :disabled="busy || mod.version == mod.latest_version">
 									<i class="fa fa-download"></i>
 									Update
 								</button>
-								<button class="btn btn-danger" v-on:click="remove(mod.id)">
+								<button class="btn btn-danger" v-on:click="remove(mod.id)" :disabled="busy">
 									<i class="fa fa-trash"></i>
 									Remove
 								</button>
