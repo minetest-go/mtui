@@ -80,6 +80,7 @@ func (c *CachedCDBClient) GetUpdates() (PackageUpdates, error) {
 		if err != nil {
 			return nil, err
 		}
+		c.updates_time = time.Now()
 	}
 	return c.updates, nil
 }
