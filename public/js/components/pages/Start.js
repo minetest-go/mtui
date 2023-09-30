@@ -2,6 +2,7 @@ import { get_servername, get_version } from "../../service/app_info.js";
 import DefaultLayout from "../layouts/DefaultLayout.js";
 import { START } from "../Breadcrumb.js";
 import { has_priv } from "../../service/login.js";
+import { has_feature } from "../../service/features.js";
 
 export default {
 	components: {
@@ -13,7 +14,8 @@ export default {
 		};
 	},
 	methods: {
-		has_priv: has_priv
+		has_priv,
+		has_feature
 	},
 	computed: {
 		servername: get_servername,
@@ -42,7 +44,7 @@ export default {
 				<i class="fa-solid fa-circle-question"></i> Help
 			</router-link>
 			&nbsp;
-			<router-link to="/wizard/1" class="btn btn-primary" v-if="has_priv('server')">
+			<router-link to="/wizard/1" class="btn btn-primary" v-if="has_priv('server') && has_feature('docker') && has_feature('minetest_config') && has_feature('modmanagement')">
 				<i class="fa-solid fa-wand-magic-sparkles"></i> Setup wizard
 			</router-link>
 			&nbsp;

@@ -48,6 +48,7 @@ export default {
     },
     template: /*html*/`
     <div>
+        <h4>Game selection</h4>
         <div class="row">
             <div class="col-12">
                 <div class="alert alert-primary" v-if="busy">

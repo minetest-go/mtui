@@ -16,6 +16,7 @@ export default {
     },
     template: /*html*/`
     <div>
+        <h4>Engine selection</h4>
         <div class="row" v-if="complete">
             <div class="col-12">
                 <div class="alert alert-success">
