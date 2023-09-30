@@ -18,6 +18,9 @@ export default {
         if (!store.packages) {
             this.search();
         }
+        if (this.$route.query.type) {
+            store.type = this.$route.query.type;
+        }
     },
     components: {
         "package-preview": Preview,
