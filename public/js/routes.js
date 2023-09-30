@@ -30,7 +30,7 @@ import Mods from './components/pages/mods/Mods.js';
 import ContentBrowse from './components/pages/cdb/Browse.js';
 import ContentdbDetail from './components/pages/cdb/Detail.js';
 import InstallCDB from './components/pages/cdb/Install.js';
-import Wizard from './components/pages/Wizard.js';
+import Wizard from './components/pages/wizard/Wizard.js';
 
 export default [{
 	path: "/", component: Start,
