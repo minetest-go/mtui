@@ -6,11 +6,72 @@ import DefaultLayout from '../../layouts/DefaultLayout.js';
 import CDBPackageLink from '../../CDBPackageLink.js';
 import { START, ADMINISTRATION, MODS } from '../../Breadcrumb.js';
 
+const ModRow = {
+	props: ["mod", "busy"],
+	components: {
+		"cdb-package-link": CDBPackageLink
+	},
+	methods: {
+		remove,
+		toggle_autoupdate: function(mod) {
+			mod.auto_update = !mod.auto_update;
+			update_mod(mod);
+		},
+	},
+	template: /*html*/`
+		<td>
+			<span class="badge bg-secondary">{{mod.mod_type}}</span>
+		</td>
+		<td>
+			<cdb-package-link v-if="mod.source_type == 'cdb'" :author="mod.author" :name="mod.name"/>
+			<span v-else>{{mod.name}}</span>
+		</td>
+		<td>
+			<span class="badge bg-success">
+				<i class="fa-solid fa-box-open" v-if="mod.source_type == 'cdb'"></i>
+				<i class="fa-brands fa-git-alt" v-if="mod.source_type == 'git'"></i>
+				{{mod.source_type}}
+			</span>
+		</td>
+		<td>
+			<a :href="mod.url" v-if="mod.source_type == 'git'">{{mod.url}}</a>
+		</td>
+		<td>
+			<span class="badge bg-secondary" v-if="mod.version">{{mod.version}}</span>
+		</td>
+		<td>
+			<span class="badge bg-secondary" v-if="mod.latest_version">{{mod.latest_version}}</span>
+		</td>
+		<td>
+			<button class="btn btn-success" v-if="mod.auto_update" v-on:click="toggle_autoupdate(mod)" :disabled="busy">
+				<i class="fa fa-check"></i>
+				Enabled
+			</button>
+			<button class="btn btn-secondary" v-if="!mod.auto_update" v-on:click="toggle_autoupdate(mod)" :disabled="busy">
+				<i class="fa fa-times"></i>
+				Disabled
+			</button>
+		</td>
+		<td>
+			<div class="btn-group">
+				<button class="btn btn-primary" v-on:click="update_mod_version(mod, mod.latest_version)" :disabled="busy || mod.version == mod.latest_version">
+					<i class="fa fa-download"></i>
+					Update
+				</button>
+				<button class="btn btn-danger" v-on:click="remove(mod.id)" :disabled="busy">
+					<i class="fa fa-trash"></i>
+					Remove
+				</button>
+			</div>
+		</td>
+	`
+};
+
 export default {
 	components: {
 		"feedback-button": FeedbackButton,
 		"default-layout": DefaultLayout,
-		"cdb-package-link": CDBPackageLink
+		"mod-row": ModRow
 	},
 	data: () => {
 		return {
@@ -41,18 +102,15 @@ export default {
 		add_mtui_mod: function() {
 			add_mtui().then(update_settings);
 		},
-		toggle_autoupdate: function(mod) {
-			mod.auto_update = !mod.auto_update;
-			update_mod(mod);
-		},
 		update_mod_version: update_mod_version,
-		remove: remove,
 		get_git_mod: get_git_mod,
 		check_updates: check_updates
 	},
 	computed: {
 		busy: is_busy,
-		mods: get_all
+		games: () => get_all().filter(m => m.mod_type == "game"),
+		mods: () => get_all().filter(m => m.mod_type == "mod"),
+		txps: () => get_all().filter(m => m.mod_type == "txp")
 	},
 	template: /*html*/`
 		<default-layout icon="cubes" title="Mods" :breadcrumb="breadcrumb">
@@ -101,7 +159,7 @@ export default {
 							<select class="form-control" v-model="add_mod_type">
 								<option value="mod">Mod</option>
 								<option value="game">Game</option>
-								<option value="txp" v-if="false">Textures</option>
+								<option value="txp">Textures</option>
 							</select>
 						</td>
 						<td>
@@ -119,8 +177,8 @@ export default {
 						<td>
 							<input class="form-control" type="text" placeholder="Version" v-model="add_version"/>
 						</td>
-						<td>
-						</td>
+						<td></td>
+						<td></td>
 						<td>
 							<feedback-button type="success" :fn="add" :disabled="!add_name || !add_url">
 								<i class="fa-brands fa-git-alt"></i>
@@ -140,6 +198,7 @@ export default {
 						<td></td>
 						<td></td>
 						<td></td>
+						<td></td>
 						<td>
 							<router-link to="/cdb/browse" class="btn btn-success">
 								<i class="fa-solid fa-box-open"></i>
@@ -147,52 +206,29 @@ export default {
 							</router-link>
 						</td>
 					</tr>
+					<tr class="table-secondary">
+						<td colspan="8">
+							<h4>Game</h4>
+						</td>
+					</tr>
+					<tr v-for="mod in games" :key="mod.id">
+						<mod-row :mod="mod" :busy="busy"/>
+					</tr>
+					<tr v-if="txps.length > 0" class="table-secondary">
+						<td colspan="8">
+							<h4>Texture-packs</h4>
+						</td>
+					</tr>
+					<tr v-for="mod in txps" :key="mod.id">
+						<mod-row :mod="mod" :busy="busy"/>
+					</tr>
+					<tr class="table-secondary">
+						<td colspan="8">
+							<h4>Mods</h4>
+						</td>
+					</tr>
 					<tr v-for="mod in mods" :key="mod.id">
-						<td>
-							<span class="badge bg-secondary">{{mod.mod_type}}</span>
-						</td>
-						<td>
-							<cdb-package-link v-if="mod.source_type == 'cdb'" :author="mod.author" :name="mod.name"/>
-							<span v-else>{{mod.name}}</span>
-						</td>
-						<td>
-							<span class="badge bg-success">
-								<i class="fa-solid fa-box-open" v-if="mod.source_type == 'cdb'"></i>
-								<i class="fa-brands fa-git-alt" v-if="mod.source_type == 'git'"></i>
-								{{mod.source_type}}
-							</span>
-						</td>
-						<td>
-							<a :href="mod.url" v-if="mod.source_type == 'git'">{{mod.url}}</a>
-						</td>
-						<td>
-							<span class="badge bg-secondary" v-if="mod.version">{{mod.version}}</span>
-						</td>
-						<td>
-							<span class="badge bg-secondary" v-if="mod.latest_version">{{mod.latest_version}}</span>
-						</td>
-						<td>
-							<button class="btn btn-success" v-if="mod.auto_update" v-on:click="toggle_autoupdate(mod)" :disabled="busy">
-								<i class="fa fa-check"></i>
-								Enabled
-							</button>
-							<button class="btn btn-secondary" v-if="!mod.auto_update" v-on:click="toggle_autoupdate(mod)" :disabled="busy">
-								<i class="fa fa-times"></i>
-								Disabled
-							</button>
-						</td>
-						<td>
-							<div class="btn-group">
-								<button class="btn btn-primary" v-on:click="update_mod_version(mod, mod.latest_version)" :disabled="busy || mod.version == mod.latest_version">
-									<i class="fa fa-download"></i>
-									Update
-								</button>
-								<button class="btn btn-danger" v-on:click="remove(mod.id)" :disabled="busy">
-									<i class="fa fa-trash"></i>
-									Remove
-								</button>
-							</div>
-						</td>
+						<mod-row :mod="mod" :busy="busy"/>
 					</tr>
 				</tbody>
 			</table>

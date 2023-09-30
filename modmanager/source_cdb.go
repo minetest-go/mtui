@@ -148,6 +148,7 @@ func (h *ContentDBModHandler) Create(ctx *HandlerContext, mod *types.Mod) error 
 		return fmt.Errorf("install error: %v", err)
 	}
 
+	mod.LatestVersion = mod.Version
 	return ctx.Repo.Create(mod)
 }
 
