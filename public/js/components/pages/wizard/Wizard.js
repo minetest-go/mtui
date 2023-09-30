@@ -40,19 +40,19 @@ export default {
     template: /*html*/`
         <default-layout title="Setup wizard" icon="wand-magic-sparkles" :breadcrumb="breadcrumb">
             <div class="row">
-                <div class="col-4">
+                <div class="col-5">
                     <button class="btn btn-outline-secondary w-100" v-on:click="previous" v-if="step > 1">
                         <i class="fa-solid fa-chevron-left"></i>
                         Previous
                     </button>
                 </div>
-                <div class="col-4 text-center">
+                <div class="col-2 text-center">
                     Step
                     <span class="badge bg-primary">{{step}}</span>
                     /
                     <span class="badge bg-primary">{{max_steps}}</span>
                 </div>
-                <div class="col-4">
+                <div class="col-5">
                     <button class="btn btn-outline-secondary w-100" v-on:click="next" v-if="step < max_steps">
                         Next
                         <i class="fa-solid fa-chevron-right"></i>
