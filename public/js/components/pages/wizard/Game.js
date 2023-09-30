@@ -60,6 +60,7 @@ export default {
         </div>
         <div v-if="!complete && !busy">
             Select the game to install
+            (expert installation methods are available in the <router-link to="/mods">mods</router-link> page)
             <div style="display: flex; flex-wrap: wrap;">
             <package-preview
                 v-for="pkg in packages"
