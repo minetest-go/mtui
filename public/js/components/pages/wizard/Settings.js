@@ -1,4 +1,4 @@
-import { get_setting, save, is_ready } from "../../../service/mtconfig.js";
+import { get_setting, save, is_ready, update_settings } from "../../../service/mtconfig.js";
 
 const SettingSuggestion = {
     props: ["type", "name", "title", "description", "default_value"],
@@ -14,7 +14,11 @@ const SettingSuggestion = {
         set: function(value) {
             this.busy = true;
             save(this.name, { value: ""+value })
-            .then(() => this.busy = false);
+            .then(() => {
+                this.busy = false;
+                this.value = value;
+                update_settings();
+            });
         },
     },
     template: /*html*/`
@@ -27,7 +31,7 @@ const SettingSuggestion = {
                 {{description}}
             </div>
             <div class="col-4" v-if="type == 'bool'">
-                <button class="btn btn-success w-100" v-if="setting && setting.value == 'true'" v-on:click="set('false')" :disabled="busy">
+                <button class="btn btn-success w-100" v-if="value == 'true'" v-on:click="set('false')" :disabled="busy">
                     <i class="fa fa-check"></i>
                     Enabled
                     <i class="fa fa-spinner fa-spin" v-if="busy"></i>
