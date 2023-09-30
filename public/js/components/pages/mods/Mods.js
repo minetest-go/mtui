@@ -27,10 +27,13 @@ const ModRow = {
 			<span v-else>{{mod.name}}</span>
 		</td>
 		<td>
-			<span class="badge bg-success">
-				<i class="fa-solid fa-box-open" v-if="mod.source_type == 'cdb'"></i>
-				<i class="fa-brands fa-git-alt" v-if="mod.source_type == 'git'"></i>
-				{{mod.source_type}}
+			<span class="badge bg-success" v-if="mod.source_type == 'cdb'">
+				<i class="fa-solid fa-box-open"></i>
+				ContentDB
+			</span>
+			<span class="badge bg-success" v-if="mod.source_type == 'git'">
+				<i class="fa-brands fa-git-alt"></i>
+				Git
 			</span>
 		</td>
 		<td>
@@ -159,7 +162,7 @@ export default {
 							<select class="form-control" v-model="add_mod_type">
 								<option value="mod">Mod</option>
 								<option value="game">Game</option>
-								<option value="txp">Textures</option>
+								<option value="txp">Texturepack</option>
 							</select>
 						</td>
 						<td>
@@ -206,7 +209,7 @@ export default {
 							</router-link>
 						</td>
 					</tr>
-					<tr class="table-secondary">
+					<tr v-if="games.length > 0" class="table-secondary">
 						<td colspan="8">
 							<h4>Game</h4>
 						</td>
@@ -222,7 +225,7 @@ export default {
 					<tr v-for="mod in txps" :key="mod.id">
 						<mod-row :mod="mod" :busy="busy"/>
 					</tr>
-					<tr class="table-secondary">
+					<tr v-if="mods.length > 0" class="table-secondary">
 						<td colspan="8">
 							<h4>Mods</h4>
 						</td>

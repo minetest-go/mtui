@@ -20,6 +20,7 @@ export default {
         }
         if (this.$route.query.type) {
             store.type = this.$route.query.type;
+            this.$router.push("/cdb/browse");
         }
     },
     components: {
@@ -38,7 +39,7 @@ export default {
             search_packages({
                 type: [store.type],
                 query: store.query,
-                limit: 25,
+                limit: 42,
                 sort: "score",
                 order: "desc"
             })
