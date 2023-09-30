@@ -28,26 +28,29 @@ events.on(EVENT_LOGGED_IN, function() {
 
 export const start = () => {
 	store.busy = true;
-	api_start()
-	.then(() => update_state());
+	return api_start().then(() => update_state());
 };
 
 export const stop = () => {
 	store.busy = true;
-	api_stop()
+	return api_stop().then(() => update_state());
+};
+
+export const restart = () => {
+	store.busy = true;
+	return api_stop()
+	.then(() => api_start())
 	.then(() => update_state());
 };
 
 export const create = () => {
 	store.busy = true;
-	api_create({version: store.version})
-	.then(() => update_state());
+	return api_create({version: store.version}).then(() => update_state());
 };
 
 export const remove = () => {
 	store.busy = true;
-	api_remove()
-	.then(() => update_state());
+	return api_remove().then(() => update_state());
 };
 
 export const is_running = () => store.status ? store.status.running : false;

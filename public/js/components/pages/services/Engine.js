@@ -1,4 +1,4 @@
-import { store, update_state, start, stop, create, remove } from "../../../service/engine.js";
+import { store, update_state, start, stop, restart, create, remove } from "../../../service/engine.js";
 import { START, SERVICES } from "../../Breadcrumb.js";
 
 import EngineStatus from "./EngineStatus.js";
@@ -27,6 +27,7 @@ export default {
 		update_state: update_state,
 		start: start,
 		stop: stop,
+		restart: restart,
 		remove: remove,
 		create: create
 	},
@@ -60,6 +61,9 @@ export default {
 									</button>
 									<button class="btn btn-warning" :disabled="busy || !status.created || !status.running" v-on:click="stop">
 										<i class="fa fa-stop"></i> Stop
+									</button>
+									<button class="btn btn-warning" :disabled="busy || !status.created || !status.running" v-on:click="restart">
+										<i class="fa fa-rotate-right"></i> Restart
 									</button>
 								</div>
 								<help-popup title="Installing a minetest engine">
