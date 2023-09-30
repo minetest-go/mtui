@@ -42,7 +42,7 @@ export default {
 				<i class="fa-solid fa-circle-question"></i> Help
 			</router-link>
 			&nbsp;
-			<router-link to="/wizard" class="btn btn-primary" v-if="has_priv('server')">
+			<router-link to="/wizard/1" class="btn btn-primary" v-if="has_priv('server')">
 				<i class="fa-solid fa-wand-magic-sparkles"></i> Setup wizard
 			</router-link>
 			&nbsp;

@@ -2,6 +2,7 @@ import { store, update_state, start, stop, restart, create, remove } from "../..
 import { START, SERVICES } from "../../Breadcrumb.js";
 
 import EngineStatus from "./EngineStatus.js";
+import EngineSelection from "./EngineSelection.js";
 import DefaultLayout from "../../layouts/DefaultLayout.js";
 import EngineLogs from "./EngineLogs.js";
 import HelpPopup from "../../HelpPopup.js";
@@ -10,6 +11,7 @@ export default {
 	components: {
 		"engine-logs": EngineLogs,
 		"engine-status": EngineStatus,
+		"engine-selection": EngineSelection,
 		"default-layout": DefaultLayout,
 		"help-popup": HelpPopup
 	},
@@ -43,11 +45,7 @@ export default {
 					</div>
 					<div class="card-body">
 						<div class="row">
-							<div class="col-md-4" v-if="versions && status">
-								<select class="form-control" v-model="version" :disabled="!status || status.created">
-									<option v-for="(image, version) in versions" :value="version">{{version}}</option>
-								</select>
-							</div>
+							<engine-selection class="col-md-4"/>
 							<div class="col-md-4" v-if="status">
 								<div class="btn-group">
 									<button class="btn btn-secondary" :disabled="busy || status.created || !version" v-on:click="create">

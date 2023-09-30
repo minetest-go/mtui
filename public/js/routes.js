@@ -48,7 +48,8 @@ export default [{
 }, {
 	path: "/signup", component: Signup
 }, {
-	path: "/wizard", component: Wizard
+	path: "/wizard/:step", component: Wizard, props: true,
+	meta: { requiredPriv: "server" }
 }, {
 	path: "/xban", component: Xban,
 	meta: { requiredPriv: "ban" }
