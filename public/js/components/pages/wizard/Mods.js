@@ -95,6 +95,9 @@ export default {
             <mod-suggestion name="skinsdb" author="bell07" description="Skin database" enables_feature="skinsdb"/>
             <mod-suggestion name="mesecons" author="Jeija" description="Mesecons digital circuitry"/>
         </div>
+        <div v-if="game && game.name == 'nodecore'">
+            <mod-suggestion name="nc_cats" author="Warr1024" description="Nodecore cats!"/>
+        </div>
     </div>
     `
 };
