@@ -30,6 +30,7 @@ import Mods from './components/pages/mods/Mods.js';
 import ContentBrowse from './components/pages/cdb/Browse.js';
 import ContentdbDetail from './components/pages/cdb/Detail.js';
 import InstallCDB from './components/pages/cdb/Install.js';
+import Wizard from './components/pages/wizard/Wizard.js';
 
 export default [{
 	path: "/", component: Start,
@@ -46,6 +47,9 @@ export default [{
 	path: "/onboard", component: Onboard
 }, {
 	path: "/signup", component: Signup
+}, {
+	path: "/wizard/:step", component: Wizard, props: true,
+	meta: { requiredPriv: "server" }
 }, {
 	path: "/xban", component: Xban,
 	meta: { requiredPriv: "ban" }

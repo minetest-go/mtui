@@ -1,4 +1,4 @@
-import { add, remove, get_all, is_busy, get_git_mod, update_mod, update_mod_version, check_updates, add_mtui } from '../../../service/mods.js';
+import { add, remove, get_mods_by_type, is_busy, get_git_mod, update_mod, update_mod_version, check_updates, add_mtui } from '../../../service/mods.js';
 import { update_settings } from '../../../service/mtconfig.js';
 
 import FeedbackButton from '../../FeedbackButton.js';
@@ -111,9 +111,9 @@ export default {
 	},
 	computed: {
 		busy: is_busy,
-		games: () => get_all().filter(m => m.mod_type == "game"),
-		mods: () => get_all().filter(m => m.mod_type == "mod"),
-		txps: () => get_all().filter(m => m.mod_type == "txp")
+		games: () => get_mods_by_type("game"),
+		mods: () => get_mods_by_type("mod"),
+		txps: () => get_mods_by_type("txp")
 	},
 	template: /*html*/`
 		<default-layout icon="cubes" title="Mods" :breadcrumb="breadcrumb">

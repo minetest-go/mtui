@@ -8,13 +8,18 @@ export const store = Vue.reactive({
     settings: {},
     filtered_settings: {},
     filtered_count: 0,
-    filtered_topics: []
+    filtered_topics: [],
+    ready: false
 });
 
 export function save(key, setting) {
     return set(key, setting)
     .then(() => store.settings[key] = setting);
 }
+
+export const get_setting = key => store.settings[key];
+
+export const is_ready = () => store.ready;
 
 export function unset(key) {
     return remove(key)
@@ -82,6 +87,7 @@ export function update_settings() {
         });
 
         apply_filter({ only_configured: true });
+        store.ready = true;
     });
 }
 

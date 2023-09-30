@@ -1,6 +1,6 @@
 
 export default {
-    props: ["pkg"],
+    props: ["pkg", "install_button"],
     computed: {
         thumbnail: function() {
             return this.pkg.thumbnail.replaceAll("/thumbnails/1", "/thumbnails/2");
@@ -19,6 +19,13 @@ export default {
             </h5>
             <h6 class="card-subtitle mb-2 text-body-secondary">by {{pkg.author}}</h6>
             <p class="card-text">{{pkg.short_description}}</p>
+            <button class="btn btn-success"
+                style="position: absolute; bottom: 15px; right: 15px;"
+                v-if="install_button"
+                v-on:click="$emit('install', pkg)">
+                <i class="fa fa-plus"></i>
+                Install
+            </button>
         </div>
     </div>
     `
