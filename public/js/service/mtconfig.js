@@ -16,6 +16,8 @@ export function save(key, setting) {
     .then(() => store.settings[key] = setting);
 }
 
+export const get_setting = key => store.settings[key];
+
 export function unset(key) {
     return remove(key)
     .then(() => delete store.settings[key]);
