@@ -25,6 +25,7 @@ export default {
             </div>
         </div>
         Select the minetest engine to install
+        (the engine can be controlled in the <router-link to="/services/engine">engine</router-link> page)
         <div class="row">
             <div class="col-8">
                 <engine-selection/>

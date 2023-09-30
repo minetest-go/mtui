@@ -86,6 +86,7 @@ export default {
     <div>
         <h4>Suggested mods</h4>
         General suggestions
+        (more mods and other installation methods are available in the <router-link to="/mods">mods</router-link> page)
         <mod-suggestion name="xban2" author="Kaeza" description="Enhanced player ban system" enables_feature="xban"/>
         <mod-suggestion name="areas" author="ShadowNinja" description="Area protection system"/>
         <mod-suggestion name="mail" author="mt-mods" description="Ingame mail system" enables_feature="mail"/>
