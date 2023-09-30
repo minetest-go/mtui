@@ -11,6 +11,9 @@ const store = Vue.reactive({
 export default {
     props: ["mails"],
     data: () => store,
+    created: function() {
+        this.sort();
+    },
     watch: {
         "mails": function() {
             this.sort();
