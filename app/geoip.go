@@ -85,20 +85,18 @@ func (r *GeoipResolver) Resolve(ipstr string) *GeoipResult {
 }
 
 func (r *GeoipResolver) ResolveLogGeoIP(l *types.Log, req *http.Request) {
-	if req == nil {
-		// nothing to work with
-		return
-	}
-
-	fwdfor := req.Header.Get("X-Forwarded-For")
-	if fwdfor != "" {
-		// behind reverse proxy
-		parts := strings.Split(fwdfor, ",")
-		l.IPAddress = &parts[0]
-	} else {
-		// direct access
-		parts := strings.Split(req.RemoteAddr, ":")
-		l.IPAddress = &parts[0]
+	if req != nil {
+		// web request
+		fwdfor := req.Header.Get("X-Forwarded-For")
+		if fwdfor != "" {
+			// behind reverse proxy
+			parts := strings.Split(fwdfor, ",")
+			l.IPAddress = &parts[0]
+		} else {
+			// direct access
+			parts := strings.Split(req.RemoteAddr, ":")
+			l.IPAddress = &parts[0]
+		}
 	}
 
 	if l.IPAddress != nil {
