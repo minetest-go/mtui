@@ -52,11 +52,13 @@ func (a *Api) SendChat(w http.ResponseWriter, r *http.Request, c *types.Claims) 
 		return
 	}
 
-	err = a.app.Repos.LogRepository.Insert(&types.Log{
+	log := &types.Log{
 		Category: types.CategoryUI,
 		Event:    "chat",
 		Username: c.Username,
 		Message:  fmt.Sprintf("'%s' writes '%s' in channel '%s'", c.Username, msg.Message, msg.Channel),
-	})
+	}
+	a.app.GeoipResolver.ResolveLogGeoIP(log, r)
+	err = a.app.Repos.LogRepository.Insert(log)
 	Send(w, msg, err)
 }
