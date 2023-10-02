@@ -47,6 +47,11 @@ export default {
 							<i class="fa-solid fa-terminal"></i> Shell
 						</router-link>
 					</li>
+					<li class="nav-item" v-if="has_priv('shout') && !maintenance">
+						<router-link to="/chat" class="nav-link">
+							<i class="fa-solid fa-comment"></i> Chat
+						</router-link>
+					</li>
 					<li class="nav-item">
 						<router-link to="/online-players" class="nav-link" v-if="!maintenance">
 							<i class="fa fa-users"></i> Online players

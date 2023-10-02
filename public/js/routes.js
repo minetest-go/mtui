@@ -31,6 +31,7 @@ import ContentBrowse from './components/pages/cdb/Browse.js';
 import ContentdbDetail from './components/pages/cdb/Detail.js';
 import InstallCDB from './components/pages/cdb/Install.js';
 import Wizard from './components/pages/wizard/Wizard.js';
+import Chat from './components/pages/Chat.js';
 
 export default [{
 	path: "/", component: Start,
@@ -47,6 +48,9 @@ export default [{
 	path: "/onboard", component: Onboard
 }, {
 	path: "/signup", component: Signup
+}, {
+	path: "/chat", component: Chat,
+	meta: { requiredPriv: "shout" }
 }, {
 	path: "/wizard/:step", component: Wizard, props: true,
 	meta: { requiredPriv: "server" }
