@@ -13,6 +13,7 @@ const ModRow = {
 	},
 	methods: {
 		remove,
+		update_mod_version,
 		toggle_autoupdate: function(mod) {
 			mod.auto_update = !mod.auto_update;
 			update_mod(mod);
@@ -105,7 +106,6 @@ export default {
 		add_mtui_mod: function() {
 			add_mtui().then(update_settings);
 		},
-		update_mod_version: update_mod_version,
 		get_git_mod: get_git_mod,
 		check_updates: check_updates
 	},
