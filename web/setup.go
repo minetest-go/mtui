@@ -101,6 +101,9 @@ func Setup(a *app.App) error {
 	apir.HandleFunc("/metrics/search", api.Feature(types.FEATURE_MONITORING, api.SearchMetrics)).Methods(http.MethodPost)
 	apir.HandleFunc("/metrics/count", api.Feature(types.FEATURE_MONITORING, api.CountMetrics)).Methods(http.MethodPost)
 
+	apir.HandleFunc("/chat/{channel}/latest", api.Secure(api.GetLatestChatLogs)).Methods(http.MethodGet)
+	apir.HandleFunc("/chat", api.SecurePriv("shout", api.SendChat)).Methods(http.MethodPost)
+
 	acfgr := apir.PathPrefix("/config").Subrouter()
 	acfgr.Use(SecureHandler(api.PrivCheck(types.PRIV_SERVER)))
 	acfgr.HandleFunc("/{key}", api.Secure(api.GetConfig)).Methods(http.MethodGet)

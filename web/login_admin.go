@@ -71,7 +71,7 @@ func (a *Api) AdminLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, priv := range []string{"server", "interact", "privs", "ban"} {
+	for _, priv := range []string{"shout", "server", "interact", "privs", "ban"} {
 		priv_exists := false
 		for _, existing_priv := range existing_privs {
 			if existing_priv.Privilege == priv {
