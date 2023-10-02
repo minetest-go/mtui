@@ -14,14 +14,14 @@ func logLoop(a *app.App, ch chan *bridge.CommandResponse) {
 		err := json.Unmarshal(cmd.Data, log)
 		if err != nil {
 			fmt.Printf("Payload error: %s\n", err.Error())
-			return
+			continue
 		}
 
 		a.GeoipResolver.ResolveLogGeoIP(log, nil)
 		err = a.Repos.LogRepository.Insert(log)
 		if err != nil {
 			fmt.Printf("DB error: %s\n", err.Error())
-			return
+			continue
 		}
 	}
 }

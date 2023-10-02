@@ -105,7 +105,7 @@ export default {
                 </div>
             </div>
             <hr>
-            <pre ref="log_pre" style="height: 400px; background: lightgray;">{{logs}}</pre>
+            <pre ref="log_pre" style="height: 400px; background: gray;">{{logs}}</pre>
         </div>
     </div>
 	`

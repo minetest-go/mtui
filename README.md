@@ -12,18 +12,21 @@ Minetest web ui
 # Features
 
 * Account/Password management
-* Remote console (chat, lua)
+* Remote console (chat, lua-injection)
+* Chat console
 * World status
 * Skin management
 * Mail management
 * XBan management
 * Mediaserver (remote_media)
 * OAuth provider
-* Player event logging
+* Event logging
+* Mod/game/texturepack configuration and updates (cdb, git)
+* Engine management (via Docker)
+* File browser
+* Minetest config management
 
 Planned:
-* mod/game/texturepack configuration and updates (cdb, git)
-* Engine management (via Docker)
 * Mapserver management (via Docker)
 * Matterbridge management (via Docker)
 

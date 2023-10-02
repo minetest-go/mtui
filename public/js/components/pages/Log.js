@@ -64,6 +64,7 @@ export default {
                     "filebrowser",
                     "maintenance",
                     "lua",
+                    "chat",
                     "chatcommand",
                     "feature",
                     "system",
