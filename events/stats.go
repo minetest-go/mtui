@@ -23,7 +23,7 @@ func statsLoop(e *eventbus.EventBus, ch chan *bridge.CommandResponse) {
 		err := json.Unmarshal(cmd.Data, stats)
 		if err != nil {
 			fmt.Printf("Payload error: %s\n", err.Error())
-			return
+			continue
 		}
 
 		e.Emit(&eventbus.Event{
