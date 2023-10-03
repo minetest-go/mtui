@@ -1,7 +1,6 @@
 mtui
 dist
 auth.sqlite*
-GeoLite2-City.mmdb
-GeoLite2-ASN.mmdb
+mmdb
 docker-compose.override.yml
 cookies

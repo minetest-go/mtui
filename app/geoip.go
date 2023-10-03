@@ -24,7 +24,7 @@ func NewGeoipResolver(basedir string) *GeoipResolver {
 	resolver := &GeoipResolver{}
 	var err error
 
-	citydb_name := path.Join(basedir, CITY_MMDB_NAME)
+	citydb_name := path.Join(basedir, "mmdb", CITY_MMDB_NAME)
 	fs, _ := os.Stat(citydb_name)
 	if fs == nil {
 		return &GeoipResolver{}
@@ -35,7 +35,7 @@ func NewGeoipResolver(basedir string) *GeoipResolver {
 		panic(err)
 	}
 
-	asndb_name := path.Join(basedir, ASN_MMDB_NAME)
+	asndb_name := path.Join(basedir, "mmdb", ASN_MMDB_NAME)
 	fs, _ = os.Stat(asndb_name)
 	if fs == nil {
 		return &GeoipResolver{}
