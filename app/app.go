@@ -68,7 +68,7 @@ func Create(world_dir string) (*App, error) {
 		WSEvents:        eventbus.NewEventBus(),
 		Config:          cfg,
 		Mediaserver:     mediaserver.New(),
-		GeoipResolver:   NewGeoipResolver(world_dir),
+		GeoipResolver:   NewGeoipResolver(path.Join(world_dir, "mmdb")),
 		Version:         Version,
 		MaintenanceMode: &atomic.Bool{},
 	}
