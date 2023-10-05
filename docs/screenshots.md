@@ -90,6 +90,10 @@ Add, remove and update your mods
 
 ![](./img/ModManagement.png)
 
+![](./img/BrowseCDB.png)
+
+![](./img/InstallCDB.png)
+
 ## Remote media server
 
 Builtin HTTP Remote media server to offload media-transfers from clients
