@@ -12,9 +12,7 @@ type Api struct {
 }
 
 func NewApi(app *app.App) *Api {
-	return &Api{
-		app: app,
-	}
+	return &Api{app: app}
 }
 
 func (api *Api) Setup() error {

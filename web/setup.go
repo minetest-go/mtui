@@ -29,7 +29,6 @@ func Setup(a *app.App) error {
 	}
 
 	// always on api
-	r.HandleFunc("/api/export", api.SecurePriv(types.PRIV_SERVER, api.Export)).Methods(http.MethodGet)
 	r.HandleFunc("/api/maintenance", api.SecurePriv(types.PRIV_SERVER, api.GetMaintenanceMode)).Methods(http.MethodGet)
 	r.HandleFunc("/api/maintenance", api.SecurePriv(types.PRIV_SERVER, api.EnableMaintenanceMode)).Methods(http.MethodPut)
 	r.HandleFunc("/api/maintenance", api.SecurePriv(types.PRIV_SERVER, api.DisableMaintenanceMode)).Methods(http.MethodDelete)

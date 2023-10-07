@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCreateApp(t *testing.T) {
+func NewApp(t *testing.T) *app.App {
 	tmpdir, err := os.MkdirTemp(os.TempDir(), "mtui_app")
 	assert.NoError(t, err)
 
@@ -25,5 +25,5 @@ player_backend = sqlite3
 	assert.NoError(t, err)
 	assert.NotNil(t, a)
 
-	assert.NoError(t, app.CreateAdminUser(a.DBContext, "test", "enter"))
+	return a
 }

@@ -3,7 +3,6 @@ package web
 import (
 	"encoding/json"
 	"fmt"
-	"mtui/auth"
 	"mtui/types"
 	"net/http"
 	"sync/atomic"
@@ -79,40 +78,10 @@ func (a *Api) CreateOnboardUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = auth.ValidateUsername(obr.Username)
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("username invalid: %v", err))
-		return
-	}
-
-	// create new password
-	salt, verifier, err := auth.CreateAuth(obr.Username, obr.Password)
+	_, err = a.app.CreateAdmin(obr.Username, obr.Password)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
-	}
-
-	auth_entry := &dbauth.AuthEntry{
-		Name:     obr.Username,
-		Password: auth.CreateDBPassword(salt, verifier),
-	}
-	// save to db
-	err = a.app.DBContext.Auth.Create(auth_entry)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	for _, priv := range []string{"shout", "server", "interact", "privs", "ban"} {
-		err = a.app.DBContext.Privs.Create(&dbauth.PrivilegeEntry{
-			ID:        *auth_entry.ID,
-			Privilege: priv,
-		})
-
-		if err != nil {
-			SendError(w, 500, err.Error())
-			return
-		}
 	}
 
 	// create log entry

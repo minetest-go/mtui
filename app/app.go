@@ -18,7 +18,6 @@ import (
 	"github.com/go-oauth2/oauth2/v4/manage"
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/minetest-go/mtdb"
-	"github.com/sirupsen/logrus"
 )
 
 var Version string
@@ -49,6 +48,7 @@ backend = sqlite3
 gameid = game
 `
 
+// Creates a new application context
 func Create(world_dir string) (*App, error) {
 
 	// check world.mt file and fall back to defaults
@@ -76,15 +76,6 @@ func Create(world_dir string) (*App, error) {
 	err = app.AttachDatabase()
 	if err != nil {
 		return nil, fmt.Errorf("could not attach database: %v", err)
-	}
-
-	// admin user
-	if cfg.AdminUsername != "" && cfg.AdminPassword != "" {
-		logrus.WithFields(logrus.Fields{"admin_user": cfg.AdminUsername}).Info("Creating admin-user")
-		err = CreateAdminUser(app.DBContext, cfg.AdminUsername, cfg.AdminPassword)
-		if err != nil {
-			return nil, err
-		}
 	}
 
 	// features

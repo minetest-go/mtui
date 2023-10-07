@@ -21,8 +21,6 @@ type Config struct {
 	InstallMtuiMod          bool
 	LogStreamURL            string
 	LogStreamAuthorization  string
-	AdminUsername           string
-	AdminPassword           string
 	MinetestConfig          string
 	DockerMinetestConfig    string
 	DockerMinetestPort      int
@@ -49,8 +47,6 @@ func NewConfig() *Config {
 		InstallMtuiMod:          os.Getenv("INSTALL_MTUI_MOD") == "true",
 		LogStreamURL:            os.Getenv("LOG_STREAM_URL"),
 		LogStreamAuthorization:  os.Getenv("LOG_STREAM_AUTHORIZATION"),
-		AdminUsername:           os.Getenv("ADMIN_USERNAME"),
-		AdminPassword:           os.Getenv("ADMIN_PASSWORD"),
 		MinetestConfig:          os.Getenv("MINETEST_CONFIG"),
 		DockerMinetestConfig:    os.Getenv("DOCKER_MINETEST_CONFIG"),
 		DockerMinetestPort:      int(port),
