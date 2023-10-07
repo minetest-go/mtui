@@ -168,15 +168,17 @@ func Setup(a *app.App) error {
 	cfgr.HandleFunc("/settings/{key}", api.SecurePriv(types.PRIV_SERVER, api.SetMTConfig)).Methods(http.MethodPost)
 	cfgr.HandleFunc("/settings/{key}", api.SecurePriv(types.PRIV_SERVER, api.DeleteMTConfig)).Methods(http.MethodDelete)
 
-	servapi := apir.PathPrefix("/service").Subrouter()
-	servapi.Use(SecureHandler(api.FeatureCheck(types.FEATURE_DOCKER)))
-	servapi.HandleFunc("/engine/versions", api.SecurePriv(types.PRIV_SERVER, api.GetEngineVersions)).Methods(http.MethodGet)
-	servapi.HandleFunc("/engine", api.SecurePriv(types.PRIV_SERVER, api.GetEngineStatus)).Methods(http.MethodGet)
-	servapi.HandleFunc("/engine", api.SecurePriv(types.PRIV_SERVER, api.CreateEngine)).Methods(http.MethodPost)
-	servapi.HandleFunc("/engine", api.SecurePriv(types.PRIV_SERVER, api.RemoveEngine)).Methods(http.MethodDelete)
-	servapi.HandleFunc("/engine/start", api.SecurePriv(types.PRIV_SERVER, api.StartEngine)).Methods(http.MethodPost)
-	servapi.HandleFunc("/engine/stop", api.SecurePriv(types.PRIV_SERVER, api.StopEngine)).Methods(http.MethodPost)
-	servapi.HandleFunc("/engine/logs/{since}/{until}", api.SecurePriv(types.PRIV_SERVER, api.GetEngineLogs)).Methods(http.MethodGet)
+	if api.app.ServiceEngine != nil {
+		servapi := apir.PathPrefix("/service").Subrouter()
+		servapi.Use(SecureHandler(api.FeatureCheck(types.FEATURE_DOCKER)))
+		servapi.HandleFunc("/engine/versions", api.SecurePriv(types.PRIV_SERVER, api.GetEngineVersions)).Methods(http.MethodGet)
+		servapi.HandleFunc("/engine", api.SecurePriv(types.PRIV_SERVER, api.GetEngineStatus)).Methods(http.MethodGet)
+		servapi.HandleFunc("/engine", api.SecurePriv(types.PRIV_SERVER, api.CreateEngine)).Methods(http.MethodPost)
+		servapi.HandleFunc("/engine", api.SecurePriv(types.PRIV_SERVER, api.RemoveEngine)).Methods(http.MethodDelete)
+		servapi.HandleFunc("/engine/start", api.SecurePriv(types.PRIV_SERVER, api.StartEngine)).Methods(http.MethodPost)
+		servapi.HandleFunc("/engine/stop", api.SecurePriv(types.PRIV_SERVER, api.StopEngine)).Methods(http.MethodPost)
+		servapi.HandleFunc("/engine/logs/{since}/{until}", api.SecurePriv(types.PRIV_SERVER, api.GetEngineLogs)).Methods(http.MethodGet)
+	}
 
 	// OAuth
 	api.app.OAuthServer.SetAllowGetAccessRequest(true)

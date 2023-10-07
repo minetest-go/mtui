@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"mtui/bridge"
 	"mtui/db"
+	"mtui/dockerservice"
 	"mtui/eventbus"
 	"mtui/mail"
 	"mtui/mediaserver"
@@ -13,8 +14,12 @@ import (
 	"mtui/types"
 	"os"
 	"path"
+	"strings"
 	"sync/atomic"
 
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/mount"
+	"github.com/docker/go-connections/nat"
 	"github.com/go-oauth2/oauth2/v4/manage"
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/minetest-go/mtdb"
@@ -38,6 +43,7 @@ type App struct {
 	OAuthMgr        *manage.Manager
 	OAuthServer     *server.Server
 	MaintenanceMode *atomic.Bool // database detached, for backup and restores
+	ServiceEngine   *dockerservice.DockerService
 }
 
 const default_world_mt_content = `
@@ -128,6 +134,50 @@ func Create(world_dir string) (*App, error) {
 			}
 		}
 		cfg.APIKey = apiKey.Value
+	}
+
+	if cfg.DockerContainerPrefix != "" {
+		// docker management enabled, set up service utils
+		portbinding := fmt.Sprintf("%d/udp", app.Config.DockerMinetestPort)
+
+		app.ServiceEngine = dockerservice.New(&dockerservice.Config{
+			ContainerName: fmt.Sprintf("%s_engine", cfg.DockerContainerPrefix),
+			Networks:      strings.Split(app.Config.DockerNetwork, ","),
+			DefaultConfig: &container.Config{
+				Cmd:  []string{"minetestserver", "--world", "/world", "--config", "/minetest.conf"},
+				Tty:  false,
+				User: fmt.Sprintf("%d", os.Getuid()),
+				Env:  []string{"HTTP_PROXY=", "HTTPS_PROXY=", "http_proxy=", "https_proxy="},
+			},
+			DefaultHostConfig: &container.HostConfig{
+				RestartPolicy: container.RestartPolicy{
+					Name: "always",
+				},
+				Mounts: []mount.Mount{
+					{
+						Type:   mount.TypeBind,
+						Source: app.Config.DockerWorlddir,
+						Target: "/world",
+					}, {
+						Type:   mount.TypeBind,
+						Source: app.Config.DockerMinetestConfig,
+						Target: "/minetest.conf",
+					}, {
+						Type:   mount.TypeBind,
+						Source: path.Join(app.Config.DockerWorlddir, "textures"),
+						Target: "/root/.minetest/textures/server", //TODO: only works in uid=0 case
+					},
+				},
+				PortBindings: nat.PortMap{
+					nat.Port(portbinding): []nat.PortBinding{
+						{
+							HostIP:   "0.0.0.0",
+							HostPort: fmt.Sprintf("%d", app.Config.DockerMinetestPort),
+						},
+					},
+				},
+			},
+		})
 	}
 
 	if Version == "" {

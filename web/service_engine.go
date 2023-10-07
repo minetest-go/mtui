@@ -1,29 +1,14 @@
 package web
 
 import (
-	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"mtui/types"
 	"net/http"
-	"os"
-	"path"
 	"strconv"
-	"strings"
 	"time"
 
-	dockertypes "github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/filters"
-	"github.com/docker/docker/api/types/mount"
-	"github.com/docker/docker/api/types/network"
-	"github.com/docker/docker/client"
-	"github.com/docker/docker/pkg/stdcopy"
-	"github.com/docker/go-connections/nat"
 	"github.com/gorilla/mux"
-	"github.com/sirupsen/logrus"
 )
 
 // map versions with full image urls (in case the registry gets switched in the future)
@@ -36,71 +21,9 @@ func (a *Api) GetEngineVersions(w http.ResponseWriter, r *http.Request, claims *
 	SendJson(w, VersionImageMapping)
 }
 
-type ServiceStatus struct {
-	ID      string `json:"id"`
-	Created bool   `json:"created"`
-	Running bool   `json:"running"`
-	Version string `json:"version"`
-}
-
-func getDockerCli() (*client.Client, error) {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	if err != nil {
-		return nil, fmt.Errorf("new client error: %v", err)
-	}
-	return cli, nil
-}
-
-func getMinetestContainer() (*dockertypes.Container, error) {
-	cli, err := getDockerCli()
-	if err != nil {
-		return nil, err
-	}
-
-	ctx := context.Background()
-	container_name := os.Getenv("DOCKER_MINETEST_CONTAINER")
-	f := filters.NewArgs()
-	f.Add("name", container_name)
-	containers, err := cli.ContainerList(ctx, dockertypes.ContainerListOptions{
-		All:     true,
-		Filters: f,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("container-list error: %v", err)
-	}
-
-	if len(containers) == 1 {
-		// single container found
-		return &containers[0], nil
-	} else if len(containers) > 1 {
-		return nil, fmt.Errorf("multiple containers found with name '%s'", container_name)
-	}
-
-	// no container found
-	return nil, nil
-}
-
 func (a *Api) GetEngineStatus(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	status := &ServiceStatus{}
-
-	container, err := getMinetestContainer()
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("fetch container error: %v", err))
-		return
-	}
-	if container != nil {
-		status.ID = container.ID
-		status.Created = true
-		status.Running = container.State == "running"
-		for v, img := range VersionImageMapping {
-			if img == container.Image {
-				status.Version = v
-				break
-			}
-		}
-	}
-
-	SendJson(w, status)
+	s, err := a.app.ServiceEngine.Status()
+	Send(w, s, err)
 }
 
 type CreateEngineRequest struct {
@@ -108,21 +31,8 @@ type CreateEngineRequest struct {
 }
 
 func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	// https://docs.docker.com/engine/api/sdk/examples/
-
-	// check if container already exists
-	c, err := getMinetestContainer()
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("fetch container error: %v", err))
-		return
-	}
-	if c != nil {
-		SendError(w, 500, "container already created")
-		return
-	}
-
 	cer := &CreateEngineRequest{}
-	err = json.NewDecoder(r.Body).Decode(cer)
+	err := json.NewDecoder(r.Body).Decode(cer)
 	if err != nil {
 		SendError(w, 500, fmt.Sprintf("json error: %v", err))
 		return
@@ -134,110 +44,8 @@ func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types
 		return
 	}
 
-	ctx := context.Background()
-	cli, err := getDockerCli()
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("docker client error: %v", err))
-		return
-	}
-	defer cli.Close()
-
-	reader, err := cli.ImagePull(ctx, image, dockertypes.ImagePullOptions{})
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("image pull error: %v", err))
-		return
-	}
-	defer reader.Close()
-	_, err = io.Copy(os.Stdout, reader)
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("io-copy error: %v", err))
-		return
-	}
-
-	world_dir := a.app.Config.DockerWorlddir
-	world_dir_container := "/world"
-	minetest_config := a.app.Config.DockerMinetestConfig
-	minetest_config_container := "/minetest.conf"
-	if minetest_config == "" {
-		SendError(w, 500, "minetest config not found")
-		return
-	}
-
-	// ensure that there is a "textures" folder inside the world-dir
-	os.MkdirAll(path.Join(a.app.WorldDir, "textures"), 0777)
-
-	network_names := strings.Split(a.app.Config.DockerNetwork, ",")
-	container_name := a.app.Config.DockerMinetestContainer
-
-	logrus.WithFields(logrus.Fields{
-		"world_dir":       world_dir,
-		"minetest_config": minetest_config,
-		"version":         cer.Version,
-		"image":           image,
-		"port":            a.app.Config.DockerMinetestPort,
-		"uid":             os.Getuid(),
-		"network_names":   network_names,
-		"container_name":  container_name,
-	}).Info("Creating minetest engine service")
-
-	portbinding := fmt.Sprintf("%d/udp", a.app.Config.DockerMinetestPort)
-
-	// prefix world and config with /data inside container to prevent filename collisions
-	resp, err := cli.ContainerCreate(ctx, &container.Config{
-		Image: image,
-		Cmd:   []string{"minetestserver", "--world", world_dir_container, "--config", minetest_config_container},
-		Tty:   false,
-		User:  fmt.Sprintf("%d", os.Getuid()),
-		Env:   []string{"HTTP_PROXY=", "HTTPS_PROXY=", "http_proxy=", "https_proxy="},
-	}, &container.HostConfig{
-		RestartPolicy: container.RestartPolicy{
-			Name: "always",
-		},
-		Mounts: []mount.Mount{
-			{
-				Type:   mount.TypeBind,
-				Source: world_dir,
-				Target: world_dir_container,
-			}, {
-				Type:   mount.TypeBind,
-				Source: minetest_config,
-				Target: minetest_config_container,
-			}, {
-				Type:   mount.TypeBind,
-				Source: path.Join(world_dir, "textures"),
-				Target: "/root/.minetest/textures/server", //TODO: only works in uid=0 case
-			},
-		},
-		PortBindings: nat.PortMap{
-			nat.Port(portbinding): []nat.PortBinding{
-				{
-					HostIP:   "0.0.0.0",
-					HostPort: fmt.Sprintf("%d", a.app.Config.DockerMinetestPort),
-				},
-			},
-		},
-	}, nil, nil, container_name)
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("container create error: %v", err))
-		return
-	}
-
-	for _, name := range network_names {
-		err = cli.NetworkConnect(ctx, name, resp.ID, &network.EndpointSettings{
-			NetworkID: name,
-		})
-		if err != nil {
-			SendError(w, 500, fmt.Sprintf("could not connect container %s to network %s: %v", resp.ID, name, err))
-			return
-		}
-	}
-
-	SendJson(w, &ServiceStatus{
-		ID:      resp.ID,
-		Created: true,
-		Running: false,
-		Version: cer.Version,
-	})
+	err = a.app.ServiceEngine.Create(image)
+	Send(w, true, err)
 
 	// create log entry
 	a.CreateUILogEntry(&types.Log{
@@ -245,28 +53,10 @@ func (a *Api) CreateEngine(w http.ResponseWriter, r *http.Request, claims *types
 		Event:    "engine",
 		Message:  fmt.Sprintf("User '%s' created the minetest engine with version '%s'", claims.Username, cer.Version),
 	}, r)
-
 }
 
 func (a *Api) StartEngine(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	c, err := getMinetestContainer()
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("fetch container error: %v", err))
-		return
-	}
-	if c == nil {
-		SendError(w, 404, "no container found")
-		return
-	}
-
-	cli, err := getDockerCli()
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("docker client error: %v", err))
-		return
-	}
-
-	ctx := context.Background()
-	err = cli.ContainerStart(ctx, c.ID, dockertypes.ContainerStartOptions{})
+	err := a.app.ServiceEngine.Start()
 	Send(w, true, err)
 
 	// create log entry
@@ -278,28 +68,10 @@ func (a *Api) StartEngine(w http.ResponseWriter, r *http.Request, claims *types.
 }
 
 func (a *Api) StopEngine(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	c, err := getMinetestContainer()
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("fetch container error: %v", err))
-		return
-	}
-	if c == nil {
-		SendError(w, 404, "no container found")
-		return
-	}
-
-	cli, err := getDockerCli()
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("docker client error: %v", err))
-		return
-	}
-
-	ctx := context.Background()
-	err = cli.ContainerStop(ctx, c.ID, container.StopOptions{})
-
 	// remove stats
 	current_stats.Store(nil)
 
+	err := a.app.ServiceEngine.Stop()
 	Send(w, true, err)
 
 	// create log entry
@@ -311,24 +83,7 @@ func (a *Api) StopEngine(w http.ResponseWriter, r *http.Request, claims *types.C
 }
 
 func (a *Api) RemoveEngine(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	c, err := getMinetestContainer()
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("fetch container error: %v", err))
-		return
-	}
-	if c == nil {
-		SendError(w, 404, "no container found")
-		return
-	}
-
-	cli, err := getDockerCli()
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("docker client error: %v", err))
-		return
-	}
-
-	ctx := context.Background()
-	err = cli.ContainerRemove(ctx, c.ID, dockertypes.ContainerRemoveOptions{})
+	err := a.app.ServiceEngine.Remove()
 	Send(w, true, err)
 
 	// create log entry
@@ -339,11 +94,6 @@ func (a *Api) RemoveEngine(w http.ResponseWriter, r *http.Request, claims *types
 	}, r)
 }
 
-type ServiceLogResponse struct {
-	Out string `json:"out"`
-	Err string `json:"err"`
-}
-
 func (a *Api) GetEngineLogs(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	vars := mux.Vars(r)
 
@@ -352,57 +102,15 @@ func (a *Api) GetEngineLogs(w http.ResponseWriter, r *http.Request, claims *type
 		SendError(w, 500, fmt.Sprintf("invalid since format: %s", vars["since"]))
 		return
 	}
-	since := time.UnixMilli(since_millis).Format(time.RFC3339)
+	since := time.UnixMilli(since_millis)
 
 	until_millis, err := strconv.ParseInt(vars["until"], 10, 64)
 	if err != nil {
 		SendError(w, 500, fmt.Sprintf("invalid until format: %s", vars["until"]))
 		return
 	}
-	until := time.UnixMilli(until_millis).Format(time.RFC3339)
+	until := time.UnixMilli(until_millis)
 
-	container, err := getMinetestContainer()
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("fetch container error: %v", err))
-		return
-	}
-	if container == nil {
-		SendError(w, 404, "container not found")
-		return
-	}
-
-	cli, err := getDockerCli()
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("docker client error: %v", err))
-		return
-	}
-
-	ctx := context.Background()
-	logs, err := cli.ContainerLogs(ctx, container.ID, dockertypes.ContainerLogsOptions{
-		ShowStdout: true,
-		ShowStderr: true,
-		Since:      since,
-		Until:      until,
-	})
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("docker stdout log error: %v", err))
-		return
-	}
-	defer logs.Close()
-
-	out_buf := bytes.NewBuffer([]byte{})
-	err_buf := bytes.NewBuffer([]byte{})
-
-	_, err = stdcopy.StdCopy(out_buf, err_buf, logs)
-	if err != nil {
-		SendError(w, 500, fmt.Sprintf("docker stdcopy error: %v", err))
-		return
-	}
-
-	slogs := &ServiceLogResponse{
-		Out: out_buf.String(),
-		Err: err_buf.String(),
-	}
-
-	Send(w, slogs, nil)
+	slogs, err := a.app.ServiceEngine.GetLogs(since, until)
+	Send(w, slogs, err)
 }

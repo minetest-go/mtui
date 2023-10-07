@@ -25,7 +25,7 @@ services:
    DOCKER_HOSTNAME: "ui"
    DOCKER_NETWORK: "mtui_default"
    DOCKER_WORLD_DIR: "${PWD}/dev/world"
-   DOCKER_MINETEST_CONTAINER: "mtui_engine"
+   DOCKER_CONTAINER_PREFIX: "mtui"
   ports:
     - 8080:8080
   volumes:
