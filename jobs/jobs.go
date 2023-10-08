@@ -8,6 +8,7 @@ func Start(a *app.App) {
 	go metricCleanup(a)
 	go mediaScan(a)
 	go modAutoUpdate(a)
+	go serviceLogs(a)
 
 	if a.Config.LogStreamURL != "" {
 		go logStream(a)

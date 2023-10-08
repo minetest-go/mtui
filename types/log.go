@@ -23,6 +23,7 @@ type LogCategory string
 const (
 	CategoryUI       LogCategory = "ui"
 	CategoryMinetest LogCategory = "minetest"
+	CategoryService  LogCategory = "service"
 )
 
 type LogSearch struct {

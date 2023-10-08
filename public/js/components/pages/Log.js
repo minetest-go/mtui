@@ -25,6 +25,51 @@ const store = Vue.reactive({
     }]
 });
 
+const category_events = {
+    "minetest": [
+        "prejoin",
+        "join",
+        "leave",
+        "authplayer",
+        "dieplayer",
+        "cheat",
+        "chat",
+        "system",
+        "on_generated",
+        "protection_violation",
+        "placenode",
+        "dignode",
+        "punchnode",
+        "craft",
+        "logfile",
+        "logfile-error",
+        "logfile-warning",
+        "logfile-action",
+        "logfile-info",
+        "logfile-verbose"
+    ],
+    "ui": [
+        "login",
+        "signup",
+        "skin",
+        "settings",
+        "filebrowser",
+        "maintenance",
+        "lua",
+        "chat",
+        "chatcommand",
+        "feature",
+        "system",
+        "engine",
+        "mods",
+        "oauth",
+        "password"
+    ],
+    "service": [
+        "engine"
+    ]
+};
+
 export default {
     components: {
         "default-layout": DefaultLayout
@@ -32,48 +77,7 @@ export default {
     data: () => store,
     computed: {
         events: function() {
-            if (this.category == "minetest") {
-                return [
-                    "prejoin",
-                    "join",
-                    "leave",
-                    "authplayer",
-                    "dieplayer",
-                    "cheat",
-                    "chat",
-                    "system",
-                    "on_generated",
-                    "protection_violation",
-                    "placenode",
-                    "dignode",
-                    "punchnode",
-                    "craft",
-                    "logfile",
-                    "logfile-error",
-                    "logfile-warning",
-                    "logfile-action",
-                    "logfile-info",
-                    "logfile-verbose"
-                ];
-            } else {
-                return [
-                    "login",
-                    "signup",
-                    "skin",
-                    "settings",
-                    "filebrowser",
-                    "maintenance",
-                    "lua",
-                    "chat",
-                    "chatcommand",
-                    "feature",
-                    "system",
-                    "engine",
-                    "mods",
-                    "oauth",
-                    "password"
-                ];
-            }
+            return category_events[this.category];
         }
     },
     methods: {
@@ -152,6 +156,7 @@ export default {
                 <select class="form-control" v-model="category">
                     <option value="minetest">Minetest</option>
                     <option value="ui">UI</option>
+                    <option value="service">Service</option>
                 </select>
             </div>
             <div class="col-md-2">
