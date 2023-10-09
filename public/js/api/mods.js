@@ -13,6 +13,10 @@ export const create_mtui_mod = () => protected_fetch("api/mods/create_mtui", {
     method: "POST"
 });
 
+export const create_beerchat_mod = () => protected_fetch("api/mods/create_beerchat", {
+    method: "POST"
+});
+
 export const update_mod = mod => protected_fetch(`api/mods/${mod.id}`, {
     method: "POST",
     body: JSON.stringify(mod)

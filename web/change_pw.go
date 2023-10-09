@@ -83,7 +83,7 @@ func (a *Api) ChangePassword(w http.ResponseWriter, r *http.Request, claims *typ
 	}
 
 	// create log entry
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "password",
 		Message:  fmt.Sprintf("User '%s' set the passowrd of %s", claims.Username, req.Username),

@@ -21,7 +21,7 @@ func (a *Api) EnableMaintenanceMode(w http.ResponseWriter, r *http.Request, c *t
 	a.app.MaintenanceMode.Store(true)
 
 	// create log entry
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: c.Username,
 		Event:    "maintenance",
 		Message:  fmt.Sprintf("User '%s' enables the maintenance mode", c.Username),
@@ -53,7 +53,7 @@ func (a *Api) DisableMaintenanceMode(w http.ResponseWriter, r *http.Request, c *
 	}
 
 	// create log entry
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: c.Username,
 		Event:    "maintenance",
 		Message:  fmt.Sprintf("User '%s' disabled the maintenance mode", c.Username),

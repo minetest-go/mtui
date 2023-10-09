@@ -51,7 +51,7 @@ func (a *Api) SetFeature(w http.ResponseWriter, r *http.Request, claims *types.C
 	if feature.Enabled {
 		action = "enables"
 	}
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "feature",
 		Message:  fmt.Sprintf("User '%s' %s the feature '%s'", claims.Username, action, feature.Name),

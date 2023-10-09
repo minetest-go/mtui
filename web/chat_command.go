@@ -28,7 +28,7 @@ func (a *Api) ExecuteChatcommand(w http.ResponseWriter, r *http.Request, claims 
 	Send(w, resp, err)
 
 	// create log entry
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "chatcommand",
 		Message:  fmt.Sprintf("User '%s' executes the chatcommand: '%s'", claims.Username, req.Command),

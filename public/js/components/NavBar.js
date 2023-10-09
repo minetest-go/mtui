@@ -2,12 +2,19 @@ import { has_priv, is_logged_in, get_claims, logout } from "../service/login.js"
 import { has_feature } from "../service/features.js";
 import { get_player_count, get_maintenance } from "../service/stats.js";
 import { get_unread_count } from '../service/mail.js';
+import { engine, matterbridge } from "../service/service.js";
 
 import StatsDisplay from './StatsDisplay.js';
-import EngineStatus from "./pages/services/EngineStatus.js";
+import ServiceStatus from "./pages/services/ServiceStatus.js";
 import NavDropdown from "./NavDropdown.js";
 
 export default {
+	data: function() {
+		return {
+			engine,
+			matterbridge
+		};
+	},
 	methods: {
 		has_priv: has_priv,
 		has_feature: has_feature,
@@ -24,7 +31,7 @@ export default {
 	},
 	components: {
 		"stats-display": StatsDisplay,
-		"engine-status": EngineStatus,
+		"service-status": ServiceStatus,
 		"nav-dropdown": NavDropdown
 	},
 	template: /*html*/`
@@ -90,7 +97,14 @@ export default {
 							<router-link to="/services/engine" class="dropdown-item">
 								<i class="fa fa-gear"></i>
 								Minetest engine
-								<engine-status/>
+								<service-status :status="engine.store.status"/>
+							</router-link>
+						</li>
+						<li>
+							<router-link to="/services/matterbridge" class="dropdown-item">
+								<i class="fa fa-gear"></i>
+								Matterbridge
+								<service-status :status="matterbridge.store.status"/>
 							</router-link>
 						</li>
 					</nav-dropdown>

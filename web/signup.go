@@ -41,7 +41,7 @@ func (a *Api) Signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// create log entry
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: sr.Username,
 		Event:    "signup",
 		Message:  fmt.Sprintf("User '%s' signed up successfully", sr.Username),

@@ -1,19 +1,17 @@
-import { get_logs } from "../../../api/service_engine.js";
-
-const store = Vue.reactive({
-    busy: false,
-    logs: "",
-    linecount: 0,
-    live: true,
-    since: Date.now() - (1000*60*60),
-    until: Date.now() + (1000*60*60),
-    logs_live_since: Date.now() - (1000*60*60) // shifting window for live-view
-});
+import { get_logs } from "../../../api/service.js";
 
 export default {
-    props: ["running"],
+    props: ["running", "servicename"],
     data: function(){
-        return store;
+        return {
+            busy: false,
+            logs: "",
+            linecount: 0,
+            live: true,
+            since: Date.now() - (1000*60*60),
+            until: Date.now() + (1000*60*60),
+            logs_live_since: Date.now() - (1000*60*60) // shifting window for live-view
+        };
     },
     created: function(){
         this.update_logs();
@@ -24,17 +22,17 @@ export default {
     },
     methods: {
         clear_logs: function() {
-            store.linecount = 0;
-            store.logs = "";
+            this.linecount = 0;
+            this.logs = "";
         },
         insert_logs: function(l) {
             if (l.out){
-                store.logs += l.out;
-                store.linecount += l.out.split("\n").length;
+                this.logs += l.out;
+                this.linecount += l.out.split("\n").length;
             }
             if (l.err){
-                store.logs += l.err;
-                store.linecount += l.err.split("\n").length;
+                this.logs += l.err;
+                this.linecount += l.err.split("\n").length;
             }
             this.scroll_to_bottom();
         },
@@ -49,16 +47,16 @@ export default {
         
             // fetch and shift window
             const now = Date.now();
-            get_logs(store.logs_live_since, now)
+            get_logs(this.servicename, this.logs_live_since, now)
             .then(l => {
                 this.insert_logs(l);
-                store.logs_live_since = now + 1;
+                this.logs_live_since = now + 1;
             });
         },
         fetch_logs: function() {
             this.clear_logs();
             this.busy = true;
-            get_logs(+this.since, +this.until)
+            get_logs(this.servicename, +this.since, +this.until)
             .then(l => this.insert_logs(l))
             .finally(() => this.busy = false);
         }

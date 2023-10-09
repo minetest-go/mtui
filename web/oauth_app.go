@@ -32,7 +32,7 @@ func (a *Api) SetOauthApp(w http.ResponseWriter, r *http.Request, claims *types.
 	Send(w, app, err)
 
 	// create log entry
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "oauth",
 		Message:  fmt.Sprintf("User '%s' updates the oauth app '%s'", claims.Username, app.ID),
@@ -45,7 +45,7 @@ func (a *Api) DeleteOauthApp(w http.ResponseWriter, r *http.Request, claims *typ
 	Send(w, true, err)
 
 	// create log entry
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "oauth",
 		Message:  fmt.Sprintf("User '%s' deletes the oauth app '%s'", claims.Username, vars["id"]),

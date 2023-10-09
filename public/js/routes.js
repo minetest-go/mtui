@@ -19,10 +19,11 @@ import OauthApps from './components/pages/oauth/OauthApps.js';
 import OauthAppEdit from './components/pages/oauth/OauthAppEdit.js';
 import MinetestConfig from './components/pages/administration/MinetestConfig.js';
 import EngineService from './components/pages/services/Engine.js';
+import MatterbridgeService from './components/pages/services/Matterbridge.js';
 import UISettings from './components/pages/administration/UISettings.js';
 import Maintenance from './components/pages/administration/Maintenance.js';
 import Filebrowser from './components/pages/filebrowser/Filebrowser.js';
-import FileEdit from './components/pages/filebrowser/FileEdit.js';
+import FileEditPage from './components/pages/filebrowser/FileEditPage.js';
 import Signup from './components/pages/Signup.js';
 import Help from './components/pages/Help.js';
 
@@ -120,12 +121,15 @@ export default [{
 	path: "/services/engine", component: EngineService,
 	meta: { requiredPriv: "server" }
 }, {
+	path: "/services/matterbridge", component: MatterbridgeService,
+	meta: { requiredPriv: "server" }
+}, {
 	path:"/ui/settings", component: UISettings,
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/filebrowser/:pathMatch(.*)", component: Filebrowser, props: true,
 	meta: { requiredPriv: "server", maintenance_page: true }
 }, {
-	path: "/fileedit/:pathMatch(.*)", component: FileEdit, props: true,
+	path: "/fileedit/:pathMatch(.*)", component: FileEditPage, props: true,
 	meta: { requiredPriv: "server", maintenance_page: true }
 }];

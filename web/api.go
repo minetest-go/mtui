@@ -4,7 +4,6 @@ import (
 	"mtui/app"
 	"mtui/types"
 	"mtui/types/command"
-	"net/http"
 )
 
 type Api struct {
@@ -22,18 +21,10 @@ func (api *Api) Setup() error {
 	go api.TanSetListener(api.app.Bridge.AddHandler(command.COMMAND_TAN_REMOVE))
 	go api.StatsEventListener(api.app.Bridge.AddHandler(command.COMMAND_STATS))
 
-	api.CreateUILogEntry(&types.Log{
+	api.app.CreateUILogEntry(&types.Log{
 		Event:   "system",
 		Message: "mtui started",
 	}, nil)
 
 	return nil
-}
-
-func (api *Api) CreateUILogEntry(l *types.Log, r *http.Request) {
-	if !api.app.MaintenanceMode.Load() {
-		l.Category = types.CategoryUI
-		api.app.GeoipResolver.ResolveLogGeoIP(l, r)
-		api.app.Repos.LogRepository.Insert(l)
-	}
 }

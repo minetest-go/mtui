@@ -67,7 +67,7 @@ func (a *Api) GetLogin(w http.ResponseWriter, r *http.Request) {
 
 		claims, err = a.updateToken(w, *auth_entry.ID, claims.Username)
 		Send(w, claims, err)
-		a.CreateUILogEntry(&types.Log{
+		a.app.CreateUILogEntry(&types.Log{
 			Username: claims.Username,
 			Event:    "login",
 			Message:  fmt.Sprintf("User '%s' refreshed session", claims.Username),
@@ -117,7 +117,7 @@ func (a *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 	if auth_entry == nil {
 		SendError(w, 404, "user not found")
 		// create log entry
-		a.CreateUILogEntry(&types.Log{
+		a.app.CreateUILogEntry(&types.Log{
 			Username: req.Username,
 			Event:    "login",
 			Message:  fmt.Sprintf("User '%s' tried to login and was not found", req.Username),
@@ -148,7 +148,7 @@ func (a *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 			if !ok {
 				SendError(w, 401, "unauthorized")
 				// create log entry
-				a.CreateUILogEntry(&types.Log{
+				a.app.CreateUILogEntry(&types.Log{
 					Username: req.Username,
 					Event:    "login",
 					Message:  fmt.Sprintf("User '%s' provided wrong password", req.Username),
@@ -203,7 +203,7 @@ func (a *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 			if !otp_ok {
 				SendError(w, 403, "otp code wrong")
 				// create log entry
-				a.CreateUILogEntry(&types.Log{
+				a.app.CreateUILogEntry(&types.Log{
 					Username: req.Username,
 					Event:    "login",
 					Message:  fmt.Sprintf("User '%s' provided wrong otp code", req.Username),
@@ -220,7 +220,7 @@ func (a *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// create log entry
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "login",
 		Message:  fmt.Sprintf("User '%s' logged in successfully", claims.Username),
