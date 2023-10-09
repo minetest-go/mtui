@@ -35,8 +35,15 @@ export const is_busy = () => store.busy;
 
 export const add = m => create_mod(m).then(update);
 
-export const add_mtui = () => create_mtui_mod().then(update);
-export const add_beerchat = () => create_beerchat_mod().then(update);
+export const add_mtui = () => {
+    store.busy = true;
+    return create_mtui_mod().then(update);
+};
+
+export const add_beerchat = () => {
+    store.busy = true;
+    return create_beerchat_mod().then(update);
+};
 
 export const remove = id => remove_mod(id).then(update);
 

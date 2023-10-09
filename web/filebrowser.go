@@ -283,7 +283,7 @@ func (a *Api) UploadFile(w http.ResponseWriter, r *http.Request, claims *types.C
 		return
 	}
 
-	f, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0644)
+	f, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return

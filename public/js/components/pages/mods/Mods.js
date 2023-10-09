@@ -130,6 +130,7 @@ export default {
 						<button class="btn btn-primary float-end" :disabled="busy" v-on:click="add_mtui_mod">
 							<i class="fa fa-plus"></i>
 							Install the "mtui" mod
+							<i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>
 						</button>
 					</div>
 				</div>

@@ -23,7 +23,7 @@ import MatterbridgeService from './components/pages/services/Matterbridge.js';
 import UISettings from './components/pages/administration/UISettings.js';
 import Maintenance from './components/pages/administration/Maintenance.js';
 import Filebrowser from './components/pages/filebrowser/Filebrowser.js';
-import FileEdit from './components/pages/filebrowser/FileEdit.js';
+import FileEditPage from './components/pages/filebrowser/FileEditPage.js';
 import Signup from './components/pages/Signup.js';
 import Help from './components/pages/Help.js';
 
@@ -130,6 +130,6 @@ export default [{
 	path: "/filebrowser/:pathMatch(.*)", component: Filebrowser, props: true,
 	meta: { requiredPriv: "server", maintenance_page: true }
 }, {
-	path: "/fileedit/:pathMatch(.*)", component: FileEdit, props: true,
+	path: "/fileedit/:pathMatch(.*)", component: FileEditPage, props: true,
 	meta: { requiredPriv: "server", maintenance_page: true }
 }];

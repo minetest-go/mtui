@@ -1,14 +1,17 @@
 import { START, SERVICES } from "../../Breadcrumb.js";
 import { add_beerchat, get_git_mod } from "../../../service/mods.js";
 import { update_settings } from '../../../service/mtconfig.js';
+import { is_busy } from "../../../service/mods.js";
 
 import DefaultLayout from "../../layouts/DefaultLayout.js";
 import ServiceView from "./ServiceView.js";
+import FileEditor from "../filebrowser/FileEditor.js";
 
 export default {
 	components: {
 		"default-layout": DefaultLayout,
-		"service-view": ServiceView
+		"service-view": ServiceView,
+        "file-editor": FileEditor
 	},
 	computed: {
 		breadcrumb: function() {
@@ -17,7 +20,8 @@ export default {
 				icon: "gear",
 				link: "/services/matterbridge"
 			}];
-		}
+		},
+        busy: is_busy
 	},
     methods: {
         get_git_mod,
@@ -33,14 +37,22 @@ export default {
                     <i class="fa-solid fa-triangle-exclamation"></i>
                     <b>Warning:</b>
                     The <i>beerchat</i> mod is not installed, some features may not work properly
-                    <button class="btn btn-primary float-end" v-on:click="add_beerchat_mod">
+                    <button class="btn btn-primary float-end" :disabled="busy" v-on:click="add_beerchat_mod">
                         <i class="fa fa-plus"></i>
                         Install and configure the "beerchat" mod
+                        <i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>
                     </button>
                 </div>
             </div>
         </div>
-		<service-view servicename="matterbridge"/>
+        <div class="row">
+            <div class="col-6">
+		        <service-view servicename="matterbridge"/>
+            </div>
+            <div class="col-6">
+                <file-editor filename="/matterbridge.toml"/>
+            </div>
+        </div>
 	</default-layout>
 	`
 };

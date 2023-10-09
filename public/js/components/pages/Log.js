@@ -66,7 +66,8 @@ const category_events = {
         "password"
     ],
     "service": [
-        "engine"
+        "engine",
+        "matterbridge"
     ]
 };
 

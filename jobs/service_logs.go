@@ -12,7 +12,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func collectServiceLogs(a *app.App, timestamp_key types.ConfigKey, s *dockerservice.DockerService) {
+func collectServiceLogs(a *app.App, timestamp_key types.ConfigKey, event string, s *dockerservice.DockerService) {
 	if s == nil {
 		// nothing to collect
 		return
@@ -61,7 +61,7 @@ func collectServiceLogs(a *app.App, timestamp_key types.ConfigKey, s *dockerserv
 		if len(line) > 0 {
 			l := &types.Log{
 				Category: types.CategoryService,
-				Event:    "engine",
+				Event:    event,
 				Message:  line,
 			}
 			err = a.Repos.LogRepository.Insert(l)
@@ -80,7 +80,8 @@ func collectServiceLogs(a *app.App, timestamp_key types.ConfigKey, s *dockerserv
 func serviceLogs(a *app.App) {
 	for {
 		if !a.MaintenanceMode.Load() {
-			collectServiceLogs(a, "engine_log_timestamp", a.ServiceEngine)
+			collectServiceLogs(a, "engine_log_timestamp", "engine", a.ServiceEngine)
+			collectServiceLogs(a, "matterbridge_log_timestamp", "matterbridge", a.ServiceMatterbridge)
 		}
 
 		// re-schedule

@@ -8,10 +8,12 @@ const modes = [{
     name: "xml", match: /.*(xml)$/i
 },{
     name: "text/css", match: /.*(css)$/i
+},{
+    name: "toml", match: /.*(toml)$/i
 }];
 
 export const can_edit = filename => {
-    return filename.match(/.*(js|lua|txt|conf|cfg|json|md|mt|html|css)$/i);
+    return filename.match(/.*(js|lua|txt|conf|cfg|json|md|mt|html|css|toml)$/i);
 };
 
 export const get_mode_name = filename => {
