@@ -1,88 +1,18 @@
 package web
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"mtui/minetestconfig"
 	"mtui/types"
 	"mtui/types/command"
 	"net/http"
-	"os"
-	"path"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 )
-
-func getSettingTypes(worlddir string) (minetestconfig.SettingTypes, error) {
-	modst, err := minetestconfig.GetAllSettingTypes(path.Join(worlddir, "worldmods"))
-	if err != nil {
-		return nil, fmt.Errorf("could not get settingtypes for worldmods dir: %v", err)
-	}
-
-	gamest, err := minetestconfig.GetAllSettingTypes(path.Join(worlddir, "game/mods"))
-	if err != nil {
-		return nil, fmt.Errorf("could not get settingtypes for game/mods dir: %v", err)
-	}
-
-	serversettings, err := minetestconfig.GetServerSettingTypes()
-	if err != nil {
-		return nil, fmt.Errorf("could not get settingtypes: %v", err)
-	}
-
-	sts := minetestconfig.SettingTypes{}
-	for k, s := range modst {
-		sts[k] = s
-	}
-	for k, s := range gamest {
-		sts[k] = s
-	}
-	for k, s := range serversettings {
-		sts[k] = s
-	}
-
-	return sts, nil
-}
-
-var mtconfig_mutex = sync.RWMutex{}
-
-func readMTConfig(worlddir string, sts minetestconfig.SettingTypes) (minetestconfig.Settings, error) {
-	mtconfig_mutex.RLock()
-	defer mtconfig_mutex.RUnlock()
-
-	mtconfig_file := os.Getenv("MINETEST_CONFIG")
-	data, err := os.ReadFile(mtconfig_file)
-	if err != nil {
-		return nil, fmt.Errorf("error reading config from '%s': %v", mtconfig_file, err)
-	}
-
-	s := minetestconfig.Settings{}
-	err = s.Read(bytes.NewReader(data), sts)
-	return s, err
-}
-
-func writeMTConfig(cfg minetestconfig.Settings, sts minetestconfig.SettingTypes) error {
-	mtconfig_mutex.Lock()
-	defer mtconfig_mutex.Unlock()
-
-	mtconfig_file := os.Getenv("MINETEST_CONFIG")
-	f, err := os.OpenFile(mtconfig_file, os.O_RDWR|os.O_TRUNC, 0755)
-	if err != nil {
-		return fmt.Errorf("could not open minetest config file '%s': %v", mtconfig_file, err)
-	}
-	defer f.Close()
-
-	err = cfg.Write(f, sts)
-	if err != nil {
-		return fmt.Errorf("could not write minetest config file '%s': %v", mtconfig_file, err)
-	}
-
-	return nil
-}
 
 var runtime_set_allowed_types = map[string]bool{
 	"string": true,
@@ -93,18 +23,18 @@ var runtime_set_allowed_types = map[string]bool{
 }
 
 func (a *Api) GetMTConfig(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	sts, err := getSettingTypes(a.app.WorldDir)
+	sts, err := a.app.GetSettingTypes()
 	if err != nil {
 		Send(w, 500, err)
 		return
 	}
 
-	s, err := readMTConfig(a.app.WorldDir, sts)
+	s, err := a.app.ReadMTConfig(sts)
 	Send(w, s, err)
 }
 
 func (a *Api) GetSettingTypes(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	sts, err := getSettingTypes(a.app.WorldDir)
+	sts, err := a.app.GetSettingTypes()
 	Send(w, sts, err)
 }
 
@@ -119,20 +49,20 @@ func (a *Api) SetMTConfig(w http.ResponseWriter, r *http.Request, claims *types.
 		return
 	}
 
-	sts, err := getSettingTypes(a.app.WorldDir)
+	sts, err := a.app.GetSettingTypes()
 	if err != nil {
 		Send(w, 500, err)
 		return
 	}
 
-	cfg, err := readMTConfig(a.app.WorldDir, sts)
+	cfg, err := a.app.ReadMTConfig(sts)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 	cfg[key] = s
 
-	err = writeMTConfig(cfg, sts)
+	err = a.app.WriteMTConfig(cfg, sts)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
@@ -180,20 +110,20 @@ func (a *Api) DeleteMTConfig(w http.ResponseWriter, r *http.Request, claims *typ
 	vars := mux.Vars(r)
 	key := vars["key"]
 
-	sts, err := getSettingTypes(a.app.WorldDir)
+	sts, err := a.app.GetSettingTypes()
 	if err != nil {
 		Send(w, 500, err)
 		return
 	}
 
-	cfg, err := readMTConfig(a.app.WorldDir, sts)
+	cfg, err := a.app.ReadMTConfig(sts)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 	delete(cfg, key)
 
-	err = writeMTConfig(cfg, sts)
+	err = a.app.WriteMTConfig(cfg, sts)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return

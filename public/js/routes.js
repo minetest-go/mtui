@@ -19,6 +19,7 @@ import OauthApps from './components/pages/oauth/OauthApps.js';
 import OauthAppEdit from './components/pages/oauth/OauthAppEdit.js';
 import MinetestConfig from './components/pages/administration/MinetestConfig.js';
 import EngineService from './components/pages/services/Engine.js';
+import MatterbridgeService from './components/pages/services/Matterbridge.js';
 import UISettings from './components/pages/administration/UISettings.js';
 import Maintenance from './components/pages/administration/Maintenance.js';
 import Filebrowser from './components/pages/filebrowser/Filebrowser.js';
@@ -118,6 +119,9 @@ export default [{
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/services/engine", component: EngineService,
+	meta: { requiredPriv: "server" }
+}, {
+	path: "/services/matterbridge", component: MatterbridgeService,
 	meta: { requiredPriv: "server" }
 }, {
 	path:"/ui/settings", component: UISettings,

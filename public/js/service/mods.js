@@ -1,4 +1,4 @@
-import { list_mods, create_mod, remove_mod, update_mod as api_update_mod, update_mod_version as api_update_mod_version, check_updates as api_check_updates, create_mtui_mod } from '../api/mods.js';
+import { list_mods, create_mod, remove_mod, update_mod as api_update_mod, update_mod_version as api_update_mod_version, check_updates as api_check_updates, create_mtui_mod, create_beerchat_mod } from '../api/mods.js';
 import events, { EVENT_LOGGED_IN } from '../events.js';
 import { get_install_mtui_mod } from './app_info.js';
 import { has_priv } from './login.js';
@@ -36,6 +36,7 @@ export const is_busy = () => store.busy;
 export const add = m => create_mod(m).then(update);
 
 export const add_mtui = () => create_mtui_mod().then(update);
+export const add_beerchat = () => create_beerchat_mod().then(update);
 
 export const remove = id => remove_mod(id).then(update);
 

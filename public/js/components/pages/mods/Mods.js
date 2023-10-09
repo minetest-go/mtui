@@ -129,7 +129,7 @@ export default {
 						The <i>mtui</i> mod is not installed, some features may not work properly
 						<button class="btn btn-primary float-end" :disabled="busy" v-on:click="add_mtui_mod">
 							<i class="fa fa-plus"></i>
-							Install "mtui" mod
+							Install the "mtui" mod
 						</button>
 					</div>
 				</div>
