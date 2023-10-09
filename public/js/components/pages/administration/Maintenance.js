@@ -1,6 +1,6 @@
 import { get_maintenance, get_stats } from "../../../service/stats.js";
 import { enable_maintenance, disable_maintenance } from "../../../api/maintenance.js";
-import { is_running } from "../../../service/engine.js";
+import { engine } from "../../../service/service.js";
 import DefaultLayout from "../../layouts/DefaultLayout.js";
 import { START, ADMINISTRATION } from "../../Breadcrumb.js";
 
@@ -19,7 +19,7 @@ export default {
     },
     computed: {
         maintenance: get_maintenance,
-        is_engine_running: is_running
+        is_engine_running: () => engine.is_running
     },
     methods: {
         enable_maintenance: function() {

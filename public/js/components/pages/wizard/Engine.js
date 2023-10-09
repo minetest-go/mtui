@@ -1,13 +1,13 @@
 import EngineSelection from "../services/EngineSelection.js";
-import { store, create } from "../../../service/engine.js";
+import { engine } from "../../../service/service.js";
 
 export default {
     components: {
         "engine-selection": EngineSelection
     },
-    data: () => store,
+    data: () => engine.store,
     methods: {
-        create
+        create: () => engine.create()
     },
     computed: {
         complete: function() {

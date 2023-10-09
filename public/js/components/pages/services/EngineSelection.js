@@ -1,7 +1,7 @@
-import { store } from "../../../service/engine.js";
+import { engine } from "../../../service/service.js";
 
 export default {
-    data: () => store,
+    data: () => engine.store,
     template: /*html*/`
     <div v-if="versions && status">
         <select class="form-control" v-model="version" :disabled="!status || status.created">
