@@ -145,7 +145,7 @@ func (a *Api) SetMTConfig(w http.ResponseWriter, r *http.Request, claims *types.
 	}
 
 	// create log entry
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "settings",
 		Message:  fmt.Sprintf("User '%s' changed the setting '%s' of type '%s' to '%s'", claims.Username, key, st.Type, s.Value),
@@ -205,7 +205,7 @@ func (a *Api) DeleteMTConfig(w http.ResponseWriter, r *http.Request, claims *typ
 	}
 
 	// create log entry
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "settings",
 		Message:  fmt.Sprintf("User '%s' removed the setting '%s' of type '%s'", claims.Username, key, st.Type),

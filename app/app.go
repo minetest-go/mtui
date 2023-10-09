@@ -28,22 +28,23 @@ import (
 var Version string
 
 type App struct {
-	DBContext       *mtdb.Context
-	DB              *sql.DB
-	WorldDir        string
-	Repos           *db.Repositories
-	ModManager      *modmanager.ModManager
-	Bridge          *bridge.Bridge
-	WSEvents        *eventbus.EventBus
-	Mail            *mail.Mail
-	Config          *types.Config
-	Mediaserver     *mediaserver.MediaServer
-	GeoipResolver   *GeoipResolver
-	Version         string
-	OAuthMgr        *manage.Manager
-	OAuthServer     *server.Server
-	MaintenanceMode *atomic.Bool // database detached, for backup and restores
-	ServiceEngine   *dockerservice.DockerService
+	DBContext           *mtdb.Context
+	DB                  *sql.DB
+	WorldDir            string
+	Repos               *db.Repositories
+	ModManager          *modmanager.ModManager
+	Bridge              *bridge.Bridge
+	WSEvents            *eventbus.EventBus
+	Mail                *mail.Mail
+	Config              *types.Config
+	Mediaserver         *mediaserver.MediaServer
+	GeoipResolver       *GeoipResolver
+	Version             string
+	OAuthMgr            *manage.Manager
+	OAuthServer         *server.Server
+	MaintenanceMode     *atomic.Bool // database detached, for backup and restores
+	ServiceEngine       *dockerservice.DockerService
+	ServiceMatterbridge *dockerservice.DockerService
 }
 
 const default_world_mt_content = `
@@ -138,7 +139,11 @@ func Create(world_dir string) (*App, error) {
 
 	if cfg.DockerContainerPrefix != "" {
 		// docker management enabled, set up service utils
+		no_proxy_env := []string{"HTTP_PROXY=", "HTTPS_PROXY=", "http_proxy=", "https_proxy="}
+
+		// minetest
 		portbinding := fmt.Sprintf("%d/udp", app.Config.DockerMinetestPort)
+		os.MkdirAll(path.Join(app.Config.WorldDir, "textures"), 0777)
 
 		app.ServiceEngine = dockerservice.New(&dockerservice.Config{
 			ContainerName: fmt.Sprintf("%s_engine", cfg.DockerContainerPrefix),
@@ -147,7 +152,7 @@ func Create(world_dir string) (*App, error) {
 				Cmd:  []string{"minetestserver", "--world", "/world", "--config", "/minetest.conf"},
 				Tty:  false,
 				User: fmt.Sprintf("%d", os.Getuid()),
-				Env:  []string{"HTTP_PROXY=", "HTTPS_PROXY=", "http_proxy=", "https_proxy="},
+				Env:  no_proxy_env,
 			},
 			DefaultHostConfig: &container.HostConfig{
 				RestartPolicy: container.RestartPolicy{
@@ -174,6 +179,27 @@ func Create(world_dir string) (*App, error) {
 							HostIP:   "0.0.0.0",
 							HostPort: fmt.Sprintf("%d", app.Config.DockerMinetestPort),
 						},
+					},
+				},
+			},
+		})
+
+		// matterbridge
+		app.ServiceMatterbridge = dockerservice.New(&dockerservice.Config{
+			ContainerName: fmt.Sprintf("%s_matterbridge", cfg.DockerContainerPrefix),
+			Networks:      strings.Split(app.Config.DockerNetwork, ","),
+			DefaultConfig: &container.Config{
+				Env: no_proxy_env,
+			},
+			DefaultHostConfig: &container.HostConfig{
+				RestartPolicy: container.RestartPolicy{
+					Name: "always",
+				},
+				Mounts: []mount.Mount{
+					{
+						Type:   mount.TypeBind,
+						Source: path.Join(app.Config.DockerWorlddir, "matterbridge.toml"),
+						Target: "/etc/matterbridge/matterbridge.toml",
 					},
 				},
 			},

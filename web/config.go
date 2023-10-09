@@ -56,7 +56,7 @@ func (a *Api) SetConfig(w http.ResponseWriter, r *http.Request, c *types.Claims)
 	}
 
 	// create log entry
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: c.Username,
 		Event:    "lua",
 		Message:  fmt.Sprintf("User '%s' sets the config '%s' to '%s'", c.Username, key, e.Value),

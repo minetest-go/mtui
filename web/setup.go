@@ -171,13 +171,15 @@ func Setup(a *app.App) error {
 	if api.app.ServiceEngine != nil {
 		servapi := apir.PathPrefix("/service").Subrouter()
 		servapi.Use(SecureHandler(api.FeatureCheck(types.FEATURE_DOCKER)))
-		servapi.HandleFunc("/engine/versions", api.SecurePriv(types.PRIV_SERVER, api.GetEngineVersions)).Methods(http.MethodGet)
-		servapi.HandleFunc("/engine", api.SecurePriv(types.PRIV_SERVER, api.GetEngineStatus)).Methods(http.MethodGet)
-		servapi.HandleFunc("/engine", api.SecurePriv(types.PRIV_SERVER, api.CreateEngine)).Methods(http.MethodPost)
-		servapi.HandleFunc("/engine", api.SecurePriv(types.PRIV_SERVER, api.RemoveEngine)).Methods(http.MethodDelete)
-		servapi.HandleFunc("/engine/start", api.SecurePriv(types.PRIV_SERVER, api.StartEngine)).Methods(http.MethodPost)
-		servapi.HandleFunc("/engine/stop", api.SecurePriv(types.PRIV_SERVER, api.StopEngine)).Methods(http.MethodPost)
-		servapi.HandleFunc("/engine/logs/{since}/{until}", api.SecurePriv(types.PRIV_SERVER, api.GetEngineLogs)).Methods(http.MethodGet)
+
+		CreateServiceApi(api.app.ServiceEngine, api, servapi, "engine", map[string]string{
+			"5.6.0": "registry.gitlab.com/minetest/minetest/server:5.6.0",
+			"5.7.0": "registry.gitlab.com/minetest/minetest/server:5.7.0",
+		})
+
+		CreateServiceApi(api.app.ServiceMatterbridge, api, servapi, "matterbridge", map[string]string{
+			"1.26.0": "42wim/matterbridge:1.26.0",
+		})
 	}
 
 	// OAuth

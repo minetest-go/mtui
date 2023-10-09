@@ -45,7 +45,7 @@ func (a *Api) UpdateModVersion(w http.ResponseWriter, r *http.Request, claims *t
 	SendJson(w, m)
 
 	// create log entry
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "mods",
 		Message:  fmt.Sprintf("User '%s' updated the %s '%s' (%s) to version '%s'", claims.Username, m.ModType, m.Name, m.SourceType, m.Version),
@@ -63,7 +63,7 @@ func (a *Api) CreateMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 	Send(w, m, a.app.ModManager.Create(m))
 
 	// create log entry
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "mods",
 		Message:  fmt.Sprintf("User '%s' creates the %s '%s' (%s) in version '%s'", claims.Username, m.ModType, m.Name, m.SourceType, m.Version),
@@ -85,7 +85,7 @@ func (a *Api) CreateMTUIMod(w http.ResponseWriter, r *http.Request, claims *type
 	}
 
 	// create log entry
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "mods",
 		Message:  fmt.Sprintf("User '%s' creates the %s '%s' (%s) in version '%s'", claims.Username, m.ModType, m.Name, m.SourceType, m.Version),
@@ -179,7 +179,7 @@ func (a *Api) UpdateMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 	Send(w, m, a.app.Repos.ModRepo.Update(m))
 
 	// create log entry
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "mods",
 		Message:  fmt.Sprintf("User '%s' updates the metadata of  %s '%s' (%s)", claims.Username, m.ModType, m.Name, m.SourceType),
@@ -206,7 +206,7 @@ func (a *Api) DeleteMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 	}
 
 	// create log entry
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "mods",
 		Message:  fmt.Sprintf("User '%s' deletes the %s '%s' (%s)", claims.Username, m.ModType, m.Name, m.SourceType),

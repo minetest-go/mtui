@@ -130,7 +130,7 @@ func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types
 		return
 	}
 
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "filebrowser",
 		Message:  fmt.Sprintf("User '%s' downloaded the file '%s' with %d bytes", claims.Username, rel_filename, count+int64(header_size)),
@@ -184,7 +184,7 @@ func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.
 		return
 	}
 
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "filebrowser",
 		Message:  fmt.Sprintf("User '%s' downloaded the directory '%s' with %d bytes (uncompressed)", claims.Username, reldir, count),
@@ -252,7 +252,7 @@ func (a *Api) UploadZip(w http.ResponseWriter, r *http.Request, claims *types.Cl
 		}
 	}
 
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "filebrowser",
 		Message:  fmt.Sprintf("User '%s' uploaded a zip to the directory '%s' with %d bytes (uncompressed)", claims.Username, reldir, count),
@@ -269,7 +269,7 @@ func (a *Api) Mkdir(w http.ResponseWriter, r *http.Request, claims *types.Claims
 	err = os.MkdirAll(absdir, 0644)
 	Send(w, true, err)
 
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "filebrowser",
 		Message:  fmt.Sprintf("User '%s' created the directory '%s'", claims.Username, reldir),
@@ -296,7 +296,7 @@ func (a *Api) UploadFile(w http.ResponseWriter, r *http.Request, claims *types.C
 		return
 	}
 
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "filebrowser",
 		Message:  fmt.Sprintf("User '%s' uploaded the file '%s' with %d bytes", claims.Username, rel_filename, count),
@@ -313,7 +313,7 @@ func (a *Api) DeleteFile(w http.ResponseWriter, r *http.Request, claims *types.C
 	err = os.RemoveAll(filename)
 	Send(w, true, err)
 
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "filebrowser",
 		Message:  fmt.Sprintf("User '%s' deleted the file '%s'", claims.Username, rel_filename),
@@ -336,7 +336,7 @@ func (a *Api) RenameFile(w http.ResponseWriter, r *http.Request, claims *types.C
 	err = os.Rename(src, dst)
 	Send(w, true, err)
 
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "filebrowser",
 		Message:  fmt.Sprintf("User '%s' moved the file '%s' to '%s'", claims.Username, rel_src, rel_dst),

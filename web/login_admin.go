@@ -39,7 +39,7 @@ func (a *Api) AdminLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// create log entry
-	a.CreateUILogEntry(&types.Log{
+	a.app.CreateUILogEntry(&types.Log{
 		Username: username,
 		Event:    "signup",
 		Message:  fmt.Sprintf("User '%s' logged in successfully as admin", username),
