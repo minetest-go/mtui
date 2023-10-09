@@ -1,16 +1,16 @@
 import { store, update_state, start, stop, restart, create, remove } from "../../../service/engine.js";
 import { START, SERVICES } from "../../Breadcrumb.js";
 
-import EngineStatus from "./EngineStatus.js";
+import ServiceStatus from "./ServiceStatus.js";
 import EngineSelection from "./EngineSelection.js";
 import DefaultLayout from "../../layouts/DefaultLayout.js";
-import EngineLogs from "./EngineLogs.js";
+import ServiceLogs from "./ServiceLogs.js";
 import HelpPopup from "../../HelpPopup.js";
 
 export default {
 	components: {
-		"engine-logs": EngineLogs,
-		"engine-status": EngineStatus,
+		"service-logs": ServiceLogs,
+		"service-status": ServiceStatus,
 		"engine-selection": EngineSelection,
 		"default-layout": DefaultLayout,
 		"help-popup": HelpPopup
@@ -40,12 +40,12 @@ export default {
 				<div class="card">
 					<div class="card-header">
 						Engine
-						<engine-status/>
+						<service-status :status="status"/>
 						<i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>
 					</div>
 					<div class="card-body">
 						<div class="row">
-							<engine-selection class="col-md-4"/>
+							<engine-selection class="col-md-4" :versions="versions" :status="status"/>
 							<div class="col-md-4" v-if="status">
 								<div class="btn-group">
 									<button class="btn btn-secondary" :disabled="busy || status.created || !version" v-on:click="create">
@@ -93,7 +93,7 @@ export default {
 		&nbsp;
 		<div class="row">
 			<div class="col-md-12">
-				<engine-logs :running="status && status.running"/>
+				<service-logs :running="status && status.running" servicename="engine"/>
 			</div>
 		</div>
 	</default-layout>

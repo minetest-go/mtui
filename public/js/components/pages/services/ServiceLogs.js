@@ -1,4 +1,4 @@
-import { get_logs } from "../../../api/service_engine.js";
+import { get_logs } from "../../../api/service.js";
 
 const store = Vue.reactive({
     busy: false,
@@ -11,7 +11,7 @@ const store = Vue.reactive({
 });
 
 export default {
-    props: ["running"],
+    props: ["running", "servicename"],
     data: function(){
         return store;
     },
@@ -49,7 +49,7 @@ export default {
         
             // fetch and shift window
             const now = Date.now();
-            get_logs(store.logs_live_since, now)
+            get_logs(this.servicename, store.logs_live_since, now)
             .then(l => {
                 this.insert_logs(l);
                 store.logs_live_since = now + 1;
@@ -58,7 +58,7 @@ export default {
         fetch_logs: function() {
             this.clear_logs();
             this.busy = true;
-            get_logs(+this.since, +this.until)
+            get_logs(this.servicename, +this.since, +this.until)
             .then(l => this.insert_logs(l))
             .finally(() => this.busy = false);
         }
