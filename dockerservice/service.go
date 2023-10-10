@@ -27,6 +27,7 @@ func (s *DockerService) getContainer() (*dockertypes.Container, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer cli.Close()
 
 	ctx := context.Background()
 	f := filters.NewArgs()
