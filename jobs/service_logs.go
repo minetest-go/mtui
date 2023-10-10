@@ -82,6 +82,7 @@ func serviceLogs(a *app.App) {
 		if !a.MaintenanceMode.Load() {
 			collectServiceLogs(a, "engine_log_timestamp", "engine", a.ServiceEngine)
 			collectServiceLogs(a, "matterbridge_log_timestamp", "matterbridge", a.ServiceMatterbridge)
+			collectServiceLogs(a, "mapserver_log_timestamp", "mapserver", a.ServiceMapserver)
 		}
 
 		// re-schedule

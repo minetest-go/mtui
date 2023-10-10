@@ -45,6 +45,7 @@ type App struct {
 	MaintenanceMode     *atomic.Bool // database detached, for backup and restores
 	ServiceEngine       *dockerservice.DockerService
 	ServiceMatterbridge *dockerservice.DockerService
+	ServiceMapserver    *dockerservice.DockerService
 }
 
 const default_world_mt_content = `
@@ -200,6 +201,28 @@ func Create(world_dir string) (*App, error) {
 						Type:   mount.TypeBind,
 						Source: path.Join(app.Config.DockerWorlddir, "matterbridge.toml"),
 						Target: "/etc/matterbridge/matterbridge.toml",
+					},
+				},
+			},
+		})
+
+		// mapserver
+		app.ServiceMapserver = dockerservice.New(&dockerservice.Config{
+			ContainerName: fmt.Sprintf("%s_mapserver", cfg.DockerContainerPrefix),
+			Networks:      strings.Split(app.Config.DockerNetwork, ","),
+			DefaultConfig: &container.Config{
+				Env:        no_proxy_env,
+				WorkingDir: "/world",
+			},
+			DefaultHostConfig: &container.HostConfig{
+				RestartPolicy: container.RestartPolicy{
+					Name: "always",
+				},
+				Mounts: []mount.Mount{
+					{
+						Type:   mount.TypeBind,
+						Source: app.Config.DockerWorlddir,
+						Target: "/world",
 					},
 				},
 			},

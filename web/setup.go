@@ -151,11 +151,12 @@ func Setup(a *app.App) error {
 	modsapi.HandleFunc("", api.Secure(api.CreateMod)).Methods(http.MethodPost)
 	modsapi.HandleFunc("/validate", api.Secure(api.ModsValidate)).Methods(http.MethodGet)
 	modsapi.HandleFunc("/checkupdates", api.Secure(api.ModsCheckUpdates)).Methods(http.MethodPost)
-	modsapi.HandleFunc("/create_mtui", api.Secure(api.CreateMTUIMod)).Methods(http.MethodPost)
-	modsapi.HandleFunc("/create_beerchat", api.Secure(api.CreateBeerchatMod)).Methods(http.MethodPost)
 	modsapi.HandleFunc("/{id}", api.Secure(api.UpdateMod)).Methods(http.MethodPost)
 	modsapi.HandleFunc("/{id}/update/{version}", api.Secure(api.UpdateModVersion)).Methods(http.MethodPost)
 	modsapi.HandleFunc("/{id}", api.Secure(api.DeleteMod)).Methods(http.MethodDelete)
+	modsapi.HandleFunc("/create_mtui", api.Secure(api.CreateMTUIMod)).Methods(http.MethodPost)
+	modsapi.HandleFunc("/create_beerchat", api.Secure(api.CreateBeerchatMod)).Methods(http.MethodPost)
+	modsapi.HandleFunc("/create_mapserver", api.Secure(api.CreateMapserverMod)).Methods(http.MethodPost)
 
 	cdbapi := apir.PathPrefix("/cdb").Subrouter()
 	cdbapi.Use(SecureHandler(api.FeatureCheck(types.FEATURE_MODMANAGEMENT), api.PrivCheck("server")))
@@ -182,6 +183,11 @@ func Setup(a *app.App) error {
 
 		CreateServiceApi(api.app.ServiceMatterbridge, api, servapi, "matterbridge", map[string]string{
 			"1.26.0": "42wim/matterbridge:1.26.0",
+		})
+
+		CreateServiceApi(api.app.ServiceMapserver, api, servapi, "mapserver", map[string]string{
+			"4.7.0":  "minetestmapserver/mapserver:4.7.0",
+			"latest": "minetestmapserver/mapserver:latest",
 		})
 	}
 

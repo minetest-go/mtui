@@ -94,6 +94,19 @@ func (a *Api) CreateBeerchatMod(w http.ResponseWriter, r *http.Request, claims *
 	Send(w, m, nil)
 }
 
+func (a *Api) CreateMapserverMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	m, err := a.app.CreateMapserverMod()
+	if err == nil && m != nil {
+		// create log entry
+		a.app.CreateUILogEntry(&types.Log{
+			Username: claims.Username,
+			Event:    "mods",
+			Message:  fmt.Sprintf("User '%s' creates the %s '%s' (%s) in version '%s'", claims.Username, m.ModType, m.Name, m.SourceType, m.Version),
+		}, r)
+	}
+	Send(w, m, nil)
+}
+
 func (a *Api) UpdateMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	vars := mux.Vars(r)
 	id := vars["id"]
