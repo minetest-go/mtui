@@ -67,11 +67,14 @@ func (a *Api) GetLogin(w http.ResponseWriter, r *http.Request) {
 
 		claims, err = a.updateToken(w, *auth_entry.ID, claims.Username)
 		Send(w, claims, err)
-		a.app.CreateUILogEntry(&types.Log{
-			Username: claims.Username,
-			Event:    "login",
-			Message:  fmt.Sprintf("User '%s' refreshed session", claims.Username),
-		}, r)
+
+		if claims != nil {
+			a.app.CreateUILogEntry(&types.Log{
+				Username: claims.Username,
+				Event:    "login",
+				Message:  fmt.Sprintf("User '%s' refreshed session", claims.Username),
+			}, r)
+		}
 
 	} else {
 		// maintenance mode, send back existing claims
@@ -80,6 +83,23 @@ func (a *Api) GetLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *Api) updateToken(w http.ResponseWriter, id int64, username string) (*types.Claims, error) {
+	f, err := a.app.Repos.FeatureRepository.GetByName(types.FEATURE_XBAN)
+	if err != nil {
+		return nil, fmt.Errorf("could not get feature: %v", err)
+	}
+
+	if f.Enabled {
+		// consult xban database
+		entry, err := a.app.GetOfflineXBanEntry(username)
+		if err != nil {
+			return nil, fmt.Errorf("could not get xban entry: %v", err)
+		}
+
+		if entry != nil && entry.Banned {
+			return nil, fmt.Errorf("player is banned (reason: '%s')", entry.Reason)
+		}
+	}
+
 	privs, err := a.app.DBContext.Privs.GetByID(id)
 	if err != nil {
 		return nil, err
@@ -219,11 +239,13 @@ func (a *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// create log entry
-	a.app.CreateUILogEntry(&types.Log{
-		Username: claims.Username,
-		Event:    "login",
-		Message:  fmt.Sprintf("User '%s' logged in successfully", claims.Username),
-	}, r)
+	if claims != nil {
+		// create log entry
+		a.app.CreateUILogEntry(&types.Log{
+			Username: claims.Username,
+			Event:    "login",
+			Message:  fmt.Sprintf("User '%s' logged in successfully", claims.Username),
+		}, r)
+	}
 	Send(w, claims, err)
 }

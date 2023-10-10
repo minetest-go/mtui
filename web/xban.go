@@ -4,18 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"mtui/bridge"
+	"mtui/types"
 	"mtui/types/command"
 	"net/http"
 	"time"
 
 	"github.com/gorilla/mux"
 )
-
-type BanRequest struct {
-	Playername string `json:"playername"`
-	Time       int64  `json:"time"` //time in seconds
-	Reason     string `json:"reason"`
-}
 
 func SendLuaResponse(w http.ResponseWriter, err error, lr *command.LuaResponse) {
 	if err != nil {
@@ -65,12 +60,9 @@ func (a *Api) GetBannedRecords(w http.ResponseWriter, r *http.Request) {
 
 func (a *Api) GetBanRecord(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	req := &command.LuaRequest{
-		Code: fmt.Sprintf("return xban.find_entry('%s')", bridge.SanitizeLuaString(vars["playername"])),
-	}
-	resp := &command.LuaResponse{}
-	err := a.app.Bridge.ExecuteCommand(command.COMMAND_LUA, req, resp, time.Second*5)
-	SendLuaResponse(w, err, resp)
+
+	e, err := a.app.GetOnlineXBanEntry(vars["playername"])
+	Send(w, e, err)
 }
 
 func (a *Api) BanPlayer(w http.ResponseWriter, r *http.Request) {
@@ -80,7 +72,7 @@ func (a *Api) BanPlayer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	banr := &BanRequest{}
+	banr := &types.XBanRequest{}
 	err = json.NewDecoder(r.Body).Decode(banr)
 	if err != nil {
 		SendError(w, 500, err.Error())
@@ -106,7 +98,7 @@ func (a *Api) TempBanPlayer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	banr := &BanRequest{}
+	banr := &types.XBanRequest{}
 	err = json.NewDecoder(r.Body).Decode(banr)
 	if err != nil {
 		SendError(w, 500, err.Error())
@@ -133,7 +125,7 @@ func (a *Api) UnbanPlayer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	banr := &BanRequest{}
+	banr := &types.XBanRequest{}
 	err = json.NewDecoder(r.Body).Decode(banr)
 	if err != nil {
 		SendError(w, 500, err.Error())
