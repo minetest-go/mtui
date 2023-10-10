@@ -9,6 +9,10 @@
         "description": "Ingame mail management",
         "mods": ["mail"]
     },{
+        "name": "chat",
+        "description": "Enables chatting in the web-ui",
+        "experimental": true
+    },{
         "name": "skinsdb",
         "description": "Skin management",
         "mods": ["skinsdb"]

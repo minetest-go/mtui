@@ -54,7 +54,7 @@ export default {
 							<i class="fa-solid fa-terminal"></i> Shell
 						</router-link>
 					</li>
-					<li class="nav-item" v-if="has_priv('shout') && !maintenance">
+					<li class="nav-item" v-if="has_priv('shout') && has_feature('chat') && !maintenance">
 						<router-link to="/chat" class="nav-link">
 							<i class="fa-solid fa-comment"></i> Chat
 						</router-link>

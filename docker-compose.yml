@@ -17,7 +17,7 @@ services:
    LOGLEVEL: debug
    SERVER_NAME: "dev-server"
    DEFAULT_THEME: "darkly"
-   ENABLE_FEATURES: "shell,luashell,minetest_config,docker,modmanagement,signup"
+   ENABLE_FEATURES: "shell,luashell,minetest_config,docker,modmanagement,signup,chat"
    INSTALL_MTUI_MOD: "true"
    MINETEST_CONFIG: "/etc/minetest/minetest.conf"
    DOCKER_MINETEST_CONFIG: "${PWD}/minetest.conf"
