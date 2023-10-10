@@ -145,6 +145,7 @@ func (s *DockerService) Remove() error {
 	if err != nil {
 		return fmt.Errorf("docker client error: %v", err)
 	}
+	defer cli.Close()
 
 	ctx := context.Background()
 	return cli.ContainerRemove(ctx, c.ID, dockertypes.ContainerRemoveOptions{
@@ -165,6 +166,7 @@ func (s *DockerService) Start() error {
 	if err != nil {
 		return fmt.Errorf("docker client error: %v", err)
 	}
+	defer cli.Close()
 
 	ctx := context.Background()
 	return cli.ContainerStart(ctx, c.ID, dockertypes.ContainerStartOptions{})
@@ -183,6 +185,7 @@ func (s *DockerService) Stop() error {
 	if err != nil {
 		return fmt.Errorf("docker client error: %v", err)
 	}
+	defer cli.Close()
 
 	ctx := context.Background()
 	return cli.ContainerStop(ctx, c.ID, container.StopOptions{})
@@ -201,6 +204,7 @@ func (s *DockerService) GetLogs(since, until time.Time) (*ServiceLog, error) {
 	if err != nil {
 		return nil, fmt.Errorf("docker client error: %v", err)
 	}
+	defer cli.Close()
 
 	ctx := context.Background()
 
