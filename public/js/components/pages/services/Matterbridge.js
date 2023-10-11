@@ -45,12 +45,15 @@ export default {
                 </div>
             </div>
         </div>
+        <div class="alert alert-primary">
+            To configure the matterbridge you can edit the <b>matterbridge.toml</b> file
+            <router-link to="/fileedit/matterbridge.toml">
+                here
+            </router-link>
+        </div>
         <div class="row">
-            <div class="col-6">
+            <div class="col-12">
 		        <service-view servicename="matterbridge"/>
-            </div>
-            <div class="col-6">
-                <file-editor filename="/matterbridge.toml"/>
             </div>
         </div>
 	</default-layout>

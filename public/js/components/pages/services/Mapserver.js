@@ -45,12 +45,16 @@ export default {
                 </div>
             </div>
         </div>
+        <div class="alert alert-primary">
+            To configure the mapserver you can edit the <b>mapserver.json</b> file
+            <router-link to="/fileedit/mapserver.json">
+                here
+            </router-link>
+            (it may need an initial start of the mapserver to create a default config)
+        </div>
         <div class="row">
-            <div class="col-6">
+            <div class="col-12">
 		        <service-view servicename="mapserver"/>
-            </div>
-            <div class="col-6">
-                <file-editor filename="/mapserver.json"/>
             </div>
         </div>
 	</default-layout>
