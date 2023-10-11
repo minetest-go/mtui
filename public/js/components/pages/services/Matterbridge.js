@@ -5,13 +5,11 @@ import { is_busy } from "../../../service/mods.js";
 
 import DefaultLayout from "../../layouts/DefaultLayout.js";
 import ServiceView from "./ServiceView.js";
-import FileEditor from "../filebrowser/FileEditor.js";
 
 export default {
 	components: {
 		"default-layout": DefaultLayout,
 		"service-view": ServiceView,
-        "file-editor": FileEditor
 	},
 	computed: {
 		breadcrumb: function() {
