@@ -179,10 +179,7 @@ func (a *App) CreateMapserverMod() (*types.Mod, error) {
 	}
 
 	cfg["mapserver.url"] = &minetestconfig.Setting{
-		Value: fmt.Sprintf("http://%s_mapserver:4242", a.Config.DockerContainerPrefix),
-	}
-	cfg["mapserver.key"] = &minetestconfig.Setting{
-		Value: "TODO",
+		Value: fmt.Sprintf("http://%s_mapserver:8080", a.Config.DockerContainerPrefix),
 	}
 
 	a.AddHTTPMod("mapserver", cfg)

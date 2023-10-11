@@ -1,0 +1,40 @@
+# example matterbridge config with libera bridge to #minetest-hosting
+# Docs:
+# * custom config: https://github.com/42wim/matterbridge/wiki/How-to-create-your-config
+# * all settings: https://github.com/42wim/matterbridge/wiki/Settings
+
+[irc]
+[irc.Libera]
+Server="irc.libera.chat:6667"
+Nick="{{.LiberaNick}}"
+Password="change-me"
+RemoteNickFormat="[{BRIDGE}] <{NICK}> "
+ColorNicks=true
+JoinDelay=2000
+
+#[discord]
+#[discord.Discord]
+#Token="<discord_token>"
+#Server="<discord_server_id>"
+#RemoteNickFormat="[{BRIDGE}] <{NICK}> "
+#UseUserName=false
+#AllowMention=["users"]
+
+[api.minetest]
+BindAddress="0.0.0.0:4242"
+Token="{{.ApiToken}}"
+Buffer=1000
+RemoteNickFormat="[{BRIDGE}] {NICK}"
+
+[[gateway]]
+name="main"
+enable=true
+[[gateway.inout]]
+account="irc.Libera"
+channel="{{.LiberaChannel}}"
+#[[gateway.inout]]
+#account = "discord.Discord"
+#channel="main"
+[[gateway.inout]]
+account="api.minetest"
+channel="api"
