@@ -18,14 +18,16 @@ import Xban from './components/pages/Xban.js';
 import OauthApps from './components/pages/oauth/OauthApps.js';
 import OauthAppEdit from './components/pages/oauth/OauthAppEdit.js';
 import MinetestConfig from './components/pages/administration/MinetestConfig.js';
-import EngineService from './components/pages/services/Engine.js';
-import MatterbridgeService from './components/pages/services/Matterbridge.js';
 import UISettings from './components/pages/administration/UISettings.js';
 import Maintenance from './components/pages/administration/Maintenance.js';
 import Filebrowser from './components/pages/filebrowser/Filebrowser.js';
 import FileEditPage from './components/pages/filebrowser/FileEditPage.js';
 import Signup from './components/pages/Signup.js';
 import Help from './components/pages/Help.js';
+
+import EngineService from './components/pages/services/Engine.js';
+import MatterbridgeService from './components/pages/services/Matterbridge.js';
+import MapserverService from './components/pages/services/Mapserver.js';
 
 import Mods from './components/pages/mods/Mods.js';
 import ContentBrowse from './components/pages/cdb/Browse.js';
@@ -122,6 +124,9 @@ export default [{
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/services/matterbridge", component: MatterbridgeService,
+	meta: { requiredPriv: "server" }
+}, {
+	path: "/services/mapserver", component: MapserverService,
 	meta: { requiredPriv: "server" }
 }, {
 	path:"/ui/settings", component: UISettings,

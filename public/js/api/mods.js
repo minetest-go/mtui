@@ -17,6 +17,10 @@ export const create_beerchat_mod = () => protected_fetch("api/mods/create_beerch
     method: "POST"
 });
 
+export const create_mapserver_mod = () => protected_fetch("api/mods/create_mapserver", {
+    method: "POST"
+});
+
 export const update_mod = mod => protected_fetch(`api/mods/${mod.id}`, {
     method: "POST",
     body: JSON.stringify(mod)
