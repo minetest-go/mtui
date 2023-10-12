@@ -9,5 +9,5 @@ type Pos struct {
 }
 
 func (p *Pos) String() string {
-	return fmt.Sprintf("%d/%d/%d", p.X, p.Y, p.Z)
+	return fmt.Sprintf("%d,%d,%d", p.X, p.Y, p.Z)
 }

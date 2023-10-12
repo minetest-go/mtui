@@ -7,6 +7,6 @@ export const set_mesecon = m => fetch(`api/mesecons`, {
     body: JSON.stringify(m)
 });
 
-export const delete_mesecon = m => fetch(`api/mesecons/${m.poskey}`, {
+export const delete_mesecon = poskey => fetch(`api/mesecons/${poskey}`, {
     method: "DELETE"
 });

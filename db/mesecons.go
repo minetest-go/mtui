@@ -27,3 +27,7 @@ func (r *MeseconsRepository) GetByPoskey(poskey string) (*types.Mesecons, error)
 		return m, err
 	}
 }
+
+func (r *MeseconsRepository) Remove(poskey string) error {
+	return r.dbu.Delete("where poskey = %s", poskey)
+}

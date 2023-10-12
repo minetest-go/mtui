@@ -1,7 +1,18 @@
 import DefaultLayout from "../layouts/DefaultLayout.js";
 import { START } from "../Breadcrumb.js";
 
-import { get_mesecon_controls, set_mesecon } from "../../api/mesecons.js";
+import { get_mesecon_controls, set_mesecon, delete_mesecon } from "../../api/mesecons.js";
+
+const node_image_mapping = {
+    "mesecons_switch:mesecon_switch_off": "mesecons_switch_off.png",
+    "mesecons_switch:mesecon_switch_on": "mesecons_switch_on.png",
+};
+
+const colors = ["red", "green", "blue", "gray", "darkgray", "yellow", "orange", "white", "pink", "magenta", "cyan", "violet"];
+colors.forEach(c => {
+    node_image_mapping[`mesecons_lightstone:lightstone_${c}_off`] = `jeija_lightstone_${c}_off.png`;
+    node_image_mapping[`mesecons_lightstone:lightstone_${c}_on`] = `jeija_lightstone_${c}_on.png`;
+});
 
 const MeseconRow = {
     props: ["mesecon"],
@@ -11,6 +22,14 @@ const MeseconRow = {
                 state: state
             });
             set_mesecon(new_mesecon).then(() => this.$emit("updated"));
+        },
+        remove: function() {
+            delete_mesecon(this.mesecon.poskey).then(() => this.$emit("removed"));
+        }
+    },
+    computed: {
+        img_src: function() {
+            return node_image_mapping[this.mesecon.nodename];
         }
     },
     template: /*html*/`
@@ -18,7 +37,10 @@ const MeseconRow = {
         <td>{{mesecon.x}},{{mesecon.y}},{{mesecon.z}}</td>
         <td>{{mesecon.last_modified}}</td>
         <td>{{mesecon.name}}</td>
-        <td>{{mesecon.state}}</td>
+        <td>
+            <img :src="'pics/' + img_src" v-if="img_src" style="height: 32px; width: 32px; image-rendering: crisp-edges"/>
+            <span v-else>{{mesecon.state}}</span>
+        </td>
         <td>
             <div class="btn-group">
                 <button class="btn btn-success" v-if="mesecon.nodename == 'mesecons_switch:mesecon_switch_off'" v-on:click="set('on')">
@@ -29,7 +51,11 @@ const MeseconRow = {
                     <i class="fa-solid fa-toggle-off"></i>
                     Set off
                 </button>
-                <button class="btn btn-warning">
+                <button class="btn btn-success" v-if="mesecon.nodename == 'mesecons_button:button_off'" v-on:click="set('on')">
+                    <i class="fa-solid fa-toggle-on"></i>
+                    Toggle
+                </button>
+                <button class="btn btn-warning" v-on:click="remove">
                     <i class="fa-solid fa-trash"></i>
                     Remove
                 </button>
@@ -57,7 +83,10 @@ export default {
     },
     methods: {
         update: function() {
-            get_mesecon_controls().then(m => this.mesecons = m);
+            get_mesecon_controls().then(m => {
+                m.sort((a,b) => a.poskey > b.poskey);
+                this.mesecons = m;
+            });
         }
     },
     created: function() {
@@ -80,7 +109,8 @@ export default {
                     </tr>
                 </thead>
                 <tbody>
-                    <mesecon-row v-for="mesecon in mesecons" :mesecon="mesecon" :key="mesecon.poskey" v-on:updated="update"/>
+                    <mesecon-row v-for="mesecon in mesecons" :mesecon="mesecon" :key="mesecon.poskey"
+                        v-on:updated="update" v-on:removed="update"/>
                 </tbody>
             </table> 
         </default-layout>

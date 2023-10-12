@@ -6,6 +6,8 @@ import (
 	"mtui/types/command"
 	"net/http"
 	"time"
+
+	"github.com/gorilla/mux"
 )
 
 func (a *Api) GetMeseconsControls(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
@@ -61,5 +63,20 @@ func (a *Api) SetMeseconsControl(w http.ResponseWriter, r *http.Request, claims 
 }
 
 func (a *Api) DeleteMeseconsControl(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	// TODO
+	vars := mux.Vars(r)
+	poskey := vars["poskey"]
+
+	m, err := a.app.Repos.MeseconsRepo.GetByPoskey(poskey)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	if m.PlayerName != claims.Username {
+		SendError(w, 403, "unauthorized")
+		return
+	}
+
+	err = a.app.Repos.MeseconsRepo.Remove(poskey)
+	Send(w, true, err)
 }
