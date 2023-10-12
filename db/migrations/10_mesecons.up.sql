@@ -3,6 +3,7 @@ create table mesecons(
     x int not null,
     y int not null,
     z int not null,
+    name varchar(128) not null,
     nodename varchar(128) not null,
     playername varchar(64) not null,
     state varchar(64) not null,
