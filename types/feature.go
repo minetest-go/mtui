@@ -14,6 +14,7 @@ const (
 	FEATURE_OTP             = "otp"
 	FEATURE_DOCKER          = "docker"
 	FEATURE_SIGNUP          = "signup"
+	FEATURE_MESECONS        = "mesecons"
 )
 
 type Feature struct {
