@@ -15,6 +15,7 @@ type Repositories struct {
 	MetricTypeRepository *MetricTypeRepository
 	MetricRepository     *MetricRepository
 	OauthAppRepo         *OauthAppRepository
+	MeseconsRepo         *MeseconsRepository
 }
 
 func NewRepositories(db dbutil.DBTx) *Repositories {
@@ -27,5 +28,6 @@ func NewRepositories(db dbutil.DBTx) *Repositories {
 		MetricTypeRepository: &MetricTypeRepository{dbu: dbutil.New[*types.MetricType](db, dbutil.DialectSQLite, func() *types.MetricType { return &types.MetricType{} })},
 		MetricRepository:     &MetricRepository{dbu: dbutil.New[*types.Metric](db, dbutil.DialectSQLite, func() *types.Metric { return &types.Metric{} })},
 		OauthAppRepo:         &OauthAppRepository{dbu: dbutil.New[*types.OauthApp](db, dbutil.DialectSQLite, func() *types.OauthApp { return &types.OauthApp{} })},
+		MeseconsRepo:         &MeseconsRepository{dbu: dbutil.New[*types.Mesecons](db, dbutil.DialectSQLite, func() *types.Mesecons { return &types.Mesecons{} })},
 	}
 }
