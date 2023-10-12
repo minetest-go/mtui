@@ -35,6 +35,7 @@ import ContentdbDetail from './components/pages/cdb/Detail.js';
 import InstallCDB from './components/pages/cdb/Install.js';
 import Wizard from './components/pages/wizard/Wizard.js';
 import Chat from './components/pages/Chat.js';
+import Mesecons from './components/pages/Mesecons.js';
 
 export default [{
 	path: "/", component: Start,
@@ -77,6 +78,9 @@ export default [{
 	meta: { requiredPriv: "interact" }
 }, {
 	path: "/shell", component: Shell,
+	meta: { requiredPriv: "interact" }
+}, {
+	path: "/mesecons", component: Mesecons,
 	meta: { requiredPriv: "interact" }
 }, {
 	path: "/lua", component: Lua,

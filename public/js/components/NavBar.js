@@ -60,6 +60,11 @@ export default {
 							<i class="fa-solid fa-comment"></i> Chat
 						</router-link>
 					</li>
+					<li class="nav-item" v-if="has_priv('interact') && has_feature('mesecons') && !maintenance">
+						<router-link to="/mesecons" class="nav-link">
+							<i class="fa-solid fa-microchip"></i> Mesecons
+						</router-link>
+					</li>
 					<li class="nav-item">
 						<router-link to="/online-players" class="nav-link" v-if="!maintenance">
 							<i class="fa fa-users"></i> Online players

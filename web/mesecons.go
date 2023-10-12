@@ -45,9 +45,21 @@ func (a *Api) SetMeseconsControl(w http.ResponseWriter, r *http.Request, claims 
 		return
 	}
 
-	cmd_req := &command.MeseconsSetRequest{}
+	cmd_req := &command.MeseconsSetRequest{
+		Pos: &types.Pos{
+			X: types.JsonInt(mesecon.X),
+			Y: types.JsonInt(mesecon.Y),
+			Z: types.JsonInt(mesecon.Z),
+		},
+		State:    command.State(mesecon.State),
+		Nodename: mesecon.NodeName,
+	}
 	cmd_resp := &command.MeseconsSetResponse{}
 
 	err = a.app.Bridge.ExecuteCommand(command.COMMAND_MESECONS_SET, cmd_req, cmd_resp, time.Second)
 	Send(w, cmd_resp, err)
+}
+
+func (a *Api) DeleteMeseconsControl(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	// TODO
 }

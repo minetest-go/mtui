@@ -94,7 +94,7 @@ export default {
         Game specific suggestions
         <div v-if="game && game.name == 'minetest_game'">
             <mod-suggestion name="skinsdb" author="bell07" description="Skin database" enables_feature="skinsdb"/>
-            <mod-suggestion name="mesecons" author="Jeija" description="Mesecons digital circuitry"/>
+            <mod-suggestion name="mesecons" author="Jeija" description="Mesecons digital circuitry" enables_feature="mesecons"/>
         </div>
         <div v-if="game && game.name == 'nodecore'">
             <mod-suggestion name="nc_cats" author="Warr1024" description="Nodecore cats!"/>

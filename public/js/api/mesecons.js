@@ -4,5 +4,9 @@ export const get_mesecon_controls = () => protected_fetch(`api/mesecons`);
 
 export const set_mesecon = m => fetch(`api/mesecons`, {
     method: "POST",
-    body: m
+    body: JSON.stringify(m)
+});
+
+export const delete_mesecon = m => fetch(`api/mesecons/${m.poskey}`, {
+    method: "DELETE"
 });
