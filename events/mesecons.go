@@ -73,6 +73,7 @@ func meseconsEvent(a *app.App, ch chan *bridge.CommandResponse) {
 		// update state
 		me.State = string(ev.State)
 		me.NodeName = ev.Nodename
+		me.LastModified = time.Now().UnixMilli()
 		err = a.Repos.MeseconsRepo.Save(me)
 		if err != nil {
 			logrus.WithError(err).Error("mesecons save error")
