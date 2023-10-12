@@ -21,17 +21,23 @@ const (
 // ui -> game
 const COMMAND_MESECONS_SET bridge.CommandType = "mesecons_set"
 
-type MeseconsSet struct {
-	Pos   *Pos  `json:"pos"`
-	State State `json:"state"`
+type MeseconsSetRequest struct {
+	Pos      *Pos   `json:"pos"`
+	State    State  `json:"state"`
+	Nodename string `json:"nodename"`
+}
+
+type MeseconsSetRespone struct {
+	Success          bool `json:"success"`
+	NodenameMismatch bool `json:"nodename_mismatch"`
 }
 
 // game -> ui
 const COMMAND_MESECONS_EVENT bridge.CommandType = "mesecons_event"
 
 type MeseconsEvent struct {
-	Pos   *Pos   `json:"pos"`
-	State State  `json:"state"`
-	Color string `json:"color"`
-	Name  string `json:"name"`
+	Pos      *Pos   `json:"pos"`
+	State    State  `json:"state"`
+	Color    string `json:"color"`
+	Nodename string `json:"nodename"`
 }
