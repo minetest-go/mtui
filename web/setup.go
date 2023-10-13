@@ -138,6 +138,12 @@ func Setup(a *app.App) error {
 	apir.HandleFunc("/bridge", api.CheckApiKey(a.Bridge.HandlePost)).Methods(http.MethodPost)
 	apir.HandleFunc("/bridge", api.CheckApiKey(a.Bridge.HandleGet)).Methods(http.MethodGet)
 
+	meser := apir.PathPrefix("/mesecons").Subrouter()
+	meser.Use(SecureHandler(api.FeatureCheck(types.FEATURE_MESECONS)))
+	meser.HandleFunc("", api.Secure(api.GetMeseconsControls)).Methods(http.MethodGet)
+	meser.HandleFunc("", api.Secure(api.SetMeseconsControl)).Methods(http.MethodPost)
+	meser.HandleFunc("/{poskey}", api.Secure(api.DeleteMeseconsControl)).Methods(http.MethodDelete)
+
 	msr := apir.PathPrefix("/media").Subrouter()
 	msr.Use(SecureHandler(api.FeatureCheck(types.FEATURE_MEDIASERVER)))
 	msr.HandleFunc("/index.mth", a.Mediaserver.ServeHTTPIndex).Methods(http.MethodPost)

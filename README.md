@@ -39,3 +39,5 @@ Planned:
 * Code: `MIT`
 * Textures: `CC BY-SA 3.0`
   * `public/pics/sam.png` [minetest_game](https://github.com/minetest/minetest_game)
+  * `public/pics/mesecons*.png` [mesecons](https://github.com/minetest-mods/mesecons)
+  * `public/pics/jeija*.png` [mesecons](https://github.com/minetest-mods/mesecons)

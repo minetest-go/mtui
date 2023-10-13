@@ -5,6 +5,11 @@
         "mods": ["areas"],
         "experimental": true
     },{
+        "name": "mesecons",
+        "description": "Mesecons control integration",
+        "mods": ["mtui", "mesecons_switch", "mesecons_button", "mesecons_lightstone"],
+        "experimental": true
+    },{
         "name": "mail",
         "description": "Ingame mail management",
         "mods": ["mail"]
