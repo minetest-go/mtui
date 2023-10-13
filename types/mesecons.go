@@ -6,6 +6,8 @@ type Mesecons struct {
 	Y            int    `json:"y"`
 	Z            int    `json:"z"`
 	Name         string `json:"name"`
+	OrderID      int    `json:"order_id"`
+	Category     string `json:"category"`
 	NodeName     string `json:"nodename"`
 	PlayerName   string `json:"playername"`
 	State        string `json:"state"`
@@ -19,6 +21,8 @@ func (m *Mesecons) Columns(action string) []string {
 		"y",
 		"z",
 		"name",
+		"order_id",
+		"category",
 		"nodename",
 		"playername",
 		"state",
@@ -37,6 +41,8 @@ func (m *Mesecons) Scan(action string, r func(dest ...any) error) error {
 		&m.Y,
 		&m.Z,
 		&m.Name,
+		&m.OrderID,
+		&m.Category,
 		&m.NodeName,
 		&m.PlayerName,
 		&m.State,
@@ -51,6 +57,8 @@ func (m *Mesecons) Values(action string) []any {
 		m.Y,
 		m.Z,
 		m.Name,
+		m.OrderID,
+		m.Category,
 		m.NodeName,
 		m.PlayerName,
 		m.State,

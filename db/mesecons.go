@@ -16,7 +16,7 @@ func (r *MeseconsRepository) Save(m *types.Mesecons) error {
 }
 
 func (r *MeseconsRepository) GetByPlayerName(playername string) ([]*types.Mesecons, error) {
-	return r.dbu.SelectMulti("where playername = %s", playername)
+	return r.dbu.SelectMulti("where playername = %s order by order_id asc", playername)
 }
 
 func (r *MeseconsRepository) GetByPoskey(poskey string) (*types.Mesecons, error) {

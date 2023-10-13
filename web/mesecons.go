@@ -40,6 +40,8 @@ func (a *Api) SetMeseconsControl(w http.ResponseWriter, r *http.Request, claims 
 	// update user provided fields
 	mesecon.Name = user_mesecon.Name
 	mesecon.State = user_mesecon.State
+	mesecon.OrderID = user_mesecon.OrderID
+	mesecon.Category = user_mesecon.Category
 	mesecon.LastModified = time.Now().UnixMilli()
 	err = a.app.Repos.MeseconsRepo.Save(mesecon)
 	if err != nil {

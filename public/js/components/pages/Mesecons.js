@@ -21,17 +21,22 @@ const MeseconRow = {
     data: function() {
         return {
             busy: false,
-            error: false
+            error: false,
+            name: this.mesecon.name,
+            name_edit: false
         };
     },
     methods: {
         format_time,
-        set: function(state) {
+        save_name: function() {
+            set_mesecon(Object.assign({}, this.mesecon, { name: this.name }))
+            .then(() => this.name_edit = false);
+        },
+        toggle: function() {
             this.busy = true;
             this.error = false;
-
             const new_mesecon = Object.assign({}, this.mesecon, {
-                state: state
+                state: this.mesecon.state == "on" ? "off" : "on"
             });
             set_mesecon(new_mesecon)
             .then(res => {
@@ -51,30 +56,47 @@ const MeseconRow = {
     computed: {
         img_src: function() {
             return node_image_mapping[this.mesecon.nodename];
+        },
+        is_switch: function() {
+            return this.mesecon.nodename == 'mesecons_switch:mesecon_switch_off' ||
+            this.mesecon.nodename == 'mesecons_switch:mesecon_switch_on';
         }
     },
     template: /*html*/`
     <tr>
         <td>{{mesecon.x}},{{mesecon.y}},{{mesecon.z}}</td>
         <td>{{format_time(mesecon.last_modified/1000)}}</td>
-        <td>{{mesecon.name}}</td>
+        <td>
+            <div class="input-group" v-if="name_edit">
+                <input type="text" class="form-control" v-model="name"/>
+                <button class="btn btn-success" v-on:click="save_name">
+                    <i class="fa fa-floppy-disk"></i>
+                </button>
+            </div>
+            <div v-else>
+                <span class="badge bg-primary">
+                    {{name}}
+                </span>
+                <i class="fa-regular fa-pen-to-square" v-on:click="name_edit = true"></i>
+            </div>
+        </td>
         <td>
             <img :src="'pics/' + img_src" v-if="img_src" style="height: 32px; width: 32px; image-rendering: crisp-edges"/>
             <span v-else>{{mesecon.state}}</span>
+            <button class="btn btn-success" v-if="is_switch" :disabled="busy" v-on:click="toggle">
+                <i class="fa fa-spinner fa-spin" v-if="busy"></i>
+                <i class="fa-solid fa-xmark" v-else-if="error"></i>
+                <i class="fa-solid fa-toggle-on" v-else></i>
+                Toggle
+            </button>
         </td>
         <td>
             <div class="btn-group">
-                <button class="btn btn-success" v-if="mesecon.nodename == 'mesecons_switch:mesecon_switch_off'" v-on:click="set('on')">
-                    <i class="fa-solid fa-toggle-on"></i>
-                    Set on
-                    <i class="fa fa-spinner fa-spin" v-if="busy"></i>
-                    <i class="fa-solid fa-xmark" v-if="error"></i>
+                <button class="btn btn-secondary" v-on:click="$emit('move-down')">
+                    <i class="fa-solid fa-chevron-down"></i>
                 </button>
-                <button class="btn btn-success" v-if="mesecon.nodename == 'mesecons_switch:mesecon_switch_on'" v-on:click="set('off')">
-                    <i class="fa-solid fa-toggle-off"></i>
-                    Set off
-                    <i class="fa fa-spinner fa-spin" v-if="busy"></i>
-                    <i class="fa-solid fa-xmark" v-if="error"></i>
+                <button class="btn btn-secondary" v-on:click="$emit('move-up')">
+                    <i class="fa-solid fa-chevron-up"></i>
                 </button>
                 <button class="btn btn-warning" v-on:click="remove">
                     <i class="fa-solid fa-trash"></i>
@@ -104,10 +126,19 @@ export default {
     },
     methods: {
         update: function() {
-            get_mesecon_controls().then(m => {
-                m.sort((a,b) => a.poskey > b.poskey);
-                this.mesecons = m;
-            });
+            get_mesecon_controls().then(m => this.mesecons = m);
+        },
+        swap: function(i1, i2) {
+            const m1 = this.mesecons[i1];
+            const m2 = this.mesecons[i2];
+            if (!m1 || !m2) {
+                return;
+            }
+            const o = m1.order_id;
+            m1.order_id = m2.order_id;
+            m2.order_id = o;
+            Promise.all([set_mesecon(m1), set_mesecon(m2)])
+            .then(() => this.update());
         }
     },
     created: function() {
@@ -130,8 +161,8 @@ export default {
                     </tr>
                 </thead>
                 <tbody>
-                    <mesecon-row v-for="mesecon in mesecons" :mesecon="mesecon" :key="mesecon.poskey"
-                        v-on:updated="update" v-on:removed="update"/>
+                    <mesecon-row v-for="(mesecon, i) in mesecons" :mesecon="mesecon" :key="mesecon.poskey"
+                        v-on:updated="update" v-on:removed="update" v-on:move-up="swap(i, i-1)" v-on:move-down="swap(i, i+1)"/>
                 </tbody>
             </table> 
         </default-layout>

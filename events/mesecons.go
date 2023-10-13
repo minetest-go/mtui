@@ -43,6 +43,16 @@ func meseconsRegister(a *app.App, ch chan *bridge.CommandResponse) {
 		me.NodeName = m.Nodename
 		me.LastModified = time.Now().UnixMilli()
 
+		// get next order id
+		list, err := a.Repos.MeseconsRepo.GetByPlayerName(m.Playername)
+		if err != nil {
+			logrus.WithError(err).Error("mesecons get error")
+			continue
+		}
+		if len(list) > 0 {
+			me.OrderID = list[len(list)-1].OrderID + 1
+		}
+
 		err = a.Repos.MeseconsRepo.Save(me)
 		if err != nil {
 			logrus.WithError(err).Error("mesecons save error")
