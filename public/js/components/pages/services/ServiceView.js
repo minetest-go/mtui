@@ -24,7 +24,7 @@ export default {
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    Engine
+                    Service-Container
                     <service-status :status="service.store.status"/>
                     <i class="fa-solid fa-spinner fa-spin" v-if="service.store.busy"></i>
                 </div>
