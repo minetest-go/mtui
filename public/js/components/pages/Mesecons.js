@@ -8,6 +8,7 @@ import { get_mesecon_controls, set_mesecon, delete_mesecon } from "../../api/mes
 const node_image_mapping = {
     "mesecons_switch:mesecon_switch_off": "mesecons_switch_off.png",
     "mesecons_switch:mesecon_switch_on": "mesecons_switch_on.png",
+    "digilines:lcd": "lcd_lcd.png"
 };
 
 const colors = ["red", "green", "blue", "gray", "darkgray", "yellow", "orange", "white", "pink", "magenta", "cyan", "violet"];
@@ -15,6 +16,15 @@ colors.forEach(c => {
     node_image_mapping[`mesecons_lightstone:lightstone_${c}_off`] = `jeija_lightstone_${c}_off.png`;
     node_image_mapping[`mesecons_lightstone:lightstone_${c}_on`] = `jeija_lightstone_${c}_on.png`;
 });
+
+const switch_nodes = {
+    "mesecons_switch:mesecon_switch_off": true,
+    "mesecons_switch:mesecon_switch_on": true
+};
+
+const display_nodes = {
+    "digilines:lcd": true
+};
 
 const MeseconRow = {
     props: ["mesecon"],
@@ -58,8 +68,10 @@ const MeseconRow = {
             return node_image_mapping[this.mesecon.nodename];
         },
         is_switch: function() {
-            return this.mesecon.nodename == 'mesecons_switch:mesecon_switch_off' ||
-            this.mesecon.nodename == 'mesecons_switch:mesecon_switch_on';
+            return switch_nodes[this.mesecon.nodename];
+        },
+        is_display: function() {
+            return display_nodes[this.mesecon.nodename];
         }
     },
     template: /*html*/`
@@ -82,7 +94,7 @@ const MeseconRow = {
         </td>
         <td>
             <img :src="'pics/' + img_src" v-if="img_src" style="height: 32px; width: 32px; image-rendering: crisp-edges"/>
-            <span v-else>{{mesecon.state}}</span>
+            <span v-if="!img_src || is_display" class="badge bg-secondary">{{mesecon.state}}</span>
             <button class="btn btn-success" v-if="is_switch" :disabled="busy" v-on:click="toggle">
                 <i class="fa fa-spinner fa-spin" v-if="busy"></i>
                 <i class="fa-solid fa-xmark" v-else-if="error"></i>
