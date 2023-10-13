@@ -2,7 +2,7 @@ import { has_priv, is_logged_in, get_claims, logout } from "../service/login.js"
 import { has_feature } from "../service/features.js";
 import { get_player_count, get_maintenance } from "../service/stats.js";
 import { get_unread_count } from '../service/mail.js';
-import { engine, matterbridge, mapserver } from "../service/service.js";
+import { engine, matterbridge, mapserver, mtweb } from "../service/service.js";
 
 import StatsDisplay from './StatsDisplay.js';
 import ServiceStatus from "./pages/services/ServiceStatus.js";
@@ -13,7 +13,8 @@ export default {
 		return {
 			engine,
 			matterbridge,
-			mapserver
+			mapserver,
+			mtweb
 		};
 	},
 	methods: {
@@ -118,6 +119,13 @@ export default {
 								<i class="fa fa-gear"></i>
 								Mapserver
 								<service-status :status="mapserver.store.status"/>
+							</router-link>
+						</li>
+						<li>
+							<router-link to="/services/mtweb" class="dropdown-item">
+								<i class="fa fa-gear"></i>
+								MTWeb
+								<service-status :status="mtweb.store.status"/>
 							</router-link>
 						</li>
 					</nav-dropdown>

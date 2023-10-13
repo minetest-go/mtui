@@ -68,7 +68,8 @@ const category_events = {
     "service": [
         "engine",
         "matterbridge",
-        "mapserver"
+        "mapserver",
+        "mtweb"
     ]
 };
 

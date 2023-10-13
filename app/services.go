@@ -115,6 +115,37 @@ func (app *App) SetupServices() {
 				},
 			},
 		})
+
+		// mtweb
+		mtweb_env := append(
+			no_proxy_env,
+			fmt.Sprintf("ALLOWED_HOST=%s", fmt.Sprintf("%s_engine", app.Config.DockerContainerPrefix)),
+			fmt.Sprintf("ALLOWED_PORT=%d", app.Config.DockerMinetestPort),
+		)
+		mtwns := fmt.Sprintf("%s-mtweb", app.Config.DockerContainerPrefix)
+		app.ServiceMTWeb = dockerservice.New(&dockerservice.Config{
+			ContainerName: fmt.Sprintf("%s_mtweb", app.Config.DockerContainerPrefix),
+			Networks:      strings.Split(app.Config.DockerNetwork, ","),
+			DefaultConfig: &container.Config{
+				Env: mtweb_env,
+				Labels: map[string]string{
+					"promtail":               "true",
+					"traefik.enable":         "true",
+					"traefik.docker.network": "terminator",
+					"traefik.http.services." + mtwns + ".loadbalancer.server.port":            "8080",
+					"traefik.http.routers." + mtwns + ".rule":                                 fmt.Sprintf("Host(`%s`) && PathPrefix(`/mtweb`)", app.Config.CookieDomain),
+					"traefik.http.routers." + mtwns + ".entrypoints":                          "websecure",
+					"traefik.http.routers." + mtwns + ".tls.certresolver":                     "default",
+					"traefik.http.routers." + mtwns + ".middlewares":                          fmt.Sprintf("%s-stripprefix", mtwns),
+					"traefik.http.middlewares." + mtwns + "-stripprefix.stripprefix.prefixes": "/mtweb",
+				},
+			},
+			DefaultHostConfig: &container.HostConfig{
+				RestartPolicy: container.RestartPolicy{
+					Name: "always",
+				},
+			},
+		})
 	}
 
 }
