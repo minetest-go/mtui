@@ -21,7 +21,17 @@
 	</head>
 	<body>
 		<!-- app root -->
-		<app id="app"></app>
+		<app id="app">
+			<div class="row">
+				<div class="col-4"></div>
+				<div class="col-4 text-center">
+					<div style="height: 250px;"></div>
+					<i class="fa fa-spinner fa-spin"></i>
+					Loading the mtui app...
+				</div>
+				<div class="col-4"></div>
+			</div>
+		</app>
 
 		<!-- app bootstrap -->
 		{{if .Webdev}}
