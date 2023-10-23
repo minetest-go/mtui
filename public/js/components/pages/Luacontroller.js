@@ -40,7 +40,7 @@ export default {
             }, {
                 name: "Luacontroller",
                 icon: "microchip",
-                link: "/mesecons/luacontroller"
+                link: `/mesecons/luacontroller/${this.x}/${this.y}/${this.z}`
             }],
             code: "",
             errmsg: "",

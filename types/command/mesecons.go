@@ -22,7 +22,8 @@ type MeseconsSetRequest struct {
 }
 
 type MeseconsSetResponse struct {
-	Success bool `json:"success"`
+	Success      bool   `json:"success"`
+	ErrorMessage string `json:"errmsg"`
 }
 
 const COMMAND_MESECONS_SETPROGRAM_LUACONTROLLER bridge.CommandType = "luacontroller_set_program"

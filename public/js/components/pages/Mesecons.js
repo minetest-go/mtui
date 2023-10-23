@@ -42,11 +42,11 @@ const MeseconRow = {
             set_mesecon(Object.assign({}, this.mesecon, { name: this.name }))
             .then(() => this.name_edit = false);
         },
-        toggle: function() {
+        set: function(state) {
             this.busy = true;
             this.error = false;
             const new_mesecon = Object.assign({}, this.mesecon, {
-                state: this.mesecon.state == "on" ? "off" : "on"
+                state: state
             });
             set_mesecon(new_mesecon)
             .then(res => {
@@ -107,6 +107,8 @@ const MeseconRow = {
         <td>
             <img :src="'pics/' + img_src" v-if="img_src" style="height: 32px; width: 32px; image-rendering: crisp-edges"/>
             <span v-if="!img_src || is_display" class="badge bg-secondary">{{mesecon.state}}</span>
+            <i class="fa fa-spinner fa-spin" v-if="busy"></i>
+            <i class="fa-solid fa-xmark" v-else-if="error"></i>
         </td>
         <td>
             <div class="btn-group">
@@ -125,11 +127,13 @@ const MeseconRow = {
                     <i class="fa fa-microchip"></i>
                     Program
                 </router-link>
-                <button class="btn btn-success" v-if="is_switch" :disabled="busy" v-on:click="toggle">
-                    <i class="fa fa-spinner fa-spin" v-if="busy"></i>
-                    <i class="fa-solid fa-xmark" v-else-if="error"></i>
-                    <i class="fa-solid fa-toggle-on" v-else></i>
-                    Toggle
+                <button class="btn btn-success" v-if="is_switch" :disabled="busy" v-on:click="set('on')">
+                    <i class="fa-solid fa-toggle-on"></i>
+                    Set ON
+                </button>
+                <button class="btn btn-success" v-if="is_switch" :disabled="busy" v-on:click="set('off')">
+                    <i class="fa-solid fa-toggle-off"></i>
+                    Set OFF
                 </button>
             </div>
         </td>
