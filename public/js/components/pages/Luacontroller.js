@@ -1,7 +1,7 @@
 import DefaultLayout from "../layouts/DefaultLayout.js";
 import { START } from "../Breadcrumb.js";
 
-import { get_luacontroller, set_luacontroller } from "../../api/luacontroller.js";
+import { get_luacontroller, set_luacontroller, digiline_send } from "../../api/luacontroller.js";
 
 export default {
     props: ["x", "y", "z"],
@@ -46,7 +46,11 @@ export default {
             errmsg: "",
             success: false,
             busy: false,
-            cm: null
+            cm: null,
+            channel: "",
+            message: "",
+            digiline_busy: false,
+            digiline_success: false
         };
     },
     methods: {
@@ -64,6 +68,23 @@ export default {
                     this.success = true;
                 }
             });
+        },
+        digiline_send: function() {
+            this.digiline_busy = true;
+            this.digiline_success = false;
+            digiline_send({
+                pos: {
+                    x: +this.x,
+                    y: +this.y,
+                    z: +this.z
+                },
+                channel: this.channel,
+                msg: this.message
+            })
+            .then(res => {
+                this.digiline_success = res.success;
+                this.digiline_busy = false;
+            });
         }
     },
     template: /*html*/`
@@ -75,6 +96,19 @@ export default {
                         Program
                         <i class="fa fa-check" v-if="success"></i>
                     </button>
+                </div>
+                <div class="col-2"></div>
+                <div class="col-8">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Channel" v-model="channel"/>
+                        <input type="text" class="form-control" placeholder="Message" v-model="message"/>
+                        <button class="btn btn-secondary" v-on:click="digiline_send">
+                            <i class="fa fa-share"></i>
+                            Send digiline message
+                            <i class="fa fa-check" v-if="digiline_success"></i>
+                            <i class="fa fa-spinner fa-spin" v-if="digiline_busy"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
             <hr>

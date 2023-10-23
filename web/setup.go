@@ -145,6 +145,7 @@ func Setup(a *app.App) error {
 	meser.HandleFunc("/{poskey}", api.Secure(api.DeleteMeseconsControl)).Methods(http.MethodDelete)
 	meser.HandleFunc("/luacontroller/get", api.Secure(api.GetLuacontroller)).Methods(http.MethodPost)
 	meser.HandleFunc("/luacontroller/set", api.Secure(api.SetLuacontroller)).Methods(http.MethodPost)
+	meser.HandleFunc("/luacontroller/digiline_send", api.Secure(api.LuacontrollerDigilineSend)).Methods(http.MethodPost)
 
 	msr := apir.PathPrefix("/media").Subrouter()
 	msr.Use(SecureHandler(api.FeatureCheck(types.FEATURE_MEDIASERVER)))

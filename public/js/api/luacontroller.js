@@ -9,3 +9,8 @@ export const set_luacontroller = m => protected_fetch(`api/mesecons/luacontrolle
     method: "POST",
     body: JSON.stringify(m)
 });
+
+export const digiline_send = m => protected_fetch(`api/mesecons/luacontroller/digiline_send`, {
+    method: "POST",
+    body: JSON.stringify(m)
+});

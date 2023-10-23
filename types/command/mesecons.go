@@ -52,6 +52,20 @@ type LuaControllerGetProgramResponse struct {
 	Code         string `json:"code"`
 }
 
+const COMMAND_MESECONS_LUACONTROLLER_DIGLINE_SEND bridge.CommandType = "luacontroller_digiline_send"
+
+type LuaControllerDigilineSendRequest struct {
+	Pos        *types.Pos `json:"pos"`
+	Playername string     `json:"playername"`
+	Channel    string     `json:"channel"`
+	Message    string     `json:"msg"`
+}
+
+type LuaControllerDigilineSendResponse struct {
+	Success      bool   `json:"success"`
+	ErrorMessage string `json:"errmsg"`
+}
+
 // game -> ui
 const COMMAND_MESECONS_EVENT bridge.CommandType = "mesecons_event"
 
