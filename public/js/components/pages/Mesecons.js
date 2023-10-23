@@ -65,6 +65,12 @@ const MeseconRow = {
     },
     computed: {
         img_src: function() {
+            if (this.is_mooncontroller) {
+                return "mooncontroller_top.png";
+            }
+            if (this.is_luacontroller) {
+                return "jeija_luacontroller_top.png";
+            }
             return node_image_mapping[this.mesecon.nodename];
         },
         is_switch: function() {
@@ -72,6 +78,12 @@ const MeseconRow = {
         },
         is_display: function() {
             return display_nodes[this.mesecon.nodename];
+        },
+        is_luacontroller: function() {
+            return this.mesecon.nodename.startsWith("mesecons_luacontroller");
+        },
+        is_mooncontroller: function() {
+            return this.mesecon.nodename.startsWith("mooncontroller");
         }
     },
     template: /*html*/`
@@ -95,12 +107,6 @@ const MeseconRow = {
         <td>
             <img :src="'pics/' + img_src" v-if="img_src" style="height: 32px; width: 32px; image-rendering: crisp-edges"/>
             <span v-if="!img_src || is_display" class="badge bg-secondary">{{mesecon.state}}</span>
-            <button class="btn btn-success" v-if="is_switch" :disabled="busy" v-on:click="toggle">
-                <i class="fa fa-spinner fa-spin" v-if="busy"></i>
-                <i class="fa-solid fa-xmark" v-else-if="error"></i>
-                <i class="fa-solid fa-toggle-on" v-else></i>
-                Toggle
-            </button>
         </td>
         <td>
             <div class="btn-group">
@@ -113,6 +119,17 @@ const MeseconRow = {
                 <button class="btn btn-warning" v-on:click="remove">
                     <i class="fa-solid fa-trash"></i>
                     Remove
+                </button>
+                <router-link :to="'/mesecons/luacontroller/' + mesecon.x + '/' + mesecon.y + '/' + mesecon.z"
+                    class="btn btn-primary" v-if="is_luacontroller || is_mooncontroller">
+                    <i class="fa fa-microchip"></i>
+                    Program
+                </router-link>
+                <button class="btn btn-success" v-if="is_switch" :disabled="busy" v-on:click="toggle">
+                    <i class="fa fa-spinner fa-spin" v-if="busy"></i>
+                    <i class="fa-solid fa-xmark" v-else-if="error"></i>
+                    <i class="fa-solid fa-toggle-on" v-else></i>
+                    Toggle
                 </button>
             </div>
         </td>

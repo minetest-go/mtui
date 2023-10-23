@@ -63,7 +63,8 @@ const category_events = {
         "engine",
         "mods",
         "oauth",
-        "password"
+        "password",
+        "mesecons"
     ],
     "service": [
         "engine",

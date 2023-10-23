@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"mtui/types"
 	"mtui/types/command"
 	"net/http"
@@ -59,6 +60,15 @@ func (a *Api) SetMeseconsControl(w http.ResponseWriter, r *http.Request, claims 
 		Nodename: mesecon.NodeName,
 	}
 	cmd_resp := &command.MeseconsSetResponse{}
+
+	a.app.CreateUILogEntry(&types.Log{
+		Category: types.CategoryUI,
+		Event:    "mesecons",
+		PosX:     &cmd_req.Pos.X,
+		PosY:     &cmd_req.Pos.Y,
+		PosZ:     &cmd_req.Pos.Z,
+		Message:  fmt.Sprintf("user '%s' sets mesecons to '%s'", claims.Username, user_mesecon.State),
+	}, r)
 
 	err = a.app.Bridge.ExecuteCommand(command.COMMAND_MESECONS_SET, cmd_req, cmd_resp, time.Second)
 	Send(w, cmd_resp, err)

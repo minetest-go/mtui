@@ -25,6 +25,32 @@ type MeseconsSetResponse struct {
 	Success bool `json:"success"`
 }
 
+const COMMAND_MESECONS_SETPROGRAM_LUACONTROLLER bridge.CommandType = "luacontroller_set_program"
+
+type LuaControllerSetProgramRequest struct {
+	Pos        *types.Pos `json:"pos"`
+	Code       string     `json:"code"`
+	Playername string     `json:"playername"`
+}
+
+type LuaControllerSetProgramResponse struct {
+	Success      bool   `json:"success"`
+	ErrorMessage string `json:"errmsg"`
+}
+
+const COMMAND_MESECONS_GETPROGRAM_LUACONTROLLER bridge.CommandType = "luacontroller_get_program"
+
+type LuaControllerGetProgramRequest struct {
+	Pos        *types.Pos `json:"pos"`
+	Playername string     `json:"playername"`
+}
+
+type LuaControllerGetProgramResponse struct {
+	Success      bool   `json:"success"`
+	ErrorMessage string `json:"errmsg"`
+	Code         string `json:"code"`
+}
+
 // game -> ui
 const COMMAND_MESECONS_EVENT bridge.CommandType = "mesecons_event"
 

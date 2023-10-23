@@ -37,6 +37,7 @@ import InstallCDB from './components/pages/cdb/Install.js';
 import Wizard from './components/pages/wizard/Wizard.js';
 import Chat from './components/pages/Chat.js';
 import Mesecons from './components/pages/Mesecons.js';
+import Luacontroller from './components/pages/Luacontroller.js';
 
 export default [{
 	path: "/", component: Start,
@@ -82,6 +83,9 @@ export default [{
 	meta: { requiredPriv: "interact" }
 }, {
 	path: "/mesecons", component: Mesecons,
+	meta: { requiredPriv: "interact" }
+}, {
+	path: "/mesecons/luacontroller/:x/:y/:z", component: Luacontroller, props: true,
 	meta: { requiredPriv: "interact" }
 }, {
 	path: "/lua", component: Lua,
