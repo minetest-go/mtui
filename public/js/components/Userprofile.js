@@ -30,7 +30,7 @@ export default {
             return (is_logged_in() && get_claims().username == this.username) || has_priv("password");
         },
         is_moderator: function() {
-            return has_priv("ban");
+            return has_priv("ban") || has_priv("server");
         }
     },
     methods: {
