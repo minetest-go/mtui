@@ -54,7 +54,7 @@ export default {
     },
     template: /*html*/`
     <div>
-        Your balance: <b>$ {{ format_money(balance) }}</b>
+        Balance: <b>$ {{ format_money(balance) }}</b>
         <div v-if="can_transfer">
             <hr>
             <h5>Wiretransfer</h5>
