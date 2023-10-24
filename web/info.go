@@ -5,16 +5,14 @@ import (
 )
 
 type AppInfo struct {
-	Version        string `json:"version"`
-	Servername     string `json:"servername"`
-	InstallMtuiMod bool   `json:"install_mtui_mod"`
+	Version    string `json:"version"`
+	Servername string `json:"servername"`
 }
 
 func (a *Api) GetAppInfo(w http.ResponseWriter, r *http.Request) {
 	ai := &AppInfo{
-		Version:        a.app.Version,
-		Servername:     a.app.Config.Servername,
-		InstallMtuiMod: a.app.Config.InstallMtuiMod,
+		Version:    a.app.Version,
+		Servername: a.app.Config.Servername,
 	}
 
 	SendJson(w, ai)

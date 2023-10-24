@@ -138,6 +138,14 @@ func Create(world_dir string) (*App, error) {
 	// docker services, if available
 	app.SetupServices()
 
+	// install mtui mod if specified
+	if cfg.InstallMtuiMod {
+		_, err := app.CreateMTUIMod()
+		if err != nil {
+			return nil, fmt.Errorf("could not install mtui mod: %v", err)
+		}
+	}
+
 	if Version == "" {
 		Version = "DEV"
 	}

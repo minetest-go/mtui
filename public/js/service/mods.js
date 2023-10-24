@@ -6,7 +6,6 @@ import { list_mods, create_mod, remove_mod,
 } from '../api/mods.js';
 
 import events, { EVENT_LOGGED_IN } from '../events.js';
-import { get_install_mtui_mod } from './app_info.js';
 import { has_priv } from './login.js';
 import { has_feature } from './features.js';
 
@@ -79,11 +78,5 @@ events.on(EVENT_LOGGED_IN, function() {
         return;
     }
 
-    update()
-    .then(() => {
-        if (!get_git_mod("mtui") && get_install_mtui_mod()) {
-            // install mtui mod
-            add_mtui();
-        }
-    });
+    update();
 });

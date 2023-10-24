@@ -31,14 +31,22 @@ func (a *App) AddHTTPMod(modname string, cfg minetestconfig.Settings) {
 }
 
 func (a *App) CreateMTUIMod() (*types.Mod, error) {
-	m := &types.Mod{
+	m, err := a.Repos.ModRepo.GetByName("mtui")
+	if err != nil {
+		return nil, err
+	}
+	if m != nil {
+		return m, nil
+	}
+
+	m = &types.Mod{
 		Name:       "mtui",
 		ModType:    types.ModTypeMod,
 		SourceType: types.SourceTypeGIT,
 		URL:        "https://github.com/minetest-go/mtui_mod.git",
 		Branch:     "refs/heads/master",
 	}
-	err := a.ModManager.Create(m)
+	err = a.ModManager.Create(m)
 	if err != nil {
 		return nil, fmt.Errorf("error creating mod: %v", err)
 	}

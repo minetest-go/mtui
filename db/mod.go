@@ -23,6 +23,14 @@ func (r *ModRepository) GetAll() ([]*types.Mod, error) {
 	return r.dbu.SelectMulti("")
 }
 
+func (r *ModRepository) GetByName(name string) (*types.Mod, error) {
+	m, err := r.dbu.Select("where name = %s", name)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	return m, err
+}
+
 func (r *ModRepository) GetByID(id string) (*types.Mod, error) {
 	m, err := r.dbu.Select("where id = %s", id)
 	if err == sql.ErrNoRows {
