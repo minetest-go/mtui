@@ -20,6 +20,17 @@ func (a *Api) GetLuacontroller(w http.ResponseWriter, r *http.Request, claims *t
 		SendError(w, 500, "position is nil")
 		return
 	}
+
+	m, err := a.app.Repos.MeseconsRepo.GetByPoskey(req.Pos.String())
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+	if m.PlayerName != claims.Username {
+		SendError(w, 403, "unauthorized")
+		return
+	}
+
 	req.Playername = claims.Username
 
 	a.app.CreateUILogEntry(&types.Log{
@@ -28,6 +39,7 @@ func (a *Api) GetLuacontroller(w http.ResponseWriter, r *http.Request, claims *t
 		PosX:     &req.Pos.X,
 		PosY:     &req.Pos.Y,
 		PosZ:     &req.Pos.Z,
+		Username: claims.Username,
 		Message:  fmt.Sprintf("user '%s' requests code from luacontroller", claims.Username),
 	}, r)
 
@@ -47,6 +59,16 @@ func (a *Api) SetLuacontroller(w http.ResponseWriter, r *http.Request, claims *t
 		SendError(w, 500, "position is nil")
 		return
 	}
+	m, err := a.app.Repos.MeseconsRepo.GetByPoskey(req.Pos.String())
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+	if m.PlayerName != claims.Username {
+		SendError(w, 403, "unauthorized")
+		return
+	}
+
 	req.Playername = claims.Username
 
 	a.app.CreateUILogEntry(&types.Log{
@@ -55,6 +77,7 @@ func (a *Api) SetLuacontroller(w http.ResponseWriter, r *http.Request, claims *t
 		PosX:       &req.Pos.X,
 		PosY:       &req.Pos.Y,
 		PosZ:       &req.Pos.Z,
+		Username:   claims.Username,
 		Message:    fmt.Sprintf("user '%s' writes code to luacontroller", claims.Username),
 		Attachment: []byte(req.Code),
 	}, r)
@@ -79,6 +102,16 @@ func (a *Api) LuacontrollerDigilineSend(w http.ResponseWriter, r *http.Request, 
 		SendError(w, 500, "channel/message length exceeded")
 		return
 	}
+	m, err := a.app.Repos.MeseconsRepo.GetByPoskey(req.Pos.String())
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+	if m.PlayerName != claims.Username {
+		SendError(w, 403, "unauthorized")
+		return
+	}
+
 	req.Playername = claims.Username
 
 	a.app.CreateUILogEntry(&types.Log{
@@ -87,6 +120,7 @@ func (a *Api) LuacontrollerDigilineSend(w http.ResponseWriter, r *http.Request, 
 		PosX:     &req.Pos.X,
 		PosY:     &req.Pos.Y,
 		PosZ:     &req.Pos.Z,
+		Username: claims.Username,
 		Message:  fmt.Sprintf("user '%s' sends digiline message '%s' on channel '%s'", claims.Username, req.Message, req.Channel),
 	}, r)
 
