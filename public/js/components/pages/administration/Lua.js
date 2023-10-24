@@ -1,5 +1,6 @@
 import { execute_lua } from "../../../api/lua.js";
 import DefaultLayout from "../../layouts/DefaultLayout.js";
+import CodeEditor from "../../CodeEditor.js";
 import { START, ADMINISTRATION } from "../../Breadcrumb.js";
 
 const store = Vue.reactive({
@@ -19,7 +20,8 @@ const store = Vue.reactive({
 
 export default {
     components: {
-        "default-layout": DefaultLayout
+        "default-layout": DefaultLayout,
+        "code-editor": CodeEditor
     },
     data: () => store,
     methods: {
@@ -47,7 +49,7 @@ export default {
     <default-layout icon="terminal" title="Lua" :breadcrumb="breadcrumb">
         <form @submit.prevent="execute" class="row">
             <div class="col-md-10">
-                <textarea rows="5" v-model="code" class="form-control"></textarea>
+                <code-editor mode="lua" v-model="code" style="height: 500px;" class="w-100"/>
             </div>
             <div class="col-md-2">
                 <button class="btn btn-outline-primary w-100" type="submit" :disabled="!code">
