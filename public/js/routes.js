@@ -24,6 +24,7 @@ import Filebrowser from './components/pages/filebrowser/Filebrowser.js';
 import FileEditPage from './components/pages/filebrowser/FileEditPage.js';
 import Signup from './components/pages/Signup.js';
 import Help from './components/pages/Help.js';
+import ProfilerView from './components/pages/ProfilerView.js';
 
 import EngineService from './components/pages/services/Engine.js';
 import MatterbridgeService from './components/pages/services/Matterbridge.js';
@@ -149,4 +150,7 @@ export default [{
 }, {
 	path: "/fileedit/:pathMatch(.*)", component: FileEditPage, props: true,
 	meta: { requiredPriv: "server", maintenance_page: true }
+}, {
+	path: "/profiler-view/:pathMatch(.*)", component: ProfilerView, props: true,
+	meta: { requiredPriv: "server" }
 }];

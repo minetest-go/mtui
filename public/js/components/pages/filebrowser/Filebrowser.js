@@ -95,6 +95,9 @@ export default {
         is_database: function(filename) {
             return filename.match(/.*(sqlite|sqlite-shm|sqlite-wal)$/i);
         },
+        is_json_profile: function(filename) {
+            return filename.match(/^profile-.*.json$/);
+        },
         get_icon: function(item) {
             if (item.is_dir) {
                 return "folder";
@@ -233,6 +236,9 @@ export default {
                         </td>
                         <td>
                             <div class="btn-group">
+                                <router-link :to="'/profiler-view/' + result.dir + '/' + item.name" class="btn btn-sm btn-secondary" v-if="is_json_profile(item.name)">
+                                    <i class="fa fa-chart-line"></i>
+                                </router-link>
                                 <router-link :to="'/fileedit/' + result.dir + '/' + item.name" class="btn btn-sm btn-primary" v-bind:class="{disabled:!can_edit(item.name)}">
                                     <i class="fa fa-edit"></i>
                                 </router-link>
