@@ -1,4 +1,6 @@
 import DefaultLayout from "../layouts/DefaultLayout.js";
+import CodeEditor from "../CodeEditor.js";
+
 import { START } from "../Breadcrumb.js";
 
 import { get_luacontroller, set_luacontroller, digiline_send } from "../../api/luacontroller.js";
@@ -6,7 +8,8 @@ import { get_luacontroller, set_luacontroller, digiline_send } from "../../api/l
 export default {
     props: ["x", "y", "z"],
     components: {
-        "default-layout": DefaultLayout
+        "default-layout": DefaultLayout,
+        "code-editor": CodeEditor
     },
     mounted: function() {
         get_luacontroller({
@@ -20,15 +23,6 @@ export default {
             if (res.success) {
                 this.code = res.code;
             }
-        })
-        .then(() => {
-            this.cm = CodeMirror.fromTextArea(this.$refs.textarea, {
-                lineNumbers: true,
-                viewportMargin: Infinity,
-                mode: {
-                    name: "lua"
-                }
-            });
         });
     },
     data: function() {
@@ -46,7 +40,6 @@ export default {
             errmsg: "",
             success: false,
             busy: false,
-            cm: null,
             channel: "",
             message: "",
             digiline_busy: false,
@@ -55,18 +48,20 @@ export default {
     },
     methods: {
         program: function() {
+            this.busy = true;
             set_luacontroller({
                 pos: {
                     x: +this.x,
                     y: +this.y,
                     z: +this.z
                 },
-                code: this.cm.getValue()
+                code: this.code
             })
             .then(res => {
                 if (res.success) {
                     this.success = true;
                 }
+                this.busy = false;
             });
         },
         digiline_send: function() {
@@ -95,6 +90,7 @@ export default {
                         <i class="fa fa-microchip"></i>
                         Program
                         <i class="fa fa-check" v-if="success"></i>
+                        <i class="fa fa-spinner fa-spin" v-if="busy"></i>
                     </button>
                 </div>
                 <div class="col-2"></div>
@@ -112,7 +108,7 @@ export default {
                 </div>
             </div>
             <hr>
-            <textarea ref="textarea" class="w-100" style="height: 800px;" v-model="code"></textarea>
+            <code-editor v-model="code" class="w-100" style="height: 800px;" mode="lua"/>
         </default-layout>
     `
 };

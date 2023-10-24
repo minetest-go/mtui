@@ -1,32 +1,32 @@
 import { download_text, upload } from "../../../api/filebrowser.js";
 import { get_mode_name } from "./common.js";
+import CodeEditor from "../../CodeEditor.js";
 
 export default {
     props: ["filename"],
+    components: {
+        "code-editor": CodeEditor
+    },
     data: function() {
         return {
             text: "",
-            cm: null,
-            success: false
+            success: false,
+            busy: false,
+            mode: get_mode_name(this.filename)
         };
     },
     mounted: function() {
+        this.busy = true;
         download_text(this.filename)
         .then(t => this.text = t)
-        .then(() => {
-            this.cm = CodeMirror.fromTextArea(this.$refs.textarea, {
-                lineNumbers: true,
-                viewportMargin: Infinity,
-                mode: {
-                    name: get_mode_name(this.filename)
-                }
-            });
-        });
+        .finally(() => this.busy = false);
     },
     methods: {
         save: function() {
-            upload(this.filename, this.cm.getValue())
-            .then(() => this.success = true);
+            this.busy = true;
+            upload(this.filename, this.text)
+            .then(() => this.success = true)
+            .finally(() => this.busy = false);
         }
     },
     template: /*html*/`
@@ -36,10 +36,11 @@ export default {
                 <i class="fa fa-floppy-disk"></i>
                 Save
                 <i class="fa fa-check" v-if="success"></i>
+                <i class="fa fa-spinner fa-spin" v-if="busy"></i>
             </button>
         </div>
     </div>
     <hr>
-    <textarea ref="textarea" class="w-100" style="height: 800px;" v-model="text"></textarea>
+    <code-editor v-model="text" class="w-100" style="height: 800px;" :mode="mode"/>
     `
 };
