@@ -15,6 +15,7 @@ const (
 	FEATURE_DOCKER          = "docker"
 	FEATURE_SIGNUP          = "signup"
 	FEATURE_MESECONS        = "mesecons"
+	FEATURE_ATM             = "atm"
 )
 
 type Feature struct {

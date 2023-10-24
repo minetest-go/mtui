@@ -138,6 +138,11 @@ func Setup(a *app.App) error {
 	apir.HandleFunc("/bridge", api.CheckApiKey(a.Bridge.HandlePost)).Methods(http.MethodPost)
 	apir.HandleFunc("/bridge", api.CheckApiKey(a.Bridge.HandleGet)).Methods(http.MethodGet)
 
+	atmr := apir.PathPrefix("/atm").Subrouter()
+	atmr.Use(SecureHandler(api.FeatureCheck(types.FEATURE_ATM)))
+	atmr.HandleFunc("/balance/{name}", api.Secure(api.GetATMBalance)).Methods(http.MethodGet)
+	atmr.HandleFunc("/transfer", api.Secure(api.ATMTransfer)).Methods(http.MethodPost)
+
 	meser := apir.PathPrefix("/mesecons").Subrouter()
 	meser.Use(SecureHandler(api.FeatureCheck(types.FEATURE_MESECONS)))
 	meser.HandleFunc("", api.Secure(api.GetMeseconsControls)).Methods(http.MethodGet)

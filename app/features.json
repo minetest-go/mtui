@@ -10,6 +10,10 @@
         "mods": ["mtui", "mesecons_switch", "mesecons_button", "mesecons_lightstone"],
         "experimental": true
     },{
+        "name": "atm",
+        "description": "ATM mod integration",
+        "mods": ["atm"]
+    },{
         "name": "mail",
         "description": "Ingame mail management",
         "mods": ["mail"]
