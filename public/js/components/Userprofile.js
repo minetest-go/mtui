@@ -1,4 +1,6 @@
 import ChangePassword from './ChangePassword.js';
+import ATMDisplay from './ATMDisplay.js';
+
 import { has_priv, get_claims, is_logged_in } from "../service/login.js";
 import { has_feature } from "../service/features.js";
 import { get as get_playerinfo } from '../api/playerinfo.js';
@@ -7,7 +9,6 @@ import format_time from '../util/format_time.js';
 import format_duration from '../util/format_duration.js';
 import format_count from '../util/format_count.js';
 import { execute_chatcommand } from "../api/chatcommand.js";
-import { get_balance } from '../api/atm.js';
 
 export default {
     props: ["username"],
@@ -15,15 +16,15 @@ export default {
         return {
             playerinfo: null,
             xban_record: null,
-            new_priv: "",
-            balance: 0
+            new_priv: ""
         };
     },
     mounted: function() {
         this.update();
     },
     components: {
-        "change-password": ChangePassword
+        "change-password": ChangePassword,
+        "atm-display": ATMDisplay
     },
     computed: {
         can_change_pw: function() {
@@ -36,10 +37,6 @@ export default {
     methods: {
         update_playerinfo: function() {
             get_playerinfo(this.username).then(pi => this.playerinfo = pi);
-
-            if (has_feature("atm")) {
-                get_balance(this.username).then(r => this.balance = r.balance);
-            }
         },
         update: function() {
             this.playerinfo = null;
@@ -66,10 +63,6 @@ export default {
         format_time: format_time,
         format_duration: format_duration,
         format_count: format_count,
-        format_money: function(x) {
-            // https://stackoverflow.com/questions/2901102/how-to-format-a-number-with-commas-as-thousands-separators
-            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "'");
-        },
         getPrivBadgeClass: function(priv) {
             if (priv == "server" || priv == "privs") {
                 return { "badge": true, "bg-danger": true };
@@ -170,11 +163,11 @@ export default {
                 <br>
                 <div class="card" v-if="has_feature('atm')">
                     <div class="card-header">
-                        <i class="fa-solid fa-money"></i>
+                        <i class="fa-solid fa-money-bill"></i>
                         ATM
                     </div>
                     <div class="card-body">
-                        Your balance: <b>$ {{ format_money(balance) }}</b>
+                        <atm-display :username="username"/>
                     </div>
                 </div>
                 <br v-if="has_feature('atm')">

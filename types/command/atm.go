@@ -15,8 +15,8 @@ type ATMTransferRequest struct {
 }
 
 type ATMTransferResponse struct {
-	Success      bool          `json:"success"`
-	ErrorMessage string        `json:"errmsg"`
-	SourceAmount types.JsonInt `json:"source_amount"`
-	TargetAmount types.JsonInt `json:"target_amount"`
+	Success       bool          `json:"success"`
+	ErrorMessage  string        `json:"errmsg"`
+	SourceBalance types.JsonInt `json:"source_balance"`
+	TargetBalance types.JsonInt `json:"target_balance"`
 }
