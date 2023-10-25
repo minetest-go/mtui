@@ -4,6 +4,8 @@ export const get_versions = (servicename) => protected_fetch(`api/service/${serv
 
 export const get_status = (servicename) => protected_fetch(`api/service/${servicename}`);
 
+export const get_stats = (servicename) => protected_fetch(`api/service/${servicename}/stats`);
+
 export const create = (servicename, opts) => protected_fetch(`api/service/${servicename}`, {
     method: "POST",
     body: JSON.stringify(opts)

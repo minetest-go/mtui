@@ -3,6 +3,7 @@ package dockerservice
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -72,9 +73,71 @@ func (s *DockerService) Status() (*Status, error) {
 		} else {
 			return nil, fmt.Errorf("could not parse image: '%s'", container.Image)
 		}
+
 	}
 
 	return status, nil
+}
+
+func (s *DockerService) Stats() (*Stats, error) {
+	container, err := s.getContainer()
+	if err != nil {
+		return nil, fmt.Errorf("fetch container error: %v", err)
+	}
+
+	st := &Stats{}
+
+	if container == nil {
+		return st, nil
+	}
+
+	cli, err := getDockerCli()
+	if err != nil {
+		return nil, err
+	}
+	defer cli.Close()
+
+	statsres, err := cli.ContainerStats(context.Background(), container.ID, false)
+	if err != nil {
+		return nil, fmt.Errorf("could not get stats: %v", err)
+	}
+	defer statsres.Body.Close()
+
+	stats := &dockertypes.StatsJSON{}
+	err = json.NewDecoder(statsres.Body).Decode(stats)
+	if err != nil {
+		return nil, fmt.Errorf("could not decode stats: %v", err)
+	}
+
+	// cpu
+	// https://github.com/moby/moby/blob/eb131c5383db8cac633919f82abad86c99bffbe5/cli/command/container/stats_helpers.go#L175-L188
+	cpuDelta := float64(stats.CPUStats.CPUUsage.TotalUsage) - float64(stats.PreCPUStats.CPUUsage.TotalUsage)
+	systemDelta := float64(stats.CPUStats.SystemUsage) - float64(stats.PreCPUStats.SystemUsage)
+	if systemDelta > 0.0 && cpuDelta > 0.0 {
+		st.CPUPercent = (cpuDelta / systemDelta) * 100.0
+	}
+
+	// memory
+	st.MemoryUsage = stats.MemoryStats.Usage
+	st.MemoryMax = stats.MemoryStats.Limit
+
+	// net
+	for _, e := range stats.Networks {
+		st.NetworkRX += e.RxBytes
+		st.NetworkTX += e.TxBytes
+	}
+
+	// disk io
+	for _, e := range stats.BlkioStats.IoServiceBytesRecursive {
+		switch e.Op {
+		case "read":
+			st.DiskRead += e.Value
+		case "write":
+			st.DiskWrite += e.Value
+		}
+	}
+
+	return st, nil
 }
 
 func (s *DockerService) Create(image string) error {

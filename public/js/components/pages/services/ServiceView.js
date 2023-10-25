@@ -1,6 +1,7 @@
 import { get_service_by_name } from "../../../service/service.js";
 
 import ServiceStatus from "./ServiceStatus.js";
+import ServiceStats from "./ServiceStats.js";
 import ServiceLogs from "./ServiceLogs.js";
 
 export default {
@@ -8,6 +9,7 @@ export default {
 	components: {
 		"service-logs": ServiceLogs,
 		"service-status": ServiceStatus,
+        "service-stats": ServiceStats
 	},
 	data: function() {
         return {
@@ -19,6 +21,11 @@ export default {
             return get_service_by_name(this.servicename);
         }
 	},
+    computed: {
+        running: function() {
+            return this.service.store.status && this.service.store.status.running;
+        }
+    },
 	template: /*html*/`
     <div class="row">
         <div class="col-md-12">
@@ -62,6 +69,7 @@ export default {
                         </div>
                     </div>
                     <br>
+                    <service-stats v-if="running" :servicename="servicename"/>
                 </div>
             </div>
         </div>
@@ -69,7 +77,7 @@ export default {
     &nbsp;
     <div class="row">
         <div class="col-md-12">
-            <service-logs :running="service.store.status && service.store.status.running" :servicename="servicename"/>
+            <service-logs :running="running" :servicename="servicename"/>
         </div>
     </div>
 	`
