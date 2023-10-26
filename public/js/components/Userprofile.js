@@ -200,8 +200,8 @@ export default {
                     </div>
                 </div>
             </div>
-            <div class="col-md-4" v-if="can_change_pw">
-                <div class="card">
+            <div class="col-md-4">
+                <div class="card" v-if="can_change_pw">
                     <div class="card-header">
                         <i class="fa-solid fa-key"></i>
                         Password
