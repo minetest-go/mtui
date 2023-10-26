@@ -79,7 +79,7 @@ require (
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/google/uuid v1.3.1
+	github.com/google/uuid v1.4.0
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/vearutop/statigz v1.4.0
 	golang.org/x/mod v0.12.0 // indirect
