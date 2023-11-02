@@ -50,4 +50,11 @@ func (a *Api) ATMTransfer(w http.ResponseWriter, r *http.Request, claims *types.
 	resp := &command.ATMTransferResponse{}
 	err = a.app.Bridge.ExecuteCommand(command.COMMAND_ATM_TRANSFER, req, resp, time.Second*2)
 	Send(w, resp, err)
+
+	a.app.CreateUILogEntry(&types.Log{
+		Category: types.CategoryUI,
+		Event:    "atm",
+		Username: claims.Username,
+		Message:  fmt.Sprintf("User '%s' transfers $ %d to user '%s'", claims.Username, req.Amount, req.Target),
+	}, r)
 }
