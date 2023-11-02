@@ -67,6 +67,7 @@ func (a *Api) SetMeseconsControl(w http.ResponseWriter, r *http.Request, claims 
 		PosX:     &cmd_req.Pos.X,
 		PosY:     &cmd_req.Pos.Y,
 		PosZ:     &cmd_req.Pos.Z,
+		Username: claims.Username,
 		Message:  fmt.Sprintf("user '%s' sets mesecons to '%s'", claims.Username, user_mesecon.State),
 	}, r)
 
