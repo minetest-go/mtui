@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"mtui/types/command"
 	"time"
+
+	"github.com/minetest-go/mtdb/player"
 )
 
 func (a *App) Healthcheck() error {
@@ -20,7 +22,7 @@ func (a *App) Healthcheck() error {
 			return fmt.Errorf("modstorage db error: %v", err)
 		}
 	}
-	_, err = a.DBContext.Player.Count()
+	_, err = a.DBContext.Player.Count(&player.PlayerSearch{})
 	if err != nil {
 		return fmt.Errorf("player db error: %v", err)
 	}
