@@ -18,7 +18,7 @@ jobs:
         cd public && npm ci && npm run jshint && npm run bundle
 
     - name: Install Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
         go-version: 1.19.x
 
