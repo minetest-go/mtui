@@ -21,7 +21,7 @@ export default {
         };
     },
     mounted: function() {
-        signup_captcha().then(c => this.captcha_id = c);
+        this.update_captcha();
     },
     components: {
         "default-layout": DefaultLayout
@@ -32,6 +32,9 @@ export default {
         }
     },
     methods: {
+        update_captcha: function() {
+            signup_captcha().then(c => this.captcha_id = c);
+        },
         create_user: function(){
             this.busy = true;
             this.error_message = "";
@@ -45,6 +48,7 @@ export default {
                 this.busy = false;
                 if (err_msg) {
                     this.error_message = err_msg;
+                    this.update_captcha();
                 } else {
                     login(this.username, this.password)
                     .then(() => this.$router.push("/profile"));
