@@ -228,6 +228,10 @@ func (a *Api) UploadZip(w http.ResponseWriter, r *http.Request, claims *types.Cl
 			return
 		}
 
+		if f.FileInfo().IsDir() {
+			continue
+		}
+
 		targetf, err := os.OpenFile(targetfile, os.O_RDWR|os.O_CREATE, 0644)
 		if err != nil {
 			SendError(w, 500, err.Error())
