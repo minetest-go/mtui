@@ -19,7 +19,7 @@ export default {
     },
     computed: {
         maintenance: get_maintenance,
-        is_engine_running: () => engine.is_running
+        is_engine_running: () => engine.is_running()
     },
     methods: {
         enable_maintenance: function() {
