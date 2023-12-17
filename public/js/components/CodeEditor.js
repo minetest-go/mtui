@@ -15,7 +15,10 @@ export default {
     },
     watch: {
         "modelValue": function() {
-            this.cm.setValue(this.modelValue);
+            if (this.cm.getValue() != this.modelValue){
+                // only update if value has changed from outside (cursor move)
+                this.cm.setValue(this.modelValue);
+            }
         }
     },
     template: /*html*/`
