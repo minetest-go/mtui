@@ -164,6 +164,8 @@ github.com/minetest-go/mtdb v1.1.44 h1:k+Ne2fhf3Sqjpa89ba4sUrVxf9vF7MpZxTi81bNoU
 github.com/minetest-go/mtdb v1.1.44/go.mod h1:hQAtCqHzQfOxgkf4vm++4A0pqu+uXegF67f4Mefxyzk=
 github.com/minetest-go/mtdb v1.1.46 h1:TGzHmvKnFOp49dgFVGO53qyzDS2guQXpjFONA5O+IZ8=
 github.com/minetest-go/mtdb v1.1.46/go.mod h1:BoQazvesXXLu5/6i5pWqMoBi79qqwRxqm6eNz1yW7m8=
+github.com/minetest-go/mtdb v1.1.47 h1:CGLRRObac0ketaXIbbA1TZTu3KVIOLzrCQfIU3mAzfs=
+github.com/minetest-go/mtdb v1.1.47/go.mod h1:BoQazvesXXLu5/6i5pWqMoBi79qqwRxqm6eNz1yW7m8=
 github.com/moby/term v0.5.0 h1:xt8Q1nalod/v7BqbG21f8mQPqH+xAaC9C3N3wfWbVP0=
 github.com/morikuni/aec v1.0.0 h1:nP9CBfwrvYnBRgY6qfDQkygYDmYwOilePFkwzv4dU8A=
 github.com/moul/http2curl v1.0.0 h1:dRMWoAtb+ePxMlLkrCbAqh4TlPHXvoGUSQ323/9Zahs=
