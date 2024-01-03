@@ -208,6 +208,7 @@ func Setup(a *app.App) error {
 
 		CreateServiceApi(api.app.ServiceMTWeb, api, servapi, "mtweb", map[string]string{
 			"1.2": "ghcr.io/buckaroobanzay/minetest-web:v1.2",
+			"1.3": "ghcr.io/buckaroobanzay/minetest-web:v1.3",
 		})
 	}
 
