@@ -34,7 +34,7 @@ func CreateServiceApi(service *dockerservice.DockerService, api *Api, r *mux.Rou
 	sr := r.PathPrefix(fmt.Sprintf("/%s", servicename)).Subrouter()
 	sr.HandleFunc("/versions", api.SecurePriv(types.PRIV_SERVER, sa.GetVersions)).Methods(http.MethodGet)
 	sr.HandleFunc("/stats", api.SecurePriv(types.PRIV_SERVER, sa.GetStats)).Methods(http.MethodGet)
-	sr.HandleFunc("", api.SecurePriv(types.PRIV_SERVER, sa.GetStatus)).Methods(http.MethodGet)
+	sr.HandleFunc("", sa.GetStatus).Methods(http.MethodGet)
 	sr.HandleFunc("", api.SecurePriv(types.PRIV_SERVER, sa.Create)).Methods(http.MethodPost)
 	sr.HandleFunc("", api.SecurePriv(types.PRIV_SERVER, sa.Remove)).Methods(http.MethodDelete)
 	sr.HandleFunc("/start", api.SecurePriv(types.PRIV_SERVER, sa.Start)).Methods(http.MethodPost)
@@ -46,7 +46,7 @@ func (a *ServiceApi) GetVersions(w http.ResponseWriter, r *http.Request, claims 
 	SendJson(w, a.imageMap)
 }
 
-func (a *ServiceApi) GetStatus(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+func (a *ServiceApi) GetStatus(w http.ResponseWriter, r *http.Request) {
 	s, err := a.service.Status()
 	Send(w, s, err)
 }
