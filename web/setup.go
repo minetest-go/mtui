@@ -202,6 +202,7 @@ func Setup(a *app.App) error {
 
 		CreateServiceApi(api.app.ServiceMapserver, api, servapi, "mapserver", map[string]string{
 			"4.7.0":  "minetestmapserver/mapserver:4.7.0",
+			"4.8.0":  "minetestmapserver/mapserver:4.8.0",
 			"latest": "minetestmapserver/mapserver:latest",
 		})
 
