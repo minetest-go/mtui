@@ -10,11 +10,27 @@ import (
 )
 
 type LogRepository struct {
-	dbu *dbutil.DBUtil[*types.Log]
-	db  dbutil.DBTx
+	dbu      *dbutil.DBUtil[*types.Log]
+	db       dbutil.DBTx
+	inserter func(*types.Log) error
+}
+
+func NewLogRepository(db dbutil.DBTx) *LogRepository {
+	return &LogRepository{
+		db:  db,
+		dbu: dbutil.New[*types.Log](db, dbutil.DialectSQLite, func() *types.Log { return &types.Log{} }),
+	}
 }
 
 func (r *LogRepository) Insert(l *types.Log) error {
+	if r.inserter == nil {
+		var err error
+		r.inserter, err = r.dbu.PrepareInsert()
+		if err != nil {
+			return err
+		}
+	}
+
 	if l.ID == "" {
 		l.ID = uuid.NewString()
 	}
@@ -23,7 +39,7 @@ func (r *LogRepository) Insert(l *types.Log) error {
 		l.Timestamp = time.Now().UnixMilli()
 	}
 
-	return r.dbu.Insert(l)
+	return r.inserter(l)
 }
 
 func (r *LogRepository) Update(l *types.Log) error {

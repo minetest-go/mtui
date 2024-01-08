@@ -54,10 +54,10 @@ gameid = game
 `
 
 // Creates a new application context
-func Create(world_dir string) (*App, error) {
+func Create(cfg *types.Config) (*App, error) {
 
 	// check world.mt file and fall back to defaults
-	world_mt_file := path.Join(world_dir, "world.mt")
+	world_mt_file := path.Join(cfg.WorldDir, "world.mt")
 	_, err := os.Stat(world_mt_file)
 	if errors.Is(err, os.ErrNotExist) {
 		err = os.WriteFile(world_mt_file, []byte(default_world_mt_content), 0644)
@@ -66,14 +66,13 @@ func Create(world_dir string) (*App, error) {
 		}
 	}
 
-	cfg := types.NewConfig()
 	app := &App{
-		WorldDir:        world_dir,
+		WorldDir:        cfg.WorldDir,
 		Bridge:          bridge.New(),
 		WSEvents:        eventbus.NewEventBus(),
 		Config:          cfg,
 		Mediaserver:     mediaserver.New(),
-		GeoipResolver:   NewGeoipResolver(path.Join(world_dir, "mmdb")),
+		GeoipResolver:   NewGeoipResolver(path.Join(cfg.WorldDir, "mmdb")),
 		Version:         Version,
 		MaintenanceMode: &atomic.Bool{},
 	}

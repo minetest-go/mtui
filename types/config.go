@@ -30,11 +30,11 @@ type Config struct {
 	DockerContainerPrefix  string
 }
 
-func NewConfig() *Config {
+func NewConfig(world_dir string) *Config {
 	port, _ := strconv.ParseInt(os.Getenv("DOCKER_MINETEST_PORT"), 10, 64)
 
 	return &Config{
-		WorldDir:               os.Getenv("WORLD_DIR"),
+		WorldDir:               world_dir,
 		CookieDomain:           os.Getenv("COOKIE_DOMAIN"),
 		CookieSecure:           os.Getenv("COOKIE_SECURE") == "true",
 		CookiePath:             os.Getenv("COOKIE_PATH"),

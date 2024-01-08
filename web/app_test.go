@@ -3,6 +3,7 @@ package web_test
 import (
 	"mtui/app"
 	"mtui/auth"
+	"mtui/types"
 	"mtui/web"
 	"os"
 	"path"
@@ -24,7 +25,7 @@ player_backend = sqlite3
 	err = os.WriteFile(path.Join(tmpdir, "world.mt"), []byte(contents), 0644)
 	assert.NoError(t, err)
 
-	a, err := app.Create(tmpdir)
+	a, err := app.Create(types.NewConfig(tmpdir))
 	assert.NoError(t, err)
 	return a
 }

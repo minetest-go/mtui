@@ -7,6 +7,7 @@ import (
 	"mtui/app"
 	"mtui/events"
 	"mtui/jobs"
+	"mtui/types"
 	"mtui/web"
 	"net/http"
 	"os"
@@ -50,7 +51,8 @@ func main() {
 		}
 	}
 
-	a, err := app.Create(world_dir)
+	cfg := types.NewConfig(world_dir)
+	a, err := app.Create(cfg)
 	if err != nil {
 		panic(err)
 	}
