@@ -28,6 +28,7 @@ func (a *Api) SetControl(w http.ResponseWriter, r *http.Request, claims *types.C
 		return
 	}
 
-	err = a.app.Bridge.ExecuteCommand(command.COMMAND_SET_CONTROL, req, nil, time.Second*2)
-	Send(w, true, err)
+	success := false
+	err = a.app.Bridge.ExecuteCommand(command.COMMAND_SET_CONTROL, req, &success, time.Second*2)
+	Send(w, success, err)
 }
