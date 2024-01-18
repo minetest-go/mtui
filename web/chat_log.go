@@ -58,7 +58,7 @@ func (a *Api) SendChat(w http.ResponseWriter, r *http.Request, c *types.Claims) 
 		Username: c.Username,
 		Message:  fmt.Sprintf("'%s' writes '%s' in channel '%s'", c.Username, msg.Message, msg.Channel),
 	}
-	a.app.GeoipResolver.ResolveLogGeoIP(log, r)
+	a.app.ResolveLogGeoIP(log, r)
 	err = a.app.Repos.LogRepository.Insert(log)
 	Send(w, msg, err)
 }

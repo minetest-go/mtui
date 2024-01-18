@@ -28,7 +28,7 @@ func TestGeoipResolve(t *testing.T) {
 	err = copy("testdata/GeoLite2-City-Test.mmdb", path.Join(tmpdir, "GeoLite2-City.mmdb"))
 	assert.NoError(t, err)
 
-	resolver := app.NewGeoipResolver(tmpdir)
+	resolver := app.NewGeoIPResolver(tmpdir, "")
 	assert.NotNil(t, resolver)
 
 	result := resolver.Resolve("81.2.69.142")

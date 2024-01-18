@@ -34,7 +34,7 @@ type App struct {
 	Mail                *mail.Mail
 	Config              *types.Config
 	Mediaserver         *mediaserver.MediaServer
-	GeoipResolver       *GeoipResolver
+	GeoipResolver       GeoIPResolver
 	Version             string
 	OAuthMgr            *manage.Manager
 	OAuthServer         *server.Server
@@ -72,7 +72,7 @@ func Create(cfg *types.Config) (*App, error) {
 		WSEvents:        eventbus.NewEventBus(),
 		Config:          cfg,
 		Mediaserver:     mediaserver.New(),
-		GeoipResolver:   NewGeoipResolver(path.Join(cfg.WorldDir, "mmdb")),
+		GeoipResolver:   NewGeoIPResolver(path.Join(cfg.WorldDir, "mmdb"), cfg.GeoIPAPI),
 		Version:         Version,
 		MaintenanceMode: &atomic.Bool{},
 	}
