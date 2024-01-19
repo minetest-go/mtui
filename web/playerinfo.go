@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"mtui/public"
 	"mtui/types"
 	"net/http"
 	"strconv"
@@ -167,4 +168,27 @@ func (a *Api) CountPlayer(w http.ResponseWriter, r *http.Request, claims *types.
 
 	count, err := a.app.DBContext.Auth.Count(s)
 	Send(w, count, err)
+}
+
+func (a *Api) GetPlayerSkin(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	playername := vars["playername"]
+
+	_, err := a.app.DBContext.ModStorage.Get("skinsdb", []byte(playername))
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	//TODO: use selected skin from player
+
+	// default skin
+	skin, err := public.Webapp.ReadFile("pics/character.png")
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	w.Header().Add("Content-Type", "image/png")
+	w.Write(skin)
 }

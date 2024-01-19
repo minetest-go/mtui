@@ -40,6 +40,7 @@ Planned:
 * Textures:
   * `CC BY-SA 3.0`
     * `public/pics/sam.png` [minetest_game](https://github.com/minetest/minetest_game)
+    * `public/pics/character.png` [minetest_game](https://github.com/minetest/minetest_game)
     * `public/pics/mesecons*.png` [mesecons](https://github.com/minetest-mods/mesecons)
     * `public/pics/mooncontroller_top.png` [mooncontroller](https://github.com/mt-mods/mooncontroller)
     * `public/pics/jeija*.png` [mesecons](https://github.com/minetest-mods/mesecons)

@@ -7,6 +7,7 @@ import { engine, matterbridge, mapserver, mtweb } from "../service/service.js";
 import StatsDisplay from './StatsDisplay.js';
 import ServiceStatus from "./pages/services/ServiceStatus.js";
 import NavDropdown from "./NavDropdown.js";
+import SkinPreview from "./SkinPreview.js";
 
 export default {
 	data: function() {
@@ -34,7 +35,8 @@ export default {
 	components: {
 		"stats-display": StatsDisplay,
 		"service-status": ServiceStatus,
-		"nav-dropdown": NavDropdown
+		"nav-dropdown": NavDropdown,
+		"skin-preview": SkinPreview
 	},
 	template: /*html*/`
 		<nav class="navbar navbar-expand-lg navbar-dark" v-bind:class="{'bg-dark': !maintenance, 'bg-warning': maintenance}">
@@ -182,7 +184,7 @@ export default {
 					<div class="btn-group" v-if="is_logged_in">
 						<button class="btn btn-outline-secondary">
 							<router-link to="/profile">
-								<i class="fas fa-user"></i>
+								<skin-preview :playername="get_claims.username"/>
 								<span>
 									Logged in as <b>{{get_claims.username}}</b>
 								</span>

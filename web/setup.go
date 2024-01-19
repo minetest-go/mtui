@@ -82,6 +82,7 @@ func Setup(a *app.App) error {
 	apir.HandleFunc("/oauth_app/{id}", api.SecurePriv(types.PRIV_SERVER, api.GetOauthAppByID)).Methods(http.MethodGet)
 	apir.HandleFunc("/oauth_app/{id}", api.SecurePriv(types.PRIV_SERVER, api.DeleteOauthApp)).Methods(http.MethodDelete)
 
+	apir.HandleFunc("/player/skin/{playername}", api.GetPlayerSkin).Methods(http.MethodGet)
 	apir.HandleFunc("/player/info/{playername}", api.SecurePriv(types.PRIV_INTERACT, api.GetPlayerInfo)).Methods(http.MethodGet)
 	apir.HandleFunc("/player/search", api.SecurePriv(types.PRIV_INTERACT, api.SearchPlayer)).Methods(http.MethodPost)
 	apir.HandleFunc("/player/count", api.SecurePriv(types.PRIV_INTERACT, api.CountPlayer)).Methods(http.MethodPost)
