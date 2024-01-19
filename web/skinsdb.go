@@ -10,7 +10,6 @@ import (
 	"os"
 	"path"
 	"strconv"
-	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -46,6 +45,8 @@ func (a *Api) SetSkin(w http.ResponseWriter, r *http.Request, claims *types.Clai
 		SendError(w, 500, err.Error())
 		return
 	}
+
+	// write file to filesystem
 	err = os.WriteFile(getPlayerSkinFile(a.app.WorldDir, claims.Username, skin_id), b, 0666)
 	if err != nil {
 		SendError(w, 500, err.Error())
@@ -53,27 +54,14 @@ func (a *Api) SetSkin(w http.ResponseWriter, r *http.Request, claims *types.Clai
 	}
 
 	// update ingame skin with base64-encoded png
-	png_str := base64.StdEncoding.EncodeToString(b)
-	skin_name := fmt.Sprintf("player_%s_%d", claims.Username, skin_id)
-
-	req := &command.LuaRequest{
-		Code: `
-			local skin_name = "` + skin_name + `"
-			local skin = skins.get(skin_name)
-			if skin then
-				skin:set_texture("[png:` + png_str + `")
-			end
-
-			local player = minetest.get_player_by_name("` + claims.Username + `")
-			if player then
-				skins.update_player_skin(player)
-			end
-			return true
-		`,
+	req := &command.SkinsSetPNGRequest{
+		Playername: claims.Username,
+		SkinName:   fmt.Sprintf("player_%s_%d", claims.Username, skin_id),
+		PNG:        base64.StdEncoding.EncodeToString(b),
 	}
-	resp := &command.LuaResponse{}
-	err = a.app.Bridge.ExecuteCommand(command.COMMAND_LUA, req, resp, time.Second*5)
-	SendLuaResponse(w, err, resp)
+
+	err = a.app.Bridge.SendCommand(command.COMMAND_SKINS_SET_PNG, req)
+	Send(w, true, err)
 
 	// create log entry
 	a.app.CreateUILogEntry(&types.Log{
