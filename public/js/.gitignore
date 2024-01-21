@@ -1,2 +1,4 @@
 bundle.js
 bundle.js.map
+wasm_bundle.js
+wasm_bundle.js.map

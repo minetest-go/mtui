@@ -238,17 +238,25 @@ func Setup(a *app.App) error {
 	// index.html or /
 	r.HandleFunc("/", api.GetIndex)
 	r.HandleFunc("/index.html", api.GetIndex)
+	r.HandleFunc("/play", api.GetPlayPage)
 
 	// static files
+	var fsh http.Handler
 	if a.Config.Webdev {
 		logrus.WithFields(logrus.Fields{"dir": "public"}).Info("Using live mode")
 		fs := http.FileServer(http.FS(os.DirFS("public")))
-		r.PathPrefix("/").HandlerFunc(fs.ServeHTTP)
-
+		fsh = fs
 	} else {
 		logrus.Info("Using embed mode")
-		r.PathPrefix("/").Handler(statigz.FileServer(public.Webapp, brotli.AddEncoding))
+		fsh = statigz.FileServer(public.Webapp, brotli.AddEncoding)
 	}
+
+	// set additional headers for wasm env
+	r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cross-Origin-Embedder-Policy", "require-corp")
+		w.Header().Set("Cross-Origin-Opener-Policy", "same-origin")
+		fsh.ServeHTTP(w, r)
+	})
 
 	http.Handle("/", r)
 
