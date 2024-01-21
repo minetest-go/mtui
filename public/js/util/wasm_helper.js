@@ -96,7 +96,6 @@ export function init(){
             if (s.startsWith("Unhandled exception:")) {
                 console.warn("unhandled exception");
                 show_error("unhandled exception");
-                location.reload();
             }
         },
         printErr: s => {
@@ -144,7 +143,7 @@ export function execute(args) {
 
     emloop_init_sound();
     emsocket_init();
-    emsocket_set_proxy(stringToNewUTF8(location.protocol.replace("http", "ws") + "//" + location.host + location.pathname + "/../api/proxy"));
+    emsocket_set_proxy(stringToNewUTF8(location.protocol.replace("http", "ws") + "//" + location.host + location.pathname + "api/wasm/proxy"));
 
     resize();
     window.addEventListener('resize', resize);

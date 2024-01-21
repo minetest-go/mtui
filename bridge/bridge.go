@@ -55,7 +55,6 @@ func (b *Bridge) ExecuteCommand(t CommandType, obj any, resp any, timeout time.D
 		case cmd := <-c:
 			if cmd.ID != nil && *cmd.ID == id {
 				rx_cmd = cmd
-				break
 			}
 		case <-time.After(100 * time.Millisecond):
 		}
@@ -74,7 +73,11 @@ func (b *Bridge) ExecuteCommand(t CommandType, obj any, resp any, timeout time.D
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(rx_cmd.Data, resp)
+	if resp == nil {
+		return nil
+	} else {
+		return json.Unmarshal(rx_cmd.Data, resp)
+	}
 }
 
 type CommandHandler func(*CommandResponse)

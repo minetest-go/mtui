@@ -105,7 +105,7 @@ func Create(cfg *types.Config) (*App, error) {
 			// create key
 			jwtKey = &types.ConfigEntry{
 				Key:   types.ConfigJWTKey,
-				Value: randSeq(16),
+				Value: RandSeq(16),
 			}
 			err = app.Repos.ConfigRepo.Set(jwtKey)
 			if err != nil {
@@ -124,7 +124,7 @@ func Create(cfg *types.Config) (*App, error) {
 			// create key
 			apiKey = &types.ConfigEntry{
 				Key:   types.ConfigApiKey,
-				Value: randSeq(16),
+				Value: RandSeq(16),
 			}
 			err = app.Repos.ConfigRepo.Set(apiKey)
 			if err != nil {

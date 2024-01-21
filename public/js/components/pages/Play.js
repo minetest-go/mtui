@@ -2,6 +2,8 @@ import DefaultLayout from "../layouts/DefaultLayout.js";
 import { START } from "../Breadcrumb.js";
 
 import { init, execute } from "../../util/wasm_helper.js";
+import { get_join_password } from "../../api/join_password.js";
+import { get_claims } from "../../service/login.js";
 
 export default {
     inject: ["unmount"],
@@ -19,17 +21,22 @@ export default {
     },
     methods: {
         play: function() {
-            this.unmount();
-            init()
-            .then(() => {
-                execute([
-                    "--go",
-                    "--address", "engine",
-                    "--port", "30000",
-                    "--name", "player", //TODO
-                    "--password", "password" //TODO
-                ]);
+            get_join_password()
+            .then(pw => {
+                const claims = get_claims();
+                this.unmount();
+                init()
+                .then(() => {
+                    execute([
+                        "--go",
+                        "--address", "engine",
+                        "--port", "30000",
+                        "--name", claims.username,
+                        "--password", pw
+                    ]);
+                });    
             });
+
         }
     },
     template: /*html*/`

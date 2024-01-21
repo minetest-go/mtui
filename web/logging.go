@@ -23,7 +23,7 @@ func (rw *responseWriter) WriteHeader(code int) {
 
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if strings.HasSuffix(r.URL.Path, "api/proxy") {
+		if strings.HasSuffix(r.URL.Path, "api/wasm/proxy") {
 			// don't handle websocket connections
 			next.ServeHTTP(w, r)
 			return
