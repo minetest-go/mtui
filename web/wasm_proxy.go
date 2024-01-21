@@ -68,19 +68,20 @@ func (api *Api) handleProxyConnection(conn *websocket.Conn) error {
 	}
 
 	logrus.WithFields(logrus.Fields{
-		"host": host,
-		"port": port,
+		"host":     host,
+		"port":     port,
+		"protocol": protocol,
 	}).Info("WASM WS Proxy connecting")
 
 	// only allow dns requests and minetest-protocol forwarding
 	if host == "10.0.0.1" && port == 53 && protocol == "TCP" {
-		err = resolveDNS(conn)
+		err = api.resolveDNS(conn)
 	} else if protocol == "UDP" {
 		// override port/host for local minetest connection
 		host = api.app.Config.WASMMinetestHost
 		if host == "" {
 			// fallback
-			host = "engine"
+			host = "mtui_engine"
 		}
 		port = int64(api.app.Config.DockerMinetestPort)
 		if port == 0 {
@@ -95,19 +96,21 @@ func (api *Api) handleProxyConnection(conn *websocket.Conn) error {
 	return err
 }
 
-func resolveDNS(conn *websocket.Conn) error {
+func (api *Api) resolveDNS(conn *websocket.Conn) error {
 	conn.WriteMessage(websocket.TextMessage, []byte("PROXY OK"))
 
-	_, data, err := conn.ReadMessage()
-	if err != nil {
-		return err
+	// fixed host to resolve
+	host := api.app.Config.WASMMinetestHost
+	if host == "" {
+		// fallback
+		host = "mtui_engine"
 	}
 
 	logrus.WithFields(logrus.Fields{
-		"host": string(data),
+		"host": host,
 	}).Debug("WASM WS: Resolving host")
 
-	ips, err := net.LookupIP(string(data))
+	ips, err := net.LookupIP(host)
 	if err != nil {
 		return err
 	}

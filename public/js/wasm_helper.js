@@ -83,7 +83,7 @@ export function execute(args) {
 
     emloop_init_sound();
     emsocket_init();
-    emsocket_set_proxy(stringToNewUTF8(location.protocol.replace("http", "ws") + "//" + location.host + location.pathname + "proxy"));
+    emsocket_set_proxy(stringToNewUTF8(location.protocol.replace("http", "ws") + "//" + location.host + location.pathname + "/../api/proxy"));
 
     resize();
     window.addEventListener('resize', resize);
