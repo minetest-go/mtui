@@ -5,6 +5,7 @@ import (
 )
 
 //go:embed js/* pics/* *.html
+//go:embed wasm/*
 //go:embed node_modules/bootstrap/dist/css/bootstrap.min.css
 //go:embed node_modules/bootswatch/dist/cyborg/bootstrap.min.css
 //go:embed node_modules/bootswatch/dist/darkly/bootstrap.min.css
