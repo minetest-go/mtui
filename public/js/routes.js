@@ -39,6 +39,7 @@ import Wizard from './components/pages/wizard/Wizard.js';
 import Chat from './components/pages/Chat.js';
 import Mesecons from './components/pages/Mesecons.js';
 import Luacontroller from './components/pages/Luacontroller.js';
+import Play from './components/pages/Play.js';
 
 export default [{
 	path: "/", component: Start,
@@ -55,6 +56,8 @@ export default [{
 	path: "/onboard", component: Onboard
 }, {
 	path: "/signup", component: Signup
+}, {
+	path: "/play", component: Play
 }, {
 	path: "/chat", component: Chat,
 	meta: { requiredPriv: "shout" }

@@ -49,5 +49,8 @@ func (a *Api) GetIndex(w http.ResponseWriter, r *http.Request) {
 		ServerName:      a.app.Config.Servername,
 		Webdev:          a.app.Config.Webdev,
 	}
+
+	w.Header().Set("Cross-Origin-Embedder-Policy", "require-corp")
+	w.Header().Set("Cross-Origin-Opener-Policy", "same-origin")
 	t.Execute(w, m)
 }

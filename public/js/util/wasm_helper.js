@@ -15,8 +15,6 @@ let emloop_pause, emloop_unpause, emloop_init_sound, emloop_invoke_main, emloop_
 let irrlicht_resize, irrlicht_force_pointerlock;
 let emsocket_init, emsocket_set_proxy;
 
-const canvas_el = document.getElementById("canvas");
-
 window.emloop_request_animation_frame = function() {
     emloop_pause();
     window.requestAnimationFrame(() => { emloop_unpause(); });
@@ -59,7 +57,67 @@ export const ready = new Promise((resolve, reject) => {
 });
 
 export function init(){
-    setProgress("wasm bootstrap script");
+    document.body.innerHTML = /*html*/`
+        <div id="error_div" style="display: none;">
+            <div class="row">
+                <div class="col-4"></div>
+                <div class="col-4 alert alert-warning">
+                    <i class="fa fa-triangle-exclamation"></i>
+                    &nbsp;
+                    <span id="error_msg"></span>
+                </div>
+                <div class="col-4"></div>
+            </div>
+        </div>
+        <div id="app">
+            <div class="row">
+                <div class="col-4"></div>
+                <div class="col-4 text-center">
+                    <div style="height: 250px;"></div>
+                    <i class="fa fa-spinner fa-spin"></i>
+                    Loading client: <b id="loading-msg">initializing...</b>
+                </div>
+                <div class="col-4"></div>
+            </div>
+        </div>
+        <canvas id="canvas" style="width: 100%; height: 100%; display: none;"></canvas>
+    `;
+
+    // provide global callbacks
+    window.Module = {
+        canvas: document.getElementById("canvas"),
+        print: s => {
+            console.log("print", s);
+            if (s.startsWith("main() exited with return value")) {
+                console.warn("game exited");
+                show_error("game exited");
+                location.reload();
+            }
+            if (s.startsWith("Unhandled exception:")) {
+                console.warn("unhandled exception");
+                show_error("unhandled exception");
+                location.reload();
+            }
+        },
+        printErr: s => {
+            console.warn("printErr", s);
+            if (s.startsWith("emsocket_getaddrinfo: emsocket_read failed")) {
+                // comes after "Unhandled exception:"
+                console.warn("socket error");
+            }
+            if (s.indexOf("Connection timed out") >= 0) {
+                // comes before "main() exited with return value 1"
+                console.warn("connection timed out");
+            }
+            if (s.indexOf("Access denied. Reason: ") >= 0) {
+                // "Timed out"
+                // "Invalid password"
+                // comes before "main() exited with return value 1"
+                console.warn("access denied");
+            }
+        }
+    };
+
     const script_el = document.createElement("script");
     script_el.src = "wasm/minetest.js";
     document.body.appendChild(script_el);
@@ -76,6 +134,9 @@ export function resize() {
 }
 
 export function execute(args) {
+    document.getElementById("app").remove();
+
+    const canvas_el = document.getElementById("canvas");
     canvas_el.style.display = "block";
 
     const [argc, argv] = makeArgv(["./minetest", ...args]);
@@ -95,35 +156,3 @@ function show_error(err) {
     document.getElementById("error_div").style.display = "block";
     document.getElementById("error_msg").innerText = err;
 }
-
-window.Module = {
-    canvas: canvas_el,
-    print: s => {
-        console.log("print", s);
-        if (s.startsWith("main() exited with return value")) {
-            console.warn("game exited");
-            show_error("game exited");
-        }
-        if (s.startsWith("Unhandled exception:")) {
-            console.warn("unhandled exception");
-            show_error("unhandled exception");
-        }
-    },
-    printErr: s => {
-        console.warn("printErr", s);
-        if (s.startsWith("emsocket_getaddrinfo: emsocket_read failed")) {
-            // comes after "Unhandled exception:"
-            console.warn("socket error");
-        }
-        if (s.indexOf("Connection timed out") >= 0) {
-            // comes before "main() exited with return value 1"
-            console.warn("connection timed out");
-        }
-        if (s.indexOf("Access denied. Reason: ") >= 0) {
-            // "Timed out"
-            // "Invalid password"
-            // comes before "main() exited with return value 1"
-            console.warn("access denied");
-        }
-    }
-};

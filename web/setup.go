@@ -238,7 +238,6 @@ func Setup(a *app.App) error {
 	// index.html or /
 	r.HandleFunc("/", api.GetIndex)
 	r.HandleFunc("/index.html", api.GetIndex)
-	r.HandleFunc("/play", api.GetPlayPage)
 
 	// static files
 	var fsh http.Handler

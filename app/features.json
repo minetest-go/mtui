@@ -66,6 +66,7 @@
     },{
         "name": "minetest_web",
         "description": "wasm web-client for minetest",
+        "mods": ["mtui"],
         "experimental": true
     }
 ]
