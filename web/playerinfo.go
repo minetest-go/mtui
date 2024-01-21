@@ -2,9 +2,12 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"mtui/public"
 	"mtui/types"
 	"net/http"
+	"os"
+	"path"
 	"strconv"
 
 	"github.com/gorilla/mux"
@@ -174,19 +177,30 @@ func (a *Api) GetPlayerSkin(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	playername := vars["playername"]
 
-	_, err := a.app.DBContext.ModStorage.Get("skinsdb", []byte(playername))
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	//TODO: use selected skin from player
-
 	// default skin
 	skin, err := public.Webapp.ReadFile("pics/character.png")
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
+	}
+
+	// check if custom skin is set
+	entry, err := a.app.DBContext.ModStorage.Get("skinsdb", []byte(playername))
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+	if entry != nil && entry.Value != nil {
+		skin_path := path.Join(a.app.WorldDir, "worldmods", "skinsdb", "textures", fmt.Sprintf("%s.png", entry.Value))
+		fi, _ := os.Stat(skin_path)
+		if fi != nil {
+			// file exists, read contents
+			skin, err = os.ReadFile(skin_path)
+			if err != nil {
+				SendError(w, 500, err.Error())
+				return
+			}
+		}
 	}
 
 	w.Header().Add("Content-Type", "image/png")
