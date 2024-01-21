@@ -25,6 +25,7 @@ type Config struct {
 	GeoIPAPI               string
 	DockerMinetestConfig   string
 	DockerMinetestPort     int
+	WASMMinetestHost       string
 	DockerHostname         string
 	DockerNetwork          string
 	DockerWorlddir         string
@@ -52,6 +53,7 @@ func NewConfig(world_dir string) *Config {
 		GeoIPAPI:               os.Getenv("GEOIP_API"),
 		DockerMinetestConfig:   os.Getenv("DOCKER_MINETEST_CONFIG"),
 		DockerMinetestPort:     int(port),
+		WASMMinetestHost:       os.Getenv("WASM_MINETEST_HOST"),
 		DockerHostname:         os.Getenv("DOCKER_HOSTNAME"),
 		DockerNetwork:          os.Getenv("DOCKER_NETWORK"),
 		DockerWorlddir:         os.Getenv("DOCKER_WORLD_DIR"),

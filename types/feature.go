@@ -16,6 +16,7 @@ const (
 	FEATURE_SIGNUP          = "signup"
 	FEATURE_MESECONS        = "mesecons"
 	FEATURE_ATM             = "atm"
+	FEATURE_MINETEST_WEB    = "minetest_web"
 )
 
 type Feature struct {

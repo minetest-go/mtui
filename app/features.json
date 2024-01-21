@@ -63,5 +63,9 @@
     },{
         "name": "signup",
         "description": "Allow account-signup on the web-interface"
+    },{
+        "name": "minetest_web",
+        "description": "wasm web-client for minetest",
+        "experimental": true
     }
 ]

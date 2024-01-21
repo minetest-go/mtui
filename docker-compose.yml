@@ -18,7 +18,7 @@ services:
    LOGLEVEL: debug
    SERVER_NAME: "dev-server"
    DEFAULT_THEME: "darkly"
-   ENABLE_FEATURES: "shell,luashell,minetest_config,docker,modmanagement,signup,chat"
+   ENABLE_FEATURES: "shell,luashell,minetest_config,docker,modmanagement,signup,chat,minetest_web"
    INSTALL_MTUI_MOD: "true"
    MINETEST_CONFIG: "/etc/minetest/minetest.conf"
    GEOIP_API: "https://hosting.minetest.ch/api/geoip"

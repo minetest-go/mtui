@@ -168,6 +168,10 @@ func Setup(a *app.App) error {
 	msr.HandleFunc("/{hash}", a.Mediaserver.ServeHTTPFetch).Methods(http.MethodGet)
 	msr.HandleFunc("/scan", api.SecurePriv(types.PRIV_SERVER, api.ScanMedia)).Methods(http.MethodPost)
 
+	prr := apir.PathPrefix("/proxy").Subrouter()
+	prr.Use(SecureHandler(api.FeatureCheck(types.FEATURE_MINETEST_WEB)))
+	prr.HandleFunc("", api.Secure(api.HandleProxy))
+
 	modsapi := apir.PathPrefix("/mods").Subrouter()
 	modsapi.Use(SecureHandler(api.FeatureCheck(types.FEATURE_MODMANAGEMENT), api.PrivCheck("server")))
 	modsapi.HandleFunc("", api.Secure(api.GetMods)).Methods(http.MethodGet)

@@ -61,6 +61,7 @@ const category_events = {
         "feature",
         "system",
         "engine",
+        "ws-proxy",
         "mods",
         "oauth",
         "password",
