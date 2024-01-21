@@ -29,7 +29,6 @@ import ProfilerView from './components/pages/ProfilerView.js';
 import EngineService from './components/pages/services/Engine.js';
 import MatterbridgeService from './components/pages/services/Matterbridge.js';
 import MapserverService from './components/pages/services/Mapserver.js';
-import MTWebService from './components/pages/services/MTWeb.js';
 
 import Mods from './components/pages/mods/Mods.js';
 import ContentBrowse from './components/pages/cdb/Browse.js';
@@ -137,9 +136,6 @@ export default [{
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/services/matterbridge", component: MatterbridgeService,
-	meta: { requiredPriv: "server" }
-}, {
-	path: "/services/mtweb", component: MTWebService,
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/services/mapserver", component: MapserverService,

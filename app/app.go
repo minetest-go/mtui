@@ -42,7 +42,6 @@ type App struct {
 	ServiceEngine       *dockerservice.DockerService
 	ServiceMatterbridge *dockerservice.DockerService
 	ServiceMapserver    *dockerservice.DockerService
-	ServiceMTWeb        *dockerservice.DockerService
 }
 
 const default_world_mt_content = `

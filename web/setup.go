@@ -219,11 +219,6 @@ func Setup(a *app.App) error {
 			"4.8.0":  "minetestmapserver/mapserver:4.8.0",
 			"latest": "minetestmapserver/mapserver:latest",
 		})
-
-		CreateServiceApi(api.app.ServiceMTWeb, api, servapi, "mtweb", map[string]string{
-			"1.2": "ghcr.io/buckaroobanzay/minetest-web:v1.2",
-			"1.3": "ghcr.io/buckaroobanzay/minetest-web:v1.3",
-		})
 	}
 
 	// OAuth

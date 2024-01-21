@@ -69,6 +69,5 @@ class Service {
 export const engine = new Service("engine");
 export const matterbridge = new Service("matterbridge");
 export const mapserver = new Service("mapserver");
-export const mtweb = new Service("mtweb");
 
 export const get_service_by_name = name => service_map[name];
