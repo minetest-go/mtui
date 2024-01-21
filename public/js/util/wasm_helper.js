@@ -20,6 +20,10 @@ window.emloop_request_animation_frame = function() {
     window.requestAnimationFrame(() => { emloop_unpause(); });
 };
 
+export function is_supported() {
+    return !!window.SharedArrayBuffer;
+}
+
 function addPack(name) {
     return fetch(`wasm/packs/${name}.pack`)
     .then(r => r.blob())

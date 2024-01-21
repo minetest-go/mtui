@@ -48,6 +48,11 @@ export default {
 							<i class="fa fa-home"></i> Home
 						</router-link>
 					</li>
+					<li class="nav-item" v-if="has_feature('minetest_web') && !maintenance">
+						<router-link to="/play" class="nav-link">
+							<i class="fa fa-play"></i> Play
+						</router-link>
+					</li>
 					<li class="nav-item" v-if="has_priv('interact') && !maintenance">
 						<router-link to="/playersearch" class="nav-link">
 							<i class="fa fa-magnifying-glass"></i> Player search
