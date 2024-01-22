@@ -50,7 +50,8 @@ func (a *Api) GetIndex(w http.ResponseWriter, r *http.Request) {
 		Webdev:          a.app.Config.Webdev,
 	}
 
-	w.Header().Set("Cross-Origin-Embedder-Policy", "require-corp")
+	w.Header().Set("Cross-Origin-Embedder-Policy", "credentialless")
 	w.Header().Set("Cross-Origin-Opener-Policy", "same-origin")
+	w.Header().Set("Cross-Origin-Resource-Policy", "cross-origin")
 	t.Execute(w, m)
 }

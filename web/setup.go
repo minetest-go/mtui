@@ -248,8 +248,9 @@ func Setup(a *app.App) error {
 
 	// set additional headers for wasm env
 	r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Cross-Origin-Embedder-Policy", "require-corp")
+		w.Header().Set("Cross-Origin-Embedder-Policy", "credentialless")
 		w.Header().Set("Cross-Origin-Opener-Policy", "same-origin")
+		w.Header().Set("Cross-Origin-Resource-Policy", "cross-origin")
 		fsh.ServeHTTP(w, r)
 	})
 
