@@ -7,7 +7,7 @@ require (
 	github.com/go-git/go-git/v5 v5.11.0
 	github.com/golang-migrate/migrate/v4 v4.17.0
 	github.com/gorilla/mux v1.8.1
-	github.com/gorilla/websocket v1.5.1 // indirect
+	github.com/gorilla/websocket v1.5.1
 	github.com/minetest-go/dbutil v1.3.0
 	github.com/minetest-go/mtdb v1.1.47
 	github.com/oschwald/geoip2-golang v1.9.0
@@ -101,7 +101,7 @@ require (
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/google/uuid v1.5.0
+	github.com/google/uuid v1.6.0
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/vearutop/statigz v1.4.0
 	golang.org/x/mod v0.12.0 // indirect
