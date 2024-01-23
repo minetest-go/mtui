@@ -1,6 +1,5 @@
 mtui
 dist
 auth.sqlite*
-mmdb
 docker-compose.override.yml
 cookies

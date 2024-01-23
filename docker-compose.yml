@@ -33,7 +33,6 @@ services:
   volumes:
    - "${PWD}/dev/world:/root/.minetest/worlds/world"
    - "./minetest.conf:/etc/minetest/minetest.conf"
-   - "./mmdb:/root/.minetest/worlds/world/mmdb"
    - "./:/app"
    - "go_dir:/go"
    - "go_cache:/.cache"
