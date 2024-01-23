@@ -51,9 +51,9 @@ func (r *LogRepository) DeleteBefore(timestamp int64) error {
 	return err
 }
 
-func (r *LogRepository) buildWhereClause(s *types.LogSearch) (string, []interface{}) {
+func (r *LogRepository) buildWhereClause(s *types.LogSearch) (string, []any) {
 	q := "where true "
-	args := make([]interface{}, 0)
+	args := make([]any, 0)
 
 	if s.ID != nil {
 		q += " and id = %s"

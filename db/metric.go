@@ -15,9 +15,9 @@ func (r *MetricRepository) Insert(m *types.Metric) error {
 	return r.dbu.Insert(m)
 }
 
-func (r *MetricRepository) buildWhereClause(s *types.MetricSearch, order bool) (string, []interface{}) {
+func (r *MetricRepository) buildWhereClause(s *types.MetricSearch, order bool) (string, []any) {
 	q := "where true "
-	args := make([]interface{}, 0)
+	args := make([]any, 0)
 
 	if s.Name != nil {
 		q += " and name = %s"

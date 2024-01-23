@@ -66,7 +66,7 @@ func (api *Api) GetClaims(r *http.Request) (*types.Claims, error) {
 		return nil, err_unauthorized
 	}
 
-	token, err := jwt.ParseWithClaims(t, &types.Claims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(t, &types.Claims{}, func(token *jwt.Token) (any, error) {
 		return []byte(api.app.Config.JWTKey), nil
 	})
 

@@ -26,7 +26,7 @@ func New() *Bridge {
 var ErrTimeout = errors.New("timeout")
 
 // one-way command, no response
-func (b *Bridge) SendCommand(t CommandType, obj interface{}) error {
+func (b *Bridge) SendCommand(t CommandType, obj any) error {
 	data, err := json.Marshal(obj)
 	if err != nil {
 		return err
