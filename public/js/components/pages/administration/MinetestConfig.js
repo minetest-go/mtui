@@ -32,6 +32,10 @@ const SettingRow = {
     methods: {
         save: function() {
             this.busy = true;
+            // ensure that the value field is of type "string"
+            if (this.work_setting.value) {
+                this.work_setting.value = "" + this.work_setting.value;
+            }
             save(this.setting.key, this.work_setting)
             .then(() => {
                 this.is_set = true;
