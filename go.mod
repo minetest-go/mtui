@@ -7,7 +7,7 @@ require (
 	github.com/go-git/go-git/v5 v5.11.0
 	github.com/golang-migrate/migrate/v4 v4.17.0
 	github.com/gorilla/mux v1.8.1
-	github.com/gorilla/websocket v1.5.1 // indirect
+	github.com/gorilla/websocket v1.5.1
 	github.com/minetest-go/dbutil v1.3.0
 	github.com/minetest-go/mtdb v1.1.47
 	github.com/oschwald/geoip2-golang v1.9.0
@@ -23,7 +23,7 @@ require (
 	github.com/docker/go-connections v0.5.0
 	github.com/go-oauth2/oauth2/v4 v4.5.2
 	github.com/golang-jwt/jwt/v4 v4.5.0
-	github.com/mattn/go-sqlite3 v1.14.19
+	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/minetest-go/areasparser v1.0.5
 )
 
