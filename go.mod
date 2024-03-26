@@ -22,7 +22,8 @@ require (
 	github.com/docker/docker v25.0.0+incompatible
 	github.com/docker/go-connections v0.5.0
 	github.com/go-oauth2/oauth2/v4 v4.5.2
-	github.com/golang-jwt/jwt/v4 v4.5.0
+	github.com/golang-jwt/jwt/v4 v4.4.2
+	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/minetest-go/areasparser v1.0.5
 )
