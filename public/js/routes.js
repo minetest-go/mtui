@@ -39,6 +39,7 @@ import Chat from './components/pages/Chat.js';
 import Mesecons from './components/pages/Mesecons.js';
 import Luacontroller from './components/pages/Luacontroller.js';
 import Play from './components/pages/Play.js';
+import RestartConditions from './components/pages/administration/RestartConditions.js';
 
 export default [{
 	path: "/", component: Start,
@@ -46,6 +47,9 @@ export default [{
 }, {
 	path: "/maintenance", component: Maintenance,
 	meta: { requiredPriv: "server", maintenance_page: true }
+}, {
+	path: "/restart-conditions", component: RestartConditions,
+	meta: { requiredPriv: "server" }
 }, {
 	path: "/help", component: Help,
 	meta: { requiredPriv: "server", maintenance_page: true }

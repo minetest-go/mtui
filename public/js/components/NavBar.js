@@ -170,6 +170,11 @@ export default {
 							</router-link>
 						</li>
 						<li>
+							<router-link to="/restart-conditions" class="dropdown-item">
+								<i class="fa fa-refresh"></i> Restart conditions
+							</router-link>
+						</li>
+						<li>
 							<router-link to="/maintenance" class="dropdown-item">
 								<i class="fa fa-wrench"></i> Maintenance
 							</router-link>
