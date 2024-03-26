@@ -34,6 +34,12 @@ func (a *Api) SetMtUIStorage(w http.ResponseWriter, r *http.Request, claims *typ
 		return
 	}
 
+	a.app.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "uimod_storage",
+		Message:  fmt.Sprintf("User '%s' sets the ui storage entry '%s' to '%s'", claims.Username, key, string(value)),
+	}, r)
+
 	entry, err := a.app.DBContext.ModStorage.Get("mtui", []byte(key))
 	if err != nil {
 		SendError(w, 500, fmt.Sprintf("get error: %s", err.Error()))

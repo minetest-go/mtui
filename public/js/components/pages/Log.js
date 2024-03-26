@@ -66,7 +66,8 @@ const category_events = {
         "oauth",
         "password",
         "mesecons",
-        "atm"
+        "atm",
+        "uimod_storage"
     ],
     "service": [
         "engine",
