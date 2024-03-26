@@ -77,6 +77,9 @@ func Setup(a *app.App) error {
 
 	apir.HandleFunc("/changepw", api.Secure(api.ChangePassword)).Methods(http.MethodPost)
 
+	apir.HandleFunc("/uimod/storage/{key}", api.SecurePriv(types.PRIV_SERVER, api.GetMtUIStorage)).Methods(http.MethodGet)
+	apir.HandleFunc("/uimod/storage/{key}", api.SecurePriv(types.PRIV_SERVER, api.SetMtUIStorage)).Methods(http.MethodPost)
+
 	apir.HandleFunc("/oauth_app", api.SecurePriv(types.PRIV_SERVER, api.GetOauthApps)).Methods(http.MethodGet)
 	apir.HandleFunc("/oauth_app", api.SecurePriv(types.PRIV_SERVER, api.SetOauthApp)).Methods(http.MethodPost)
 	apir.HandleFunc("/oauth_app/{id}", api.SecurePriv(types.PRIV_SERVER, api.GetOauthAppByID)).Methods(http.MethodGet)
