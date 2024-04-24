@@ -45,7 +45,17 @@ func (b *Bridge) ExecuteCommand(t CommandType, obj any, resp any, timeout time.D
 	if err != nil {
 		return err
 	}
-	b.tx_cmds <- &CommandRequest{Type: t, Data: data, ID: &id}
+	tx_cmd := &CommandRequest{Type: t, Data: data, ID: &id}
+
+	select {
+	case b.tx_cmds <- tx_cmd:
+	default:
+		// channel full, remove a few and insert command again
+		for i := 0; i < 10; i++ {
+			<-b.tx_cmds
+		}
+		b.tx_cmds <- tx_cmd
+	}
 
 	c := b.AddHandler(t)
 	then := time.Now().Add(timeout)
