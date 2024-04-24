@@ -52,7 +52,7 @@ func collectCommands(ch chan *CommandRequest, delay time.Duration) []*CommandReq
 
 func (b *Bridge) HandleGet(w http.ResponseWriter, r *http.Request) {
 	then := time.Now().Add(20 * time.Second)
-	cmds := make([]*CommandRequest, 0)
+	var cmds []*CommandRequest
 	for {
 		// collect commands for at least 100ms
 		cmds = collectCommands(b.tx_cmds, 100*time.Millisecond)
