@@ -1,6 +1,6 @@
 module mtui
 
-go 1.20
+go 1.21
 
 require (
 	github.com/HimbeerserverDE/srp v0.0.0
