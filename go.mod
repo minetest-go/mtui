@@ -7,7 +7,7 @@ require (
 	github.com/go-git/go-git/v5 v5.12.0
 	github.com/golang-migrate/migrate/v4 v4.17.1
 	github.com/gorilla/mux v1.8.1
-	github.com/gorilla/websocket v1.5.1
+	github.com/gorilla/websocket v1.5.3
 	github.com/minetest-go/dbutil v1.3.0
 	github.com/minetest-go/mtdb v1.1.48
 	github.com/oschwald/geoip2-golang v1.9.0
