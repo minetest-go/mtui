@@ -59,9 +59,14 @@ func collectServiceLogs(a *app.App, timestamp_key types.ConfigKey, event string,
 	// log into log-db
 	for _, line := range lines {
 		if len(line) > 0 {
+			eventname := event
+			if strings.Contains(line, "ERROR[Main]") {
+				eventname = fmt.Sprintf("%s-mod-errors", event)
+			}
+
 			l := &types.Log{
 				Category: types.CategoryService,
-				Event:    event,
+				Event:    eventname,
 				Message:  line,
 			}
 			err = a.Repos.LogRepository.Insert(l)

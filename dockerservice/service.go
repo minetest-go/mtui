@@ -272,7 +272,7 @@ func (s *DockerService) GetLogs(since, until time.Time) (*ServiceLog, error) {
 
 	ctx := context.Background()
 
-	logs, err := cli.ContainerLogs(ctx, c.ID, dockertypes.ContainerLogsOptions{
+	logs, err := cli.ContainerLogs(ctx, c.ID, container.LogsOptions{
 		ShowStdout: true,
 		ShowStderr: true,
 		Since:      since.Format(time.RFC3339),

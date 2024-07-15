@@ -71,8 +71,9 @@ const category_events = {
     ],
     "service": [
         "engine",
+        "engine-mod-errors",
         "matterbridge",
-        "mapserver"
+        "mapserver",
     ]
 };
 
