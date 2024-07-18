@@ -1,5 +1,6 @@
 import ChangePassword from './ChangePassword.js';
 import ATMDisplay from './ATMDisplay.js';
+import SkinPreview from './SkinPreview.js';
 
 import { has_priv, get_claims, is_logged_in } from "../service/login.js";
 import { has_feature } from "../service/features.js";
@@ -24,7 +25,8 @@ export default {
     },
     components: {
         "change-password": ChangePassword,
-        "atm-display": ATMDisplay
+        "atm-display": ATMDisplay,
+        "skin-preview": SkinPreview
     },
     computed: {
         can_change_pw: function() {
@@ -85,6 +87,8 @@ export default {
             <small class="text-muted">
                 {{ playerinfo.name }}
             </small>
+            &nbsp;
+            <skin-preview :playername="username"/>
         </h3>
         <div class="alert alert-warning" v-if="!playerinfo.auth_entry || !playerinfo.player_entry">
             <i class="fa fa-triangle-exclamation"></i>

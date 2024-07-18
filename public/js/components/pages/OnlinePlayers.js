@@ -1,13 +1,16 @@
+import DefaultLayout from "../layouts/DefaultLayout.js";
+import { START } from "../Breadcrumb.js";
+import SkinPreview from "../SkinPreview.js";
+
 import { store } from "../../service/stats.js";
 import format_seconds from "../../util/format_seconds.js";
 import { has_priv } from "../../service/login.js";
-import DefaultLayout from "../layouts/DefaultLayout.js";
-import { START } from "../Breadcrumb.js";
 
 export default {
     data: () => store,
     components: {
-        "default-layout": DefaultLayout
+        "default-layout": DefaultLayout,
+        "skin-preview": SkinPreview
     },
     computed: {
         breadcrumb: function() {
@@ -43,6 +46,8 @@ export default {
                         <router-link :to="'/profile/' + player.name">
                             {{player.name}}
                         </router-link>
+                        &nbsp;
+                        <skin-preview :playername="player.name"/>
                     </td>
                     <td>
                         <i class="fa-solid fa-heart" style="color: red;"></i>

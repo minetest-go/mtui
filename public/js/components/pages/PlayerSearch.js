@@ -1,7 +1,9 @@
-import { search, count } from "../../api/playerinfo.js";
-import format_time from '../../util/format_time.js';
 import DefaultLayout from "../layouts/DefaultLayout.js";
 import { START, PLAYER_SEARCH } from "../Breadcrumb.js";
+import SkinPreview from "../SkinPreview.js";
+
+import { search, count } from "../../api/playerinfo.js";
+import format_time from '../../util/format_time.js';
 
 const store = Vue.reactive({
     busy: false,
@@ -14,7 +16,8 @@ const store = Vue.reactive({
 export default {
     data: () => store,
 	components: {
-		"default-layout": DefaultLayout
+		"default-layout": DefaultLayout,
+        "skin-preview": SkinPreview
 	},
     methods: {
         format_time: format_time,
@@ -92,6 +95,8 @@ export default {
                         <router-link :to="'/profile/' + p.name">
                             {{p.name}}
                         </router-link>
+                        &nbsp;
+                        <skin-preview :playername="p.name"/>
                     </td>
                     <td>
                         <i class="fa-solid fa-heart" style="color: red;"></i>
