@@ -64,7 +64,6 @@ export default {
 
             send(mail)
             .then(r => {
-                console.log(r);
                 this.body = "";
                 this.subject = "";
                 this.busy = false;
