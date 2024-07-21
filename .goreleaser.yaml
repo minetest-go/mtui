@@ -10,12 +10,3 @@ builds:
       - -s -w -extldflags=-static -X mtui/app.Version={{.Version}}
 changelog:
   sort: asc
-  filters:
-    exclude:
-      - '^docs:'
-      - '^test:'
-dockers:
-- image_templates:
-    - "ghcr.io/minetest-go/mtui:{{ .Version }}"
-    - "ghcr.io/minetest-go/mtui:latest"
-  dockerfile: Dockerfile
