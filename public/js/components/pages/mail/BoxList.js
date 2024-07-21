@@ -9,7 +9,7 @@ const store = Vue.reactive({
 });
 
 export default {
-    props: ["mails"],
+    props: ["mails", "boxname"],
     data: () => store,
     created: function() {
         this.sort();
@@ -52,10 +52,15 @@ export default {
         <table class="table table-condensed" v-if="sorted_mails.length > 0">
             <thead>
                 <tr>
-                    <th>
+                    <th v-if="boxname == 'inbox'">
                         From
                         <i class="fa-solid fa-chevron-up" v-bind:style="chevron_style('from', 'asc')" v-on:click="sort('from', 'asc')"></i>
                         <i class="fa-solid fa-chevron-down" v-bind:style="chevron_style('from', 'desc')" v-on:click="sort('from', 'desc')"></i>
+                    </th>
+                    <th v-else>
+                        To
+                        <i class="fa-solid fa-chevron-up" v-bind:style="chevron_style('to', 'asc')" v-on:click="sort('to', 'asc')"></i>
+                        <i class="fa-solid fa-chevron-down" v-bind:style="chevron_style('to', 'desc')" v-on:click="sort('to', 'desc')"></i>
                     </th>
                     <th>
                         Subject
@@ -72,9 +77,14 @@ export default {
             </thead>
             <tbody>
                 <tr v-for="(mail, index) in sorted_mails" :key="index" :class="{'table-info': !mail.read}">
-                    <td>
+                    <td v-if="boxname == 'inbox'">
                         <router-link :to="'/profile/' + mail.from">
                             {{mail.from}}
+                        </router-link>                    
+                    </td>
+                    <td v-else>
+                        <router-link :to="'/profile/' + mail.to">
+                            {{mail.to}}
                         </router-link>                    
                     </td>
                     <td>

@@ -56,7 +56,7 @@ export default {
             </li>
         </ul>
         &nbsp;
-        <box-list :mails="mails"/>
+        <box-list :mails="mails" :boxname="boxname"/>
     </default-layout>
     `
 };
