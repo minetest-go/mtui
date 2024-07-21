@@ -33,7 +33,7 @@ func (s *DockerService) getContainer() (*dockertypes.Container, error) {
 	ctx := context.Background()
 	f := filters.NewArgs()
 	f.Add("name", s.cfg.ContainerName)
-	containers, err := cli.ContainerList(ctx, dockertypes.ContainerListOptions{
+	containers, err := cli.ContainerList(ctx, container.ListOptions{
 		All:     true,
 		Filters: f,
 	})
@@ -212,7 +212,7 @@ func (s *DockerService) Remove() error {
 	defer cli.Close()
 
 	ctx := context.Background()
-	return cli.ContainerRemove(ctx, c.ID, dockertypes.ContainerRemoveOptions{
+	return cli.ContainerRemove(ctx, c.ID, container.RemoveOptions{
 		Force: true,
 	})
 }
@@ -233,7 +233,7 @@ func (s *DockerService) Start() error {
 	defer cli.Close()
 
 	ctx := context.Background()
-	return cli.ContainerStart(ctx, c.ID, dockertypes.ContainerStartOptions{})
+	return cli.ContainerStart(ctx, c.ID, container.StartOptions{})
 }
 
 func (s *DockerService) Stop() error {
