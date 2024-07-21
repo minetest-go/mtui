@@ -49,19 +49,19 @@ export async function add(m) {
 
 export async function add_mtui() {
     store.busy = true;
-    await create_mtui_mod()
+    await create_mtui_mod();
     await update();
 }
 
 export async function add_beerchat() {
     store.busy = true;
-    await create_beerchat_mod()
+    await create_beerchat_mod();
     await update();
 }
 
 export async function add_mapserver() {
     store.busy = true;
-    await create_mapserver_mod()
+    await create_mapserver_mod();
     await update();
 }
 
