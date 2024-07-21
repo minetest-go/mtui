@@ -1,8 +1,13 @@
-import { list_mods, create_mod, remove_mod,
+import {
+    list_mods,
+    create_mod,
+    remove_mod,
     update_mod as api_update_mod,
     update_mod_version as api_update_mod_version,
     check_updates as api_check_updates,
-    create_mtui_mod, create_beerchat_mod, create_mapserver_mod
+    create_mtui_mod,
+    create_beerchat_mod,
+    create_mapserver_mod
 } from '../api/mods.js';
 
 import events, { EVENT_LOGGED_IN } from '../events.js';
@@ -16,44 +21,49 @@ const store = Vue.reactive({
     error_msg: ""
 });
 
-export const update = () => {
+export async function update() {
     store.busy = true;
-    return list_mods()
-    .then(l => store.list = l)
-    .then(() => store.has_mtui_mod = store.list.find(m => m.name == "mtui"))
-    .finally(() => store.busy = false);
-};
+    store.list = await list_mods();
+    store.has_mtui_mod = store.list.find(m => m.name == "mtui");
+    store.busy = false;
+}
 
-export const update_mod = m => {
+export async function update_mod(m) {
     store.busy = true;
-    api_update_mod(m)
-    .then(() => update());
-};
+    await api_update_mod(m);
+    await update();
+}
 
-export const update_mod_version = (m, v) => {
+export async function update_mod_version(m, v) {
     store.busy = true;
-    api_update_mod_version(m, v)
-    .then(() => update());
+    await api_update_mod_version(m, v);
+    await update();
 };
 
 export const is_busy = () => store.busy;
 
-export const add = m => create_mod(m).then(update);
+export async function add(m) {
+    await create_mod(m);
+    await update();
+}
 
-export const add_mtui = () => {
+export async function add_mtui() {
     store.busy = true;
-    return create_mtui_mod().then(update);
-};
+    await create_mtui_mod()
+    await update();
+}
 
-export const add_beerchat = () => {
+export async function add_beerchat() {
     store.busy = true;
-    return create_beerchat_mod().then(update);
-};
+    await create_beerchat_mod()
+    await update();
+}
 
-export const add_mapserver = () => {
+export async function add_mapserver() {
     store.busy = true;
-    return create_mapserver_mod().then(update);
-};
+    await create_mapserver_mod()
+    await update();
+}
 
 export const remove = id => remove_mod(id).then(update);
 
@@ -67,11 +77,11 @@ export const get_git_mod = name => store.list.find(m => m.name == name);
 
 export const get_game = () => store.list.find(m => m.mod_type == "game");
 
-export const check_updates = () => {
+export async function check_updates() {
     store.busy = true;
-    api_check_updates()
-    .then(() => update());
-};
+    await api_check_updates();
+    await update();
+}
 
 events.on(EVENT_LOGGED_IN, function() {
     if (!has_priv("server") || !has_feature("modmanagement")){

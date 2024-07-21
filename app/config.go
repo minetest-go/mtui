@@ -12,6 +12,10 @@ import (
 var mtconfig_mutex = sync.RWMutex{}
 
 func (a *App) ReadMTConfig(sts minetestconfig.SettingTypes) (minetestconfig.Settings, error) {
+	if a.Config.MinetestConfig == "" {
+		return nil, fmt.Errorf("environment variable for minetest config not configured")
+	}
+
 	mtconfig_mutex.RLock()
 	defer mtconfig_mutex.RUnlock()
 

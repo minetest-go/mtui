@@ -5,6 +5,7 @@ import FeedbackButton from '../../FeedbackButton.js';
 import DefaultLayout from '../../layouts/DefaultLayout.js';
 import CDBPackageLink from '../../CDBPackageLink.js';
 import { START, ADMINISTRATION, MODS } from '../../Breadcrumb.js';
+import { has_feature } from '../../../service/features.js';
 
 const ModRow = {
 	props: ["mod", "busy"],
@@ -103,8 +104,11 @@ export default {
 				this.add_version = "";
 			});
 		},
-		add_mtui_mod: function() {
-			add_mtui().then(update_settings);
+		add_mtui_mod: async function() {
+			await add_mtui();
+			if (has_feature("minetest_config")) {
+				await update_settings();
+			}
 		},
 		get_git_mod: get_git_mod,
 		check_updates: check_updates
