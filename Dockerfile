@@ -5,10 +5,12 @@ RUN npm ci && npm run bundle
 
 FROM golang:1.22.4 as go-builder
 ARG MTUI_VERSION="docker-dev"
+WORKDIR /data
+COPY go.* /data/
+RUN go mod download
 COPY . /data
 COPY --from=bundle-builder /public/js/bundle* /data/public/js/
 COPY --from=bundle-builder /public/node_modules /data/public/node_modules
-WORKDIR /data
 RUN CGO_ENABLED=1 go build -ldflags="-s -w -extldflags=-static -X mtui/app.Version=$MTUI_VERSION" .
 
 FROM alpine:3.20.1
