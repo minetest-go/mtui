@@ -34,8 +34,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          build-args:
-            MTUI_VERSION: ${{ github.ref_name }}
+          build-args: MTUI_VERSION=${{ github.ref_name }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
