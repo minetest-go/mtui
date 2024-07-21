@@ -11,7 +11,7 @@ services:
  ui:
   image: golang:1.22.5
   environment:
-   WORLD_DIR: "/root/.minetest/worlds/world"
+   WORLD_DIR: "/world"
    WEBDEV: "true"
    API_KEY: "mykey"
    INSTALL_MTUI_MOD: "true"
@@ -20,20 +20,20 @@ services:
    DEFAULT_THEME: "darkly"
    ENABLE_FEATURES: "shell,luashell,minetest_config,docker,modmanagement,signup,chat,minetest_web"
    INSTALL_MTUI_MOD: "true"
-   MINETEST_CONFIG: "/etc/minetest/minetest.conf"
+   MINETEST_CONFIG: "/world/minetest.conf"
    GEOIP_API: "https://hosting.minetest.ch/api/geoip"
    DOCKER_MINETEST_CONFIG: "${PWD}/minetest.conf"
    DOCKER_MINETEST_PORT: 30000
    DOCKER_HOSTNAME: "ui"
    DOCKER_NETWORK: "mtui_default"
-   DOCKER_WORLD_DIR: "${PWD}/dev/world"
+   DOCKER_WORLD_DIR: "/var/lib/docker/volumes/mtui_world_dir/_data"
    DOCKER_CONTAINER_PREFIX: "mtui"
   ports:
     - 8080:8080
   volumes:
-   - "${PWD}/dev/world:/root/.minetest/worlds/world"
-   - "./minetest.conf:/etc/minetest/minetest.conf"
+   - "./minetest.conf:/world/minetest.conf"
    - "./:/app"
+   - "world_dir:/world"
    - "go_dir:/go"
    - "go_cache:/.cache"
    - "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -43,3 +43,4 @@ services:
 volumes:
   go_cache: {}
   go_dir: {}
+  world_dir: {}
