@@ -63,7 +63,7 @@ export default {
             }
 
             send(mail)
-            .then(r => {
+            .then(() => {
                 this.body = "";
                 this.subject = "";
                 this.busy = false;
