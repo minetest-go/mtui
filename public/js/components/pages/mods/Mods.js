@@ -72,6 +72,8 @@ const ModRow = {
 	`
 };
 
+const modname_regex = /^[a-zA-Z0-9_]*$/;
+
 export default {
 	components: {
 		"feedback-button": FeedbackButton,
@@ -117,7 +119,10 @@ export default {
 		busy: is_busy,
 		games: () => get_mods_by_type("game"),
 		mods: () => get_mods_by_type("mod"),
-		txps: () => get_mods_by_type("txp")
+		txps: () => get_mods_by_type("txp"),
+		add_name_valid: function() {
+			return (this.add_name == "" || modname_regex.test(this.add_name));
+		}
 	},
 	template: /*html*/`
 		<default-layout icon="cubes" title="Mods" :breadcrumb="breadcrumb">
@@ -171,7 +176,17 @@ export default {
 							</select>
 						</td>
 						<td>
-							<input class="form-control" type="text" placeholder="Mod name" v-model="add_name"/>
+							<div class="input-group has-validation">
+								<input
+									class="form-control"
+									type="text"
+									placeholder="Mod name"
+									v-model="add_name"
+									v-bind:class="{'is-invalid': !add_name_valid}"/>
+								<div class="invalid-feedback" v-if="!add_name_valid">
+									Allowed modname characters: a-z A-Z 0-9 _
+								</div>
+							</div>
 						</td>
 						<td>
 							<span class="badge bg-success">
