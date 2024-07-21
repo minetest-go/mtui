@@ -1,18 +1,21 @@
 import error_toast_store from "../store/error_toast.js";
 
-export const protected_fetch = (url, opts) => fetch(url, opts)
-    .then(r => {
+export async function protected_fetch(url, opts) {
+    try {
+        const r = await fetch(url, opts);
         if (r.status == 200) {
-            return r.json();
+            return await r.json();
          } else {
-            return r.text().then(msg => {
-                error_toast_store.status = r.status;
-                return Promise.reject(msg);
-            });
+            const msg = await r.text();
+            error_toast_store.title = "HTTP status error";
+            error_toast_store.url = url;
+            error_toast_store.message = msg;
+            throw new Error(msg);
          }
-    })
-    .catch(e => {
+    } catch (e) {
         error_toast_store.title = `HTTP fetch error`;
         error_toast_store.url = url;
         error_toast_store.message = e;
-    });
+        throw e;
+    }
+}
