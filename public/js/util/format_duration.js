@@ -1,14 +1,14 @@
 
 const ranges = [{
-    start: 60*60*24*7, suffix: "weeks"
+    start: 60*60*24*7, suffix: "week(s)"
 },{
-    start: 60*60*24, suffix: "days"
+    start: 60*60*24, suffix: "day(s)"
 },{
-    start: 60*60, suffix: "hours"
+    start: 60*60, suffix: "hour(s)"
 },{
-    start: 60, suffix: "minutes"
+    start: 60, suffix: "minute(s)"
 },{
-    start: 0, suffix: "seconds"
+    start: 1, suffix: "second(s)"
 }];
 
 export default function(seconds) {

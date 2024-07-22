@@ -1,5 +1,5 @@
 export default function(seconds) {
-    if (!seconds){
+    if (!seconds || seconds < 1){
         return "";
     }
     const minutes = Math.floor(+seconds / 60);
