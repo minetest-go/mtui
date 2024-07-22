@@ -17,12 +17,16 @@ func (a *App) CreateUser(username, password string, overwrite bool, privs []stri
 		return nil, fmt.Errorf("password is empty")
 	}
 
-	auth_entry, err := a.DBContext.Auth.GetByUsername(username)
+	auth_entries, err := a.DBContext.Auth.Search(&dbauth.AuthSearch{UsernameIgnoreCase: &username})
 	if err != nil {
 		return nil, fmt.Errorf("could not fetch auth entry: %v", err)
 	}
+	if len(auth_entries) > 1 {
+		return nil, fmt.Errorf("multiple users found")
+	}
 
-	if auth_entry == nil {
+	var auth_entry *dbauth.AuthEntry
+	if len(auth_entries) == 0 {
 		// create new auth entry
 		salt, verifier, err := auth.CreateAuth(username, password)
 		if err != nil {
