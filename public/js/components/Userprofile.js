@@ -62,9 +62,9 @@ export default {
                 this.update_playerinfo();
             });
         },
-        format_time: format_time,
-        format_duration: format_duration,
-        format_count: format_count,
+        format_time,
+        format_duration,
+        format_count,
         getPrivBadgeClass: function(priv) {
             if (priv == "server" || priv == "privs") {
                 return { "badge": true, "bg-danger": true };

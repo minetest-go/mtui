@@ -1,12 +1,16 @@
-import { get_servername, get_version } from "../../service/app_info.js";
 import DefaultLayout from "../layouts/DefaultLayout.js";
 import { START } from "../Breadcrumb.js";
+import SkinPreview from "../SkinPreview.js";
+
+import { get_servername, get_version } from "../../service/app_info.js";
 import { has_priv, is_logged_in } from "../../service/login.js";
 import { has_feature } from "../../service/features.js";
+import { get_players } from "../../service/stats.js";
 
 export default {
 	components: {
-		"default-layout": DefaultLayout
+		"default-layout": DefaultLayout,
+		"skin-preview": SkinPreview
 	},
 	data: function() {
 		return {
@@ -15,12 +19,13 @@ export default {
 	},
 	methods: {
 		has_priv,
-		is_logged_in,
 		has_feature
 	},
 	computed: {
+		is_logged_in,
 		servername: get_servername,
-		version: get_version
+		version: get_version,
+		players: get_players
 	},
 	template: /*html*/`
 	<default-layout icon="home" title="Start" :breadcrumb="breadcrumb">
@@ -37,7 +42,7 @@ export default {
 				<i class="fa-solid fa-terminal"></i> Shell
 			</router-link>
 			&nbsp;
-			<router-link to="/profile" class="btn btn-primary" v-if="is_logged_in()">
+			<router-link to="/profile" class="btn btn-primary" v-if="is_logged_in">
 				<i class="fa fa-user"></i> Profile
 			</router-link>
 			<router-link to="/login" class="btn btn-primary" v-else>
@@ -55,6 +60,19 @@ export default {
 			<a class="btn btn-secondary" href="https://github.com/minetest-go/mtui" target="new">
 				<i class="fa-brands fa-github"></i> Source
 			</a>
+			<hr/>
+			<h3 v-if="players.length">Online players</h3>
+			<div class="container">
+				<router-link
+					class="btn btn-secondary m-1"
+					:to="is_logged_in ? '/profile/'+player.name : ''"
+					v-for="player in players"
+					:key="player.name">
+					{{player.name}}
+					&nbsp;
+					<skin-preview :playername="player.name"/>
+				</router-link>
+			</div>
 		</div>
 	</default-layout>
 	`
