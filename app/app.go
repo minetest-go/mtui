@@ -76,6 +76,10 @@ func Create(cfg *types.Config) (*App, error) {
 		MaintenanceMode: &atomic.Bool{},
 	}
 
+	if app.Version == "" {
+		app.Version = "DEV"
+	}
+
 	err = app.AttachDatabase()
 	if err != nil {
 		return nil, fmt.Errorf("could not attach database: %v", err)
