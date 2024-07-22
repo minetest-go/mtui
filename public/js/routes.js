@@ -43,7 +43,7 @@ import RestartConditions from './components/pages/administration/RestartConditio
 
 export default [{
 	path: "/", component: Start,
-	meta: { requiredPriv: "interact", maintenance_page: true }
+	meta: { maintenance_page: true }
 }, {
 	path: "/maintenance", component: Maintenance,
 	meta: { requiredPriv: "server", maintenance_page: true }

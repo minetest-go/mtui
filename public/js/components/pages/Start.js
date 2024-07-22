@@ -1,7 +1,7 @@
 import { get_servername, get_version } from "../../service/app_info.js";
 import DefaultLayout from "../layouts/DefaultLayout.js";
 import { START } from "../Breadcrumb.js";
-import { has_priv } from "../../service/login.js";
+import { has_priv, is_logged_in } from "../../service/login.js";
 import { has_feature } from "../../service/features.js";
 
 export default {
@@ -15,6 +15,7 @@ export default {
 	},
 	methods: {
 		has_priv,
+		is_logged_in,
 		has_feature
 	},
 	computed: {
@@ -36,8 +37,11 @@ export default {
 				<i class="fa-solid fa-terminal"></i> Shell
 			</router-link>
 			&nbsp;
-			<router-link to="/profile" class="btn btn-primary">
+			<router-link to="/profile" class="btn btn-primary" v-if="is_logged_in()">
 				<i class="fa fa-user"></i> Profile
+			</router-link>
+			<router-link to="/login" class="btn btn-primary" v-else>
+				<i class="fa-solid fa-right-to-bracket"></i> Login
 			</router-link>
 			&nbsp;
 			<router-link to="/help" class="btn btn-primary" v-if="has_priv('server')">
