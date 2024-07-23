@@ -89,6 +89,8 @@ func createSqliteSnapshot(filename string) (string, error) {
 }
 
 func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	maintenance := a.app.MaintenanceMode.Load()
+
 	reldir, absdir, err := a.get_sanitized_dir(r)
 	if err != nil {
 		SendError(w, 500, err.Error())
@@ -119,7 +121,7 @@ func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.
 		relPath := strings.TrimPrefix(filePath, absdir)
 		relPath = strings.TrimPrefix(relPath, "/")
 
-		if isSqliteDatabase(filePath) {
+		if isSqliteDatabase(filePath) && !maintenance {
 			tmppath, err := createSqliteSnapshot(filePath)
 			if err != nil {
 				return fmt.Errorf("sqlite snapshot error for '%s': %v", filePath, err)
@@ -161,6 +163,8 @@ func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.
 }
 
 func (a *Api) DownloadTarGZ(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	maintenance := a.app.MaintenanceMode.Load()
+
 	reldir, absdir, err := a.get_sanitized_dir(r)
 	if err != nil {
 		SendError(w, 500, err.Error())
@@ -199,7 +203,7 @@ func (a *Api) DownloadTarGZ(w http.ResponseWriter, r *http.Request, claims *type
 		}
 		fi.Name = relPath
 
-		if isSqliteDatabase(filePath) {
+		if isSqliteDatabase(filePath) && !maintenance {
 			tmppath, err := createSqliteSnapshot(filePath)
 			if err != nil {
 				return fmt.Errorf("sqlite snapshot error for '%s': %v", filePath, err)
