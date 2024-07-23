@@ -61,7 +61,7 @@ export default {
 				<i class="fa-brands fa-github"></i> Source
 			</a>
 			<hr/>
-			<h3 v-if="players.length">Online players</h3>
+			<h3 v-if="players && players.length">Online players</h3>
 			<div class="container">
 				<router-link
 					class="btn btn-secondary m-1"
