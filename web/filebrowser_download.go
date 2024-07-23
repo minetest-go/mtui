@@ -128,7 +128,11 @@ func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.
 			filePath = tmppath
 		}
 
-		zipFile, err := zw.Create(relPath)
+		zipFile, err := zw.CreateHeader(&zip.FileHeader{
+			Name:     relPath,
+			Method:   zip.Deflate,
+			Modified: info.ModTime(),
+		})
 		if err != nil {
 			return err
 		}
