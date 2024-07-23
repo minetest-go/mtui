@@ -4,8 +4,10 @@ import (
 	"archive/tar"
 	"archive/zip"
 	"compress/gzip"
+	"context"
 	"fmt"
 	"io"
+	"mtui/db"
 	"mtui/types"
 	"net/http"
 	"os"
@@ -60,6 +62,32 @@ func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types
 	}, r)
 }
 
+func ignoreFileDownload(filename string) bool {
+	if strings.HasSuffix(filename, ".sqlite-shm") || strings.HasSuffix(filename, ".sqlite-wal") {
+		// sqlite wal and shared memory
+		return true
+	}
+	return false
+}
+
+func isSqliteDatabase(filename string) bool {
+	return strings.HasSuffix(filename, ".sqlite")
+}
+
+func createSqliteSnapshot(filename string) (string, error) {
+	f, err := os.CreateTemp(os.TempDir(), "backup.sqlite")
+	if err != nil {
+		return "", fmt.Errorf("create temp error: %v", err)
+	}
+
+	err = db.BackupSqlite3Database(context.Background(), filename, f.Name())
+	if err != nil {
+		return "", fmt.Errorf("backup error from '%s' to '%s': %v", filename, f.Name(), err)
+	}
+
+	return f.Name(), nil
+}
+
 func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	reldir, absdir, err := a.get_sanitized_dir(r)
 	if err != nil {
@@ -85,7 +113,21 @@ func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.
 		if err != nil {
 			return err
 		}
+		if ignoreFileDownload(filePath) {
+			return nil
+		}
 		relPath := strings.TrimPrefix(filePath, absdir)
+		relPath = strings.TrimPrefix(relPath, "/")
+
+		if isSqliteDatabase(filePath) {
+			tmppath, err := createSqliteSnapshot(filePath)
+			if err != nil {
+				return fmt.Errorf("sqlite snapshot error for '%s': %v", filePath, err)
+			}
+			defer os.Remove(tmppath)
+			filePath = tmppath
+		}
+
 		zipFile, err := zw.Create(relPath)
 		if err != nil {
 			return err
@@ -142,12 +184,32 @@ func (a *Api) DownloadTarGZ(w http.ResponseWriter, r *http.Request, claims *type
 		if err != nil {
 			return err
 		}
+		if ignoreFileDownload(filePath) {
+			return nil
+		}
+
 		relPath := strings.TrimPrefix(filePath, absdir)
 		fi, err := tar.FileInfoHeader(info, info.Name())
 		if err != nil {
 			return err
 		}
 		fi.Name = relPath
+
+		if isSqliteDatabase(filePath) {
+			tmppath, err := createSqliteSnapshot(filePath)
+			if err != nil {
+				return fmt.Errorf("sqlite snapshot error for '%s': %v", filePath, err)
+			}
+			defer os.Remove(tmppath)
+			filePath = tmppath
+
+			tmpfi, err := os.Stat(tmppath)
+			if err != nil {
+				return fmt.Errorf("stat error: '%s': %v", tmppath, err)
+			}
+
+			fi.Size = tmpfi.Size()
+		}
 
 		err = tw.WriteHeader(fi)
 		if err != nil {
