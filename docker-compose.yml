@@ -28,6 +28,7 @@ services:
    DOCKER_NETWORK: "mtui_default"
    DOCKER_WORLD_DIR: "/var/lib/docker/volumes/mtui_world_dir/_data"
    DOCKER_CONTAINER_PREFIX: "mtui"
+   DOCKER_AUTOINSTALL_ENGINE: "true"
   ports:
     - 8080:8080
   volumes:

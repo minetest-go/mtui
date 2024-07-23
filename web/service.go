@@ -19,9 +19,9 @@ type ServiceApi struct {
 	servicename string
 }
 
-func CreateServiceApi(service *dockerservice.DockerService, api *Api, r *mux.Router, servicename string, imageMap map[string]string) {
+func CreateServiceApi(service *dockerservice.DockerService, api *Api, r *mux.Router, servicename string, imageMap map[string]string) *ServiceApi {
 	if service == nil {
-		return
+		return nil
 	}
 
 	sa := &ServiceApi{
@@ -40,6 +40,7 @@ func CreateServiceApi(service *dockerservice.DockerService, api *Api, r *mux.Rou
 	sr.HandleFunc("/start", api.SecurePriv(types.PRIV_SERVER, sa.Start)).Methods(http.MethodPost)
 	sr.HandleFunc("/stop", api.SecurePriv(types.PRIV_SERVER, sa.Stop)).Methods(http.MethodPost)
 	sr.HandleFunc("/logs/{since}/{until}", api.SecurePriv(types.PRIV_SERVER, sa.GetLogs)).Methods(http.MethodGet)
+	return sa
 }
 
 func (a *ServiceApi) GetVersions(w http.ResponseWriter, r *http.Request, claims *types.Claims) {

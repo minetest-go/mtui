@@ -207,21 +207,17 @@ func Setup(a *app.App) error {
 		servapi := apir.PathPrefix("/service").Subrouter()
 		servapi.Use(SecureHandler(api.FeatureCheck(types.FEATURE_DOCKER)))
 
-		CreateServiceApi(api.app.ServiceEngine, api, servapi, "engine", map[string]string{
-			"5.6.0": "registry.gitlab.com/minetest/minetest/server:5.6.0",
-			"5.7.0": "registry.gitlab.com/minetest/minetest/server:5.7.0",
-			"5.8.0": "ghcr.io/minetest-hosting/minetest-docker:5.8.0",
-		})
+		CreateServiceApi(api.app.ServiceEngine, api, servapi, "engine", types.EngineServiceImages)
+		CreateServiceApi(api.app.ServiceMatterbridge, api, servapi, "matterbridge", types.MatterbridgeServiceImages)
+		CreateServiceApi(api.app.ServiceMapserver, api, servapi, "mapserver", types.MapserverServiceImages)
 
-		CreateServiceApi(api.app.ServiceMatterbridge, api, servapi, "matterbridge", map[string]string{
-			"1.26.0": "42wim/matterbridge:1.26.0",
-		})
-
-		CreateServiceApi(api.app.ServiceMapserver, api, servapi, "mapserver", map[string]string{
-			"4.7.0":  "minetestmapserver/mapserver:4.7.0",
-			"4.8.0":  "minetestmapserver/mapserver:4.8.0",
-			"latest": "minetestmapserver/mapserver:latest",
-		})
+		if api.app.Config.DockerAutoInstallEngine {
+			status, err := api.app.ServiceEngine.Status()
+			if err == nil && status != nil && !status.Created {
+				// silently install default engine
+				go api.app.ServiceEngine.Create(types.EngineServiceImages[types.EngineServiceLatest])
+			}
+		}
 	}
 
 	// OAuth
