@@ -9,10 +9,15 @@ import (
 	"github.com/mattn/go-sqlite3"
 )
 
-func BackupSqlite3Database(ctx context.Context, srcdb *sql.DB, dstfile string) error {
+func BackupSqlite3Database(ctx context.Context, srcfile, dstfile string) error {
+	srcdb, err := sql.Open("sqlite3", "file:"+srcfile)
+	if err != nil {
+		return fmt.Errorf("source db open error: %v", err)
+	}
+
 	dstdb, err := sql.Open("sqlite3", "file:"+dstfile)
 	if err != nil {
-		return fmt.Errorf("sql open error: %v", err)
+		return fmt.Errorf("destination db open error: %v", err)
 	}
 
 	srcconn, err := srcdb.Conn(context.Background())
