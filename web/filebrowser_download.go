@@ -16,52 +16,6 @@ import (
 	"strings"
 )
 
-func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	rel_filename, filename, err := a.get_sanitized_filename(r, "filename")
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	f, err := os.Open(filename)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-	defer f.Close()
-
-	header := make([]byte, 512)
-	header_size, err := f.Read(header)
-	if err != nil && err != io.EOF {
-		SendError(w, 500, err.Error())
-		return
-	}
-	contentType := http.DetectContentType(header)
-	w.Header().Set("Content-Type", contentType)
-
-	if r.URL.Query().Get("download") == "true" {
-		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", path.Base(filename)))
-	}
-
-	_, err = w.Write(header[:header_size])
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	count, err := io.Copy(w, f)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-
-	a.app.CreateUILogEntry(&types.Log{
-		Username: claims.Username,
-		Event:    "filebrowser",
-		Message:  fmt.Sprintf("User '%s' downloaded the file '%s' with %d bytes", claims.Username, rel_filename, count+int64(header_size)),
-	}, r)
-}
-
 func ignoreFileDownload(filename string) bool {
 	if strings.HasSuffix(filename, ".sqlite-shm") || strings.HasSuffix(filename, ".sqlite-wal") {
 		// sqlite wal and shared memory
@@ -86,6 +40,63 @@ func createSqliteSnapshot(filename string) (string, error) {
 	}
 
 	return f.Name(), nil
+}
+
+func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	rel_filename, filename, err := a.get_sanitized_filename(r, "filename")
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	maintenance := a.app.MaintenanceMode.Load()
+	if isSqliteDatabase(filename) && !maintenance {
+		tmppath, err := createSqliteSnapshot(filename)
+		if err != nil {
+			SendError(w, 500, fmt.Sprintf("error creating snapshot of '%s': %v", filename, err))
+			return
+		}
+		defer os.Remove(tmppath)
+		filename = tmppath
+	}
+
+	f, err := os.Open(filename)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+	defer f.Close()
+
+	header := make([]byte, 512)
+	header_size, err := f.Read(header)
+	if err != nil && err != io.EOF {
+		SendError(w, 500, err.Error())
+		return
+	}
+	contentType := http.DetectContentType(header)
+	w.Header().Set("Content-Type", contentType)
+
+	if r.URL.Query().Get("download") == "true" {
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", path.Base(rel_filename)))
+	}
+
+	_, err = w.Write(header[:header_size])
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	count, err := io.Copy(w, f)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	a.app.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "filebrowser",
+		Message:  fmt.Sprintf("User '%s' downloaded the file '%s' with %d bytes", claims.Username, rel_filename, count+int64(header_size)),
+	}, r)
 }
 
 func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
