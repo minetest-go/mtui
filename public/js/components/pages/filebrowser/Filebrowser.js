@@ -14,7 +14,6 @@ import {
 import format_size from "../../../util/format_size.js";
 import format_time from "../../../util/format_time.js";
 import { START, FILEBROWSER } from "../../Breadcrumb.js";
-import { get_maintenance } from "../../../service/stats.js";
 import { can_edit } from "./common.js";
 
 export default {
@@ -34,7 +33,6 @@ export default {
         };
     },
     methods: {
-        get_maintenance,
         format_size,
         format_time,
         get_zip_url,
@@ -114,9 +112,6 @@ export default {
             });
         },
         can_edit: can_edit,
-        is_database: function(filename) {
-            return filename.match(/.*(sqlite|sqlite-shm|sqlite-wal)$/i);
-        },
         is_json_profile: function(filename) {
             return filename.match(/^profile-.*.json$/);
         },
@@ -242,7 +237,7 @@ export default {
                         <td></td>
                         <td></td>
                     </tr>
-                    <tr v-for="item in result.items" v-bind:class="{'table-warning': is_database(item.name) && !get_maintenance()}">
+                    <tr v-for="item in result.items">
                         <td>
                             <router-link :to="'/filebrowser' + result.dir + '/' + item.name" v-if="item.is_dir">
                                 <i v-bind:class="get_icon_class(item)"></i>
@@ -251,7 +246,6 @@ export default {
                             <span v-if="!item.is_dir">
                                 <i v-bind:class="get_icon_class(item)"></i>
                                 {{item.name}}
-                                <i class="fa-solid fa-triangle-exclamation" v-if="is_database(item.name) && !get_maintenance()" title="Database might be inconsistent when downloading without maintenance-mode enabled!"></i>
                             </span>
                         </td>
                         <td>
