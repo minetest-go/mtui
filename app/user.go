@@ -45,6 +45,9 @@ func (a *App) CreateUser(username, password string, overwrite bool, privs []stri
 	} else if !overwrite {
 		// overwrite not enabled
 		return nil, fmt.Errorf("user already exists: '%s'", username)
+	} else {
+		// overwrite enabled and one or more auth entries found
+		auth_entry = auth_entries[0]
 	}
 
 	existing_privs, err := a.DBContext.Privs.GetByID(*auth_entry.ID)
