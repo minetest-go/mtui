@@ -12,6 +12,48 @@ import (
 	"path"
 )
 
+var usedDatabaseFiles = map[string]bool{
+	"map.sqlite":         true,
+	"auth.sqlite":        true,
+	"mod_storage.sqlite": true,
+	"players.sqlite":     true,
+	"mtui.sqlite":        true,
+}
+
+func (a *Api) writeFile(filename string, data io.Reader, r *http.Request, claims *types.Claims) (int64, error) {
+
+	is_dbfile := usedDatabaseFiles[path.Base(filename)]
+	if is_dbfile && !a.app.MaintenanceMode.Load() {
+		// create log entry
+		a.app.CreateUILogEntry(&types.Log{
+			Username: claims.Username,
+			Event:    "maintenance",
+			Message:  fmt.Sprintf("User '%s' uploads '%s' enabling temporary maintenance mode", claims.Username, path.Base(filename)),
+		}, r)
+
+		// not in maintenance mode, enable it for the upload of this critical databse file
+		a.app.MaintenanceMode.Store(true)
+		a.app.DetachDatabase()
+		defer func() {
+			a.app.AttachDatabase()
+			a.app.MaintenanceMode.Store(false)
+		}()
+	}
+
+	f, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		return 0, fmt.Errorf("openfile error for '%s': %v", filename, err)
+	}
+	defer f.Close()
+
+	count, err := io.Copy(f, data)
+	if err != nil {
+		return 0, fmt.Errorf("copyfile error for '%s': %v", filename, err)
+	}
+
+	return count, nil
+}
+
 func (a *Api) UploadZip(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	reldir, absdir, err := a.get_sanitized_dir(r)
 	if err != nil {
@@ -53,22 +95,14 @@ func (a *Api) UploadZip(w http.ResponseWriter, r *http.Request, claims *types.Cl
 			continue
 		}
 
-		targetf, err := os.OpenFile(targetfile, os.O_RDWR|os.O_CREATE, 0644)
-		if err != nil {
-			SendError(w, 500, err.Error())
-			return
-		}
-
 		zipfile, err := f.Open()
 		if err != nil {
-			targetf.Close()
 			SendError(w, 500, err.Error())
 			return
 		}
 
-		fc, err := io.Copy(targetf, zipfile)
+		fc, err := a.writeFile(targetfile, zipfile, r, claims)
 		count += fc
-		targetf.Close()
 		zipfile.Close()
 
 		if err != nil {
@@ -123,15 +157,8 @@ func (a *Api) UploadTarGZ(w http.ResponseWriter, r *http.Request, claims *types.
 			continue
 		}
 
-		targetf, err := os.OpenFile(targetfile, os.O_RDWR|os.O_CREATE, 0644)
-		if err != nil {
-			SendError(w, 500, err.Error())
-			return
-		}
-
-		fc, err := io.Copy(targetf, tr)
+		fc, err := a.writeFile(targetfile, tr, r, claims)
 		count += fc
-		targetf.Close()
 
 		if err != nil {
 			SendError(w, 500, err.Error())
@@ -153,14 +180,7 @@ func (a *Api) UploadFile(w http.ResponseWriter, r *http.Request, claims *types.C
 		return
 	}
 
-	f, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
-	if err != nil {
-		SendError(w, 500, err.Error())
-		return
-	}
-	defer f.Close()
-
-	count, err := io.Copy(f, r.Body)
+	count, err := a.writeFile(filename, r.Body, r, claims)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
