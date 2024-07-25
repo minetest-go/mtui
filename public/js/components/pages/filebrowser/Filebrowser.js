@@ -51,11 +51,7 @@ export default {
         upload: function() {
             const files = Array.from(this.$refs.input_upload.files);
             this.upload_busy = true;
-
-            const promises = files.map(file => {
-                return file.arrayBuffer()
-                .then(buf => upload(this.result.dir + "/" + file.name, buf));
-            });
+            const promises = files.map(file => upload(this.result.dir + "/" + file.name, file));
 
             Promise.all(promises).then(() => {
                 this.$refs.input_upload.value = null;
@@ -80,8 +76,7 @@ export default {
                 return;
             }
 
-            file.arrayBuffer()
-            .then(buf => upload_fn(this.result.dir, buf))
+            upload_fn(this.result.dir, file)
             .then(() => {
                 this.$refs.input_upload_archive.value = null;
                 this.upload_archive_busy = false;
