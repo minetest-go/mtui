@@ -31,7 +31,7 @@ func (a *Api) writeFile(filename string, data io.Reader, r *http.Request, claims
 			Message:  fmt.Sprintf("User '%s' uploads '%s' enabling temporary maintenance mode", claims.Username, path.Base(filename)),
 		}, r)
 
-		// not in maintenance mode, enable it for the upload of this critical databse file
+		// not in maintenance mode, enable it for the upload of this critical database file
 		a.app.MaintenanceMode.Store(true)
 		a.app.DetachDatabase()
 		defer func() {
