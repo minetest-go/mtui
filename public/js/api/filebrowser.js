@@ -10,20 +10,26 @@ export const get_download_url = filename => `api/filebrowser/file?filename=${fil
 export const get_zip_url = dir => `api/filebrowser/zip?dir=${dir}`;
 export const get_targz_url = dir => `api/filebrowser/targz?dir=${dir}`;
 
-export const upload = (filename, data) => fetch(`api/filebrowser/file?filename=${filename}`, {
-    method: "POST",
-    body: data
-});
+function postProgress(url, body, callback) {
+    callback = callback ? callback : () => {};
 
-export const upload_zip = (dir, data) => fetch(`api/filebrowser/zip?dir=${dir}`, {
-    method: "POST",
-    body: data
-});
+    return new Promise(resolve => {
+        var request = new XMLHttpRequest();
+        request.upload.addEventListener('progress', e => {
+            const progress = e.total / e.loaded;
+            callback(progress);
+        });
+        request.upload.addEventListener('load', () => resolve());
+        request.open('POST', url);
+        request.send(body);
+    });
+}
 
-export const upload_targz = (dir, data) => fetch(`api/filebrowser/targz?dir=${dir}`, {
-    method: "POST",
-    body: data
-});
+export const upload = (filename, data, callback) => postProgress(`api/filebrowser/file?filename=${filename}`, data, callback);
+
+export const upload_zip = (dir, data, callback) => postProgress(`api/filebrowser/zip?dir=${dir}`, data, callback);
+
+export const upload_targz = (dir, data, callback) => postProgress(`api/filebrowser/targz?dir=${dir}`, data, callback);
 
 export const mkdir = dir => fetch(`api/filebrowser/mkdir?dir=${dir}`, {
     method: "POST"
