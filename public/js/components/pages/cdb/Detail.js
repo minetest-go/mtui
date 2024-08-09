@@ -24,6 +24,11 @@ export default {
         get_dependencies(this.author, this.name)
         .then(d => this.deps = d[`${this.author}/${this.name}`]);
     },
+    methods: {
+        markdown: function(txt) {
+            return DOMPurify.sanitize(marked.parse(txt));
+        }
+    },
     computed: {
         thumbnails: function() {
             return this.pkg.screenshots.map(s => s.replaceAll("/uploads/", "/thumbnails/2/"));
@@ -54,7 +59,12 @@ export default {
                         <span v-for="tag in pkg.tags" style="margin: 2px;" class="badge bg-success">{{tag}}</span>
                         <hr>
                         <h4>Description</h4>
-                        <pre>{{pkg.long_description || pkg.short_description}}</pre>
+                        <div v-if="pkg.long_description">
+                            <div v-html="markdown(pkg.long_description)"></div>
+                        </div>
+                        <div v-else>
+                            <pre>{{pkg.short_description}}</pre>
+                        </div>
                         <h4>Dependencies</h4>
                         <ul v-if="deps">
                             <li v-for="dep in deps">

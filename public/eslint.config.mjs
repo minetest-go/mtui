@@ -1,7 +1,7 @@
 import globals from "globals";
 import pluginJs from "@eslint/js";
 import pluginVue from "eslint-plugin-vue";
-import stylisticJs from '@stylistic/eslint-plugin-js'
+import stylisticJs from '@stylistic/eslint-plugin-js';
 
 export default [
   {
@@ -18,6 +18,8 @@ export default [
         CodeMirror: "readonly",
         Chart: "readonly",
         VueDatePicker: "readonly",
+        DOMPurify: "readonly",
+        marked: "readonly",
         ...globals.browser
       }
     }

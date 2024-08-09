@@ -18,6 +18,8 @@
     "bootswatch": "^5.3.1",
     "chart.js": "^4.0.1",
     "codemirror": "^5.65.15",
+    "dompurify": "^3.1.6",
+    "marked": "^14.0.0",
     "vue": "^3.2.33",
     "vue-router": "^4.0.14"
   },

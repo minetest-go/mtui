@@ -27,6 +27,8 @@ import (
 //go:embed node_modules/codemirror/mode/xml/xml.js
 //go:embed node_modules/codemirror/mode/css/css.js
 //go:embed node_modules/codemirror/mode/toml/toml.js
+//go:embed node_modules/marked/lib/marked.umd.js
+//go:embed node_modules/dompurify/dist/purify.min.js
 var Webapp embed.FS
 
 const DefaultCss = "node_modules/bootstrap/dist/css/bootstrap.min.css"
