@@ -24,6 +24,7 @@ func RandSeq(n int) string {
 // to be used in a provisioned environment for easy admin-onboarding
 func (a *Api) AdminLogin(w http.ResponseWriter, r *http.Request) {
 	key := r.URL.Query().Get("key")
+	disable_redirect := r.URL.Query().Get("disable_redirect") == "true"
 	username := mux.Vars(r)["username"]
 
 	if key != a.app.Config.JWTKey {
@@ -45,12 +46,23 @@ func (a *Api) AdminLogin(w http.ResponseWriter, r *http.Request) {
 		Message:  fmt.Sprintf("User '%s' logged in successfully as admin", username),
 	}, r)
 
-	_, err = a.updateToken(w, *auth_entry.ID, username)
+	claims, err := a.updateToken(w, *auth_entry.ID, username)
 	if err != nil {
 		SendError(w, 500, err.Error())
 		return
 	}
 
-	// redirect to main page
-	http.Redirect(w, r, fmt.Sprintf("%s#/help", a.app.Config.CookiePath), http.StatusSeeOther)
+	token, err := a.createToken(claims)
+	if err != nil {
+		SendError(w, 500, err.Error())
+		return
+	}
+
+	if disable_redirect {
+		// return jwt
+		w.Write([]byte(token))
+	} else {
+		// redirect to main page
+		http.Redirect(w, r, fmt.Sprintf("%s#/help", a.app.Config.CookiePath), http.StatusSeeOther)
+	}
 }

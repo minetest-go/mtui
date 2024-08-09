@@ -44,10 +44,13 @@ func (api *Api) RemoveClaims(w http.ResponseWriter) {
 	http.SetCookie(w, api.createCookie("", time.Now()))
 }
 
-func (api *Api) SetClaims(w http.ResponseWriter, claims *types.Claims) error {
+func (api *Api) createToken(claims *types.Claims) (string, error) {
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return t.SignedString([]byte(api.app.Config.JWTKey))
+}
 
-	token, err := t.SignedString([]byte(api.app.Config.JWTKey))
+func (api *Api) SetClaims(w http.ResponseWriter, claims *types.Claims) error {
+	token, err := api.createToken(claims)
 	if err != nil {
 		return err
 	}
