@@ -18,7 +18,7 @@ func (a *Api) GetATMBalance(w http.ResponseWriter, r *http.Request, claims *type
 
 	entry, err := a.app.DBContext.ModStorage.Get("atm", []byte(fmt.Sprintf("balance_%s", name)))
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -27,7 +27,7 @@ func (a *Api) GetATMBalance(w http.ResponseWriter, r *http.Request, claims *type
 	if entry != nil {
 		v, err := strconv.ParseInt(string(entry.Value), 10, 64)
 		if err != nil {
-			SendError(w, 500, err.Error())
+			SendError(w, 500, err)
 			return
 		}
 		balance = int(v)
@@ -40,7 +40,7 @@ func (a *Api) ATMTransfer(w http.ResponseWriter, r *http.Request, claims *types.
 	req := &command.ATMTransferRequest{}
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 

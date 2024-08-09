@@ -13,7 +13,7 @@ func (a *Api) GetFeatures(w http.ResponseWriter, r *http.Request) {
 
 	available_features, err := app.GetAvailableFeatures()
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	for _, avavailable_feature := range available_features {
@@ -22,7 +22,7 @@ func (a *Api) GetFeatures(w http.ResponseWriter, r *http.Request) {
 
 	list, err := a.app.Repos.FeatureRepository.GetAll()
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	for _, feature := range list {
@@ -39,7 +39,7 @@ func (a *Api) SetFeature(w http.ResponseWriter, r *http.Request, claims *types.C
 	feature := &types.Feature{}
 	err := json.NewDecoder(r.Body).Decode(feature)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 

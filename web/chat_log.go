@@ -31,7 +31,7 @@ func (a *Api) SendChat(w http.ResponseWriter, r *http.Request, c *types.Claims) 
 	msg := &command.ChatMessage{}
 	err := json.NewDecoder(r.Body).Decode(msg)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	msg.Name = c.Username
@@ -42,13 +42,13 @@ func (a *Api) SendChat(w http.ResponseWriter, r *http.Request, c *types.Claims) 
 		Message: msg.Message,
 	})
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
 	err = a.app.Bridge.SendCommand(command.COMMAND_CHAT_SEND, msg)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 

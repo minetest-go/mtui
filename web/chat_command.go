@@ -13,13 +13,13 @@ func (a *Api) ExecuteChatcommand(w http.ResponseWriter, r *http.Request, claims 
 	req := &command.ExecuteChatCommandRequest{}
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
 	if req.Playername != claims.Username {
 		// username does not match
-		SendError(w, 500, "username mismatch")
+		SendError(w, 500, fmt.Errorf("username mismatch"))
 		return
 	}
 

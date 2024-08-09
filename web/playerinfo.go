@@ -96,29 +96,29 @@ func (a *Api) GetPlayerInfo(w http.ResponseWriter, r *http.Request, claims *type
 
 	auth, err := a.app.DBContext.Auth.GetByUsername(playername)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	if auth == nil {
-		SendError(w, 404, "player not found")
+		SendError(w, 404, fmt.Errorf("player not found"))
 		return
 	}
 
 	privs, err := a.app.DBContext.Privs.GetByID(*auth.ID)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
 	player, err := a.app.DBContext.Player.GetPlayer(playername)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
 	md, err := a.app.DBContext.PlayerMetadata.GetPlayerMetadata(playername)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -130,7 +130,7 @@ func (a *Api) SearchPlayer(w http.ResponseWriter, r *http.Request, claims *types
 	s := &auth.AuthSearch{}
 	err := json.NewDecoder(r.Body).Decode(s)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -139,19 +139,19 @@ func (a *Api) SearchPlayer(w http.ResponseWriter, r *http.Request, claims *types
 	for i, auth := range list {
 		privs, err := a.app.DBContext.Privs.GetByID(*auth.ID)
 		if err != nil {
-			SendError(w, 500, err.Error())
+			SendError(w, 500, err)
 			return
 		}
 
 		player, err := a.app.DBContext.Player.GetPlayer(auth.Name)
 		if err != nil {
-			SendError(w, 500, err.Error())
+			SendError(w, 500, err)
 			return
 		}
 
 		md, err := a.app.DBContext.PlayerMetadata.GetPlayerMetadata(auth.Name)
 		if err != nil {
-			SendError(w, 500, err.Error())
+			SendError(w, 500, err)
 			return
 		}
 
@@ -165,7 +165,7 @@ func (a *Api) CountPlayer(w http.ResponseWriter, r *http.Request, claims *types.
 	s := &auth.AuthSearch{}
 	err := json.NewDecoder(r.Body).Decode(s)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -180,14 +180,14 @@ func (a *Api) GetPlayerSkin(w http.ResponseWriter, r *http.Request) {
 	// default skin
 	skin, err := public.Webapp.ReadFile("pics/character.png")
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
 	// check if custom skin is set
 	entry, err := a.app.DBContext.ModStorage.Get("skinsdb", []byte(playername))
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	if entry != nil && entry.Value != nil {
@@ -197,7 +197,7 @@ func (a *Api) GetPlayerSkin(w http.ResponseWriter, r *http.Request) {
 			// file exists, read contents
 			skin, err = os.ReadFile(skin_path)
 			if err != nil {
-				SendError(w, 500, err.Error())
+				SendError(w, 500, err)
 				return
 			}
 		}

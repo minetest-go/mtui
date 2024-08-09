@@ -63,24 +63,24 @@ type OnboardRequest struct {
 func (a *Api) CreateOnboardUser(w http.ResponseWriter, r *http.Request) {
 	can_ob, err := a.canOboard()
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	if !can_ob {
-		SendError(w, 405, "onboarding not possible")
+		SendError(w, 405, fmt.Errorf("onboarding not possible"))
 		return
 	}
 
 	obr := &OnboardRequest{}
 	err = json.NewDecoder(r.Body).Decode(obr)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
 	_, err = a.app.CreateAdmin(obr.Username, obr.Password)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 

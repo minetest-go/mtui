@@ -8,14 +8,14 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func SendError(w http.ResponseWriter, code int, message string) {
+func SendError(w http.ResponseWriter, code int, err error) {
 	logrus.WithFields(logrus.Fields{
-		"code":    code,
-		"message": message,
+		"code": code,
+		"err":  err,
 	}).Error("http error")
 	w.Header().Set("Content-Type", "text/plain; charset=UTF-8")
 	w.WriteHeader(code)
-	w.Write([]byte(message))
+	w.Write([]byte(err.Error()))
 }
 
 func SendText(w http.ResponseWriter, txt string) {
@@ -41,7 +41,7 @@ func SendRawJson(w http.ResponseWriter, data []byte) {
 
 func Send(w http.ResponseWriter, o any, err error) {
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 	} else {
 		SendJson(w, o)
 	}

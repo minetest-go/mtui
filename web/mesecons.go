@@ -20,21 +20,21 @@ func (a *Api) SetMeseconsControl(w http.ResponseWriter, r *http.Request, claims 
 	user_mesecon := &types.Mesecons{}
 	err := json.NewDecoder(r.Body).Decode(user_mesecon)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
 	mesecon, err := a.app.Repos.MeseconsRepo.GetByPoskey(user_mesecon.PosKey)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	if mesecon == nil {
-		SendError(w, 404, "not found")
+		SendError(w, 404, fmt.Errorf("not found"))
 		return
 	}
 	if mesecon.PlayerName != claims.Username {
-		SendError(w, 403, "unauthorized")
+		SendError(w, 403, fmt.Errorf("unauthorized"))
 		return
 	}
 
@@ -46,7 +46,7 @@ func (a *Api) SetMeseconsControl(w http.ResponseWriter, r *http.Request, claims 
 	mesecon.LastModified = time.Now().UnixMilli()
 	err = a.app.Repos.MeseconsRepo.Save(mesecon)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -81,12 +81,12 @@ func (a *Api) DeleteMeseconsControl(w http.ResponseWriter, r *http.Request, clai
 
 	m, err := a.app.Repos.MeseconsRepo.GetByPoskey(poskey)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
 	if m.PlayerName != claims.Username {
-		SendError(w, 403, "unauthorized")
+		SendError(w, 403, fmt.Errorf("unauthorized"))
 		return
 	}
 

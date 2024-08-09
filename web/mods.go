@@ -23,17 +23,17 @@ func (a *Api) UpdateModVersion(w http.ResponseWriter, r *http.Request, claims *t
 
 	m, err := a.app.ModManager.Mod(id)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	if m == nil {
-		SendError(w, 404, "not found")
+		SendError(w, 404, fmt.Errorf("not found"))
 		return
 	}
 
 	err = a.app.ModManager.Update(m, version)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -54,7 +54,7 @@ func (a *Api) CreateMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 	m := &types.Mod{}
 	err := json.NewDecoder(r.Body).Decode(m)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -113,17 +113,17 @@ func (a *Api) UpdateMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 
 	m, err := a.app.ModManager.Mod(id)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	if m == nil {
-		SendError(w, 404, "not found")
+		SendError(w, 404, fmt.Errorf("not found"))
 		return
 	}
 
 	err = json.NewDecoder(r.Body).Decode(m)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -143,17 +143,17 @@ func (a *Api) DeleteMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 
 	m, err := a.app.ModManager.Mod(id)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	if m == nil {
-		SendError(w, 404, "not found")
+		SendError(w, 404, fmt.Errorf("not found"))
 		return
 	}
 
 	err = a.app.ModManager.Remove(m)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 	}
 
 	// create log entry

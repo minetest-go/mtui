@@ -43,13 +43,13 @@ func (a *Api) get_sanitized_filename(r *http.Request, query_param string) (strin
 func (a *Api) BrowseFolder(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	reldir, absdir, err := a.get_sanitized_dir(r)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
 	entries, err := os.ReadDir(absdir)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -91,7 +91,7 @@ func (a *Api) BrowseFolder(w http.ResponseWriter, r *http.Request, claims *types
 func (a *Api) Mkdir(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	reldir, absdir, err := a.get_sanitized_dir(r)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -108,7 +108,7 @@ func (a *Api) Mkdir(w http.ResponseWriter, r *http.Request, claims *types.Claims
 func (a *Api) DeleteFile(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	rel_filename, filename, err := a.get_sanitized_filename(r, "filename")
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -125,13 +125,13 @@ func (a *Api) DeleteFile(w http.ResponseWriter, r *http.Request, claims *types.C
 func (a *Api) RenameFile(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	rel_src, src, err := a.get_sanitized_filename(r, "src")
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
 	rel_dst, dst, err := a.get_sanitized_filename(r, "dst")
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 

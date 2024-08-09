@@ -65,13 +65,13 @@ func (a *ServiceApi) Create(w http.ResponseWriter, r *http.Request, claims *type
 	cer := &CreateRequest{}
 	err := json.NewDecoder(r.Body).Decode(cer)
 	if err != nil {
-		SendError(w, 500, fmt.Sprintf("json error: %v", err))
+		SendError(w, 500, fmt.Errorf("json error: %v", err))
 		return
 	}
 
 	image := a.imageMap[cer.Version]
 	if image == "" {
-		SendError(w, 404, fmt.Sprintf("unknown version: %s", cer.Version))
+		SendError(w, 404, fmt.Errorf("unknown version: %s", cer.Version))
 		return
 	}
 
@@ -130,14 +130,14 @@ func (a *ServiceApi) GetLogs(w http.ResponseWriter, r *http.Request, claims *typ
 
 	since_millis, err := strconv.ParseInt(vars["since"], 10, 64)
 	if err != nil {
-		SendError(w, 500, fmt.Sprintf("invalid since format: %s", vars["since"]))
+		SendError(w, 500, fmt.Errorf("invalid since format: %s", vars["since"]))
 		return
 	}
 	since := time.UnixMilli(since_millis)
 
 	until_millis, err := strconv.ParseInt(vars["until"], 10, 64)
 	if err != nil {
-		SendError(w, 500, fmt.Sprintf("invalid until format: %s", vars["until"]))
+		SendError(w, 500, fmt.Errorf("invalid until format: %s", vars["until"]))
 		return
 	}
 	until := time.UnixMilli(until_millis)

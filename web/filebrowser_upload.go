@@ -57,26 +57,26 @@ func (a *Api) writeFile(filename string, data io.Reader, r *http.Request, claims
 func (a *Api) UploadZip(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	reldir, absdir, err := a.get_sanitized_dir(r)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
 	tf, err := os.CreateTemp(os.TempDir(), "mtui-zip-upload")
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	defer os.Remove(tf.Name())
 
 	_, err = io.Copy(tf, r.Body)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
 	zr, err := zip.OpenReader(tf.Name())
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	defer zr.Close()
@@ -87,7 +87,7 @@ func (a *Api) UploadZip(w http.ResponseWriter, r *http.Request, claims *types.Cl
 		dirname := path.Dir(targetfile)
 		err = os.MkdirAll(dirname, 0644)
 		if err != nil {
-			SendError(w, 500, err.Error())
+			SendError(w, 500, err)
 			return
 		}
 
@@ -97,7 +97,7 @@ func (a *Api) UploadZip(w http.ResponseWriter, r *http.Request, claims *types.Cl
 
 		zipfile, err := f.Open()
 		if err != nil {
-			SendError(w, 500, err.Error())
+			SendError(w, 500, err)
 			return
 		}
 
@@ -106,7 +106,7 @@ func (a *Api) UploadZip(w http.ResponseWriter, r *http.Request, claims *types.Cl
 		zipfile.Close()
 
 		if err != nil {
-			SendError(w, 500, err.Error())
+			SendError(w, 500, err)
 			return
 		}
 	}
@@ -121,13 +121,13 @@ func (a *Api) UploadZip(w http.ResponseWriter, r *http.Request, claims *types.Cl
 func (a *Api) UploadTarGZ(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	reldir, absdir, err := a.get_sanitized_dir(r)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
 	zr, err := gzip.NewReader(r.Body)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	defer zr.Close()
@@ -141,7 +141,7 @@ func (a *Api) UploadTarGZ(w http.ResponseWriter, r *http.Request, claims *types.
 			break
 		}
 		if err != nil {
-			SendError(w, 500, err.Error())
+			SendError(w, 500, err)
 			return
 		}
 
@@ -149,7 +149,7 @@ func (a *Api) UploadTarGZ(w http.ResponseWriter, r *http.Request, claims *types.
 		dirname := path.Dir(targetfile)
 		err = os.MkdirAll(dirname, 0644)
 		if err != nil {
-			SendError(w, 500, err.Error())
+			SendError(w, 500, err)
 			return
 		}
 
@@ -161,7 +161,7 @@ func (a *Api) UploadTarGZ(w http.ResponseWriter, r *http.Request, claims *types.
 		count += fc
 
 		if err != nil {
-			SendError(w, 500, err.Error())
+			SendError(w, 500, err)
 			return
 		}
 	}
@@ -176,13 +176,13 @@ func (a *Api) UploadTarGZ(w http.ResponseWriter, r *http.Request, claims *types.
 func (a *Api) UploadFile(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	rel_filename, filename, err := a.get_sanitized_filename(r, "filename")
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
 	count, err := a.writeFile(filename, r.Body, r, claims)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 

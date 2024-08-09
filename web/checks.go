@@ -44,11 +44,11 @@ func (api *Api) Secure(fn SecureHandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		claims, err := api.GetClaims(r)
 		if err == err_unauthorized {
-			SendError(w, http.StatusUnauthorized, "unauthorized")
+			SendError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized"))
 			return
 		} else if err != nil {
 			api.RemoveClaims(w)
-			SendError(w, http.StatusInternalServerError, err.Error())
+			SendError(w, http.StatusInternalServerError, err)
 			return
 		}
 		fn(w, r, claims)
@@ -65,7 +65,7 @@ func (api *Api) OptionalSecure(fn SecureHandlerFunc) http.HandlerFunc {
 			return
 		} else if err != nil {
 			api.RemoveClaims(w)
-			SendError(w, http.StatusInternalServerError, err.Error())
+			SendError(w, http.StatusInternalServerError, err)
 			return
 		}
 		// logged in
@@ -79,15 +79,15 @@ func (api *Api) PrivCheck(required_priv string) Check {
 	return func(w http.ResponseWriter, r *http.Request) bool {
 		claims, err := api.GetClaims(r)
 		if err == err_unauthorized {
-			SendError(w, http.StatusUnauthorized, "unauthorized")
+			SendError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized"))
 			return false
 		} else if err != nil {
 			api.RemoveClaims(w)
-			SendError(w, http.StatusInternalServerError, err.Error())
+			SendError(w, http.StatusInternalServerError, err)
 			return false
 		}
 		if !claims.HasPriv(required_priv) {
-			SendError(w, http.StatusForbidden, "forbidden, missing priv: "+required_priv)
+			SendError(w, http.StatusForbidden, fmt.Errorf("forbidden, missing priv: '%s'", required_priv))
 			return false
 		}
 		return true
@@ -98,12 +98,12 @@ func (api *Api) FeatureCheck(name string) Check {
 	return func(w http.ResponseWriter, r *http.Request) bool {
 		feature, err := api.app.Repos.FeatureRepository.GetByName(name)
 		if err != nil {
-			SendError(w, 500, err.Error())
+			SendError(w, 500, err)
 			return false
 		}
 
 		if !feature.Enabled {
-			SendError(w, http.StatusInternalServerError, fmt.Sprintf("Feature '%s' not enabled", name))
+			SendError(w, http.StatusInternalServerError, fmt.Errorf("Feature '%s' not enabled", name))
 			return false
 		}
 
@@ -161,14 +161,14 @@ func (api *Api) SecurePriv(required_priv string, fn SecureHandlerFunc) http.Hand
 	return func(w http.ResponseWriter, r *http.Request) {
 		claims, err := api.GetClaims(r)
 		if err == err_unauthorized {
-			SendError(w, http.StatusUnauthorized, "unauthorized")
+			SendError(w, http.StatusUnauthorized, fmt.Errorf("unauthorized"))
 			return
 		} else if err != nil {
-			SendError(w, http.StatusInternalServerError, err.Error())
+			SendError(w, http.StatusInternalServerError, err)
 			return
 		}
 		if !claims.HasPriv(required_priv) {
-			SendError(w, http.StatusForbidden, "forbidden, missing priv: "+required_priv)
+			SendError(w, http.StatusForbidden, fmt.Errorf("forbidden, missing priv: '%s'", required_priv))
 			return
 		}
 		fn(w, r, claims)
@@ -180,14 +180,14 @@ func (api *Api) Feature(name string, fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		feature, err := api.app.Repos.FeatureRepository.GetByName(name)
 		if err != nil {
-			SendError(w, 500, err.Error())
+			SendError(w, 500, err)
 			return
 		}
 
 		if feature.Enabled {
 			fn(w, r)
 		} else {
-			SendError(w, http.StatusInternalServerError, fmt.Sprintf("Feature '%s' not enabled", name))
+			SendError(w, http.StatusInternalServerError, fmt.Errorf("Feature '%s' not enabled", name))
 		}
 	}
 }

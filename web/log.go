@@ -12,7 +12,7 @@ func (a *Api) SearchLogs(w http.ResponseWriter, r *http.Request, claims *types.C
 	s := &types.LogSearch{}
 	err := json.NewDecoder(r.Body).Decode(s)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -24,7 +24,7 @@ func (a *Api) CountLogs(w http.ResponseWriter, r *http.Request, claims *types.Cl
 	s := &types.LogSearch{}
 	err := json.NewDecoder(r.Body).Decode(s)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 

@@ -13,21 +13,21 @@ func (a *Api) GetLuacontroller(w http.ResponseWriter, r *http.Request, claims *t
 	req := &command.LuaControllerGetProgramRequest{}
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	if req.Pos == nil {
-		SendError(w, 500, "position is nil")
+		SendError(w, 500, fmt.Errorf("position is nil"))
 		return
 	}
 
 	m, err := a.app.Repos.MeseconsRepo.GetByPoskey(req.Pos.String())
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	if m.PlayerName != claims.Username {
-		SendError(w, 403, "unauthorized")
+		SendError(w, 403, fmt.Errorf("unauthorized"))
 		return
 	}
 
@@ -52,20 +52,20 @@ func (a *Api) SetLuacontroller(w http.ResponseWriter, r *http.Request, claims *t
 	req := &command.LuaControllerSetProgramRequest{}
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	if req.Pos == nil {
-		SendError(w, 500, "position is nil")
+		SendError(w, 500, fmt.Errorf("position is nil"))
 		return
 	}
 	m, err := a.app.Repos.MeseconsRepo.GetByPoskey(req.Pos.String())
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	if m.PlayerName != claims.Username {
-		SendError(w, 403, "unauthorized")
+		SendError(w, 403, fmt.Errorf("unauthorized"))
 		return
 	}
 
@@ -91,24 +91,24 @@ func (a *Api) LuacontrollerDigilineSend(w http.ResponseWriter, r *http.Request, 
 	req := &command.LuaControllerDigilineSendRequest{}
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	if req.Pos == nil {
-		SendError(w, 500, "position is nil")
+		SendError(w, 500, fmt.Errorf("position is nil"))
 		return
 	}
 	if len(req.Channel) > 64 || len(req.Message) > 128 {
-		SendError(w, 500, "channel/message length exceeded")
+		SendError(w, 500, fmt.Errorf("channel/message length exceeded"))
 		return
 	}
 	m, err := a.app.Repos.MeseconsRepo.GetByPoskey(req.Pos.String())
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	if m.PlayerName != claims.Username {
-		SendError(w, 403, "unauthorized")
+		SendError(w, 403, fmt.Errorf("unauthorized"))
 		return
 	}
 

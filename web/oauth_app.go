@@ -24,7 +24,7 @@ func (a *Api) SetOauthApp(w http.ResponseWriter, r *http.Request, claims *types.
 	app := &types.OauthApp{}
 	err := json.NewDecoder(r.Body).Decode(app)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 

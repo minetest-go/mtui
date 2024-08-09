@@ -13,7 +13,7 @@ func (a *Api) ExecuteLua(w http.ResponseWriter, r *http.Request, claims *types.C
 	req := &command.LuaRequest{}
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 

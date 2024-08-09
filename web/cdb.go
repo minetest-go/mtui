@@ -16,7 +16,7 @@ func (a *Api) SearchCDBPackages(w http.ResponseWriter, r *http.Request, claims *
 	q := &cdb.PackageQuery{}
 	err := json.NewDecoder(r.Body).Decode(q)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -52,7 +52,7 @@ func (a *Api) ResolveCDBPackageDependencies(w http.ResponseWriter, r *http.Reque
 	rr := &ResolveCDBPackageDepsRequest{}
 	err := json.NewDecoder(r.Body).Decode(rr)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 

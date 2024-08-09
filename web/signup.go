@@ -24,12 +24,12 @@ func (a *Api) Signup(w http.ResponseWriter, r *http.Request) {
 	sr := &SignupRequest{}
 	err := json.NewDecoder(r.Body).Decode(sr)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
 	if !captcha.VerifyString(sr.CaptchaID, sr.Captcha) {
-		SendError(w, 401, "captcha invalid")
+		SendError(w, 401, fmt.Errorf("captcha invalid"))
 		return
 	}
 

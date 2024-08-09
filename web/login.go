@@ -51,18 +51,18 @@ func (a *Api) DoLogout(w http.ResponseWriter, r *http.Request) {
 func (a *Api) GetLogin(w http.ResponseWriter, r *http.Request) {
 	claims, err := a.GetClaims(r)
 	if err == err_unauthorized {
-		SendError(w, 401, "unauthorized")
+		SendError(w, 401, fmt.Errorf("unauthorized"))
 	} else if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 	} else if !a.app.MaintenanceMode.Load() {
 		// refresh token
 		auth_entry, err := a.app.DBContext.Auth.GetByUsername(claims.Username)
 		if err != nil {
-			SendError(w, 500, err.Error())
+			SendError(w, 500, err)
 			return
 		}
 		if auth_entry == nil {
-			SendError(w, 404, "auth entry not found")
+			SendError(w, 404, fmt.Errorf("auth entry not found"))
 			return
 		}
 
@@ -126,17 +126,17 @@ func (a *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 	req := &LoginRequest{}
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
 	auth_entry, err := a.app.DBContext.Auth.GetByUsername(req.Username)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	if auth_entry == nil {
-		SendError(w, 404, "user not found")
+		SendError(w, 404, fmt.Errorf("user not found"))
 		// create log entry
 		a.app.CreateUILogEntry(&types.Log{
 			Username: req.Username,
@@ -157,17 +157,17 @@ func (a *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 			// SRP fallback
 			salt, verifier, err := auth.ParseDBPassword(auth_entry.Password)
 			if err != nil {
-				SendError(w, 500, err.Error())
+				SendError(w, 500, err)
 				return
 			}
 
 			ok, err := auth.VerifyAuth(req.Username, req.Password, salt, verifier)
 			if err != nil {
-				SendError(w, 500, err.Error())
+				SendError(w, 500, err)
 				return
 			}
 			if !ok {
-				SendError(w, 401, "unauthorized")
+				SendError(w, 401, fmt.Errorf("unauthorized"))
 				// create log entry
 				a.app.CreateUILogEntry(&types.Log{
 					Username: req.Username,
@@ -180,7 +180,7 @@ func (a *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 	} else {
 		// login with tan
 		if tan != req.Password {
-			SendError(w, 401, "unauthorized")
+			SendError(w, 401, fmt.Errorf("unauthorized"))
 			return
 		}
 
@@ -191,7 +191,7 @@ func (a *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 	// check otp code if applicable
 	privs, err := a.app.DBContext.Privs.GetByID(*auth_entry.ID)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -205,7 +205,7 @@ func (a *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 	if otp_enabled {
 		secret_entry, err := a.app.DBContext.ModStorage.Get("otp", []byte(fmt.Sprintf("%s_secret", req.Username)))
 		if err != nil {
-			SendError(w, 500, err.Error())
+			SendError(w, 500, err)
 			return
 		}
 
@@ -217,12 +217,12 @@ func (a *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 			})
 
 			if err != nil {
-				SendError(w, 500, err.Error())
+				SendError(w, 500, err)
 				return
 			}
 
 			if !otp_ok {
-				SendError(w, 403, "otp code wrong")
+				SendError(w, 403, fmt.Errorf("otp code wrong"))
 				// create log entry
 				a.app.CreateUILogEntry(&types.Log{
 					Username: req.Username,
@@ -236,7 +236,7 @@ func (a *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 
 	claims, err := a.updateToken(w, *auth_entry.ID, auth_entry.Name)
 	if err != nil {
-		SendError(w, 500, fmt.Sprintf("token-update failed: %v", err))
+		SendError(w, 500, fmt.Errorf("token-update failed: %v", err))
 		return
 	}
 

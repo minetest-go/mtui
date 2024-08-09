@@ -37,19 +37,19 @@ func (a *Api) SetSkin(w http.ResponseWriter, r *http.Request, claims *types.Clai
 	skin_id, _ := strconv.ParseInt(vars["id"], 10, 64)
 
 	if r.ContentLength > 1024*10 {
-		SendError(w, 500, "file size > 10kb")
+		SendError(w, 500, fmt.Errorf("file size > 10kb"))
 		return
 	}
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
 	// write file to filesystem
 	err = os.WriteFile(getPlayerSkinFile(a.app.WorldDir, claims.Username, skin_id), b, 0666)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 

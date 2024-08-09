@@ -16,7 +16,7 @@ func (a *Api) GetConfig(w http.ResponseWriter, r *http.Request, c *types.Claims)
 
 	e, err := a.app.Repos.ConfigRepo.GetByKey(types.ConfigKey(key))
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -32,13 +32,13 @@ func (a *Api) SetConfig(w http.ResponseWriter, r *http.Request, c *types.Claims)
 	buf := bytes.NewBuffer([]byte{})
 	_, err := io.Copy(buf, r.Body)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
 	e, err := a.app.Repos.ConfigRepo.GetByKey(types.ConfigKey(key))
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -51,7 +51,7 @@ func (a *Api) SetConfig(w http.ResponseWriter, r *http.Request, c *types.Claims)
 	e.Value = buf.String()
 	err = a.app.Repos.ConfigRepo.Set(e)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 

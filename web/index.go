@@ -16,13 +16,13 @@ type IndexModel struct {
 func (a *Api) GetIndex(w http.ResponseWriter, r *http.Request) {
 	data, err := public.Webapp.ReadFile("index.html")
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
 	t, err := template.New("").Parse(string(data))
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -35,7 +35,7 @@ func (a *Api) GetIndex(w http.ResponseWriter, r *http.Request) {
 	if !a.app.MaintenanceMode.Load() {
 		entry, err := a.app.Repos.ConfigRepo.GetByKey(types.ConfigThemeKey)
 		if err != nil {
-			SendError(w, 500, err.Error())
+			SendError(w, 500, err)
 			return
 		}
 

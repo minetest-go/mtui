@@ -45,7 +45,7 @@ func (a *Api) SetMTConfig(w http.ResponseWriter, r *http.Request, claims *types.
 	s := &minetestconfig.Setting{}
 	err := json.NewDecoder(r.Body).Decode(s)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -57,14 +57,14 @@ func (a *Api) SetMTConfig(w http.ResponseWriter, r *http.Request, claims *types.
 
 	cfg, err := a.app.ReadMTConfig(sts)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	cfg[key] = s
 
 	err = a.app.WriteMTConfig(cfg, sts)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -118,14 +118,14 @@ func (a *Api) DeleteMTConfig(w http.ResponseWriter, r *http.Request, claims *typ
 
 	cfg, err := a.app.ReadMTConfig(sts)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	delete(cfg, key)
 
 	err = a.app.WriteMTConfig(cfg, sts)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 

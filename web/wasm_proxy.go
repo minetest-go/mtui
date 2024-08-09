@@ -24,7 +24,7 @@ var upgrader = websocket.Upgrader{
 func (api *Api) HandleProxy(w http.ResponseWriter, r *http.Request, c *types.Claims) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 

@@ -38,12 +38,12 @@ func (a *Api) markMail(w http.ResponseWriter, r *http.Request, claims *types.Cla
 	id := vars["id"]
 	e, err := a.app.Mail.GetEntry(claims.Username)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	m := e.FindMessage(id)
 	if m == nil {
-		SendError(w, 404, "mail not found")
+		SendError(w, 404, fmt.Errorf("mail not found"))
 		return
 	}
 	m.Read = read
@@ -70,11 +70,11 @@ func (a *Api) isValidRecipient(recipient string) (bool, error) {
 func (a *Api) checkRecipient(w http.ResponseWriter, recipient string) bool {
 	v, err := a.isValidRecipient(recipient)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return false
 	}
 	if !v {
-		SendError(w, 404, fmt.Sprintf("invalid recipient: '%s'", recipient))
+		SendError(w, 404, fmt.Errorf("invalid recipient: '%s'", recipient))
 		return false
 	}
 	return true
@@ -84,7 +84,7 @@ func (a *Api) SendMail(w http.ResponseWriter, r *http.Request, claims *types.Cla
 	m := &mail.Message{}
 	err := json.NewDecoder(r.Body).Decode(m)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -114,26 +114,26 @@ func (a *Api) SendMail(w http.ResponseWriter, r *http.Request, claims *types.Cla
 	// insert into senders outbox
 	e, err := a.app.Mail.GetEntry(claims.Username)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	e.Outbox = append(e.Outbox, m)
 	err = a.app.Mail.SetEntry(claims.Username, e)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
 	// insert into receivers inbox
 	e, err = a.app.Mail.GetEntry(m.To)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	e.Inbox = append(e.Inbox, m)
 	err = a.app.Mail.SetEntry(m.To, e)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -145,12 +145,12 @@ func (a *Api) DeleteMail(w http.ResponseWriter, r *http.Request, claims *types.C
 	id := vars["id"]
 	e, err := a.app.Mail.GetEntry(claims.Username)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	m := e.FindMessage(id)
 	if m == nil {
-		SendError(w, 404, "mail not found")
+		SendError(w, 404, fmt.Errorf("mail not found"))
 		return
 	}
 	e.RemoveMessage(id)
@@ -164,11 +164,11 @@ func (a *Api) CheckValidRecipient(w http.ResponseWriter, r *http.Request, claims
 	recipient := vars["recipient"]
 	v, err := a.isValidRecipient(recipient)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	if !v {
-		SendError(w, 404, "Recipient player does not exist")
+		SendError(w, 404, fmt.Errorf("recipient player does not exist"))
 		return
 	}
 }

@@ -18,7 +18,7 @@ func (a *Api) ChangePassword(w http.ResponseWriter, r *http.Request, claims *typ
 	req := &ChangePasswordRequest{}
 	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -27,18 +27,18 @@ func (a *Api) ChangePassword(w http.ResponseWriter, r *http.Request, claims *typ
 	// check username
 	if req.Username != claims.Username && !is_superuser {
 		// username does not match and "server" or "password" not found (not a superuser)
-		SendError(w, 500, "username mismatch and not a superuser")
+		SendError(w, 500, fmt.Errorf("username mismatch and not a superuser"))
 		return
 	}
 
 	// fetch entry from db
 	auth_entry, err := a.app.DBContext.Auth.GetByUsername(req.Username)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	if auth_entry == nil {
-		SendError(w, 404, "not found")
+		SendError(w, 404, fmt.Errorf("not found"))
 		return
 	}
 
@@ -51,17 +51,17 @@ func (a *Api) ChangePassword(w http.ResponseWriter, r *http.Request, claims *typ
 			// SRP fallback
 			salt, verifier, err := auth.ParseDBPassword(auth_entry.Password)
 			if err != nil {
-				SendError(w, 500, err.Error())
+				SendError(w, 500, err)
 				return
 			}
 
 			ok, err := auth.VerifyAuth(req.Username, req.OldPassword, salt, verifier)
 			if err != nil {
-				SendError(w, 500, err.Error())
+				SendError(w, 500, err)
 				return
 			}
 			if !ok {
-				SendError(w, 401, "unauthorized")
+				SendError(w, 401, fmt.Errorf("unauthorized"))
 				return
 			}
 		}
@@ -70,7 +70,7 @@ func (a *Api) ChangePassword(w http.ResponseWriter, r *http.Request, claims *typ
 	// create new password
 	salt, verifier, err := auth.CreateAuth(req.Username, req.NewPassword)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -78,7 +78,7 @@ func (a *Api) ChangePassword(w http.ResponseWriter, r *http.Request, claims *typ
 	auth_entry.Password = auth.CreateDBPassword(salt, verifier)
 	err = a.app.DBContext.Auth.Update(auth_entry)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 

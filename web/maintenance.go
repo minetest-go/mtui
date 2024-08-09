@@ -16,7 +16,7 @@ func (a *Api) GetMaintenanceMode(w http.ResponseWriter, r *http.Request, c *type
 func (a *Api) EnableMaintenanceMode(w http.ResponseWriter, r *http.Request, c *types.Claims) {
 	//TODO: this could lead to a race condition if called fast enough
 	if a.app.MaintenanceMode.Load() {
-		SendError(w, 500, "already in maintenance mode")
+		SendError(w, 500, fmt.Errorf("already in maintenance mode"))
 	}
 	a.app.MaintenanceMode.Store(true)
 
@@ -42,7 +42,7 @@ func (a *Api) EnableMaintenanceMode(w http.ResponseWriter, r *http.Request, c *t
 func (a *Api) DisableMaintenanceMode(w http.ResponseWriter, r *http.Request, c *types.Claims) {
 	//TODO: this could lead to a race condition if called fast enough
 	if !a.app.MaintenanceMode.Load() {
-		SendError(w, 500, "maintenance mode already disabled")
+		SendError(w, 500, fmt.Errorf("maintenance mode already disabled"))
 	}
 	a.app.MaintenanceMode.Store(false)
 	err := a.app.AttachDatabase()

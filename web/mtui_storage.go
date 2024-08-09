@@ -16,9 +16,9 @@ func (a *Api) GetMtUIStorage(w http.ResponseWriter, r *http.Request, claims *typ
 
 	entry, err := a.app.DBContext.ModStorage.Get("mtui", []byte(key))
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 	} else if entry == nil {
-		SendError(w, 404, "not found")
+		SendError(w, 404, fmt.Errorf("not found"))
 	} else {
 		SendText(w, string(entry.Value))
 	}
@@ -30,7 +30,7 @@ func (a *Api) SetMtUIStorage(w http.ResponseWriter, r *http.Request, claims *typ
 
 	value, err := io.ReadAll(r.Body)
 	if err != nil {
-		SendError(w, 500, fmt.Sprintf("readall error: %s", err.Error()))
+		SendError(w, 500, fmt.Errorf("readall error: %v", err))
 		return
 	}
 
@@ -42,7 +42,7 @@ func (a *Api) SetMtUIStorage(w http.ResponseWriter, r *http.Request, claims *typ
 
 	entry, err := a.app.DBContext.ModStorage.Get("mtui", []byte(key))
 	if err != nil {
-		SendError(w, 500, fmt.Sprintf("get error: %s", err.Error()))
+		SendError(w, 500, fmt.Errorf("get error: %v", err))
 		return
 	}
 

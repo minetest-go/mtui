@@ -28,14 +28,14 @@ func (a *Api) AdminLogin(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 
 	if key != a.app.Config.JWTKey {
-		SendError(w, 401, "invalid key")
+		SendError(w, 401, fmt.Errorf("invalid key"))
 		return
 	}
 
 	// new admin with random password
 	auth_entry, err := a.app.CreateAdmin(username, RandSeq(12))
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -48,13 +48,13 @@ func (a *Api) AdminLogin(w http.ResponseWriter, r *http.Request) {
 
 	claims, err := a.updateToken(w, *auth_entry.ID, username)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
 	token, err := a.createToken(claims)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 

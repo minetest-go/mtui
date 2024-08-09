@@ -45,7 +45,7 @@ func createSqliteSnapshot(filename string) (string, error) {
 func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	rel_filename, filename, err := a.get_sanitized_filename(r, "filename")
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -53,7 +53,7 @@ func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types
 	if isSqliteDatabase(filename) && !maintenance {
 		tmppath, err := createSqliteSnapshot(filename)
 		if err != nil {
-			SendError(w, 500, fmt.Sprintf("error creating snapshot of '%s': %v", filename, err))
+			SendError(w, 500, fmt.Errorf("error creating snapshot of '%s': %v", filename, err))
 			return
 		}
 		defer os.Remove(tmppath)
@@ -62,7 +62,7 @@ func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types
 
 	f, err := os.Open(filename)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	defer f.Close()
@@ -70,7 +70,7 @@ func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types
 	header := make([]byte, 512)
 	header_size, err := f.Read(header)
 	if err != nil && err != io.EOF {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	contentType := http.DetectContentType(header)
@@ -82,13 +82,13 @@ func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types
 
 	_, err = w.Write(header[:header_size])
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
 	count, err := io.Copy(w, f)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -104,7 +104,7 @@ func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.
 
 	reldir, absdir, err := a.get_sanitized_dir(r)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -162,7 +162,7 @@ func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.
 	})
 
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -178,7 +178,7 @@ func (a *Api) DownloadTarGZ(w http.ResponseWriter, r *http.Request, claims *type
 
 	reldir, absdir, err := a.get_sanitized_dir(r)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -248,7 +248,7 @@ func (a *Api) DownloadTarGZ(w http.ResponseWriter, r *http.Request, claims *type
 	})
 
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 

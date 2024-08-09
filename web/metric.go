@@ -12,7 +12,7 @@ func (a *Api) SearchMetrics(w http.ResponseWriter, r *http.Request) {
 	s := &types.MetricSearch{}
 	err := json.NewDecoder(r.Body).Decode(s)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 
@@ -24,7 +24,7 @@ func (a *Api) CountMetrics(w http.ResponseWriter, r *http.Request) {
 	s := &types.MetricSearch{}
 	err := json.NewDecoder(r.Body).Decode(s)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 

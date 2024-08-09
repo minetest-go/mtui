@@ -13,7 +13,7 @@ func (a *Api) RequestJoinPassword(w http.ResponseWriter, r *http.Request, claims
 	pw := app.RandSeq(16)
 	salt, verifier, err := auth.CreateAuth(claims.Username, pw)
 	if err != nil {
-		SendError(w, 500, err.Error())
+		SendError(w, 500, err)
 		return
 	}
 	dbpass := auth.CreateDBPassword(salt, verifier)
