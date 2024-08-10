@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 )
 
@@ -143,4 +144,35 @@ func (a *Api) RenameFile(w http.ResponseWriter, r *http.Request, claims *types.C
 		Event:    "filebrowser",
 		Message:  fmt.Sprintf("User '%s' moved the file '%s' to '%s'", claims.Username, rel_src, rel_dst),
 	}, r)
+}
+
+func (a *Api) GetDirectorySize(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	_, absdir, err := a.get_sanitized_dir(r)
+	if err != nil {
+		SendError(w, 500, err)
+		return
+	}
+
+	count := int64(0)
+	err = filepath.Walk(absdir, func(filePath string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		if ignoreFileDownload(filePath) {
+			return nil
+		}
+
+		fi, err := os.Stat(filePath)
+		if err != nil {
+			return fmt.Errorf("stat error: '%s': %v", filePath, err)
+		}
+
+		count += fi.Size()
+		return nil
+	})
+
+	Send(w, count, err)
 }

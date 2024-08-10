@@ -41,6 +41,7 @@ func Setup(a *app.App) error {
 
 	fbr := r.PathPrefix("/api/filebrowser").Subrouter()
 	fbr.Use(SecureHandler(api.PrivCheck(types.PRIV_SERVER)))
+	fbr.HandleFunc("/size", api.Secure(api.GetDirectorySize)).Methods(http.MethodGet)
 	fbr.HandleFunc("/browse", api.Secure(api.BrowseFolder)).Methods(http.MethodGet)
 	fbr.HandleFunc("/zip", api.Secure(api.DownloadZip)).Methods(http.MethodGet)
 	fbr.HandleFunc("/targz", api.Secure(api.DownloadTarGZ)).Methods(http.MethodGet)
