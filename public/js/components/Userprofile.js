@@ -183,7 +183,7 @@ export default {
                     <div class="card-body" v-if="playerinfo.stats">
                         <ul>
                             <li v-if="is_moderator">
-                                <b>Position: </b> {{ parseInt(playerinfo.posx) }} / {{ parseInt(playerinfo.posy) }} / {{ parseInt(playerinfo.posz) }}
+                                <b>Position: </b> {{ parseInt(playerinfo.posx)/10 }} / {{ parseInt(playerinfo.posy)/10 }} / {{ parseInt(playerinfo.posz)/10 }}
                             </li>
                             <li v-if="playerinfo.stats.played_time">
                                 <b>Playtime:</b> {{ format_duration(playerinfo.stats.played_time) }}
