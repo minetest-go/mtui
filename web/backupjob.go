@@ -34,6 +34,7 @@ const (
 )
 
 type CreateBackupJob struct {
+	ID       string        `json:"id"`
 	Type     BackupJobType `json:"type"`
 	Host     string        `json:"host"`
 	Port     int           `json:"port"`
@@ -110,12 +111,15 @@ func (a *Api) CreateBackupJob(w http.ResponseWriter, r *http.Request, c *types.C
 		return
 	}
 
-	id := uuid.NewString()
+	if job.ID == "" {
+		job.ID = uuid.NewString()
+	}
+
 	info := &BackupJobInfo{
 		Status: BackupJobRunning,
-		ID:     id,
+		ID:     job.ID,
 	}
-	backupjobs[id] = info
+	backupjobs[job.ID] = info
 	go backupJob(a.app, job, info, c)
 
 	SendJson(w, info)
