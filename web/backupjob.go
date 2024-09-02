@@ -3,6 +3,8 @@ package web
 import (
 	"encoding/json"
 	"fmt"
+	"mtui/app"
+	"mtui/types"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -20,9 +22,9 @@ const (
 )
 
 type BackupJobInfo struct {
-	ID      string
-	Status  BackupJobState
-	Message string
+	ID      string         `json:"id"`
+	Status  BackupJobState `json:"state"`
+	Message string         `json:"message"`
 }
 
 type BackupJobType string
@@ -32,17 +34,17 @@ const (
 )
 
 type CreateBackupJob struct {
-	Type     BackupJobType
-	Host     string
-	Port     int
-	Filename string
-	Username string
-	Password string
+	Type     BackupJobType `json:"type"`
+	Host     string        `json:"host"`
+	Port     int           `json:"port"`
+	Filename string        `json:"filename"`
+	Username string        `json:"username"`
+	Password string        `json:"password"`
 }
 
 var backupjobs = map[string]*BackupJobInfo{}
 
-func backupJob(job *CreateBackupJob, info *BackupJobInfo) {
+func backupJob(a *app.App, job *CreateBackupJob, info *BackupJobInfo) {
 	addr := fmt.Sprintf("%s:%d", job.Host, job.Port)
 
 	config := &ssh.ClientConfig{
@@ -77,7 +79,26 @@ func backupJob(job *CreateBackupJob, info *BackupJobInfo) {
 	}
 	defer file.Close()
 
-	//TODO
+	filecount := 0
+	bytes, err := a.StreamZip(a.WorldDir, file, &app.StreamZipOpts{
+		Callback: func(files, bytes int64, currentfile string) {
+			info.Message = fmt.Sprintf("Copying file '%s' (progress: %d bytes, %d files)", currentfile, bytes, files)
+			filecount++
+		},
+	})
+	if err != nil {
+		info.Status = BackupJobFailure
+		info.Message = fmt.Sprintf("sftp create failed: %v", err)
+		return
+	}
+
+	info.Message = fmt.Sprintf("Backup complete with %d bytes and %d files", bytes, filecount)
+	info.Status = BackupJobSuccess
+
+	a.CreateUILogEntry(&types.Log{
+		Event:   "backup",
+		Message: info.Message,
+	}, nil)
 }
 
 func (a *Api) CreateBackupJob(w http.ResponseWriter, r *http.Request) {
@@ -88,10 +109,13 @@ func (a *Api) CreateBackupJob(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	info := &BackupJobInfo{Status: BackupJobRunning}
 	id := uuid.NewString()
+	info := &BackupJobInfo{
+		Status: BackupJobRunning,
+		ID:     id,
+	}
 	backupjobs[id] = info
-	go backupJob(job, info)
+	go backupJob(a.app, job, info)
 
 	SendJson(w, info)
 }
