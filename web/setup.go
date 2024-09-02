@@ -53,6 +53,11 @@ func Setup(a *app.App) error {
 	fbr.HandleFunc("/file", api.Secure(api.DeleteFile)).Methods(http.MethodDelete)
 	fbr.HandleFunc("/rename", api.Secure(api.RenameFile)).Methods(http.MethodPost)
 
+	// backup job
+	apibj := r.PathPrefix("/api/backupjob").Subrouter()
+	apibj.HandleFunc("", api.CheckApiKey(api.CreateBackupJob)).Methods(http.MethodPost)
+	apibj.HandleFunc("/{id}", api.CheckApiKey(api.GetBackupJobInfo)).Methods(http.MethodGet)
+
 	// maintenance mode middleware enabled routes below
 	apir := r.PathPrefix("/api").Subrouter()
 	apir.Use(MaintenanceModeCheck(a.MaintenanceMode))
