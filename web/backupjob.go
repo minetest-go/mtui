@@ -44,7 +44,7 @@ type CreateBackupJob struct {
 
 var backupjobs = map[string]*BackupJobInfo{}
 
-func backupJob(a *app.App, job *CreateBackupJob, info *BackupJobInfo) {
+func backupJob(a *app.App, job *CreateBackupJob, info *BackupJobInfo, c *types.Claims) {
 	addr := fmt.Sprintf("%s:%d", job.Host, job.Port)
 
 	config := &ssh.ClientConfig{
@@ -96,12 +96,13 @@ func backupJob(a *app.App, job *CreateBackupJob, info *BackupJobInfo) {
 	info.Status = BackupJobSuccess
 
 	a.CreateUILogEntry(&types.Log{
-		Event:   "backup",
-		Message: info.Message,
+		Username: c.Username,
+		Event:    "backup",
+		Message:  info.Message,
 	}, nil)
 }
 
-func (a *Api) CreateBackupJob(w http.ResponseWriter, r *http.Request) {
+func (a *Api) CreateBackupJob(w http.ResponseWriter, r *http.Request, c *types.Claims) {
 	job := &CreateBackupJob{}
 	err := json.NewDecoder(r.Body).Decode(job)
 	if err != nil {
@@ -115,12 +116,12 @@ func (a *Api) CreateBackupJob(w http.ResponseWriter, r *http.Request) {
 		ID:     id,
 	}
 	backupjobs[id] = info
-	go backupJob(a.app, job, info)
+	go backupJob(a.app, job, info, c)
 
 	SendJson(w, info)
 }
 
-func (a *Api) GetBackupJobInfo(w http.ResponseWriter, r *http.Request) {
+func (a *Api) GetBackupJobInfo(w http.ResponseWriter, r *http.Request, c *types.Claims) {
 	id := mux.Vars(r)["id"]
 	info := backupjobs[id]
 	if info == nil {
