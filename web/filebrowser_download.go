@@ -4,10 +4,9 @@ import (
 	"archive/tar"
 	"archive/zip"
 	"compress/gzip"
-	"context"
 	"fmt"
 	"io"
-	"mtui/db"
+	"mtui/app"
 	"mtui/types"
 	"net/http"
 	"os"
@@ -15,32 +14,6 @@ import (
 	"path/filepath"
 	"strings"
 )
-
-func ignoreFileDownload(filename string) bool {
-	if strings.HasSuffix(filename, ".sqlite-shm") || strings.HasSuffix(filename, ".sqlite-wal") {
-		// sqlite wal and shared memory
-		return true
-	}
-	return false
-}
-
-func isSqliteDatabase(filename string) bool {
-	return strings.HasSuffix(filename, ".sqlite")
-}
-
-func createSqliteSnapshot(filename string) (string, error) {
-	f, err := os.CreateTemp(os.TempDir(), "backup.sqlite")
-	if err != nil {
-		return "", fmt.Errorf("create temp error: %v", err)
-	}
-
-	err = db.BackupSqlite3Database(context.Background(), filename, f.Name())
-	if err != nil {
-		return "", fmt.Errorf("backup error from '%s' to '%s': %v", filename, f.Name(), err)
-	}
-
-	return f.Name(), nil
-}
 
 func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	rel_filename, filename, err := a.get_sanitized_filename(r, "filename")
@@ -50,8 +23,8 @@ func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types
 	}
 
 	maintenance := a.app.MaintenanceMode.Load()
-	if isSqliteDatabase(filename) && !maintenance {
-		tmppath, err := createSqliteSnapshot(filename)
+	if app.IsSqliteDatabase(filename) && !maintenance {
+		tmppath, err := app.CreateSqliteSnapshot(filename)
 		if err != nil {
 			SendError(w, 500, fmt.Errorf("error creating snapshot of '%s': %v", filename, err))
 			return
@@ -100,7 +73,6 @@ func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types
 }
 
 func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	maintenance := a.app.MaintenanceMode.Load()
 
 	reldir, absdir, err := a.get_sanitized_dir(r)
 	if err != nil {
@@ -118,49 +90,7 @@ func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.
 	zw := zip.NewWriter(w)
 	defer zw.Close()
 
-	count := int64(0)
-	err = filepath.Walk(absdir, func(filePath string, info os.FileInfo, err error) error {
-		if info.IsDir() {
-			return nil
-		}
-		if err != nil {
-			return err
-		}
-		if ignoreFileDownload(filePath) {
-			return nil
-		}
-		relPath := strings.TrimPrefix(filePath, absdir)
-		relPath = strings.TrimPrefix(relPath, "/")
-
-		if isSqliteDatabase(filePath) && !maintenance {
-			tmppath, err := createSqliteSnapshot(filePath)
-			if err != nil {
-				return fmt.Errorf("sqlite snapshot error for '%s': %v", filePath, err)
-			}
-			defer os.Remove(tmppath)
-			filePath = tmppath
-		}
-
-		zipFile, err := zw.CreateHeader(&zip.FileHeader{
-			Name:     relPath,
-			Method:   zip.Deflate,
-			Modified: info.ModTime(),
-		})
-		if err != nil {
-			return err
-		}
-		fsFile, err := os.Open(filePath)
-		if err != nil {
-			return err
-		}
-		fc, err := io.Copy(zipFile, fsFile)
-		if err != nil {
-			return err
-		}
-		count += fc
-		return nil
-	})
-
+	count, err := a.app.StreamZip(absdir, w)
 	if err != nil {
 		SendError(w, 500, err)
 		return
@@ -203,7 +133,7 @@ func (a *Api) DownloadTarGZ(w http.ResponseWriter, r *http.Request, claims *type
 		if err != nil {
 			return err
 		}
-		if ignoreFileDownload(filePath) {
+		if app.IgnoreSqliteFileDownload(filePath) {
 			return nil
 		}
 
@@ -214,8 +144,8 @@ func (a *Api) DownloadTarGZ(w http.ResponseWriter, r *http.Request, claims *type
 		}
 		fi.Name = relPath
 
-		if isSqliteDatabase(filePath) && !maintenance {
-			tmppath, err := createSqliteSnapshot(filePath)
+		if app.IsSqliteDatabase(filePath) && !maintenance {
+			tmppath, err := app.CreateSqliteSnapshot(filePath)
 			if err != nil {
 				return fmt.Errorf("sqlite snapshot error for '%s': %v", filePath, err)
 			}

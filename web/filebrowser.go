@@ -2,6 +2,7 @@ package web
 
 import (
 	"fmt"
+	"mtui/app"
 	"mtui/types"
 	"net/http"
 	"os"
@@ -161,7 +162,7 @@ func (a *Api) GetDirectorySize(w http.ResponseWriter, r *http.Request, claims *t
 		if err != nil {
 			return err
 		}
-		if ignoreFileDownload(filePath) {
+		if app.IgnoreSqliteFileDownload(filePath) {
 			return nil
 		}
 
