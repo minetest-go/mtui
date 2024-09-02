@@ -9,13 +9,25 @@ import (
 	"strings"
 )
 
-func (a *App) StreamZip(path string, w io.Writer) (int64, error) {
+type StreamProgressCallback func(files, bytes int64, currentfile string)
+
+type StreamZipOpts struct {
+	Callback StreamProgressCallback
+}
+
+func (a *App) StreamZip(path string, w io.Writer, opts *StreamZipOpts) (int64, error) {
+	if opts == nil {
+		opts = &StreamZipOpts{}
+	}
+
 	maintenance := a.MaintenanceMode.Load()
 
 	zw := zip.NewWriter(w)
 	defer zw.Close()
 
-	count := int64(0)
+	bytes := int64(0)
+	files := int64(0)
+
 	err := filepath.Walk(path, func(filePath string, info os.FileInfo, err error) error {
 		if info.IsDir() {
 			return nil
@@ -38,6 +50,10 @@ func (a *App) StreamZip(path string, w io.Writer) (int64, error) {
 			filePath = tmppath
 		}
 
+		if opts.Callback != nil {
+			opts.Callback(files, bytes, relPath)
+		}
+
 		zipFile, err := zw.CreateHeader(&zip.FileHeader{
 			Name:     relPath,
 			Method:   zip.Deflate,
@@ -54,9 +70,11 @@ func (a *App) StreamZip(path string, w io.Writer) (int64, error) {
 		if err != nil {
 			return err
 		}
-		count += fc
+		bytes += fc
+		files += 1
+
 		return nil
 	})
 
-	return count, err
+	return bytes, err
 }

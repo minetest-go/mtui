@@ -90,7 +90,7 @@ func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.
 	zw := zip.NewWriter(w)
 	defer zw.Close()
 
-	count, err := a.app.StreamZip(absdir, w)
+	count, err := a.app.StreamZip(absdir, w, nil)
 	if err != nil {
 		SendError(w, 500, err)
 		return
