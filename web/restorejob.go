@@ -72,7 +72,7 @@ func restoreJob(a *app.App, job *CreateRestoreJob, info *RestoreJobInfo, c *type
 	}
 	defer sc.Close()
 
-	file, err := sc.Create(job.Filename)
+	file, err := sc.Open(job.Filename)
 	if err != nil {
 		info.Status = RestoreJobFailure
 		info.Message = fmt.Sprintf("sftp create failed: %v", err)
