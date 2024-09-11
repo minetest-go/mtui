@@ -55,8 +55,8 @@ func Setup(a *app.App) error {
 
 	// backup job
 	apibj := r.PathPrefix("/api/backupjob").Subrouter()
-	apibj.HandleFunc("", api.SecurePriv(types.PRIV_BAN, api.CreateBackupJob)).Methods(http.MethodPost)
-	apibj.HandleFunc("/{id}", api.SecurePriv(types.PRIV_BAN, api.GetBackupJobInfo)).Methods(http.MethodGet)
+	apibj.HandleFunc("", api.SecurePriv(types.PRIV_SERVER, api.CreateBackupJob)).Methods(http.MethodPost)
+	apibj.HandleFunc("/{id}", api.SecurePriv(types.PRIV_SERVER, api.GetBackupJobInfo)).Methods(http.MethodGet)
 
 	// maintenance mode middleware enabled routes below
 	apir := r.PathPrefix("/api").Subrouter()
