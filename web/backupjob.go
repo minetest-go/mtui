@@ -89,7 +89,7 @@ func backupJob(a *app.App, job *CreateBackupJob, info *BackupJobInfo, c *types.C
 	})
 	if err != nil {
 		info.Status = BackupJobFailure
-		info.Message = fmt.Sprintf("sftp create failed: %v", err)
+		info.Message = fmt.Sprintf("backup failed: %v", err)
 		return
 	}
 

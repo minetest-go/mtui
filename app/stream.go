@@ -6,7 +6,10 @@ import (
 	"compress/gzip"
 	"fmt"
 	"io"
+	"mtui/types"
+	"net/http"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 )
@@ -159,4 +162,59 @@ func (a *App) StreamTarGZ(path string, w io.Writer, opts *StreamTarGZOpts) (int6
 	})
 
 	return bytes, err
+}
+
+type DownloadTargGZOpts struct {
+	Callback StreamProgressCallback
+}
+
+func (a *App) DownloadTargGZ(abspath string, r io.Reader, req *http.Request, c *types.Claims, opts *DownloadTargGZOpts) (int64, error) {
+	if opts == nil {
+		opts = &DownloadTargGZOpts{}
+	}
+
+	zr, err := gzip.NewReader(r)
+	if err != nil {
+		return 0, fmt.Errorf("gzip.NewReader failed: %v", err)
+	}
+	defer zr.Close()
+
+	tr := tar.NewReader(zr)
+	bytes := int64(0)
+	files := int64(0)
+
+	for {
+		th, err := tr.Next()
+		if th == nil || err == io.EOF {
+			break
+		}
+		if err != nil {
+			return 0, fmt.Errorf("tr.Next() failed: %v", err)
+		}
+
+		targetfile := path.Join(abspath, th.Name)
+		dirname := path.Dir(targetfile)
+		err = os.MkdirAll(dirname, 0644)
+		if err != nil {
+			return 0, fmt.Errorf("os.MkdirAll failed: %v", err)
+		}
+
+		if th.FileInfo().IsDir() {
+			continue
+		}
+
+		if opts.Callback != nil {
+			opts.Callback(files, bytes, th.Name)
+		}
+
+		fc, err := a.WriteFile(targetfile, tr, req, c)
+		bytes += fc
+		files += 1
+
+		if err != nil {
+			return 0, fmt.Errorf("WriteFile failed: %v", err)
+		}
+	}
+
+	return bytes, nil
 }

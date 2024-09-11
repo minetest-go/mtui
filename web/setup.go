@@ -58,6 +58,11 @@ func Setup(a *app.App) error {
 	apibj.HandleFunc("", api.SecurePriv(types.PRIV_SERVER, api.CreateBackupJob)).Methods(http.MethodPost)
 	apibj.HandleFunc("/{id}", api.SecurePriv(types.PRIV_SERVER, api.GetBackupJobInfo)).Methods(http.MethodGet)
 
+	// restore job
+	apirj := r.PathPrefix("/api/restorejob").Subrouter()
+	apirj.HandleFunc("", api.SecurePriv(types.PRIV_SERVER, api.CreateRestoreJob)).Methods(http.MethodPost)
+	apirj.HandleFunc("/{id}", api.SecurePriv(types.PRIV_SERVER, api.GetRestoreJobInfo)).Methods(http.MethodGet)
+
 	// maintenance mode middleware enabled routes below
 	apir := r.PathPrefix("/api").Subrouter()
 	apir.Use(MaintenanceModeCheck(a.MaintenanceMode))
