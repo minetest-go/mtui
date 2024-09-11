@@ -81,7 +81,7 @@ func backupJob(a *app.App, job *CreateBackupJob, info *BackupJobInfo, c *types.C
 	defer file.Close()
 
 	filecount := 0
-	bytes, err := a.StreamZip(a.WorldDir, file, &app.StreamZipOpts{
+	bytes, err := a.StreamTarGZ(a.WorldDir, file, &app.StreamTarGZOpts{
 		Callback: func(files, bytes int64, currentfile string) {
 			info.Message = fmt.Sprintf("Copying file '%s' (progress: %d bytes, %d files)", currentfile, bytes, files)
 			filecount++

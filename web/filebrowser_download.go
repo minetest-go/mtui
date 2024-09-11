@@ -1,9 +1,7 @@
 package web
 
 import (
-	"archive/tar"
 	"archive/zip"
-	"compress/gzip"
 	"fmt"
 	"io"
 	"mtui/app"
@@ -11,8 +9,6 @@ import (
 	"net/http"
 	"os"
 	"path"
-	"path/filepath"
-	"strings"
 )
 
 func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
@@ -73,7 +69,6 @@ func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types
 }
 
 func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-
 	reldir, absdir, err := a.get_sanitized_dir(r)
 	if err != nil {
 		SendError(w, 500, err)
@@ -104,8 +99,6 @@ func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.
 }
 
 func (a *Api) DownloadTarGZ(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	maintenance := a.app.MaintenanceMode.Load()
-
 	reldir, absdir, err := a.get_sanitized_dir(r)
 	if err != nil {
 		SendError(w, 500, err)
@@ -119,63 +112,7 @@ func (a *Api) DownloadTarGZ(w http.ResponseWriter, r *http.Request, claims *type
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.tar.gz\"", targzfilename))
 	w.Header().Set("Content-Type", "application/gzip")
 
-	zw := gzip.NewWriter(w)
-	defer zw.Close()
-
-	tw := tar.NewWriter(zw)
-	defer tw.Close()
-
-	count := int64(0)
-	err = filepath.Walk(absdir, func(filePath string, info os.FileInfo, err error) error {
-		if info.IsDir() {
-			return nil
-		}
-		if err != nil {
-			return err
-		}
-		if app.IgnoreSqliteFileDownload(filePath) {
-			return nil
-		}
-
-		relPath := strings.TrimPrefix(filePath, absdir)
-		fi, err := tar.FileInfoHeader(info, info.Name())
-		if err != nil {
-			return err
-		}
-		fi.Name = relPath
-
-		if app.IsSqliteDatabase(filePath) && !maintenance {
-			tmppath, err := app.CreateSqliteSnapshot(filePath)
-			if err != nil {
-				return fmt.Errorf("sqlite snapshot error for '%s': %v", filePath, err)
-			}
-			defer os.Remove(tmppath)
-			filePath = tmppath
-
-			tmpfi, err := os.Stat(tmppath)
-			if err != nil {
-				return fmt.Errorf("stat error: '%s': %v", tmppath, err)
-			}
-
-			fi.Size = tmpfi.Size()
-		}
-
-		err = tw.WriteHeader(fi)
-		if err != nil {
-			return err
-		}
-
-		fsFile, err := os.Open(filePath)
-		if err != nil {
-			return err
-		}
-		fc, err := io.Copy(tw, fsFile)
-		if err != nil {
-			return err
-		}
-		count += fc
-		return nil
-	})
+	count, err := a.app.StreamTarGZ(absdir, w, nil)
 
 	if err != nil {
 		SendError(w, 500, err)
