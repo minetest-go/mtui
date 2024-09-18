@@ -35,20 +35,19 @@ func (a *App) CreateMTUIMod() (*types.Mod, error) {
 	if err != nil {
 		return nil, err
 	}
-	if m != nil {
-		return m, nil
-	}
-
-	m = &types.Mod{
-		Name:       "mtui",
-		ModType:    types.ModTypeMod,
-		SourceType: types.SourceTypeGIT,
-		URL:        "https://github.com/minetest-go/mtui_mod.git",
-		Branch:     "refs/heads/master",
-	}
-	err = a.ModManager.Create(m)
-	if err != nil {
-		return nil, fmt.Errorf("error creating mod: %v", err)
+	if m == nil {
+		// not installed yet
+		m = &types.Mod{
+			Name:       "mtui",
+			ModType:    types.ModTypeMod,
+			SourceType: types.SourceTypeGIT,
+			URL:        "https://github.com/minetest-go/mtui_mod.git",
+			Branch:     "refs/heads/master",
+		}
+		err = a.ModManager.Create(m)
+		if err != nil {
+			return nil, fmt.Errorf("error creating mod: %v", err)
+		}
 	}
 
 	// settings for mtui key/url
