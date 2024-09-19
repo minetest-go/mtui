@@ -32,6 +32,7 @@ func (a *App) StreamZip(path string, w io.Writer, opts *StreamZipOpts) (int64, e
 
 	bytes := int64(0)
 	files := int64(0)
+	buf := make([]byte, 1024*1024*10) // 10 mb buffer
 
 	err := filepath.Walk(path, func(filePath string, info os.FileInfo, err error) error {
 		if info.IsDir() {
@@ -71,7 +72,9 @@ func (a *App) StreamZip(path string, w io.Writer, opts *StreamZipOpts) (int64, e
 		if err != nil {
 			return err
 		}
-		fc, err := io.Copy(zipFile, fsFile)
+		defer fsFile.Close()
+
+		fc, err := io.CopyBuffer(zipFile, fsFile, buf)
 		if err != nil {
 			return err
 		}
@@ -103,6 +106,7 @@ func (a *App) StreamTarGZ(path string, w io.Writer, opts *StreamTarGZOpts) (int6
 
 	bytes := int64(0)
 	files := int64(0)
+	buf := make([]byte, 1024*1024*10) // 10 mb buffer
 
 	err := filepath.Walk(path, func(filePath string, info os.FileInfo, err error) error {
 		if info.IsDir() {
@@ -151,7 +155,9 @@ func (a *App) StreamTarGZ(path string, w io.Writer, opts *StreamTarGZOpts) (int6
 		if err != nil {
 			return err
 		}
-		fc, err := io.Copy(tw, fsFile)
+		defer fsFile.Close()
+
+		fc, err := io.CopyBuffer(tw, fsFile, buf)
 		if err != nil {
 			return err
 		}

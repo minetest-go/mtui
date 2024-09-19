@@ -24,7 +24,8 @@ func (a *Api) UploadZip(w http.ResponseWriter, r *http.Request, claims *types.Cl
 	}
 	defer os.Remove(tf.Name())
 
-	_, err = io.Copy(tf, r.Body)
+	buf := make([]byte, 1024*1024*1) // 1 mb buffer
+	_, err = io.CopyBuffer(tf, r.Body, buf)
 	if err != nil {
 		SendError(w, 500, err)
 		return

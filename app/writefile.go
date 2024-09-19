@@ -43,7 +43,8 @@ func (a *App) WriteFile(filename string, data io.Reader, r *http.Request, claims
 	}
 	defer f.Close()
 
-	count, err := io.Copy(f, data)
+	buf := make([]byte, 1024*1024) // 1 mb buffer
+	count, err := io.CopyBuffer(f, data, buf)
 	if err != nil {
 		return 0, fmt.Errorf("copyfile error for '%s': %v", filename, err)
 	}

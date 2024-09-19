@@ -7,6 +7,7 @@ import (
 	"mtui/app"
 	"mtui/types"
 	"net/http"
+	"os"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -74,7 +75,7 @@ func backupJob(a *app.App, job *CreateBackupJob, info *BackupJobInfo, c *types.C
 	}
 	defer sc.Close()
 
-	file, err := sc.Create(job.Filename)
+	file, err := sc.OpenFile(job.Filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC)
 	if err != nil {
 		info.Status = BackupJobFailure
 		info.Message = fmt.Sprintf("sftp create failed: %v", err)
