@@ -3,6 +3,7 @@ package web
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"mtui/app"
 	"mtui/types"
 	"net/http"
@@ -41,6 +42,7 @@ type CreateBackupJob struct {
 	Filename string        `json:"filename"`
 	Username string        `json:"username"`
 	Password string        `json:"password"`
+	Key      string        `json:"key"`
 }
 
 var backupjobs = map[string]*BackupJobInfo{}
@@ -80,8 +82,21 @@ func backupJob(a *app.App, job *CreateBackupJob, info *BackupJobInfo, c *types.C
 	}
 	defer file.Close()
 
+	var output io.Writer
+	output = file
+
+	if job.Key != "" {
+		// enable encryption
+		output, err = app.EncryptedWriter(job.Key, file)
+		if err != nil {
+			info.Status = BackupJobFailure
+			info.Message = fmt.Sprintf("encryption failed: %v", err)
+			return
+		}
+	}
+
 	filecount := 0
-	bytes, err := a.StreamTarGZ(a.WorldDir, file, &app.StreamTarGZOpts{
+	bytes, err := a.StreamTarGZ(a.WorldDir, output, &app.StreamTarGZOpts{
 		Callback: func(files, bytes int64, currentfile string) {
 			info.Message = fmt.Sprintf("Copying file '%s' (progress: %d bytes, %d files)", currentfile, bytes, files)
 			filecount++

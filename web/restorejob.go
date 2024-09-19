@@ -3,6 +3,7 @@ package web
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"mtui/app"
 	"mtui/types"
 	"net/http"
@@ -41,6 +42,7 @@ type CreateRestoreJob struct {
 	Filename string         `json:"filename"`
 	Username string         `json:"username"`
 	Password string         `json:"password"`
+	Key      string         `json:"key"`
 }
 
 var Restorejobs = map[string]*RestoreJobInfo{}
@@ -80,8 +82,21 @@ func restoreJob(a *app.App, job *CreateRestoreJob, info *RestoreJobInfo, c *type
 	}
 	defer file.Close()
 
+	var reader io.Reader
+	reader = file
+
+	if job.Key != "" {
+		// enable decryption
+		reader, err = app.EncryptedReader(job.Key, file)
+		if err != nil {
+			info.Status = RestoreJobFailure
+			info.Message = fmt.Sprintf("decryption failed: %v", err)
+			return
+		}
+	}
+
 	filecount := 0
-	bytes, err := a.DownloadTargGZ(a.WorldDir, file, nil, c, &app.DownloadTargGZOpts{
+	bytes, err := a.DownloadTargGZ(a.WorldDir, reader, nil, c, &app.DownloadTargGZOpts{
 		Callback: func(files, bytes int64, currentfile string) {
 			info.Message = fmt.Sprintf("Copying file '%s' (progress: %d bytes, %d files)", currentfile, bytes, files)
 			filecount++
