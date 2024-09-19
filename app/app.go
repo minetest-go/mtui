@@ -140,11 +140,40 @@ func Create(cfg *types.Config) (*App, error) {
 	// docker services, if available
 	app.SetupServices()
 
-	// install mtui mod if specified
+	// (re-)install mtui mod if specified
 	if cfg.InstallMtuiMod {
 		_, err := app.CreateMTUIMod()
 		if err != nil {
 			return nil, fmt.Errorf("could not install mtui mod: %v", err)
+		}
+	}
+
+	// autoreconfigure mods on startup (in case of changed settings)
+	if cfg.AutoReconfigureMods {
+		// beerchat
+		mod, err := app.Repos.ModRepo.GetByID("beerchat")
+		if err != nil {
+			return nil, fmt.Errorf("could not fetch mod entity: %v", err)
+		}
+		if mod != nil {
+			// reconfigure
+			_, err = app.CreateBeerchatMod()
+			if err != nil {
+				return nil, fmt.Errorf("error creating beerchat mod: %v", err)
+			}
+		}
+
+		// mapserver
+		mod, err = app.Repos.ModRepo.GetByID("mapserver")
+		if err != nil {
+			return nil, fmt.Errorf("could not fetch mod entity: %v", err)
+		}
+		if mod != nil {
+			// reconfigure
+			_, err = app.CreateMapserverMod()
+			if err != nil {
+				return nil, fmt.Errorf("error creating mapserver mod: %v", err)
+			}
 		}
 	}
 

@@ -93,16 +93,24 @@ func (a *App) CreateMTUIMod() (*types.Mod, error) {
 }
 
 func (a *App) CreateBeerchatMod() (*types.Mod, error) {
-	m := &types.Mod{
-		Name:       "beerchat",
-		ModType:    types.ModTypeMod,
-		SourceType: types.SourceTypeGIT,
-		URL:        "https://github.com/mt-mods/beerchat.git",
-		Branch:     "refs/heads/master",
-	}
-	err := a.ModManager.Create(m)
+	m, err := a.Repos.ModRepo.GetByName("beerchat")
 	if err != nil {
-		return nil, fmt.Errorf("error creating mod: %v", err)
+		return nil, err
+	}
+
+	if m == nil {
+		// create mod
+		m = &types.Mod{
+			Name:       "beerchat",
+			ModType:    types.ModTypeMod,
+			SourceType: types.SourceTypeGIT,
+			URL:        "https://github.com/mt-mods/beerchat.git",
+			Branch:     "refs/heads/master",
+		}
+		err = a.ModManager.Create(m)
+		if err != nil {
+			return nil, fmt.Errorf("error creating mod: %v", err)
+		}
 	}
 
 	// settings for mtui key/url
@@ -148,16 +156,24 @@ func (a *App) CreateBeerchatMod() (*types.Mod, error) {
 }
 
 func (a *App) CreateMapserverMod() (*types.Mod, error) {
-	m := &types.Mod{
-		Name:       "mapserver",
-		ModType:    types.ModTypeMod,
-		SourceType: types.SourceTypeGIT,
-		URL:        "https://github.com/minetest-mapserver/mapserver_mod.git",
-		Branch:     "refs/heads/master",
-	}
-	err := a.ModManager.Create(m)
+	m, err := a.Repos.ModRepo.GetByName("mapserver")
 	if err != nil {
-		return nil, fmt.Errorf("error creating mod: %v", err)
+		return nil, err
+	}
+
+	if m == nil {
+		// create mod
+		m = &types.Mod{
+			Name:       "mapserver",
+			ModType:    types.ModTypeMod,
+			SourceType: types.SourceTypeGIT,
+			URL:        "https://github.com/minetest-mapserver/mapserver_mod.git",
+			Branch:     "refs/heads/master",
+		}
+		err = a.ModManager.Create(m)
+		if err != nil {
+			return nil, fmt.Errorf("error creating mod: %v", err)
+		}
 	}
 
 	// settings for mtui key/url

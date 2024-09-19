@@ -19,6 +19,7 @@ type Config struct {
 	Servername              string
 	EnabledFeatures         []string
 	InstallMtuiMod          bool
+	AutoReconfigureMods     bool
 	LogStreamURL            string
 	LogStreamAuthorization  string
 	MinetestConfig          string
@@ -48,6 +49,7 @@ func NewConfig(world_dir string) *Config {
 		Servername:              os.Getenv("SERVER_NAME"),
 		EnabledFeatures:         strings.Split(os.Getenv("ENABLE_FEATURES"), ","),
 		InstallMtuiMod:          os.Getenv("INSTALL_MTUI_MOD") == "true",
+		AutoReconfigureMods:     os.Getenv("AUTORECONFIGURE_MODS") == "true",
 		LogStreamURL:            os.Getenv("LOG_STREAM_URL"),
 		LogStreamAuthorization:  os.Getenv("LOG_STREAM_AUTHORIZATION"),
 		MinetestConfig:          os.Getenv("MINETEST_CONFIG"),
