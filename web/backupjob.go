@@ -67,7 +67,7 @@ func backupJob(a *app.App, job *CreateBackupJob, info *BackupJobInfo, c *types.C
 	}
 	defer client.Close()
 
-	sc, err := sftp.NewClient(client)
+	sc, err := sftp.NewClient(client, sftp.UseConcurrentWrites(true))
 	if err != nil {
 		info.Status = BackupJobFailure
 		info.Message = fmt.Sprintf("sftp open failed: %v", err)
