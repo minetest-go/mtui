@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/pkg/sftp"
+	"github.com/studio-b12/gowebdav"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -32,14 +33,16 @@ type BackupJobInfo struct {
 type BackupJobType string
 
 const (
-	BackupJobTypeSCP BackupJobType = "scp"
+	BackupJobTypeSCP    BackupJobType = "scp"
+	BackupJobTypeWEBDAV BackupJobType = "webdav"
 )
 
 type CreateBackupJob struct {
 	ID       string        `json:"id"`
 	Type     BackupJobType `json:"type"`
-	Host     string        `json:"host"`
-	Port     int           `json:"port"`
+	Host     string        `json:"host"` //scp
+	Port     int           `json:"port"` //scp
+	URL      string        `json:"url"`  // webdav
 	Filename string        `json:"filename"`
 	Username string        `json:"username"`
 	Password string        `json:"password"`
@@ -49,46 +52,77 @@ type CreateBackupJob struct {
 var backupjobs = map[string]*BackupJobInfo{}
 
 func backupJob(a *app.App, job *CreateBackupJob, info *BackupJobInfo, c *types.Claims) {
-	addr := fmt.Sprintf("%s:%d", job.Host, job.Port)
+	var output io.WriteCloser
+	var err error
 
-	config := &ssh.ClientConfig{
-		User: job.Username,
-		Auth: []ssh.AuthMethod{
-			ssh.Password(job.Password),
-		},
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-	}
+	switch job.Type {
+	case BackupJobTypeSCP:
+		addr := fmt.Sprintf("%s:%d", job.Host, job.Port)
 
-	client, err := ssh.Dial("tcp", addr, config)
-	if err != nil {
+		config := &ssh.ClientConfig{
+			User: job.Username,
+			Auth: []ssh.AuthMethod{
+				ssh.Password(job.Password),
+			},
+			HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		}
+
+		client, err := ssh.Dial("tcp", addr, config)
+		if err != nil {
+			info.Status = BackupJobFailure
+			info.Message = fmt.Sprintf("ssh dial failed: %v", err)
+			return
+		}
+		defer client.Close()
+
+		sc, err := sftp.NewClient(client, sftp.UseConcurrentWrites(true))
+		if err != nil {
+			info.Status = BackupJobFailure
+			info.Message = fmt.Sprintf("sftp open failed: %v", err)
+			return
+		}
+		defer sc.Close()
+
+		file, err := sc.OpenFile(job.Filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC)
+		if err != nil {
+			info.Status = BackupJobFailure
+			info.Message = fmt.Sprintf("sftp create failed: %v", err)
+			return
+		}
+		defer file.Close()
+		output = file
+
+	case BackupJobTypeWEBDAV:
+		c := gowebdav.NewClient(job.URL, job.Username, job.Password)
+		err = c.Connect()
+		if err != nil {
+			info.Status = BackupJobFailure
+			info.Message = fmt.Sprintf("webdav connection failed: %v", err)
+			return
+		}
+
+		pr, pw := io.Pipe()
+		output = pw
+
+		go func() {
+			err := c.WriteStream(job.Filename, pr, 0644)
+			if err != nil {
+				info.Status = BackupJobFailure
+				info.Message = fmt.Sprintf("webdav stream failed: %v", err)
+			}
+		}()
+
+	default:
 		info.Status = BackupJobFailure
-		info.Message = fmt.Sprintf("ssh dial failed: %v", err)
+		info.Message = fmt.Sprintf("unknown job type: %s", job.Type)
 		return
 	}
-	defer client.Close()
 
-	sc, err := sftp.NewClient(client, sftp.UseConcurrentWrites(true))
-	if err != nil {
-		info.Status = BackupJobFailure
-		info.Message = fmt.Sprintf("sftp open failed: %v", err)
-		return
-	}
-	defer sc.Close()
-
-	file, err := sc.OpenFile(job.Filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC)
-	if err != nil {
-		info.Status = BackupJobFailure
-		info.Message = fmt.Sprintf("sftp create failed: %v", err)
-		return
-	}
-	defer file.Close()
-
-	var output io.Writer
-	output = file
+	defer output.Close()
 
 	if job.Key != "" {
 		// enable encryption
-		output, err = app.EncryptedWriter(job.Key, file)
+		output, err = app.EncryptedWriter(job.Key, output)
 		if err != nil {
 			info.Status = BackupJobFailure
 			info.Message = fmt.Sprintf("encryption failed: %v", err)

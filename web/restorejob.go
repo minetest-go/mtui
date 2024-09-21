@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/pkg/sftp"
+	"github.com/studio-b12/gowebdav"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -31,14 +32,16 @@ type RestoreJobInfo struct {
 type RestoreJobType string
 
 const (
-	RestoreJobTypeSCP RestoreJobType = "scp"
+	RestoreJobTypeSCP    RestoreJobType = "scp"
+	RestoreJobTypeWEBDAV RestoreJobType = "webdav"
 )
 
 type CreateRestoreJob struct {
 	ID       string         `json:"id"`
 	Type     RestoreJobType `json:"type"`
-	Host     string         `json:"host"`
-	Port     int            `json:"port"`
+	Host     string         `json:"host"` //scp
+	Port     int            `json:"port"` //scp
+	URL      string         `json:"url"`  // webdav
 	Filename string         `json:"filename"`
 	Username string         `json:"username"`
 	Password string         `json:"password"`
@@ -48,46 +51,72 @@ type CreateRestoreJob struct {
 var Restorejobs = map[string]*RestoreJobInfo{}
 
 func restoreJob(a *app.App, job *CreateRestoreJob, info *RestoreJobInfo, c *types.Claims) {
-	addr := fmt.Sprintf("%s:%d", job.Host, job.Port)
-
-	config := &ssh.ClientConfig{
-		User: job.Username,
-		Auth: []ssh.AuthMethod{
-			ssh.Password(job.Password),
-		},
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-	}
-
-	client, err := ssh.Dial("tcp", addr, config)
-	if err != nil {
-		info.Status = RestoreJobFailure
-		info.Message = fmt.Sprintf("ssh dial failed: %v", err)
-		return
-	}
-	defer client.Close()
-
-	sc, err := sftp.NewClient(client)
-	if err != nil {
-		info.Status = RestoreJobFailure
-		info.Message = fmt.Sprintf("sftp open failed: %v", err)
-		return
-	}
-	defer sc.Close()
-
-	file, err := sc.Open(job.Filename)
-	if err != nil {
-		info.Status = RestoreJobFailure
-		info.Message = fmt.Sprintf("sftp create failed: %v", err)
-		return
-	}
-	defer file.Close()
-
 	var reader io.Reader
-	reader = file
+	var err error
+
+	switch job.Type {
+	case RestoreJobTypeSCP:
+		addr := fmt.Sprintf("%s:%d", job.Host, job.Port)
+		config := &ssh.ClientConfig{
+			User: job.Username,
+			Auth: []ssh.AuthMethod{
+				ssh.Password(job.Password),
+			},
+			HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		}
+
+		client, err := ssh.Dial("tcp", addr, config)
+		if err != nil {
+			info.Status = RestoreJobFailure
+			info.Message = fmt.Sprintf("ssh dial failed: %v", err)
+			return
+		}
+		defer client.Close()
+
+		sc, err := sftp.NewClient(client)
+		if err != nil {
+			info.Status = RestoreJobFailure
+			info.Message = fmt.Sprintf("sftp open failed: %v", err)
+			return
+		}
+		defer sc.Close()
+
+		file, err := sc.Open(job.Filename)
+		if err != nil {
+			info.Status = RestoreJobFailure
+			info.Message = fmt.Sprintf("sftp create failed: %v", err)
+			return
+		}
+		defer file.Close()
+		reader = file
+
+	case RestoreJobTypeWEBDAV:
+		c := gowebdav.NewClient(job.URL, job.Username, job.Password)
+		err = c.Connect()
+		if err != nil {
+			info.Status = RestoreJobFailure
+			info.Message = fmt.Sprintf("webdav connection failed: %v", err)
+			return
+		}
+
+		r, err := c.ReadStream(job.Filename)
+		if err != nil {
+			info.Status = RestoreJobFailure
+			info.Message = fmt.Sprintf("webdav connection failed: %v", err)
+			return
+		}
+		defer r.Close()
+		reader = r
+
+	default:
+		info.Status = RestoreJobFailure
+		info.Message = fmt.Sprintf("unknown job type: %s", job.Type)
+		return
+	}
 
 	if job.Key != "" {
 		// enable decryption
-		reader, err = app.EncryptedReader(job.Key, file)
+		reader, err = app.EncryptedReader(job.Key, reader)
 		if err != nil {
 			info.Status = RestoreJobFailure
 			info.Message = fmt.Sprintf("decryption failed: %v", err)
