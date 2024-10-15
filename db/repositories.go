@@ -28,7 +28,7 @@ func NewRepositories(db dbutil.DBTx, g *gorm.DB) *Repositories {
 		ChatLogRepo:          &ChatLogRepository{g: g},
 		MetricTypeRepository: &MetricTypeRepository{g: g},
 		MetricRepository:     &MetricRepository{g: g},
-		OauthAppRepo:         &OauthAppRepository{dbu: dbutil.New[*types.OauthApp](db, dbutil.DialectSQLite, func() *types.OauthApp { return &types.OauthApp{} })},
+		OauthAppRepo:         &OauthAppRepository{g: g},
 		MeseconsRepo:         &MeseconsRepository{dbu: dbutil.New[*types.Mesecons](db, dbutil.DialectSQLite, func() *types.Mesecons { return &types.Mesecons{} })},
 	}
 }
