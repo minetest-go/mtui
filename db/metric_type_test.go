@@ -9,7 +9,8 @@ import (
 )
 
 func TestMetricType(t *testing.T) {
-	repos := db.NewRepositories(setupDB(t))
+	_, g := setupDB(t)
+	repos := db.NewRepositories(g)
 
 	mt := &types.MetricType{
 		Name: "my_metric",

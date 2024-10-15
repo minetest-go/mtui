@@ -32,7 +32,7 @@ func metricLoop(a *app.App, ch chan *bridge.CommandResponse) {
 		defer tx.Rollback()
 
 		gtx := a.G.Begin()
-		repos := db.NewRepositories(tx, gtx)
+		repos := db.NewRepositories(gtx)
 		for _, metric := range metrics {
 			err = repos.MetricTypeRepository.Insert(&types.MetricType{
 				Name: metric.Name,

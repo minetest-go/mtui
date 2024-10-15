@@ -9,7 +9,8 @@ import (
 )
 
 func TestMesecons(t *testing.T) {
-	repos := db.NewRepositories(setupDB(t))
+	_, g := setupDB(t)
+	repos := db.NewRepositories(g)
 
 	m1 := &types.Mesecons{
 		PosKey:     "1,2,3",

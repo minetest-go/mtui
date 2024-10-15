@@ -1,7 +1,6 @@
 package db
 
 import (
-	"github.com/minetest-go/dbutil"
 	"gorm.io/gorm"
 )
 
@@ -17,7 +16,7 @@ type Repositories struct {
 	MeseconsRepo         *MeseconsRepository
 }
 
-func NewRepositories(db dbutil.DBTx, g *gorm.DB) *Repositories {
+func NewRepositories(g *gorm.DB) *Repositories {
 	return &Repositories{
 		ModRepo:              &ModRepository{g: g},
 		ConfigRepo:           &ConfigRepository{g: g},
