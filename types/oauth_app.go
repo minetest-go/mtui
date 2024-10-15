@@ -1,49 +1,16 @@
 package types
 
 type OauthApp struct {
-	ID      string `json:"id"`
-	Enabled bool   `json:"enabled"`
-	Created int64  `json:"created"`
-	Name    string `json:"name"`
-	Domain  string `json:"domain"`
-	Secret  string `json:"secret"`
+	ID      string `json:"id" gorm:"primarykey;column:id"`
+	Enabled bool   `json:"enabled" gorm:"column:enabled"`
+	Created int64  `json:"created" gorm:"column:created"`
+	Name    string `json:"name" gorm:"column:name"`
+	Domain  string `json:"domain" gorm:"column:domain"`
+	Secret  string `json:"secret" gorm:"column:secret"`
 }
 
-func (m *OauthApp) Columns(action string) []string {
-	return []string{
-		"id",
-		"enabled",
-		"created",
-		"name",
-		"domain",
-		"secret",
-	}
-}
-
-func (m *OauthApp) Table() string {
+func (m *OauthApp) TableName() string {
 	return "oauth_app"
-}
-
-func (m *OauthApp) Scan(action string, r func(dest ...any) error) error {
-	return r(
-		&m.ID,
-		&m.Enabled,
-		&m.Created,
-		&m.Name,
-		&m.Domain,
-		&m.Secret,
-	)
-}
-
-func (m *OauthApp) Values(action string) []any {
-	return []any{
-		m.ID,
-		m.Enabled,
-		m.Created,
-		m.Name,
-		m.Domain,
-		m.Secret,
-	}
 }
 
 func (m *OauthApp) GetID() string {

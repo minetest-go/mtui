@@ -1,28 +1,32 @@
 package db
 
 import (
-	"database/sql"
 	"mtui/types"
 
-	"github.com/minetest-go/dbutil"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type ConfigRepository struct {
-	dbu *dbutil.DBUtil[*types.ConfigEntry]
+	g *gorm.DB
 }
 
 func (r *ConfigRepository) GetByKey(key types.ConfigKey) (*types.ConfigEntry, error) {
-	c, err := r.dbu.Select("where key = %s", key)
-	if err == sql.ErrNoRows {
-		return nil, nil
+	var list []*types.ConfigEntry
+	err := r.g.Where(types.ConfigEntry{Key: key}).Limit(1).Find(&list).Error
+	if len(list) == 0 {
+		return nil, err
 	}
-	return c, err
+	return list[0], err
 }
 
 func (r *ConfigRepository) Set(c *types.ConfigEntry) error {
-	return r.dbu.InsertOrReplace(c)
+	return r.g.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "key"}},
+		UpdateAll: true,
+	}).Create(c).Error
 }
 
-func (r *ConfigRepository) Delete(key string) error {
-	return r.dbu.Delete("where key = %s", key)
+func (r *ConfigRepository) Delete(key types.ConfigKey) error {
+	return r.g.Delete(types.ConfigEntry{Key: key}).Error
 }

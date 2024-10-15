@@ -10,8 +10,8 @@ import (
 )
 
 func TestModRepo(t *testing.T) {
-	_db := setupDB(t)
-	repo := db.NewRepositories(_db).ModRepo
+	_, g := setupDB(t)
+	repo := db.NewRepositories(g).ModRepo
 
 	m := &types.Mod{
 		ID:         uuid.NewString(),

@@ -10,8 +10,8 @@ import (
 )
 
 func TestOauthRepo(t *testing.T) {
-	DB := setupDB(t)
-	repo := db.NewRepositories(DB).OauthAppRepo
+	_, g := setupDB(t)
+	repo := db.NewRepositories(g).OauthAppRepo
 
 	// create
 	err := repo.Set(&types.OauthApp{

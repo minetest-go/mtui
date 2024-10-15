@@ -9,8 +9,8 @@ import (
 )
 
 func TestChatLogRepo(t *testing.T) {
-	_db := setupDB(t)
-	repo := db.NewRepositories(_db).ChatLogRepo
+	_, g := setupDB(t)
+	repo := db.NewRepositories(g).ChatLogRepo
 
 	assert.NoError(t, repo.Insert(&types.ChatLog{Timestamp: 100, Channel: "main", Name: "player1", Message: "msg1"}))
 	assert.NoError(t, repo.Insert(&types.ChatLog{Timestamp: 200, Channel: "main", Name: "player2", Message: "msg2"}))

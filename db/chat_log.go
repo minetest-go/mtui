@@ -5,11 +5,11 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/minetest-go/dbutil"
+	"gorm.io/gorm"
 )
 
 type ChatLogRepository struct {
-	dbu *dbutil.DBUtil[*types.ChatLog]
+	g *gorm.DB
 }
 
 func (r *ChatLogRepository) Insert(l *types.ChatLog) error {
@@ -21,17 +21,21 @@ func (r *ChatLogRepository) Insert(l *types.ChatLog) error {
 		l.Timestamp = time.Now().UnixMilli()
 	}
 
-	return r.dbu.Insert(l)
+	return r.g.Create(l).Error
 }
 
 func (r *ChatLogRepository) Search(channel string, from, to int64) ([]*types.ChatLog, error) {
-	return r.dbu.SelectMulti("where channel = %s and timestamp > %s and timestamp < %s order by timestamp asc limit 1000", channel, from, to)
+	var list []*types.ChatLog
+	err := r.g.Where("timestamp > ?", from).Where("timestamp < ?", to).Where(types.ChatLog{Channel: channel}).Find(&list).Error
+	return list, err
 }
 
 func (r *ChatLogRepository) GetLatest(channel string, limit int) ([]*types.ChatLog, error) {
-	return r.dbu.SelectMulti("where channel = %s order by timestamp asc limit %s", channel, limit)
+	var list []*types.ChatLog
+	err := r.g.Where(types.ChatLog{Channel: channel}).Order("timestamp ASC").Limit(limit).Find(&list).Error
+	return list, err
 }
 
 func (r *ChatLogRepository) DeleteBefore(timestamp int64) error {
-	return r.dbu.Delete("where timestamp < %s", timestamp)
+	return r.g.Where("timestamp < ?", timestamp).Delete(types.ChatLog{}).Error
 }

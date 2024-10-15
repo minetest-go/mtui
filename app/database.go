@@ -27,18 +27,19 @@ func (a *App) AttachDatabase() error {
 	}
 	a.DBContext = dbctx
 
-	db_, err := db.Init(a.WorldDir)
+	db_, g, err := db.Init(a.WorldDir)
 	if err != nil {
 		return err
 	}
 	a.DB = db_
+	a.G = g
 
 	err = db.Migrate(db_)
 	if err != nil {
 		return err
 	}
 
-	a.Repos = db.NewRepositories(db_)
+	a.Repos = db.NewRepositories(g)
 	a.Mail = mail.New(dbctx)
 	a.ModManager = modmanager.New(a.WorldDir, a.Repos.ModRepo)
 

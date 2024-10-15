@@ -1,28 +1,34 @@
 package db
 
 import (
-	"database/sql"
 	"mtui/types"
 
-	"github.com/minetest-go/dbutil"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type MetricTypeRepository struct {
-	dbu *dbutil.DBUtil[*types.MetricType]
+	g *gorm.DB
 }
 
 func (r *MetricTypeRepository) Insert(mt *types.MetricType) error {
-	return r.dbu.InsertOrReplace(mt)
+	return r.g.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "name"}},
+		UpdateAll: true,
+	}).Create(mt).Error
 }
 
 func (r *MetricTypeRepository) GetByName(name string) (*types.MetricType, error) {
-	mt, err := r.dbu.Select("where name = %s", name)
-	if err == sql.ErrNoRows {
-		return nil, nil
+	var list []*types.MetricType
+	err := r.g.Where(types.MetricType{Name: name}).Find(&list).Error
+	if len(list) == 0 {
+		return nil, err
 	}
-	return mt, err
+	return list[0], err
 }
 
 func (r *MetricTypeRepository) GetAll() ([]*types.MetricType, error) {
-	return r.dbu.SelectMulti("")
+	var list []*types.MetricType
+	err := r.g.Find(&list).Error
+	return list, err
 }

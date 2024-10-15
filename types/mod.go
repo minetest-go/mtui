@@ -17,30 +17,18 @@ const (
 )
 
 type Mod struct {
-	ID            string     `json:"id"`
-	Name          string     `json:"name"`
-	Author        string     `json:"author"`
-	ModType       ModType    `json:"mod_type"`
-	SourceType    SourceType `json:"source_type"`
-	URL           string     `json:"url"`
-	Branch        string     `json:"branch"`
-	Version       string     `json:"version"`
-	LatestVersion string     `json:"latest_version"`
-	AutoUpdate    bool       `json:"auto_update"`
+	ID            string     `json:"id" gorm:"primarykey;column:id"`
+	Name          string     `json:"name" gorm:"column:name"`
+	Author        string     `json:"author" gorm:"column:author"`
+	ModType       ModType    `json:"mod_type" gorm:"column:mod_type"`
+	SourceType    SourceType `json:"source_type" gorm:"column:source_type"`
+	URL           string     `json:"url" gorm:"column:url"`
+	Branch        string     `json:"branch" gorm:"column:branch"`
+	Version       string     `json:"version" gorm:"column:version"`
+	LatestVersion string     `json:"latest_version" gorm:"column:latest_version"`
+	AutoUpdate    bool       `json:"auto_update" gorm:"column:auto_update"`
 }
 
-func (m *Mod) Columns(action string) []string {
-	return []string{"id", "name", "author", "mod_type", "source_type", "url", "branch", "version", "latest_version", "auto_update"}
-}
-
-func (m *Mod) Table() string {
+func (m *Mod) TableName() string {
 	return "mod"
-}
-
-func (m *Mod) Scan(action string, r func(dest ...any) error) error {
-	return r(&m.ID, &m.Name, &m.Author, &m.ModType, &m.SourceType, &m.URL, &m.Branch, &m.Version, &m.LatestVersion, &m.AutoUpdate)
-}
-
-func (m *Mod) Values(action string) []any {
-	return []any{m.ID, m.Name, m.Author, m.ModType, m.SourceType, m.URL, m.Branch, m.Version, m.LatestVersion, m.AutoUpdate}
 }

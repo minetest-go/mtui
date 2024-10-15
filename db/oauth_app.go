@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"math/rand"
 	"mtui/types"
@@ -10,11 +9,12 @@ import (
 
 	"github.com/go-oauth2/oauth2/v4"
 	"github.com/google/uuid"
-	"github.com/minetest-go/dbutil"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type OauthAppRepository struct {
-	dbu *dbutil.DBUtil[*types.OauthApp]
+	g *gorm.DB
 }
 
 // https://stackoverflow.com/questions/22892120/how-to-generate-a-random-string-of-a-fixed-length-in-go/22892986#22892986
@@ -38,33 +38,38 @@ func (r *OauthAppRepository) Set(m *types.OauthApp) error {
 	if m.Created == 0 {
 		m.Created = time.Now().Unix()
 	}
-	return r.dbu.InsertOrReplace(m)
+	return r.g.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "id"}},
+		UpdateAll: true,
+	}).Create(m).Error
 }
 
 func (r *OauthAppRepository) GetAll() ([]*types.OauthApp, error) {
-	return r.dbu.SelectMulti("")
+	var list []*types.OauthApp
+	err := r.g.Find(&list).Error
+	return list, err
 }
 
 func (r *OauthAppRepository) GetByName(name string) (*types.OauthApp, error) {
-	f, err := r.dbu.Select("where name = %s", name)
-	if err == sql.ErrNoRows {
-		return nil, nil
-	} else {
-		return f, err
+	var list []*types.OauthApp
+	err := r.g.Where(&types.OauthApp{Name: name}).Limit(1).Find(&list).Error
+	if len(list) == 0 {
+		return nil, err
 	}
+	return list[0], err
 }
 
 func (r *OauthAppRepository) GetByID(id string) (*types.OauthApp, error) {
-	f, err := r.dbu.Select("where id = %s", id)
-	if err == sql.ErrNoRows {
-		return nil, nil
-	} else {
-		return f, err
+	var list []*types.OauthApp
+	err := r.g.Where(&types.OauthApp{ID: id}).Limit(1).Find(&list).Error
+	if len(list) == 0 {
+		return nil, err
 	}
+	return list[0], err
 }
 
 func (r *OauthAppRepository) Delete(id string) error {
-	return r.dbu.Delete("where id = %s", id)
+	return r.g.Where(types.OauthApp{ID: id}).Delete(types.OauthApp{}).Error
 }
 
 type OAuthAppStore struct {
