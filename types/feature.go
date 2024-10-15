@@ -20,22 +20,10 @@ const (
 )
 
 type Feature struct {
-	Name    string `json:"name"`
-	Enabled bool   `json:"enabled"`
+	Name    string `json:"name" gorm:"primarykey;column:name"`
+	Enabled bool   `json:"enabled" gorm:"column:enabled"`
 }
 
-func (m *Feature) Columns(action string) []string {
-	return []string{"name", "enabled"}
-}
-
-func (m *Feature) Table() string {
+func (m *Feature) TableName() string {
 	return "feature"
-}
-
-func (m *Feature) Scan(action string, r func(dest ...any) error) error {
-	return r(&m.Name, &m.Enabled)
-}
-
-func (m *Feature) Values(action string) []any {
-	return []any{m.Name, m.Enabled}
 }

@@ -1,8 +1,8 @@
 package types
 
 type ConfigEntry struct {
-	Key   ConfigKey `json:"key"`
-	Value string    `json:"value"`
+	Key   ConfigKey `json:"key" gorm:"primarykey;column:key"`
+	Value string    `json:"value" gorm:"column:value"`
 }
 
 type ConfigKey string
@@ -14,18 +14,6 @@ const (
 	ConfigLogStreamTimestamp ConfigKey = "logstream_timestamp"
 )
 
-func (m *ConfigEntry) Columns(action string) []string {
-	return []string{"key", "value"}
-}
-
-func (m *ConfigEntry) Table() string {
+func (m *ConfigEntry) TableName() string {
 	return "config"
-}
-
-func (m *ConfigEntry) Scan(action string, r func(dest ...any) error) error {
-	return r(&m.Key, &m.Value)
-}
-
-func (m *ConfigEntry) Values(action string) []any {
-	return []any{m.Key, m.Value}
 }

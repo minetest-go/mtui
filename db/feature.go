@@ -1,29 +1,34 @@
 package db
 
 import (
-	"database/sql"
 	"mtui/types"
 
-	"github.com/minetest-go/dbutil"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type FeatureRepository struct {
-	dbu *dbutil.DBUtil[*types.Feature]
+	g *gorm.DB
 }
 
 func (r *FeatureRepository) Set(m *types.Feature) error {
-	return r.dbu.InsertOrReplace(m)
+	return r.g.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "name"}},
+		UpdateAll: true,
+	}).Create(m).Error
 }
 
 func (r *FeatureRepository) GetAll() ([]*types.Feature, error) {
-	return r.dbu.SelectMulti("")
+	var list []*types.Feature
+	err := r.g.Find(&list).Error
+	return list, err
 }
 
 func (r *FeatureRepository) GetByName(name string) (*types.Feature, error) {
-	f, err := r.dbu.Select("where name = %s", name)
-	if err == sql.ErrNoRows {
-		return nil, nil
-	} else {
-		return f, err
+	var list []*types.Feature
+	err := r.g.Where(types.Feature{Name: name}).Limit(1).Find(&list).Error
+	if len(list) == 0 {
+		return nil, err
 	}
+	return list[0], err
 }
