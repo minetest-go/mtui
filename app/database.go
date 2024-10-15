@@ -27,7 +27,7 @@ func (a *App) AttachDatabase() error {
 	}
 	a.DBContext = dbctx
 
-	db_, err := db.Init(a.WorldDir)
+	db_, _, err := db.Init(a.WorldDir)
 	if err != nil {
 		return err
 	}

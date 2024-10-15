@@ -13,7 +13,7 @@ func setupDB(t *testing.T) *sql.DB {
 	tmpdir, err := os.MkdirTemp(os.TempDir(), "mtui")
 	assert.NoError(t, err)
 
-	db_, err := db.Init(tmpdir)
+	db_, _, err := db.Init(tmpdir)
 	assert.NoError(t, err)
 	assert.NotNil(t, db_)
 
