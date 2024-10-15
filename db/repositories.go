@@ -24,7 +24,7 @@ func NewRepositories(db dbutil.DBTx, g *gorm.DB) *Repositories {
 		ModRepo:              &ModRepository{g: g},
 		ConfigRepo:           &ConfigRepository{g: g},
 		FeatureRepository:    &FeatureRepository{g: g},
-		LogRepository:        NewLogRepository(db),
+		LogRepository:        &LogRepository{g: g},
 		ChatLogRepo:          &ChatLogRepository{dbu: dbutil.New[*types.ChatLog](db, dbutil.DialectSQLite, func() *types.ChatLog { return &types.ChatLog{} })},
 		MetricTypeRepository: &MetricTypeRepository{dbu: dbutil.New[*types.MetricType](db, dbutil.DialectSQLite, func() *types.MetricType { return &types.MetricType{} })},
 		MetricRepository:     &MetricRepository{dbu: dbutil.New[*types.Metric](db, dbutil.DialectSQLite, func() *types.Metric { return &types.Metric{} })},

@@ -1,35 +1,18 @@
 package db
 
 import (
-	"fmt"
 	"mtui/types"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/minetest-go/dbutil"
+	"gorm.io/gorm"
 )
 
 type LogRepository struct {
-	dbu      *dbutil.DBUtil[*types.Log]
-	db       dbutil.DBTx
-	inserter func(*types.Log) error
-}
-
-func NewLogRepository(db dbutil.DBTx) *LogRepository {
-	return &LogRepository{
-		db:  db,
-		dbu: dbutil.New[*types.Log](db, dbutil.DialectSQLite, func() *types.Log { return &types.Log{} }),
-	}
+	g *gorm.DB
 }
 
 func (r *LogRepository) Insert(l *types.Log) error {
-	if r.inserter == nil {
-		var err error
-		r.inserter, err = r.dbu.PrepareInsert()
-		if err != nil {
-			return err
-		}
-	}
 
 	if l.ID == "" {
 		l.ID = uuid.NewString()
@@ -39,90 +22,74 @@ func (r *LogRepository) Insert(l *types.Log) error {
 		l.Timestamp = time.Now().UnixMilli()
 	}
 
-	return r.inserter(l)
+	return r.g.Create(l).Error
 }
 
 func (r *LogRepository) Update(l *types.Log) error {
-	return r.dbu.Update(l, "where id = %s", l.ID)
+	return r.g.Model(l).Updates(l).Error
 }
 
 func (r *LogRepository) DeleteBefore(timestamp int64) error {
-	_, err := r.db.Exec("delete from log where timestamp < ?1", timestamp)
-	return err
+	return r.g.Where("timestamp < ?", timestamp).Delete(types.Log{}).Error
 }
 
-func (r *LogRepository) buildWhereClause(s *types.LogSearch) (string, []any) {
-	q := "where true "
-	args := make([]any, 0)
+func (r *LogRepository) query(s *types.LogSearch) *gorm.DB {
+	q := r.g.Model(types.Log{})
 
 	if s.ID != nil {
-		q += " and id = %s"
-		args = append(args, *s.ID)
+		q = q.Where(types.Log{ID: *s.ID})
 	}
 
 	if s.Category != nil {
-		q += " and category = %s"
-		args = append(args, *s.Category)
+		q = q.Where(types.Log{Category: *s.Category})
 	}
 
 	if s.Event != nil {
-		q += " and event = %s"
-		args = append(args, *s.Event)
+		q = q.Where(types.Log{Event: *s.Event})
 	}
 
 	if s.Username != nil {
-		q += " and username = %s"
-		args = append(args, *s.Username)
+		q = q.Where(types.Log{Username: *s.Username})
 	}
 
 	if s.Nodename != nil {
-		q += " and nodename = %s"
-		args = append(args, *s.Nodename)
+		q = q.Where(types.Log{Nodename: s.Nodename})
 	}
 
 	if s.PosX != nil {
-		q += " and posx = %s"
-		args = append(args, *s.PosX)
+		q = q.Where(types.Log{PosX: types.JsonIntPtr(int64(*s.PosX))})
 	}
 
 	if s.PosY != nil {
-		q += " and posy = %s"
-		args = append(args, *s.PosY)
+		q = q.Where(types.Log{PosY: types.JsonIntPtr(int64(*s.PosY))})
 	}
 
 	if s.PosZ != nil {
-		q += " and posz = %s"
-		args = append(args, *s.PosZ)
+		q = q.Where(types.Log{PosZ: types.JsonIntPtr(int64(*s.PosZ))})
 	}
 
 	if s.IPAddress != nil {
-		q += " and ip_address = %s"
-		args = append(args, *s.IPAddress)
+		q = q.Where(types.Log{IPAddress: s.IPAddress})
 	}
 
 	if s.GeoCountry != nil {
-		q += " and geo_country = %s"
-		args = append(args, *s.GeoCountry)
+		q = q.Where(types.Log{GeoCountry: s.GeoCountry})
 	}
 
 	if s.GeoCity != nil {
-		q += " and geo_city = %s"
-		args = append(args, *s.GeoCity)
+		q = q.Where(types.Log{GeoCity: s.GeoCity})
 	}
 
 	if s.GeoASN != nil {
-		q += " and geo_asn = %s"
-		args = append(args, *s.GeoASN)
+		q = q.Where(types.Log{GeoASN: s.GeoASN})
 	}
 
 	if s.FromTimestamp != nil {
-		q += " and timestamp > %s"
-		args = append(args, *s.FromTimestamp)
+		q = q.Where("timestamp > ?", *s.FromTimestamp)
 	}
 
 	if s.ToTimestamp != nil {
-		q += " and timestamp < %s"
-		args = append(args, *s.ToTimestamp)
+		q = q.Where("timestamp < ?", *s.ToTimestamp)
 	}
 
 	// limit result length to 1000 per default
@@ -130,43 +97,31 @@ func (r *LogRepository) buildWhereClause(s *types.LogSearch) (string, []any) {
 	if s.Limit != nil && *s.Limit < limit {
 		limit = *s.Limit
 	}
+	q = q.Limit(limit)
 
-	sort := "desc"
 	if s.SortAscending {
-		sort = "asc"
+		q = q.Order("timestamp ASC")
+	} else {
+		q = q.Order("timestamp DESC")
 	}
-	q += fmt.Sprintf(" order by timestamp %s limit %d", sort, limit)
 
-	return q, args
+	return q
 }
 
 func (r *LogRepository) Search(s *types.LogSearch) ([]*types.Log, error) {
-	q, args := r.buildWhereClause(s)
-	return r.dbu.SelectMulti(q, args...)
+	var list []*types.Log
+	err := r.query(s).Find(&list).Error
+	return list, err
 }
 
 func (r *LogRepository) Count(s *types.LogSearch) (int, error) {
-	q, args := r.buildWhereClause(s)
-	return r.dbu.Count(q, args...)
+	var c int64
+	err := r.query(s).Count(&c).Error
+	return int(c), err
 }
 
 func (r *LogRepository) GetEvents(c types.LogCategory) ([]string, error) {
-	rows, err := r.db.Query("select event from log where category = ?1 group by event", c)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	result := make([]string, 0)
-	for rows.Next() {
-		var e string
-		err = rows.Scan(&e)
-		if err != nil {
-			return nil, err
-		}
-
-		result = append(result, e)
-	}
-
-	return result, nil
+	var list []string
+	err := r.g.Raw("select event from log where category = ? group by event", c).Find(&list).Error
+	return list, err
 }

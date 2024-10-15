@@ -1,21 +1,21 @@
 package types
 
 type Log struct {
-	ID         string      `json:"id"`
-	Timestamp  int64       `json:"timestamp"`
-	Category   LogCategory `json:"category"`
-	Event      string      `json:"event"`
-	Username   string      `json:"username"`
-	Message    string      `json:"message"`
-	Nodename   *string     `json:"nodename"`
-	IPAddress  *string     `json:"ip_address"`
-	GeoCountry *string     `json:"geo_country"`
-	GeoCity    *string     `json:"geo_city"`
-	GeoASN     *int        `json:"geo_asn"`
-	PosX       *JsonInt    `json:"posx"`
-	PosY       *JsonInt    `json:"posy"`
-	PosZ       *JsonInt    `json:"posz"`
-	Attachment []byte      `json:"attachment"`
+	ID         string      `json:"id" gorm:"primarykey;column:id"`
+	Timestamp  int64       `json:"timestamp" gorm:"column:timestamp"`
+	Category   LogCategory `json:"category" gorm:"column:category"`
+	Event      string      `json:"event" gorm:"column:event"`
+	Username   string      `json:"username" gorm:"column:username"`
+	Message    string      `json:"message" gorm:"column:message"`
+	Nodename   *string     `json:"nodename" gorm:"column:nodename"`
+	IPAddress  *string     `json:"ip_address" gorm:"column:ip_address"`
+	GeoCountry *string     `json:"geo_country" gorm:"column:geo_country"`
+	GeoCity    *string     `json:"geo_city" gorm:"column:geo_city"`
+	GeoASN     *int        `json:"geo_asn" gorm:"column:geo_asn"`
+	PosX       *JsonInt    `json:"posx" gorm:"column:posx"`
+	PosY       *JsonInt    `json:"posy" gorm:"column:posy"`
+	PosZ       *JsonInt    `json:"posz" gorm:"column:posz"`
+	Attachment []byte      `json:"attachment" gorm:"column:attachment"`
 }
 
 type LogCategory string
@@ -45,66 +45,6 @@ type LogSearch struct {
 	SortAscending bool         `json:"sort_ascending"`
 }
 
-func (m *Log) Columns(action string) []string {
-	return []string{
-		"id",
-		"timestamp",
-		"category",
-		"event",
-		"username",
-		"message",
-		"nodename",
-		"ip_address",
-		"geo_country",
-		"geo_city",
-		"geo_asn",
-		"posx",
-		"posy",
-		"posz",
-		"attachment",
-	}
-}
-
-func (m *Log) Table() string {
+func (m *Log) TableName() string {
 	return "log"
-}
-
-func (m *Log) Scan(action string, r func(dest ...any) error) error {
-	return r(
-		&m.ID,
-		&m.Timestamp,
-		&m.Category,
-		&m.Event,
-		&m.Username,
-		&m.Message,
-		&m.Nodename,
-		&m.IPAddress,
-		&m.GeoCountry,
-		&m.GeoCity,
-		&m.GeoASN,
-		&m.PosX,
-		&m.PosY,
-		&m.PosZ,
-		&m.Attachment,
-	)
-}
-
-func (m *Log) Values(action string) []any {
-	return []any{
-		m.ID,
-		m.Timestamp,
-		m.Category,
-		m.Event,
-		m.Username,
-		m.Message,
-		m.Nodename,
-		m.IPAddress,
-		m.GeoCountry,
-		m.GeoCity,
-		m.GeoASN,
-		m.PosX,
-		m.PosY,
-		m.PosZ,
-		m.Attachment,
-	}
 }
