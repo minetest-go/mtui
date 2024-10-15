@@ -1,47 +1,23 @@
 package types
 
 type MetricType struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
-	Help string `json:"help"`
+	Name string `json:"name" gorm:"primarykey;column:name"`
+	Type string `json:"type" gorm:"column:type"`
+	Help string `json:"help" gorm:"column:help"`
 }
 
-func (m *MetricType) Columns(action string) []string {
-	return []string{"name", "type", "help"}
-}
-
-func (m *MetricType) Table() string {
+func (m *MetricType) TableName() string {
 	return "metric_type"
 }
 
-func (m *MetricType) Scan(action string, r func(dest ...any) error) error {
-	return r(&m.Name, &m.Type, &m.Help)
-}
-
-func (m *MetricType) Values(action string) []any {
-	return []any{m.Name, m.Type, m.Help}
-}
-
 type Metric struct {
-	Timestamp int64   `json:"timestamp"`
-	Name      string  `json:"name"`
-	Value     float64 `json:"value"`
+	Timestamp int64   `json:"timestamp" gorm:"primarykey;column:timestamp"`
+	Name      string  `json:"name" gorm:"primarykey;column:name"`
+	Value     float64 `json:"value" gorm:"column:value"`
 }
 
-func (m *Metric) Columns(action string) []string {
-	return []string{"timestamp", "name", "value"}
-}
-
-func (m *Metric) Table() string {
+func (m *Metric) TableName() string {
 	return "metric"
-}
-
-func (m *Metric) Scan(action string, r func(dest ...any) error) error {
-	return r(&m.Timestamp, &m.Name, &m.Value)
-}
-
-func (m *Metric) Values(action string) []any {
-	return []any{m.Timestamp, m.Name, m.Value}
 }
 
 type MetricSearch struct {

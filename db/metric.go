@@ -1,61 +1,60 @@
 package db
 
 import (
-	"fmt"
 	"mtui/types"
 
-	"github.com/minetest-go/dbutil"
+	"gorm.io/gorm"
 )
 
 type MetricRepository struct {
-	dbu *dbutil.DBUtil[*types.Metric]
+	g *gorm.DB
 }
 
 func (r *MetricRepository) Insert(m *types.Metric) error {
-	return r.dbu.Insert(m)
+	return r.g.Create(m).Error
 }
 
-func (r *MetricRepository) buildWhereClause(s *types.MetricSearch, order bool) (string, []any) {
-	q := "where true "
-	args := make([]any, 0)
+func (r *MetricRepository) query(s *types.MetricSearch, order bool) *gorm.DB {
+	q := r.g.Model(types.Metric{})
 
 	if s.Name != nil {
-		q += " and name = %s"
-		args = append(args, *s.Name)
+		q = q.Where(types.Metric{Name: *s.Name})
 	}
 
 	if s.FromTimestamp != nil {
-		q += " and timestamp > %s"
-		args = append(args, *s.FromTimestamp)
+		q = q.Where("timestamp > ?", *s.FromTimestamp)
 	}
 
 	if s.ToTimestamp != nil {
-		q += " and timestamp < %s"
-		args = append(args, *s.ToTimestamp)
+		q = q.Where("timestamp < ?", *s.ToTimestamp)
 	}
+
+	// limit result length to 1000 per default
+	limit := 1000
+	if s.Limit != nil && *s.Limit < limit {
+		limit = *s.Limit
+	}
+	q = q.Limit(limit)
 
 	if order {
-		// limit result length to 1000 per default
-		limit := 1000
-		if s.Limit != nil && *s.Limit < limit {
-			limit = *s.Limit
-		}
-		q += fmt.Sprintf(" order by timestamp desc limit %d", limit)
+		q = q.Order("timestamp DESC")
 	}
 
-	return q, args
+	return q
 }
 
 func (r *MetricRepository) Search(s *types.MetricSearch) ([]*types.Metric, error) {
-	q, args := r.buildWhereClause(s, true)
-	return r.dbu.SelectMulti(q, args...)
+	var list []*types.Metric
+	err := r.query(s, true).Find(&list).Error
+	return list, err
 }
 
 func (r *MetricRepository) Count(s *types.MetricSearch) (int, error) {
-	q, args := r.buildWhereClause(s, false)
-	return r.dbu.Count(q, args...)
+	var c int64
+	err := r.query(s, false).Count(&c).Error
+	return int(c), err
 }
 
 func (r *MetricRepository) DeleteBefore(timestamp int64) error {
-	return r.dbu.Delete("where timestamp < %s", timestamp)
+	return r.g.Where("timestamp < ?", timestamp).Delete(types.Metric{}).Error
 }
