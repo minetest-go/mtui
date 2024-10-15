@@ -4,6 +4,7 @@ import (
 	"mtui/types"
 
 	"github.com/minetest-go/dbutil"
+	"gorm.io/gorm"
 )
 
 type Repositories struct {
@@ -18,9 +19,9 @@ type Repositories struct {
 	MeseconsRepo         *MeseconsRepository
 }
 
-func NewRepositories(db dbutil.DBTx) *Repositories {
+func NewRepositories(db dbutil.DBTx, g *gorm.DB) *Repositories {
 	return &Repositories{
-		ModRepo:              &ModRepository{dbu: dbutil.New[*types.Mod](db, dbutil.DialectSQLite, func() *types.Mod { return &types.Mod{} })},
+		ModRepo:              &ModRepository{g: g},
 		ConfigRepo:           &ConfigRepository{dbu: dbutil.New[*types.ConfigEntry](db, dbutil.DialectSQLite, func() *types.ConfigEntry { return &types.ConfigEntry{} })},
 		FeatureRepository:    &FeatureRepository{dbu: dbutil.New[*types.Feature](db, dbutil.DialectSQLite, func() *types.Feature { return &types.Feature{} })},
 		LogRepository:        NewLogRepository(db),

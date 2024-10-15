@@ -19,6 +19,7 @@ import (
 	"github.com/go-oauth2/oauth2/v4/manage"
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/minetest-go/mtdb"
+	"gorm.io/gorm"
 )
 
 var Version string
@@ -26,6 +27,7 @@ var Version string
 type App struct {
 	DBContext           *mtdb.Context
 	DB                  *sql.DB
+	G                   *gorm.DB
 	WorldDir            string
 	Repos               *db.Repositories
 	ModManager          *modmanager.ModManager

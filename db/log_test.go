@@ -9,9 +9,9 @@ import (
 )
 
 func TestLogRepo(t *testing.T) {
-	_db := setupDB(t)
+	_db, g := setupDB(t)
 
-	repo := db.NewRepositories(_db).LogRepository
+	repo := db.NewRepositories(_db, g).LogRepository
 	l := &types.Log{
 		Event:    "myevent",
 		Category: types.CategoryMinetest,

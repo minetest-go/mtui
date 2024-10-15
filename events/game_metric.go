@@ -31,7 +31,8 @@ func metricLoop(a *app.App, ch chan *bridge.CommandResponse) {
 		}
 		defer tx.Rollback()
 
-		repos := db.NewRepositories(tx)
+		gtx := a.G.Begin()
+		repos := db.NewRepositories(tx, gtx)
 		for _, metric := range metrics {
 			err = repos.MetricTypeRepository.Insert(&types.MetricType{
 				Name: metric.Name,
@@ -52,6 +53,12 @@ func metricLoop(a *app.App, ch chan *bridge.CommandResponse) {
 				fmt.Printf("Metric insert error: %s\n", err.Error())
 				return
 			}
+		}
+
+		err = gtx.Commit().Error
+		if err != nil {
+			fmt.Printf("Commit error: %s\n", err.Error())
+			return
 		}
 
 		err = tx.Commit()

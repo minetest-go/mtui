@@ -9,8 +9,8 @@ import (
 )
 
 func TestConfig(t *testing.T) {
-	DB := setupDB(t)
-	repo := db.NewRepositories(DB).ConfigRepo
+	DB, g := setupDB(t)
+	repo := db.NewRepositories(DB, g).ConfigRepo
 
 	// create
 	assert.NoError(t, repo.Set(&types.ConfigEntry{Key: "x", Value: "y"}))
