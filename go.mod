@@ -97,7 +97,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/uuid v1.6.0
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/vearutop/statigz v1.4.0
+	github.com/vearutop/statigz v1.4.3
 	golang.org/x/mod v0.17.0 // indirect
 	golang.org/x/sys v0.26.0 // indirect
 	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect
