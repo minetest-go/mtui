@@ -1,8 +1,6 @@
 package db
 
 import (
-	"mtui/types"
-
 	"github.com/minetest-go/dbutil"
 	"gorm.io/gorm"
 )
@@ -29,6 +27,6 @@ func NewRepositories(db dbutil.DBTx, g *gorm.DB) *Repositories {
 		MetricTypeRepository: &MetricTypeRepository{g: g},
 		MetricRepository:     &MetricRepository{g: g},
 		OauthAppRepo:         &OauthAppRepository{g: g},
-		MeseconsRepo:         &MeseconsRepository{dbu: dbutil.New[*types.Mesecons](db, dbutil.DialectSQLite, func() *types.Mesecons { return &types.Mesecons{} })},
+		MeseconsRepo:         &MeseconsRepository{g: g},
 	}
 }

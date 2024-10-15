@@ -1,67 +1,19 @@
 package types
 
 type Mesecons struct {
-	PosKey       string `json:"poskey"`
-	X            int    `json:"x"`
-	Y            int    `json:"y"`
-	Z            int    `json:"z"`
-	Name         string `json:"name"`
-	OrderID      int    `json:"order_id"`
-	Category     string `json:"category"`
-	NodeName     string `json:"nodename"`
-	PlayerName   string `json:"playername"`
-	State        string `json:"state"`
-	LastModified int64  `json:"last_modified"`
+	PosKey       string `json:"poskey" gorm:"primarykey;column:poskey"`
+	X            int    `json:"x" gorm:"column:x"`
+	Y            int    `json:"y" gorm:"column:y"`
+	Z            int    `json:"z" gorm:"column:z"`
+	Name         string `json:"name" gorm:"column:name"`
+	OrderID      int    `json:"order_id" gorm:"column:order_id"`
+	Category     string `json:"category" gorm:"column:category"`
+	NodeName     string `json:"nodename" gorm:"column:nodename"`
+	PlayerName   string `json:"playername" gorm:"column:playername"`
+	State        string `json:"state" gorm:"column:state"`
+	LastModified int64  `json:"last_modified" gorm:"column:last_modified"`
 }
 
-func (m *Mesecons) Columns(action string) []string {
-	return []string{
-		"poskey",
-		"x",
-		"y",
-		"z",
-		"name",
-		"order_id",
-		"category",
-		"nodename",
-		"playername",
-		"state",
-		"last_modified",
-	}
-}
-
-func (m *Mesecons) Table() string {
+func (m *Mesecons) TableName() string {
 	return "mesecons"
-}
-
-func (m *Mesecons) Scan(action string, r func(dest ...any) error) error {
-	return r(
-		&m.PosKey,
-		&m.X,
-		&m.Y,
-		&m.Z,
-		&m.Name,
-		&m.OrderID,
-		&m.Category,
-		&m.NodeName,
-		&m.PlayerName,
-		&m.State,
-		&m.LastModified,
-	)
-}
-
-func (m *Mesecons) Values(action string) []any {
-	return []any{
-		m.PosKey,
-		m.X,
-		m.Y,
-		m.Z,
-		m.Name,
-		m.OrderID,
-		m.Category,
-		m.NodeName,
-		m.PlayerName,
-		m.State,
-		m.LastModified,
-	}
 }
