@@ -160,6 +160,8 @@ github.com/mattn/go-colorable v0.1.7/go.mod h1:u6P/XSegPjTcexA+o6vUJrdnUu04hMope
 github.com/mattn/go-isatty v0.0.12/go.mod h1:cbi8OIDigv2wuxKPP5vlRcQ1OAZbq2CE4Kysco4FUpU=
 github.com/mattn/go-sqlite3 v1.14.22 h1:2gZY6PC6kBnID23Tichd1K+Z0oS6nE/XwU+Vz/5o4kU=
 github.com/mattn/go-sqlite3 v1.14.22/go.mod h1:Uh1q+B4BYcTPb+yiD3kU8Ct7aC0hY9fxUwlHK0RXw+Y=
+github.com/mattn/go-sqlite3 v1.14.24 h1:tpSp2G2KyMnnQu99ngJ47EIkWVmliIizyZBfPrBWDRM=
+github.com/mattn/go-sqlite3 v1.14.24/go.mod h1:Uh1q+B4BYcTPb+yiD3kU8Ct7aC0hY9fxUwlHK0RXw+Y=
 github.com/minetest-go/areasparser v1.0.5 h1:kyfb7mk4S7Gvx5N42uJK8ze3BAbfj8uyLsv2Tuy43MQ=
 github.com/minetest-go/areasparser v1.0.5/go.mod h1:NvohBk60WBrAbfvgmJccCEblz9I/Ygba4k9V81rwoNc=
 github.com/minetest-go/mtdb v1.1.51 h1:+TW7+t3+e1OZ9X468LJov5q4Fpso5XOj7fhizlWZUZk=
