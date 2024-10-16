@@ -30,6 +30,9 @@ func (app *App) SetupServices() {
 				Tty:  false,
 				User: fmt.Sprintf("%d", os.Getuid()),
 				Env:  no_proxy_env,
+				ExposedPorts: nat.PortSet{
+					nat.Port(fmt.Sprintf("%d/udp", app.Config.DockerMinetestPort)): {},
+				},
 			},
 			DefaultHostConfig: &container.HostConfig{
 				RestartPolicy: container.RestartPolicy{
@@ -53,7 +56,7 @@ func (app *App) SetupServices() {
 				PortBindings: nat.PortMap{
 					nat.Port(portbinding): []nat.PortBinding{
 						{
-							HostIP:   "0.0.0.0",
+							HostIP:   "",
 							HostPort: fmt.Sprintf("%d", app.Config.DockerMinetestPort),
 						},
 					},
