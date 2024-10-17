@@ -15,6 +15,7 @@ import format_size from "../../../util/format_size.js";
 import format_time from "../../../util/format_time.js";
 import { START, FILEBROWSER } from "../../Breadcrumb.js";
 import { can_edit } from "./common.js";
+import { get_filebrowser_enabled } from "../../../service/stats.js";
 
 export default {
     props: ["pathMatch"],
@@ -107,6 +108,7 @@ export default {
             });
         },
         can_edit: can_edit,
+        filebrowser_enabled: get_filebrowser_enabled,
         is_json_profile: function(filename) {
             return filename.match(/^profile-.*.json$/);
         },
@@ -159,6 +161,14 @@ export default {
     },
     template: /*html*/`
         <default-layout icon="folder" title="Filebrowser" :breadcrumb="breadcrumb">
+            <div class="row" v-if="filebrowser_enabled">
+                <div class="col-md-12">
+                    <div class="alert alert-info">
+                        <i class="fa fa-info"></i>
+                        <b>Note: </b> To upload larger files use the dedicated <a href="filebrowser/">filebrowser</a> interface and enable the maintenance mode for database files
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-4">
                     <div class="input-group">
