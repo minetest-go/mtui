@@ -22,9 +22,9 @@ require (
 	github.com/docker/go-connections v0.5.0
 	github.com/go-oauth2/oauth2/v4 v4.5.2
 	github.com/golang-jwt/jwt/v4 v4.5.0
-	github.com/mattn/go-sqlite3 v1.14.22
+	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/minetest-go/areasparser v1.0.5
-	github.com/pkg/sftp v1.13.6
+	github.com/pkg/sftp v1.13.7
 	github.com/studio-b12/gowebdav v0.9.0
 	gorm.io/driver/sqlite v1.5.6
 	gorm.io/gorm v1.25.12
