@@ -29,6 +29,6 @@
     "@stylistic/eslint-plugin-js": "^2.3.0",
     "eslint": "^9.7.0",
     "eslint-plugin-vue": "^9.27.0",
-    "rollup": "4.24.0"
+    "rollup": "4.24.3"
   }
 }
