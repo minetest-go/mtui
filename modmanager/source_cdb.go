@@ -100,7 +100,7 @@ func (h *ContentDBModHandler) installMod(ctx *HandlerContext, mod *types.Mod, re
 	return nil
 }
 
-func (h *ContentDBModHandler) getLatestRelease(ctx *HandlerContext, mod *types.Mod) (*cdb.PackageRelease, error) {
+func (h *ContentDBModHandler) getLatestRelease(_ *HandlerContext, mod *types.Mod) (*cdb.PackageRelease, error) {
 	releases, err := cli.GetReleases(mod.Author, mod.Name)
 	if err != nil {
 		return nil, fmt.Errorf("could not fetch releases: %v", err)
