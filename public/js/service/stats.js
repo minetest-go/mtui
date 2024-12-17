@@ -19,4 +19,3 @@ export const stop_polling = () => clearInterval(handle);
 export const get_player_count = () => store.player_count;
 export const get_players = () => store.players;
 export const get_maintenance = () => store.maintenance;
-export const get_filebrowser_enabled = () => store.filebrowser_enabled;

@@ -16,7 +16,6 @@ import format_size from "../../../util/format_size.js";
 import format_time from "../../../util/format_time.js";
 import { START, FILEBROWSER } from "../../Breadcrumb.js";
 import { can_edit } from "./common.js";
-import { get_filebrowser_enabled } from "../../../service/stats.js";
 
 export default {
     props: ["pathMatch"],
@@ -26,7 +25,7 @@ export default {
     data: function() {
         return {
             result: null,
-            mkfile_name: "",
+            mkdir_name: "",
             move_name: "",
             move_target: "",
             upload_archive_busy: false,
@@ -41,14 +40,9 @@ export default {
         get_targz_url,
         get_download_url,
         mkdir: function() {
-            mkdir(this.result.dir + "/" + this.mkfile_name)
+            mkdir(this.result.dir + "/" + this.mkdir_name)
             .then(() => this.browse_dir())
-            .then(() => this.mkfile_name = "");
-        },
-        mkfile: function() {
-            upload(this.result.dir + "/" + this.mkfile_name, "")
-            .then(() => this.browse_dir())
-            .then(() => this.mkfile_name = "");
+            .then(() => this.mkdir_name = "");
         },
         upload: function() {
             const files = Array.from(this.$refs.input_upload.files);
@@ -115,7 +109,6 @@ export default {
             });
         },
         can_edit: can_edit,
-        filebrowser_enabled: get_filebrowser_enabled,
         is_json_profile: function(filename) {
             return filename.match(/^profile-.*.json$/);
         },
@@ -168,27 +161,14 @@ export default {
     },
     template: /*html*/`
         <default-layout icon="folder" title="Filebrowser" :breadcrumb="breadcrumb">
-            <div class="row" v-if="filebrowser_enabled">
-                <div class="col-md-12">
-                    <div class="alert alert-info">
-                        <i class="fa fa-info"></i>
-                        <b>Note: </b> To upload larger files use the dedicated <a href="filebrowser/">filebrowser</a> interface and enable the maintenance mode for database files
-                    </div>
-                </div>
-            </div>
             <div class="row">
                 <div class="col-md-4">
                     <div class="input-group">
-                        <input type="text" v-model="mkfile_name" class="form-control" placeholder="Directory name"/>
-                        <button class="btn btn-secondary" v-on:click="mkdir" :disabled="!mkfile_name">
+                        <input type="text" v-model="mkdir_name" class="form-control" placeholder="Directory name"/>
+                        <button class="btn btn-secondary" v-on:click="mkdir" :disabled="!mkdir_name">
                             <i class="fa fa-folder"></i>
                             <i class="fa fa-plus"></i>
                             Create directory
-                        </button>
-                        <button class="btn btn-secondary" v-on:click="mkfile" :disabled="!mkfile_name">
-                            <i class="fa fa-file"></i>
-                            <i class="fa fa-plus"></i>
-                            Create file
                         </button>
                     </div>
                 </div>
