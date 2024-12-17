@@ -169,7 +169,7 @@ export default {
 								<i class="fa fa-photo-film"></i> Mediaserver
 							</router-link>
 						</li>
-						<li>
+						<li v-if="!maintenance">
 							<router-link to="/restart-conditions" class="dropdown-item">
 								<i class="fa fa-refresh"></i> Restart conditions
 							</router-link>
