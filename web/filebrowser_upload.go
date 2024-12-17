@@ -114,3 +114,24 @@ func (a *Api) UploadFile(w http.ResponseWriter, r *http.Request, claims *types.C
 		Message:  fmt.Sprintf("User '%s' uploaded the file '%s' with %d bytes", claims.Username, rel_filename, count),
 	}, r)
 }
+
+func (a *Api) AppendFile(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	_, filename, err := a.get_sanitized_filename(r, "filename")
+	if err != nil {
+		SendError(w, 500, err)
+		return
+	}
+
+	f, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+	if err != nil {
+		SendError(w, 500, fmt.Errorf("openfile error for '%s': %v", filename, err))
+		return
+	}
+	defer f.Close()
+
+	_, err = io.Copy(f, r.Body)
+	if err != nil {
+		SendError(w, 500, fmt.Errorf("copyfile error for '%s': %v", filename, err))
+		return
+	}
+}

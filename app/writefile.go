@@ -17,9 +17,13 @@ var usedDatabaseFiles = map[string]bool{
 	"mtui.sqlite":        true,
 }
 
+func IsDatabaseFile(filename string) bool {
+	return usedDatabaseFiles[path.Base(filename)]
+}
+
 func (a *App) WriteFile(filename string, data io.Reader, r *http.Request, claims *types.Claims) (int64, error) {
 
-	is_dbfile := usedDatabaseFiles[path.Base(filename)]
+	is_dbfile := IsDatabaseFile(filename)
 	if is_dbfile && !a.MaintenanceMode.Load() {
 		// create log entry
 		a.CreateUILogEntry(&types.Log{

@@ -74,6 +74,7 @@ func Setup(a *app.App) error {
 	fbr.HandleFunc("/file", api.Secure(api.DownloadFile)).Methods(http.MethodGet)
 	fbr.HandleFunc("/file", api.Secure(api.UploadFile)).Methods(http.MethodPost)
 	fbr.HandleFunc("/file", api.Secure(api.DeleteFile)).Methods(http.MethodDelete)
+	fbr.HandleFunc("/file", api.Secure(api.AppendFile)).Methods(http.MethodPut)
 	fbr.HandleFunc("/rename", api.Secure(api.RenameFile)).Methods(http.MethodPost)
 
 	// backup job
