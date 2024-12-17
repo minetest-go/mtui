@@ -19,18 +19,11 @@ func (r *MeseconsRepository) Save(m *types.Mesecons) error {
 }
 
 func (r *MeseconsRepository) GetByPlayerName(playername string) ([]*types.Mesecons, error) {
-	var list []*types.Mesecons
-	err := r.g.Where(types.Mesecons{PlayerName: playername}).Order("order_id ASC").Find(&list).Error
-	return list, err
+	return FindMulti[types.Mesecons](r.g.Where(types.Mesecons{PlayerName: playername}).Order("order_id ASC"))
 }
 
 func (r *MeseconsRepository) GetByPoskey(poskey string) (*types.Mesecons, error) {
-	var list []*types.Mesecons
-	err := r.g.Where(types.Mesecons{PosKey: poskey}).Find(&list).Error
-	if len(list) == 0 {
-		return nil, err
-	}
-	return list[0], err
+	return FindSingle[types.Mesecons](r.g.Where(types.Mesecons{PosKey: poskey}))
 }
 
 func (r *MeseconsRepository) Remove(poskey string) error {

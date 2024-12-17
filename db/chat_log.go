@@ -25,15 +25,11 @@ func (r *ChatLogRepository) Insert(l *types.ChatLog) error {
 }
 
 func (r *ChatLogRepository) Search(channel string, from, to int64) ([]*types.ChatLog, error) {
-	var list []*types.ChatLog
-	err := r.g.Where("timestamp > ?", from).Where("timestamp < ?", to).Where(types.ChatLog{Channel: channel}).Find(&list).Error
-	return list, err
+	return FindMulti[types.ChatLog](r.g.Where("timestamp > ?", from).Where("timestamp < ?", to).Where(types.ChatLog{Channel: channel}))
 }
 
 func (r *ChatLogRepository) GetLatest(channel string, limit int) ([]*types.ChatLog, error) {
-	var list []*types.ChatLog
-	err := r.g.Where(types.ChatLog{Channel: channel}).Order("timestamp ASC").Limit(limit).Find(&list).Error
-	return list, err
+	return FindMulti[types.ChatLog](r.g.Where(types.ChatLog{Channel: channel}).Order("timestamp ASC"))
 }
 
 func (r *ChatLogRepository) DeleteBefore(timestamp int64) error {

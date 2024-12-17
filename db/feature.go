@@ -19,16 +19,9 @@ func (r *FeatureRepository) Set(m *types.Feature) error {
 }
 
 func (r *FeatureRepository) GetAll() ([]*types.Feature, error) {
-	var list []*types.Feature
-	err := r.g.Find(&list).Error
-	return list, err
+	return FindMulti[types.Feature](r.g)
 }
 
 func (r *FeatureRepository) GetByName(name string) (*types.Feature, error) {
-	var list []*types.Feature
-	err := r.g.Where(types.Feature{Name: name}).Limit(1).Find(&list).Error
-	if len(list) == 0 {
-		return nil, err
-	}
-	return list[0], err
+	return FindSingle[types.Feature](r.g.Where(types.Feature{Name: name}))
 }

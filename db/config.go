@@ -12,12 +12,7 @@ type ConfigRepository struct {
 }
 
 func (r *ConfigRepository) GetByKey(key types.ConfigKey) (*types.ConfigEntry, error) {
-	var list []*types.ConfigEntry
-	err := r.g.Where(types.ConfigEntry{Key: key}).Limit(1).Find(&list).Error
-	if len(list) == 0 {
-		return nil, err
-	}
-	return list[0], err
+	return FindSingle[types.ConfigEntry](r.g.Where(types.ConfigEntry{Key: key}))
 }
 
 func (r *ConfigRepository) Set(c *types.ConfigEntry) error {

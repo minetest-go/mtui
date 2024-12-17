@@ -109,9 +109,7 @@ func (r *LogRepository) query(s *types.LogSearch) *gorm.DB {
 }
 
 func (r *LogRepository) Search(s *types.LogSearch) ([]*types.Log, error) {
-	var list []*types.Log
-	err := r.query(s).Find(&list).Error
-	return list, err
+	return FindMulti[types.Log](r.query(s))
 }
 
 func (r *LogRepository) Count(s *types.LogSearch) (int, error) {

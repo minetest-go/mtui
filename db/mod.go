@@ -19,27 +19,15 @@ func (r *ModRepository) Create(m *types.Mod) error {
 }
 
 func (r *ModRepository) GetAll() ([]*types.Mod, error) {
-	var list []*types.Mod
-	err := r.g.Find(&list).Error
-	return list, err
+	return FindMulti[types.Mod](r.g)
 }
 
 func (r *ModRepository) GetByName(name string) (*types.Mod, error) {
-	var list []*types.Mod
-	err := r.g.Where(types.Mod{Name: name}).Limit(1).Find(&list).Error
-	if len(list) == 0 {
-		return nil, err
-	}
-	return list[0], err
+	return FindSingle[types.Mod](r.g.Where(types.Mod{Name: name}))
 }
 
 func (r *ModRepository) GetByID(id string) (*types.Mod, error) {
-	var list []*types.Mod
-	err := r.g.Where(&types.Mod{ID: id}).Limit(1).Find(&list).Error
-	if len(list) == 0 {
-		return nil, err
-	}
-	return list[0], err
+	return FindSingle[types.Mod](r.g.Where(types.Mod{ID: id}))
 }
 
 func (r *ModRepository) Update(m *types.Mod) error {
