@@ -40,6 +40,7 @@ import Mesecons from './components/pages/Mesecons.js';
 import Luacontroller from './components/pages/Luacontroller.js';
 import Play from './components/pages/Play.js';
 import RestartConditions from './components/pages/administration/RestartConditions.js';
+import BackupRestore from './components/pages/administration/BackupRestore.js';
 
 export default [{
 	path: "/", component: Start,
@@ -100,6 +101,9 @@ export default [{
 }, {
 	path: "/mods", component: Mods,
 	meta: { requiredPriv: "server" }
+}, {
+	path: "/backup", component: BackupRestore,
+	meta: { requiredPriv: "server", maintenance_page: true }
 }, {
 	path: "/cdb/browse", component: ContentBrowse,
 	meta: { requiredPriv: "server" }
