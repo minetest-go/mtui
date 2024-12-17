@@ -142,7 +142,7 @@ func (a *Api) RenameFile(w http.ResponseWriter, r *http.Request, claims *types.C
 		a.app.CreateUILogEntry(&types.Log{
 			Username: claims.Username,
 			Event:    "maintenance",
-			Message:  fmt.Sprintf("User '%s' uploads '%s' enabling temporary maintenance mode", claims.Username, path.Base(dst)),
+			Message:  fmt.Sprintf("User '%s' renames '%s' to '%s' enabling temporary maintenance mode", claims.Username, rel_src, rel_dst),
 		}, r)
 
 		a.app.MaintenanceMode.Store(true)
