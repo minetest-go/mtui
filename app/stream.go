@@ -224,3 +224,53 @@ func (a *App) DownloadTargGZ(abspath string, r io.Reader, req *http.Request, c *
 
 	return bytes, nil
 }
+
+func (a *App) DownloadZip(abspath string, r io.Reader, req *http.Request, c *types.Claims) (int64, error) {
+
+	tf, err := os.CreateTemp(os.TempDir(), "mtui-zip-upload")
+	if err != nil {
+		return 0, fmt.Errorf("createtemp error: %v", err)
+	}
+	defer os.Remove(tf.Name())
+
+	buf := make([]byte, 1024*1024*1) // 1 mb buffer
+	_, err = io.CopyBuffer(tf, r, buf)
+	if err != nil {
+		return 0, fmt.Errorf("copybuffer error: %v", err)
+	}
+
+	zr, err := zip.OpenReader(tf.Name())
+	if err != nil {
+		return 0, fmt.Errorf("openreader errror: %v", err)
+	}
+	defer zr.Close()
+
+	count := int64(0)
+	for _, f := range zr.File {
+		targetfile := path.Join(abspath, f.Name)
+		dirname := path.Dir(targetfile)
+		err = os.MkdirAll(dirname, 0644)
+		if err != nil {
+			return 0, fmt.Errorf("mkdirall error: %v", err)
+		}
+
+		if f.FileInfo().IsDir() {
+			continue
+		}
+
+		zipfile, err := f.Open()
+		if err != nil {
+			return 0, fmt.Errorf("file open error: '%s', '%v'", f.Name, err)
+		}
+
+		fc, err := a.WriteFile(targetfile, zipfile, req, c)
+		count += fc
+		zipfile.Close()
+
+		if err != nil {
+			return 0, fmt.Errorf("writefile error: %v", err)
+		}
+	}
+
+	return count, nil
+}

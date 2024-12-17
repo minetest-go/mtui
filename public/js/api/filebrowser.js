@@ -36,6 +36,10 @@ export const upload_zip = (dir, data, callback) => postProgress(`api/filebrowser
 
 export const upload_targz = (dir, data, callback) => postProgress(`api/filebrowser/targz?dir=${dir}`, data, callback);
 
+export const unzip = filename => fetch(`api/filebrowser/unzip?filename=${filename}`, {
+    method: "POST"
+});
+
 export const mkdir = dir => fetch(`api/filebrowser/mkdir?dir=${dir}`, {
     method: "POST"
 });

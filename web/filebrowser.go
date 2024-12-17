@@ -124,6 +124,31 @@ func (a *Api) DeleteFile(w http.ResponseWriter, r *http.Request, claims *types.C
 	}, r)
 }
 
+func (a *Api) UnzipFile(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	rel_filename, filename, err := a.get_sanitized_filename(r, "filename")
+	if err != nil {
+		SendError(w, 500, err)
+		return
+	}
+
+	f, err := os.Open(filename)
+	if err != nil {
+		SendError(w, 500, fmt.Errorf("os open error: %v", err))
+		return
+	}
+	defer f.Close()
+
+	abspath := path.Dir(filename)
+	count, err := a.app.DownloadZip(abspath, f, r, claims)
+	Send(w, true, err)
+
+	a.app.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "filebrowser",
+		Message:  fmt.Sprintf("User '%s' unzipped the file '%s' (%d bytes)", claims.Username, rel_filename, count),
+	}, r)
+}
+
 func (a *Api) RenameFile(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	rel_src, src, err := a.get_sanitized_filename(r, "src")
 	if err != nil {

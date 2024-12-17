@@ -11,6 +11,7 @@ import {
     upload_targz,
     rename
 } from "../../../api/filebrowser.js";
+import { upload_chunked } from "../../../service/uploader.js";
 import format_size from "../../../util/format_size.js";
 import format_time from "../../../util/format_time.js";
 import { START, FILEBROWSER } from "../../Breadcrumb.js";
@@ -52,7 +53,7 @@ export default {
         upload: function() {
             const files = Array.from(this.$refs.input_upload.files);
             this.upload_busy = true;
-            const promises = files.map(file => upload(this.result.dir + "/" + file.name, file));
+            const promises = files.map(file => upload_chunked(this.result.dir, file.name, file));
 
             Promise.all(promises).then(() => {
                 this.$refs.input_upload.value = null;

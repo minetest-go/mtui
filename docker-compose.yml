@@ -14,7 +14,6 @@ services:
    WORLD_DIR: "/world"
    WEBDEV: "true"
    API_KEY: "mykey"
-   INSTALL_MTUI_MOD: "true"
    LOGLEVEL: debug
    SERVER_NAME: "dev-server"
    DEFAULT_THEME: "darkly"

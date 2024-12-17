@@ -1,13 +1,11 @@
 package web
 
 import (
-	"archive/zip"
 	"fmt"
 	"io"
 	"mtui/types"
 	"net/http"
 	"os"
-	"path"
 )
 
 func (a *Api) UploadZip(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
@@ -17,55 +15,10 @@ func (a *Api) UploadZip(w http.ResponseWriter, r *http.Request, claims *types.Cl
 		return
 	}
 
-	tf, err := os.CreateTemp(os.TempDir(), "mtui-zip-upload")
+	count, err := a.app.DownloadZip(absdir, r.Body, r, claims)
 	if err != nil {
 		SendError(w, 500, err)
 		return
-	}
-	defer os.Remove(tf.Name())
-
-	buf := make([]byte, 1024*1024*1) // 1 mb buffer
-	_, err = io.CopyBuffer(tf, r.Body, buf)
-	if err != nil {
-		SendError(w, 500, err)
-		return
-	}
-
-	zr, err := zip.OpenReader(tf.Name())
-	if err != nil {
-		SendError(w, 500, err)
-		return
-	}
-	defer zr.Close()
-
-	count := int64(0)
-	for _, f := range zr.File {
-		targetfile := path.Join(absdir, f.Name)
-		dirname := path.Dir(targetfile)
-		err = os.MkdirAll(dirname, 0644)
-		if err != nil {
-			SendError(w, 500, err)
-			return
-		}
-
-		if f.FileInfo().IsDir() {
-			continue
-		}
-
-		zipfile, err := f.Open()
-		if err != nil {
-			SendError(w, 500, err)
-			return
-		}
-
-		fc, err := a.app.WriteFile(targetfile, zipfile, r, claims)
-		count += fc
-		zipfile.Close()
-
-		if err != nil {
-			SendError(w, 500, err)
-			return
-		}
 	}
 
 	a.app.CreateUILogEntry(&types.Log{
