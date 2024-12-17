@@ -25,6 +25,11 @@ function postProgress(url, body, callback) {
     });
 }
 
+export const append = (filename, data) => fetch(`api/filebrowser/file?filename=${filename}`, {
+    method: "PUT",
+    body: data
+});
+
 export const upload = (filename, data, callback) => postProgress(`api/filebrowser/file?filename=${filename}`, data, callback);
 
 export const upload_zip = (dir, data, callback) => postProgress(`api/filebrowser/zip?dir=${dir}`, data, callback);
