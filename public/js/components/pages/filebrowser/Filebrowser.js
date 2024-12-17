@@ -29,7 +29,6 @@ export default {
             mkfile_name: "",
             move_name: "",
             move_target: "",
-            upload_busy: false,
             upload_archive_busy: false,
             prepare_delete: null,
             upload_progress: {}
@@ -53,22 +52,20 @@ export default {
         },
         upload: function() {
             const files = Array.from(this.$refs.input_upload.files);
-            this.upload_busy = true;
-            const promises = files.map(file => {
-                return upload_chunked(this.result.dir, file.name, file, progress => {
+            files.forEach(file => {
+                upload_chunked(this.result.dir, file.name, file, progress => {
                     this.upload_progress[file.name] = {
                         progress,
                         name: file.name,
                         size: file.size
                     };
+                }).then(() => {
+                    delete this.upload_progress[file.name];
+                    this.browse_dir();
                 });
             });
 
-            Promise.all(promises).then(() => {
-                this.$refs.input_upload.value = null;
-                this.upload_busy = false;
-                this.browse_dir();
-            });
+            this.$refs.input_upload.value = null;
         },
         upload_archive: function() {
             if (this.$refs.input_upload_archive.files.length == 0) {
@@ -201,7 +198,6 @@ export default {
                         <button class="btn btn-secondary" v-on:click="upload">
                             <i class="fa fa-upload"></i>
                             Upload file
-                            <i class="fa fa-spinner fa-spin" v-if="upload_busy"></i>
                         </button>
                     </div>
                 </div>
@@ -241,6 +237,16 @@ export default {
                     </tr>
                 </thead>
                 <tbody>
+                    <tr v-for="(entry, name) in upload_progress">
+                        <td>
+                            {{name}} {{entry.progress}}
+                        </td>
+                        <td>{{format_size(entry.size)}}</td>
+                        <td></td>
+                        <td>
+                            <i class="fa fa-spinner fa-spin"></i>
+                        </td>
+                    </tr>
                     <tr v-if="result.parent_dir">
                         <td>
                             <router-link :to="'/filebrowser' + result.parent_dir">
