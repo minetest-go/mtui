@@ -37,26 +37,30 @@ export default {
     template: /*html*/`
     <default-layout icon="list-check" title="UI Settings" :breadcrumb="breadcrumb">
         <table class="table table-striped" v-if="themes">
-            <tr>
-                <th>Setting</th>
-                <th>Value</th>
-                <th>Action</th>
-            </tr>
-            <tr>
-                <td>
-                    Theme
-                </td>
-                <td>
-                    <select class="form-control" v-model="current_theme">
-                        <option v-for="theme in themes" :value="theme">{{theme}}</option>
-                    </select>
-                </td>
-                <td>
-                    <a class="btn btn-success w-100" v-on:click="set_config('theme', current_theme, true)">
-                        <i class="fa fa-save"></i> Save
-                    </a>
-                </td>
-            </tr>
+            <thead>
+                <tr>
+                    <th>Setting</th>
+                    <th>Value</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        Theme
+                    </td>
+                    <td>
+                        <select class="form-control" v-model="current_theme">
+                            <option v-for="theme in themes" :value="theme">{{theme}}</option>
+                        </select>
+                    </td>
+                    <td>
+                        <a class="btn btn-success w-100" v-on:click="set_config('theme', current_theme, true)">
+                            <i class="fa fa-save"></i> Save
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
         </table>
     </default-layout>
     `

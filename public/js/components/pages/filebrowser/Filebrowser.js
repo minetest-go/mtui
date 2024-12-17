@@ -218,12 +218,14 @@ export default {
                 <tbody>
                     <tr v-for="(entry, name) in upload_progress">
                         <td>
-                            {{name}} {{entry.progress}}
-                        </td>
-                        <td>{{format_size(entry.size)}}</td>
-                        <td></td>
-                        <td>
                             <i class="fa fa-spinner fa-spin"></i>
+                            {{name}} ({{Math.floor(entry.progress * 100)}} % / {{format_size(entry.size)}})
+                        </td>
+                        <td colspan="3">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" v-bind:style="{ width: (entry.progress*100)+'%' }">
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     <tr v-if="result.parent_dir">
