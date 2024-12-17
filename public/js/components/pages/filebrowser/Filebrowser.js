@@ -6,7 +6,6 @@ import {
     get_download_url,
     mkdir,
     remove,
-    upload,
     upload_zip,
     upload_targz,
     rename
