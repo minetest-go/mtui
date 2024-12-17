@@ -30,6 +30,8 @@ export default {
         disable_maintenance: function() {
             disable_maintenance()
             .then(() => window.location.reload());
+        },
+        upload: function() {
         }
     },
     template: /*html*/`
@@ -39,7 +41,7 @@ export default {
                     Download backup <i class="fa fa-download"></i>
                 </div>
                 <div class="card-body">
-                    <a class="btn btn-primary">
+                    <a class="btn btn-primary" href="api/filebrowser/zip?dir=/">
                         Download backup
                     </a>
                 </div>
@@ -62,10 +64,15 @@ export default {
                     <button class="btn btn-success" v-if="maintenance" v-on:click="disable_maintenance">
                         Disable maintenance mode
                     </button>
-                    <i class="fa fa-chevron-right"></i>
-                    <button class="btn btn-danger" :disabled="!maintenance">
-                        Restore from backup
-                    </button>
+                    <br>
+                    <i class="fa fa-chevron-down"></i>
+                    <div class="input-group">
+                        <input ref="input_upload" type="file" class="form-control" :disabled="!maintenance" accept=".zip"/>
+                        <button class="btn btn-danger" v-on:click="upload" :disabled="!maintenance">
+                            <i class="fa fa-upload"></i>
+                            Restore from backup
+                        </button>
+                    </div>
                 </div>
             </div>
         </default-layout>
