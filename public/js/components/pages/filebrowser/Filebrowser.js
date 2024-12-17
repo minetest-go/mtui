@@ -31,7 +31,8 @@ export default {
             move_target: "",
             upload_busy: false,
             upload_archive_busy: false,
-            prepare_delete: null
+            prepare_delete: null,
+            upload_progress: {}
         };
     },
     methods: {
@@ -53,7 +54,15 @@ export default {
         upload: function() {
             const files = Array.from(this.$refs.input_upload.files);
             this.upload_busy = true;
-            const promises = files.map(file => upload_chunked(this.result.dir, file.name, file));
+            const promises = files.map(file => {
+                return upload_chunked(this.result.dir, file.name, file, progress => {
+                    this.upload_progress[file.name] = {
+                        progress,
+                        name: file.name,
+                        size: file.size
+                    };
+                });
+            });
 
             Promise.all(promises).then(() => {
                 this.$refs.input_upload.value = null;
