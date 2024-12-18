@@ -8,22 +8,25 @@ name (Admin name) string
 [**Serverlist and MOTD]
 
 #    Name of the server, to be displayed when players join and in the serverlist.
-server_name (Server name) string Minetest server
+server_name (Server name) string Luanti server
 
 #    Description of server, to be displayed when players join and in the serverlist.
 server_description (Server description) string mine here
 
 #    Domain name of server, to be displayed in the serverlist.
-server_address (Server address) string game.minetest.net
+server_address (Server address) string game.example.net
 
 #    Homepage of server, to be displayed in the serverlist.
-server_url (Server URL) string https://minetest.net
+server_url (Server URL) string https://game.example.net
 
 #    Automatically report to the serverlist.
 server_announce (Announce server) bool false
 
+#    Send names of online players to the serverlist. If disabled only the player count is revealed.
+server_announce_send_players (Send player names to the server list) bool true
+
 #    Announce to this serverlist.
-serverlist_url (Serverlist URL) string servers.minetest.net
+serverlist_url (Serverlist URL) string https://servers.luanti.org
 
 #    Message of the day displayed to players connecting.
 motd (Message of the day) string
@@ -32,7 +35,7 @@ motd (Message of the day) string
 max_users (Maximum users) int 15 0 65535
 
 #    If this is set, players will always (re)spawn at the given position.
-static_spawnpoint (Static spawnpoint) string
+static_spawnpoint (Static spawn point) string
 
 [**Networking]
 
@@ -47,6 +50,14 @@ bind_address (Bind address) string
 #    Older clients are compatible in the sense that they will not crash when connecting
 #    to new servers, but they may not support all new features that you are expecting.
 strict_protocol_version_checking (Strict protocol checking) bool false
+
+#    Define the oldest clients allowed to connect.
+#    Older clients are compatible in the sense that they will not crash when connecting
+#    to new servers, but they may not support all new features that you are expecting.
+#    This allows for more fine-grained control than strict_protocol_version_checking.
+#    Luanti still enforces its own internal minimum, and enabling
+#    strict_protocol_version_checking will effectively override this.
+protocol_version_min (Protocol version minimum) int 1 1 65535
 
 #    Specifies URL from which client fetches media instead of using UDP.
 #    $filename should be accessible from $remote_media$filename via cURL
@@ -74,8 +85,13 @@ default_privs (Default privileges) string interact, shout
 #    Privileges that players with basic_privs can grant
 basic_privs (Basic privileges) string interact, shout
 
-#    If enabled, disable cheat prevention in multiplayer.
-disable_anticheat (Disable anticheat) bool false
+#    Server anticheat configuration.
+#    Flags are positive. Uncheck the flag to disable corresponding anticheat module.
+anticheat_flags (Anticheat flags) flags digging,interaction,movement digging,interaction,movement
+
+#    Tolerance of movement cheat detector.
+#    Increase the value if players experience stuttery movement.
+anticheat_movement_tolerance (Anticheat movement tolerance) float 1.0 1.0
 
 #    If enabled, actions are recorded for rollback.
 #    This option is only read when server starts.
@@ -97,7 +113,7 @@ csm_restriction_flags (Client side modding restrictions) int 62 0 63
 
 #   If the CSM restriction for node range is enabled, get_node calls are limited
 #   to this distance from the player to the node.
-csm_restriction_noderange (Client side node lookup range restriction) int 0 0 4294967295
+csm_restriction_noderange (Client-side node lookup range restriction) int 0 0 4294967295
 
 [**Chat]
 
@@ -108,7 +124,7 @@ strip_color_codes (Strip color codes) bool false
 #    Set the maximum length of a chat message (in characters) sent by clients.
 chat_message_max_size (Chat message max length) int 500 10 65535
 
-#    Amount of messages a player may send per 10 seconds.
+#    Number of messages a player may send per 10 seconds.
 chat_message_limit_per_10sec (Chat message count limit) float 8.0 1.0
 
 #    Kick players who sent more than X messages per 10 seconds.
@@ -203,9 +219,9 @@ mapgen_limit (Map generation limit) int 31007 0 31007
 #    Global map generation attributes.
 #    In Mapgen v6 the 'decorations' flag controls all decorations except trees
 #    and jungle grass, in all other mapgens this flag controls all decorations.
-mg_flags (Mapgen flags) flags caves,dungeons,light,decorations,biomes,ores caves,dungeons,light,decorations,biomes,ores,nocaves,nodungeons,nolight,nodecorations,nobiomes,noores
+mg_flags (Mapgen flags) flags caves,dungeons,light,decorations,biomes,ores caves,dungeons,light,decorations,biomes,ores
 
-[*Biome API noise parameters]
+[*Biome API]
 
 #    Temperature variation for biomes.
 mg_biome_np_heat (Heat noise) noise_params_2d 50, 50, (1000, 1000, 1000), 5349, 3, 0.5, 2.0, eased
@@ -222,7 +238,7 @@ mg_biome_np_humidity_blend (Humidity blend noise) noise_params_2d 0, 1.5, (8, 8,
 [*Mapgen V5]
 
 #    Map generation attributes specific to Mapgen v5.
-mgv5_spflags (Mapgen V5 specific flags) flags caverns caverns,nocaverns
+mgv5_spflags (Mapgen V5 specific flags) flags caverns caverns
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    Value >= 10.0 completely disables generation of tunnels and avoids the
@@ -295,7 +311,8 @@ mgv5_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0, 2
 #    The 'snowbiomes' flag enables the new 5 biome system.
 #    When the 'snowbiomes' flag is enabled jungles are automatically enabled and
 #    the 'jungles' flag is ignored.
-mgv6_spflags (Mapgen V6 specific flags) flags jungles,biomeblend,mudflow,snowbiomes,noflat,trees jungles,biomeblend,mudflow,snowbiomes,flat,trees,nojungles,nobiomeblend,nomudflow,nosnowbiomes,noflat,notrees
+#    The 'temples' flag disables generation of desert temples. Normal dungeons will appear instead.
+mgv6_spflags (Mapgen V6 specific flags) flags jungles,biomeblend,mudflow,snowbiomes,noflat,trees,temples jungles,biomeblend,mudflow,snowbiomes,flat,trees,temples
 
 #    Deserts occur when np_biome exceeds this value.
 #    When the 'snowbiomes' flag is enabled, this is ignored.
@@ -351,7 +368,7 @@ mgv6_np_apple_trees (Apple trees noise) noise_params_2d 0, 1, (100, 100, 100), 3
 #    'ridges': Rivers.
 #    'floatlands': Floating land masses in the atmosphere.
 #    'caverns': Giant caves deep underground.
-mgv7_spflags (Mapgen V7 specific flags) flags mountains,ridges,nofloatlands,caverns mountains,ridges,floatlands,caverns,nomountains,noridges,nofloatlands,nocaverns
+mgv7_spflags (Mapgen V7 specific flags) flags mountains,ridges,nofloatlands,caverns mountains,ridges,floatlands,caverns
 
 #    Y of mountain density gradient zero level. Used to shift mountains vertically.
 mgv7_mount_zero_level (Mountain zero level) int 0 -31000 31000
@@ -388,7 +405,7 @@ mgv7_floatland_density (Floatland density) float -0.6
 #    to above 'mgv7_floatland_ymax' - 'mgv7_floatland_taper' (the start of the
 #    upper tapering).
 #    ***WARNING, POTENTIAL DANGER TO WORLDS AND SERVER PERFORMANCE***:
-#    When enabling water placement the floatlands must be configured and tested
+#    When enabling water placement, floatlands must be configured and tested
 #    to be a solid layer by setting 'mgv7_floatland_density' to 2.0 (or other
 #    required value depending on 'mgv7_np_floatland'), to avoid
 #    server-intensive extreme water flow and to avoid vast flooding of the
@@ -485,7 +502,7 @@ mgv7_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0, 2
 [*Mapgen Carpathian]
 
 #    Map generation attributes specific to Mapgen Carpathian.
-mgcarpathian_spflags (Mapgen Carpathian specific flags) flags caverns,norivers caverns,rivers,nocaverns,norivers
+mgcarpathian_spflags (Mapgen Carpathian specific flags) flags caverns,norivers caverns,rivers
 
 #    Defines the base ground level.
 mgcarpathian_base_level (Base ground level) float 12.0
@@ -594,7 +611,7 @@ mgcarpathian_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 50
 
 #    Map generation attributes specific to Mapgen Flat.
 #    Occasional lakes and hills can be added to the flat world.
-mgflat_spflags (Mapgen Flat specific flags) flags nolakes,nohills,nocaverns lakes,hills,caverns,nolakes,nohills,nocaverns
+mgflat_spflags (Mapgen Flat specific flags) flags nolakes,nohills,nocaverns lakes,hills,caverns
 
 #    Y of flat ground.
 mgflat_ground_level (Ground level) int 8 -31000 31000
@@ -678,7 +695,7 @@ mgflat_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500), 0,
 #    Map generation attributes specific to Mapgen Fractal.
 #    'terrain' enables the generation of non-fractal terrain:
 #    ocean, islands and underground.
-mgfractal_spflags (Mapgen Fractal specific flags) flags terrain terrain,noterrain
+mgfractal_spflags (Mapgen Fractal specific flags) flags terrain terrain
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    Value >= 10.0 completely disables generation of tunnels and avoids the
@@ -812,10 +829,10 @@ mgfractal_np_dungeons (Dungeon noise) noise_params_3d 0.9, 0.5, (500, 500, 500),
 #    'vary_river_depth': If enabled, low humidity and high heat causes rivers
 #    to become shallower and occasionally dry.
 #    'altitude_dry': Reduces humidity with altitude.
-mgvalleys_spflags (Mapgen Valleys specific flags) flags altitude_chill,humid_rivers,vary_river_depth,altitude_dry altitude_chill,humid_rivers,vary_river_depth,altitude_dry,noaltitude_chill,nohumid_rivers,novary_river_depth,noaltitude_dry
+mgvalleys_spflags (Mapgen Valleys specific flags) flags altitude_chill,humid_rivers,vary_river_depth,altitude_dry altitude_chill,humid_rivers,vary_river_depth,altitude_dry
 
 #    The vertical distance over which heat drops by 20 if 'altitude_chill' is
-#    enabled. Also the vertical distance over which humidity drops by 10 if
+#    enabled. Also, the vertical distance over which humidity drops by 10 if
 #    'altitude_dry' is enabled.
 mgvalleys_altitude_chill (Altitude chill) int 90 0 65535
 
@@ -871,7 +888,7 @@ mgvalleys_np_cave1 (Cave noise #1) noise_params_3d 0, 12, (61, 61, 61), 52534, 3
 #    Second of two 3D noises that together define tunnels.
 mgvalleys_np_cave2 (Cave noise #2) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
-#    The depth of dirt or other biome filler node.
+#    Variation of biome filler depth.
 mgvalleys_np_filler_depth (Filler depth) noise_params_2d 0, 1.2, (256, 256, 256), 1605, 3, 0.5, 2.0, eased
 
 #    3D noise defining giant caverns.
@@ -954,6 +971,9 @@ deprecated_lua_api_handling (Deprecated Lua API handling) enum log none,log,erro
 #    Enable random user input (only used for testing).
 random_input (Random input) bool false
 
+#    Enable random mod loading (mainly used for testing).
+random_mod_load_order (Random mod load order) bool false
+
 #    Enable mod channels support.
 enable_mod_channels (Mod channels) bool false
 
@@ -968,8 +988,8 @@ profiler.load (Load the game profiler) bool false
 #    when calling `/profiler save [format]` without format.
 profiler.default_report_format (Default report format) enum txt txt,csv,lua,json,json_pretty
 
-#    The file path relative to your worldpath in which profiles will be saved to.
-profiler.report_path (Report path) string ""
+#    The file path relative to your world path in which profiles will be saved to.
+profiler.report_path (Report path) string
 
 #    Instrument the methods of entities on registration.
 instrument.entity (Entity methods) bool true
@@ -984,7 +1004,7 @@ instrument.lbm (Loading Block Modifiers) bool true
 instrument.chatcommand (Chat commands) bool true
 
 #    Instrument global callback functions on registration.
-#    (anything you pass to a minetest.register_*() function)
+#    (anything you pass to a core.register_*() function)
 instrument.global_callback (Global callbacks) bool true
 
 #    Instrument builtin.
@@ -997,7 +1017,7 @@ instrument.builtin (Builtin) bool false
 #     * Instrument the sampler being used to update the statistics.
 instrument.profiler (Profiler) bool false
 
-[**Engine profiler]
+[**Engine Profiler]
 
 #    Print the engine's profiling data in regular intervals (in seconds).
 #    0 = disable. Useful for developers.
