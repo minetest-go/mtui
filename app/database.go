@@ -106,7 +106,17 @@ func (a *App) DetachDatabase() error {
 	a.ModManager = nil
 	a.Mail = nil
 	a.Repos = nil
-	err := a.DB.Close()
+	gdb, err := a.G.DB()
+	if err != nil {
+		return fmt.Errorf("could not get gorm database: %v", err)
+	}
+
+	err = gdb.Close()
+	if err != nil {
+		return fmt.Errorf("could not close gorm database: %v", err)
+	}
+
+	err = a.DB.Close()
 	if err != nil {
 		return fmt.Errorf("could not close database: %v", err)
 	}

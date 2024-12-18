@@ -169,14 +169,14 @@ export default {
 								<i class="fa fa-photo-film"></i> Mediaserver
 							</router-link>
 						</li>
-						<li>
+						<li v-if="!maintenance">
 							<router-link to="/restart-conditions" class="dropdown-item">
 								<i class="fa fa-refresh"></i> Restart conditions
 							</router-link>
 						</li>
 						<li>
-							<router-link to="/maintenance" class="dropdown-item">
-								<i class="fa fa-wrench"></i> Maintenance
+							<router-link to="/backup" class="dropdown-item">
+								<i class="fa fa-upload"></i> Backup/Restore
 							</router-link>
 						</li>
 					</nav-dropdown>

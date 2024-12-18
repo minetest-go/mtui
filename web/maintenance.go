@@ -18,7 +18,6 @@ func (a *Api) EnableMaintenanceMode(w http.ResponseWriter, r *http.Request, c *t
 	if a.app.MaintenanceMode.Load() {
 		SendError(w, 500, fmt.Errorf("already in maintenance mode"))
 	}
-	a.app.MaintenanceMode.Store(true)
 
 	// create log entry
 	a.app.CreateUILogEntry(&types.Log{
@@ -26,6 +25,8 @@ func (a *Api) EnableMaintenanceMode(w http.ResponseWriter, r *http.Request, c *t
 		Event:    "maintenance",
 		Message:  fmt.Sprintf("User '%s' enables the maintenance mode", c.Username),
 	}, r)
+
+	a.app.MaintenanceMode.Store(true)
 
 	// clear current stats
 	current_stats.Store(nil)

@@ -18,10 +18,9 @@ type Config struct {
 	Webdev                  bool
 	Servername              string
 	EnabledFeatures         []string
-	FilebrowserURL          string
-	FilebrowserProxyPath    string
 	InstallMtuiMod          bool
 	AutoReconfigureMods     bool
+	LogRetention            string
 	LogStreamURL            string
 	LogStreamAuthorization  string
 	MinetestConfig          string
@@ -50,10 +49,9 @@ func NewConfig(world_dir string) *Config {
 		Webdev:                  os.Getenv("WEBDEV") == "true",
 		Servername:              os.Getenv("SERVER_NAME"),
 		EnabledFeatures:         strings.Split(os.Getenv("ENABLE_FEATURES"), ","),
-		FilebrowserURL:          os.Getenv("FILEBROWSER_URL"),
-		FilebrowserProxyPath:    os.Getenv("FILEBROWSER_PROXY_PATH"),
 		InstallMtuiMod:          os.Getenv("INSTALL_MTUI_MOD") == "true",
 		AutoReconfigureMods:     os.Getenv("AUTORECONFIGURE_MODS") == "true",
+		LogRetention:            os.Getenv("LOG_RETENTION"),
 		LogStreamURL:            os.Getenv("LOG_STREAM_URL"),
 		LogStreamAuthorization:  os.Getenv("LOG_STREAM_AUTHORIZATION"),
 		MinetestConfig:          os.Getenv("MINETEST_CONFIG"),

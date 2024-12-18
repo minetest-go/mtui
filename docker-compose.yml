@@ -18,7 +18,6 @@ services:
    SERVER_NAME: "dev-server"
    DEFAULT_THEME: "darkly"
    ENABLE_FEATURES: "shell,luashell,minetest_config,docker,modmanagement,signup,chat,minetest_web"
-   FILEBROWSER_URL: "http://filebrowser/"
    INSTALL_MTUI_MOD: "true"
    MINETEST_CONFIG: "/world/minetest.conf"
    GEOIP_API: "https://hosting.minetest.ch/api/geoip"
@@ -40,21 +39,8 @@ services:
    - "/var/run/docker.sock:/var/run/docker.sock:ro"
   working_dir: /app
   command: ["go", "run", "."]
-  
- filebrowser:
-  image: filebrowser/filebrowser:v2.31.2
-  ports:
-    - 8081:80
-  environment:
-    FB_DATABASE: /database/filebrowser.db
-    FB_BASEURL: /filebrowser
-    FB_NOAUTH: "true"
-  volumes:
-    - world_dir:/srv
-    - filebrowser_db:/database
 
 volumes:
   go_cache: {}
   go_dir: {}
   world_dir: {}
-  filebrowser_db: {}

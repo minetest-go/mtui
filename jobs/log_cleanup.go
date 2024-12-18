@@ -3,18 +3,16 @@ package jobs
 import (
 	"fmt"
 	"mtui/app"
-	"os"
 	"time"
 )
 
 func logCleanup(a *app.App) {
-	log_retention_str := os.Getenv("LOG_RETENTION")
 	log_retention := time.Hour * 24 * 7 // 7 days default log retention
-	if log_retention_str != "" {
+	if a.Config.LogRetention != "" {
 		var err error
-		log_retention, err = time.ParseDuration(log_retention_str)
+		log_retention, err = time.ParseDuration(a.Config.LogRetention)
 		if err != nil {
-			fmt.Printf("Log retention parsing of '%s' failed: %v, defaulting to 7 days\n", log_retention_str, err)
+			fmt.Printf("Log retention parsing of '%s' failed: %v, defaulting to 7 days\n", a.Config.LogRetention, err)
 			log_retention = time.Hour * 24 * 7
 		}
 	}

@@ -1,7 +1,6 @@
 package web
 
 import (
-	"archive/zip"
 	"fmt"
 	"io"
 	"mtui/app"
@@ -81,9 +80,6 @@ func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.
 	}
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.zip\"", zipfilename))
 	w.Header().Set("Content-Type", "application/zip")
-
-	zw := zip.NewWriter(w)
-	defer zw.Close()
 
 	count, err := a.app.StreamZip(absdir, w, nil)
 	if err != nil {

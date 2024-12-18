@@ -1,13 +1,10 @@
 package web
 
 import (
-	"fmt"
 	"mtui/app"
 	"mtui/public"
 	"mtui/types"
 	"net/http"
-	"net/http/httputil"
-	"net/url"
 	"os"
 	"time"
 
@@ -29,26 +26,6 @@ func Setup(a *app.App) error {
 	err := api.Setup()
 	if err != nil {
 		return err
-	}
-
-	if a.Config.FilebrowserURL != "" {
-		// enable filebrowser access with "server" priv
-		remote, err := url.Parse(a.Config.FilebrowserURL)
-		if err != nil {
-			return err
-		}
-
-		handler := func(p *httputil.ReverseProxy) func(http.ResponseWriter, *http.Request) {
-			return api.SecurePriv("server", func(w http.ResponseWriter, r *http.Request, c *types.Claims) {
-				r.Host = remote.Host
-				// prepend proxy path
-				r.URL.Path = fmt.Sprintf("%s%s", a.Config.FilebrowserProxyPath, r.URL.Path)
-				p.ServeHTTP(w, r)
-			})
-		}
-
-		proxy := httputil.NewSingleHostReverseProxy(remote)
-		r.PathPrefix("/filebrowser/").HandlerFunc(handler(proxy))
 	}
 
 	// always on api

@@ -1,14 +1,9 @@
 import DefaultLayout from "../../layouts/DefaultLayout.js";
 import {
     browse,
-    get_zip_url,
-    get_targz_url,
     get_download_url,
     mkdir,
     remove,
-    upload,
-    upload_zip,
-    upload_targz,
     rename
 } from "../../../api/filebrowser.js";
 import { upload_chunked } from "../../../service/uploader.js";
@@ -16,7 +11,6 @@ import format_size from "../../../util/format_size.js";
 import format_time from "../../../util/format_time.js";
 import { START, FILEBROWSER } from "../../Breadcrumb.js";
 import { can_edit } from "./common.js";
-import { get_filebrowser_enabled } from "../../../service/stats.js";
 
 export default {
     props: ["pathMatch"],
@@ -26,64 +20,38 @@ export default {
     data: function() {
         return {
             result: null,
-            mkfile_name: "",
+            mkdir_name: "",
             move_name: "",
             move_target: "",
-            upload_busy: false,
-            upload_archive_busy: false,
-            prepare_delete: null
+            prepare_delete: null,
+            upload_progress: {}
         };
     },
     methods: {
         format_size,
         format_time,
-        get_zip_url,
-        get_targz_url,
         get_download_url,
         mkdir: function() {
-            mkdir(this.result.dir + "/" + this.mkfile_name)
+            mkdir(this.result.dir + "/" + this.mkdir_name)
             .then(() => this.browse_dir())
-            .then(() => this.mkfile_name = "");
-        },
-        mkfile: function() {
-            upload(this.result.dir + "/" + this.mkfile_name, "")
-            .then(() => this.browse_dir())
-            .then(() => this.mkfile_name = "");
+            .then(() => this.mkdir_name = "");
         },
         upload: function() {
             const files = Array.from(this.$refs.input_upload.files);
-            this.upload_busy = true;
-            const promises = files.map(file => upload_chunked(this.result.dir, file.name, file));
-
-            Promise.all(promises).then(() => {
-                this.$refs.input_upload.value = null;
-                this.upload_busy = false;
-                this.browse_dir();
+            files.forEach(file => {
+                upload_chunked(this.result.dir, file.name, file, progress => {
+                    this.upload_progress[file.name] = {
+                        progress,
+                        name: file.name,
+                        size: file.size
+                    };
+                }).then(() => {
+                    delete this.upload_progress[file.name];
+                    this.browse_dir();
+                });
             });
-        },
-        upload_archive: function() {
-            if (this.$refs.input_upload_archive.files.length == 0) {
-                return;
-            }
-            this.upload_archive_busy = true;
-            const file = this.$refs.input_upload_archive.files[0];
-            let upload_fn = null;
-            if (file.name.endsWith(".zip")) {
-                upload_fn = upload_zip;
-            } else if (file.name.endsWith(".tar.gz")) {
-                upload_fn = upload_targz;
-            } else {
-                this.$refs.input_upload_archive.value = null;
-                this.upload_archive_busy = false;
-                return;
-            }
 
-            upload_fn(this.result.dir, file)
-            .then(() => {
-                this.$refs.input_upload_archive.value = null;
-                this.upload_archive_busy = false;
-                this.browse_dir();
-            });
+            this.$refs.input_upload.value = null;
         },
         confirm_delete: function() {
             remove(this.result.dir + "/" + this.prepare_delete)
@@ -109,7 +77,6 @@ export default {
             });
         },
         can_edit: can_edit,
-        filebrowser_enabled: get_filebrowser_enabled,
         is_json_profile: function(filename) {
             return filename.match(/^profile-.*.json$/);
         },
@@ -162,64 +129,25 @@ export default {
     },
     template: /*html*/`
         <default-layout icon="folder" title="Filebrowser" :breadcrumb="breadcrumb">
-            <div class="row" v-if="filebrowser_enabled">
-                <div class="col-md-12">
-                    <div class="alert alert-info">
-                        <i class="fa fa-info"></i>
-                        <b>Note: </b> To upload larger files use the dedicated <a href="filebrowser/">filebrowser</a> interface and enable the maintenance mode for database files
-                    </div>
-                </div>
-            </div>
             <div class="row">
                 <div class="col-md-4">
                     <div class="input-group">
-                        <input type="text" v-model="mkfile_name" class="form-control" placeholder="Directory name"/>
-                        <button class="btn btn-secondary" v-on:click="mkdir" :disabled="!mkfile_name">
+                        <input type="text" v-model="mkdir_name" class="form-control" placeholder="Directory name"/>
+                        <button class="btn btn-secondary" v-on:click="mkdir" :disabled="!mkdir_name">
                             <i class="fa fa-folder"></i>
                             <i class="fa fa-plus"></i>
                             Create directory
                         </button>
-                        <button class="btn btn-secondary" v-on:click="mkfile" :disabled="!mkfile_name">
-                            <i class="fa fa-file"></i>
-                            <i class="fa fa-plus"></i>
-                            Create file
-                        </button>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-8">
                     <div class="input-group">
                         <input ref="input_upload" type="file" class="form-control" multiple/>
                         <button class="btn btn-secondary" v-on:click="upload">
                             <i class="fa fa-upload"></i>
                             Upload file
-                            <i class="fa fa-spinner fa-spin" v-if="upload_busy"></i>
                         </button>
                     </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="input-group">
-                        <input ref="input_upload_archive" type="file" class="form-control" accept=".zip,.tar.gz"/>
-                        <button class="btn btn-secondary" v-on:click="upload_archive">
-                            <i class="fa fa-upload"></i>
-                            Upload archive
-                            <i class="fa-solid fa-triangle-exclamation" style="color: orange;" title="The contents of the archive-file will overwrite files with the same name!"></i>
-                            <i class="fa fa-spinner fa-spin" v-if="upload_archive_busy"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="col-md-2 btn-group" v-if="result">
-                    <a class="btn btn-outline-secondary disabled">
-                        <i class="fa fa-download"></i>
-                        Download
-                    </a>
-                    <a class="btn btn-secondary" :href="get_zip_url(result.dir)">
-                        <i class="fa fa-download"></i>
-                        zip
-                    </a>
-                    <a class="btn btn-secondary" :href="get_targz_url(result.dir)">
-                        <i class="fa fa-download"></i>
-                        tar.gz
-                    </a>
                 </div>
             </div>
             <table class="table table-striped table-condensed" v-if="result">
@@ -232,6 +160,18 @@ export default {
                     </tr>
                 </thead>
                 <tbody>
+                    <tr v-for="(entry, name) in upload_progress">
+                        <td>
+                            <i class="fa fa-spinner fa-spin"></i>
+                            {{name}} ({{Math.floor(entry.progress * 100)}} % / {{format_size(entry.size)}})
+                        </td>
+                        <td colspan="3">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" v-bind:style="{ width: (entry.progress*100)+'%' }">
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
                     <tr v-if="result.parent_dir">
                         <td>
                             <router-link :to="'/filebrowser' + result.parent_dir">
