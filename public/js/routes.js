@@ -19,7 +19,6 @@ import OauthApps from './components/pages/oauth/OauthApps.js';
 import OauthAppEdit from './components/pages/oauth/OauthAppEdit.js';
 import MinetestConfig from './components/pages/administration/MinetestConfig.js';
 import UISettings from './components/pages/administration/UISettings.js';
-import Maintenance from './components/pages/administration/Maintenance.js';
 import Filebrowser from './components/pages/filebrowser/Filebrowser.js';
 import FileEditPage from './components/pages/filebrowser/FileEditPage.js';
 import Signup from './components/pages/Signup.js';
@@ -45,9 +44,6 @@ import BackupRestore from './components/pages/administration/BackupRestore.js';
 export default [{
 	path: "/", component: Start,
 	meta: { maintenance_page: true }
-}, {
-	path: "/maintenance", component: Maintenance,
-	meta: { requiredPriv: "server", maintenance_page: true }
 }, {
 	path: "/restart-conditions", component: RestartConditions,
 	meta: { requiredPriv: "server" }

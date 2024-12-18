@@ -1,13 +1,9 @@
 import DefaultLayout from "../../layouts/DefaultLayout.js";
 import {
     browse,
-    get_zip_url,
-    get_targz_url,
     get_download_url,
     mkdir,
     remove,
-    upload_zip,
-    upload_targz,
     rename
 } from "../../../api/filebrowser.js";
 import { upload_chunked } from "../../../service/uploader.js";
@@ -27,7 +23,6 @@ export default {
             mkdir_name: "",
             move_name: "",
             move_target: "",
-            upload_archive_busy: false,
             prepare_delete: null,
             upload_progress: {}
         };
@@ -35,8 +30,6 @@ export default {
     methods: {
         format_size,
         format_time,
-        get_zip_url,
-        get_targz_url,
         get_download_url,
         mkdir: function() {
             mkdir(this.result.dir + "/" + this.mkdir_name)
@@ -59,30 +52,6 @@ export default {
             });
 
             this.$refs.input_upload.value = null;
-        },
-        upload_archive: function() {
-            if (this.$refs.input_upload_archive.files.length == 0) {
-                return;
-            }
-            this.upload_archive_busy = true;
-            const file = this.$refs.input_upload_archive.files[0];
-            let upload_fn = null;
-            if (file.name.endsWith(".zip")) {
-                upload_fn = upload_zip;
-            } else if (file.name.endsWith(".tar.gz")) {
-                upload_fn = upload_targz;
-            } else {
-                this.$refs.input_upload_archive.value = null;
-                this.upload_archive_busy = false;
-                return;
-            }
-
-            upload_fn(this.result.dir, file)
-            .then(() => {
-                this.$refs.input_upload_archive.value = null;
-                this.upload_archive_busy = false;
-                this.browse_dir();
-            });
         },
         confirm_delete: function() {
             remove(this.result.dir + "/" + this.prepare_delete)
@@ -171,7 +140,7 @@ export default {
                         </button>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-8">
                     <div class="input-group">
                         <input ref="input_upload" type="file" class="form-control" multiple/>
                         <button class="btn btn-secondary" v-on:click="upload">
@@ -179,31 +148,6 @@ export default {
                             Upload file
                         </button>
                     </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="input-group">
-                        <input ref="input_upload_archive" type="file" class="form-control" accept=".zip,.tar.gz"/>
-                        <button class="btn btn-secondary" v-on:click="upload_archive">
-                            <i class="fa fa-upload"></i>
-                            Upload archive
-                            <i class="fa-solid fa-triangle-exclamation" style="color: orange;" title="The contents of the archive-file will overwrite files with the same name!"></i>
-                            <i class="fa fa-spinner fa-spin" v-if="upload_archive_busy"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="col-md-2 btn-group" v-if="result">
-                    <a class="btn btn-outline-secondary disabled">
-                        <i class="fa fa-download"></i>
-                        Download
-                    </a>
-                    <a class="btn btn-secondary" :href="get_zip_url(result.dir)">
-                        <i class="fa fa-download"></i>
-                        zip
-                    </a>
-                    <a class="btn btn-secondary" :href="get_targz_url(result.dir)">
-                        <i class="fa fa-download"></i>
-                        tar.gz
-                    </a>
                 </div>
             </div>
             <table class="table table-striped table-condensed" v-if="result">

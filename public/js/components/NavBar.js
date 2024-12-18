@@ -175,11 +175,6 @@ export default {
 							</router-link>
 						</li>
 						<li>
-							<router-link to="/maintenance" class="dropdown-item">
-								<i class="fa fa-wrench"></i> Maintenance
-							</router-link>
-						</li>
-						<li>
 							<router-link to="/backup" class="dropdown-item">
 								<i class="fa fa-upload"></i> Backup/Restore
 							</router-link>
