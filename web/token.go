@@ -1,9 +1,12 @@
 package web
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"mtui/types"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -29,15 +32,22 @@ func (api *Api) SetToken(w http.ResponseWriter, token string, expires time.Time)
 }
 
 func GetToken(r *http.Request) (string, error) {
+	// token in cookie
 	c, err := r.Cookie(TOKEN_COOKIE_NAME)
-	if err == http.ErrNoCookie {
-		return "", err_unauthorized
-	}
-	if err != nil {
+	if err != nil && err != http.ErrNoCookie {
 		return "", err
 	}
+	if c != nil {
+		return c.Value, nil
+	}
 
-	return c.Value, nil
+	auth_header := r.Header.Get("Authorization")
+	if strings.HasPrefix(auth_header, "Bearer ") {
+		auth, _ := strings.CutPrefix(auth_header, "Bearer ")
+		return auth, nil
+	}
+
+	return "", err_unauthorized
 }
 
 func (api *Api) RemoveClaims(w http.ResponseWriter) {
@@ -87,4 +97,49 @@ func (api *Api) GetClaims(r *http.Request) (*types.Claims, error) {
 	}
 
 	return claims, nil
+}
+
+type CreateTokenRequest struct {
+	Expiry int64    `json:"expiry"` // millis utc
+	Privs  []string `json:"privs"`
+}
+
+// Creates an api token for scripting use
+// resulting token won't be able to issue other tokens or extend the token lifespan
+func (a *Api) CreateToken(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	if claims.ApiToken {
+		SendError(w, 403, fmt.Errorf("can't re-issue an api-token with another api-token"))
+		return
+	}
+
+	ctr := &CreateTokenRequest{}
+	err := json.NewDecoder(r.Body).Decode(ctr)
+	if err != nil {
+		SendError(w, 500, fmt.Errorf("json error: %v", err))
+		return
+	}
+
+	// check privs
+	for _, p := range ctr.Privs {
+		if !claims.HasPriv(p) {
+			SendError(w, 403, fmt.Errorf("priv not available: '%s'", p))
+			return
+		}
+	}
+
+	t, err := a.createToken(&types.Claims{
+		Privileges: ctr.Privs,
+		Username:   claims.Username,
+		ApiToken:   true,
+		RegisteredClaims: &jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.UnixMilli(ctr.Expiry)),
+		},
+	})
+	if err != nil {
+		SendError(w, 500, fmt.Errorf("create token error: %v", err))
+		return
+	}
+
+	w.Header().Add("Content-Type", "text/plain")
+	w.Write([]byte(t))
 }

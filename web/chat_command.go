@@ -17,11 +17,8 @@ func (a *Api) ExecuteChatcommand(w http.ResponseWriter, r *http.Request, claims 
 		return
 	}
 
-	if req.Playername != claims.Username {
-		// username does not match
-		SendError(w, 500, fmt.Errorf("username mismatch"))
-		return
-	}
+	// assign playername from claims
+	req.Playername = claims.Username
 
 	resp := &command.ExecuteChatCommandResponse{}
 	err = a.app.Bridge.ExecuteCommand(command.COMMAND_CHATCMD, req, resp, time.Second*5)
