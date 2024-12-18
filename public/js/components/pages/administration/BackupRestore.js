@@ -3,6 +3,7 @@ import { enable_maintenance, disable_maintenance } from "../../../api/maintenanc
 import { engine } from "../../../service/service.js";
 import { upload_chunked } from "../../../service/uploader.js";
 import { unzip, remove } from "../../../api/filebrowser.js";
+import { get_mods_by_type, remove as remove_mod, add_mtui, add_beerchat, add_mapserver } from "../../../service/mods.js";
 
 import DefaultLayout from "../../layouts/DefaultLayout.js";
 import { START } from "../../Breadcrumb.js";
@@ -39,6 +40,7 @@ export default {
         restore: async function() {
             const file = this.$refs.input_upload.files[0];
             if (!file) {
+                // no file selected
                 return;
             }
 
@@ -57,8 +59,31 @@ export default {
             await remove("/restore.zip");
 
             this.restore_active = false;
+            
+            this.restore_message = "Disableing maintenance mode";
+            await disable_maintenance();
 
-            await this.disable_maintenance();
+            this.restore_message = "Reconfiguring system-relevant mods";
+            const mods = get_mods_by_type("mod");
+
+            for (let i=0; i<mods.length; i++) {
+                const mod = mods[i];
+                // remove and reinstall
+                if (mod.name == "mtui"){
+                    await remove_mod(mod.id);
+                    await add_mtui();
+                }
+                if (mod.name == "mapserver"){
+                    await remove_mod(mod.id);
+                    await add_mapserver();
+                }
+                if (mod.name == "beerchat"){
+                    await remove_mod(mod.id);
+                    await add_beerchat();
+                }
+            }
+
+            window.location.reload();
         }
     },
     template: /*html*/`

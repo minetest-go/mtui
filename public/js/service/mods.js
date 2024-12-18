@@ -65,7 +65,7 @@ export async function add_mapserver() {
     await update();
 }
 
-export const remove = id => remove_mod(id).then(update);
+export const remove = async id => await remove_mod(id).then(update);
 
 export const get_all = () => store.list;
 
