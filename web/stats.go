@@ -46,6 +46,7 @@ func (a *Api) GetStats(w http.ResponseWriter, r *http.Request, claims *types.Cla
 	cs := current_stats.Load()
 	if cs != nil && seconds_ago < 10 {
 		sc.MaxLag = cs.MaxLag
+		sc.Uptime = cs.Uptime
 		sc.PlayerCount = cs.PlayerCount
 		sc.TimeOfDay = cs.TimeOfDay
 		sc.Players = make([]*command.PlayerStats, cs.PlayerCount)
