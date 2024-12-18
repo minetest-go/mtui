@@ -17,8 +17,7 @@ func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types
 		return
 	}
 
-	maintenance := a.app.MaintenanceMode.Load()
-	if app.IsSqliteDatabase(filename) && !maintenance {
+	if app.IsSqliteDatabase(filename) && !a.app.MaintenanceMode() {
 		tmppath, err := app.CreateSqliteSnapshot(filename)
 		if err != nil {
 			SendError(w, 500, fmt.Errorf("error creating snapshot of '%s': %v", filename, err))
@@ -91,33 +90,5 @@ func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.
 		Username: claims.Username,
 		Event:    "filebrowser",
 		Message:  fmt.Sprintf("User '%s' downloaded the directory '%s' as zip with %d bytes (uncompressed)", claims.Username, reldir, count),
-	}, r)
-}
-
-func (a *Api) DownloadTarGZ(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	reldir, absdir, err := a.get_sanitized_dir(r)
-	if err != nil {
-		SendError(w, 500, err)
-		return
-	}
-
-	targzfilename := path.Base(absdir)
-	if reldir == "/" {
-		targzfilename = "world"
-	}
-	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.tar.gz\"", targzfilename))
-	w.Header().Set("Content-Type", "application/gzip")
-
-	count, err := a.app.StreamTarGZ(absdir, w, nil)
-
-	if err != nil {
-		SendError(w, 500, err)
-		return
-	}
-
-	a.app.CreateUILogEntry(&types.Log{
-		Username: claims.Username,
-		Event:    "filebrowser",
-		Message:  fmt.Sprintf("User '%s' downloaded the directory '%s' as tar.gz with %d bytes (uncompressed)", claims.Username, reldir, count),
 	}, r)
 }

@@ -50,6 +50,47 @@ type CreateRestoreJob struct {
 
 var Restorejobs = map[string]*RestoreJobInfo{}
 
+func reconfigureSystemMods(a *app.App) error {
+	mods, err := a.Repos.ModRepo.GetAll()
+	if err != nil {
+		return fmt.Errorf("get all mods: %v", err)
+	}
+
+	for _, mod := range mods {
+		switch mod.Name {
+		case "mtui":
+			err = a.ModManager.Remove(mod)
+			if err != nil {
+				return fmt.Errorf("mtui remove failed: %v", err)
+			}
+			_, err = a.CreateMTUIMod()
+			if err != nil {
+				return fmt.Errorf("mtui create failed: %v", err)
+			}
+		case "mapserver":
+			err = a.ModManager.Remove(mod)
+			if err != nil {
+				return fmt.Errorf("mapserver remove failed: %v", err)
+			}
+			_, err = a.CreateMapserverMod()
+			if err != nil {
+				return fmt.Errorf("mapserver create failed: %v", err)
+			}
+		case "beerchat":
+			err = a.ModManager.Remove(mod)
+			if err != nil {
+				return fmt.Errorf("beerchat remove failed: %v", err)
+			}
+			_, err = a.CreateBeerchatMod()
+			if err != nil {
+				return fmt.Errorf("beerchat create failed: %v", err)
+			}
+		}
+	}
+
+	return nil
+}
+
 func restoreJob(a *app.App, job *CreateRestoreJob, info *RestoreJobInfo, c *types.Claims) {
 	var reader io.Reader
 	var err error
@@ -99,6 +140,14 @@ func restoreJob(a *app.App, job *CreateRestoreJob, info *RestoreJobInfo, c *type
 			return
 		}
 
+		fi, err := c.Stat(job.Filename)
+		if err != nil {
+			info.Status = RestoreJobFailure
+			info.Message = fmt.Sprintf("stat connection failed: %v", err)
+			return
+		}
+		info.Message = fmt.Sprintf("Downlading zip file, size: %d bytes", fi.Size())
+
 		r, err := c.ReadStream(job.Filename)
 		if err != nil {
 			info.Status = RestoreJobFailure
@@ -125,7 +174,7 @@ func restoreJob(a *app.App, job *CreateRestoreJob, info *RestoreJobInfo, c *type
 	}
 
 	filecount := 0
-	bytes, err := a.DownloadTargGZ(a.WorldDir, reader, nil, c, &app.DownloadTargGZOpts{
+	bytes, err := a.DownloadZip(a.WorldDir, reader, nil, c, &app.DownloadZipOpts{
 		Callback: func(files, bytes int64, currentfile string) {
 			info.Message = fmt.Sprintf("Copying file '%s' (progress: %d bytes, %d files)", currentfile, bytes, files)
 			filecount++
@@ -134,6 +183,14 @@ func restoreJob(a *app.App, job *CreateRestoreJob, info *RestoreJobInfo, c *type
 	if err != nil {
 		info.Status = RestoreJobFailure
 		info.Message = fmt.Sprintf("restore failed: %v", err)
+		return
+	}
+
+	// reinstall system-mods
+	err = reconfigureSystemMods(a)
+	if err != nil {
+		info.Status = RestoreJobFailure
+		info.Message = fmt.Sprintf("mod reconfiguration failed: %v", err)
 		return
 	}
 

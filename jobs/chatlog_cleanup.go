@@ -8,7 +8,7 @@ import (
 
 func chatlogCleanup(a *app.App) {
 	for {
-		if !a.MaintenanceMode.Load() {
+		if !a.MaintenanceMode() {
 			ts := time.Now().AddDate(0, 0, -30)
 			err := a.Repos.ChatLogRepo.DeleteBefore(ts.UnixMilli())
 			if err != nil {

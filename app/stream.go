@@ -1,9 +1,7 @@
 package app
 
 import (
-	"archive/tar"
 	"archive/zip"
-	"compress/gzip"
 	"fmt"
 	"io"
 	"mtui/types"
@@ -25,8 +23,6 @@ func (a *App) StreamZip(path string, w io.Writer, opts *StreamZipOpts) (int64, e
 		opts = &StreamZipOpts{}
 	}
 
-	maintenance := a.MaintenanceMode.Load()
-
 	zw := zip.NewWriter(w)
 	defer zw.Close()
 
@@ -47,7 +43,7 @@ func (a *App) StreamZip(path string, w io.Writer, opts *StreamZipOpts) (int64, e
 		relPath := strings.TrimPrefix(filePath, path)
 		relPath = strings.TrimPrefix(relPath, "/")
 
-		if IsSqliteDatabase(filePath) && !maintenance {
+		if IsSqliteDatabase(filePath) && !a.MaintenanceMode() {
 			tmppath, err := CreateSqliteSnapshot(filePath)
 			if err != nil {
 				return fmt.Errorf("sqlite snapshot error for '%s': %v", filePath, err)
@@ -87,145 +83,15 @@ func (a *App) StreamZip(path string, w io.Writer, opts *StreamZipOpts) (int64, e
 	return bytes, err
 }
 
-type StreamTarGZOpts struct {
+type DownloadZipOpts struct {
 	Callback StreamProgressCallback
 }
 
-func (a *App) StreamTarGZ(path string, w io.Writer, opts *StreamTarGZOpts) (int64, error) {
+func (a *App) DownloadZip(abspath string, r io.Reader, req *http.Request, c *types.Claims, opts *DownloadZipOpts) (int64, error) {
+
 	if opts == nil {
-		opts = &StreamTarGZOpts{}
+		opts = &DownloadZipOpts{}
 	}
-
-	maintenance := a.MaintenanceMode.Load()
-
-	zw := gzip.NewWriter(w)
-	defer zw.Close()
-
-	tw := tar.NewWriter(zw)
-	defer tw.Close()
-
-	bytes := int64(0)
-	files := int64(0)
-	buf := make([]byte, 1024*1024*10) // 10 mb buffer
-
-	err := filepath.Walk(path, func(filePath string, info os.FileInfo, err error) error {
-		if info.IsDir() {
-			return nil
-		}
-		if err != nil {
-			return err
-		}
-		if IgnoreSqliteFileDownload(filePath) {
-			return nil
-		}
-
-		relPath := strings.TrimPrefix(filePath, path)
-		fi, err := tar.FileInfoHeader(info, info.Name())
-		if err != nil {
-			return err
-		}
-		fi.Name = relPath
-
-		if IsSqliteDatabase(filePath) && !maintenance {
-			tmppath, err := CreateSqliteSnapshot(filePath)
-			if err != nil {
-				return fmt.Errorf("sqlite snapshot error for '%s': %v", filePath, err)
-			}
-			defer os.Remove(tmppath)
-			filePath = tmppath
-
-			tmpfi, err := os.Stat(tmppath)
-			if err != nil {
-				return fmt.Errorf("stat error: '%s': %v", tmppath, err)
-			}
-
-			fi.Size = tmpfi.Size()
-		}
-
-		if opts.Callback != nil {
-			opts.Callback(files, bytes, relPath)
-		}
-
-		err = tw.WriteHeader(fi)
-		if err != nil {
-			return err
-		}
-
-		fsFile, err := os.Open(filePath)
-		if err != nil {
-			return err
-		}
-		defer fsFile.Close()
-
-		fc, err := io.CopyBuffer(tw, fsFile, buf)
-		if err != nil {
-			return err
-		}
-		bytes += fc
-		files += 1
-
-		return nil
-	})
-
-	return bytes, err
-}
-
-type DownloadTargGZOpts struct {
-	Callback StreamProgressCallback
-}
-
-func (a *App) DownloadTargGZ(abspath string, r io.Reader, req *http.Request, c *types.Claims, opts *DownloadTargGZOpts) (int64, error) {
-	if opts == nil {
-		opts = &DownloadTargGZOpts{}
-	}
-
-	zr, err := gzip.NewReader(r)
-	if err != nil {
-		return 0, fmt.Errorf("gzip.NewReader failed: %v", err)
-	}
-	defer zr.Close()
-
-	tr := tar.NewReader(zr)
-	bytes := int64(0)
-	files := int64(0)
-
-	for {
-		th, err := tr.Next()
-		if th == nil || err == io.EOF {
-			break
-		}
-		if err != nil {
-			return 0, fmt.Errorf("tr.Next() failed: %v", err)
-		}
-
-		targetfile := path.Join(abspath, th.Name)
-		dirname := path.Dir(targetfile)
-		err = os.MkdirAll(dirname, 0644)
-		if err != nil {
-			return 0, fmt.Errorf("os.MkdirAll failed: %v", err)
-		}
-
-		if th.FileInfo().IsDir() {
-			continue
-		}
-
-		if opts.Callback != nil {
-			opts.Callback(files, bytes, th.Name)
-		}
-
-		fc, err := a.WriteFile(targetfile, tr, req, c)
-		bytes += fc
-		files += 1
-
-		if err != nil {
-			return 0, fmt.Errorf("WriteFile failed: %v", err)
-		}
-	}
-
-	return bytes, nil
-}
-
-func (a *App) DownloadZip(abspath string, r io.Reader, req *http.Request, c *types.Claims) (int64, error) {
 
 	tf, err := os.CreateTemp(os.TempDir(), "mtui-zip-upload")
 	if err != nil {
@@ -245,7 +111,9 @@ func (a *App) DownloadZip(abspath string, r io.Reader, req *http.Request, c *typ
 	}
 	defer zr.Close()
 
-	count := int64(0)
+	bytes := int64(0)
+	files := int64(0)
+
 	for _, f := range zr.File {
 		targetfile := path.Join(abspath, f.Name)
 		dirname := path.Dir(targetfile)
@@ -263,8 +131,13 @@ func (a *App) DownloadZip(abspath string, r io.Reader, req *http.Request, c *typ
 			return 0, fmt.Errorf("file open error: '%s', '%v'", f.Name, err)
 		}
 
+		if opts.Callback != nil {
+			opts.Callback(files, bytes, f.Name)
+		}
+
 		fc, err := a.WriteFile(targetfile, zipfile, req, c)
-		count += fc
+		bytes += fc
+		files++
 		zipfile.Close()
 
 		if err != nil {
@@ -272,5 +145,5 @@ func (a *App) DownloadZip(abspath string, r io.Reader, req *http.Request, c *typ
 		}
 	}
 
-	return count, nil
+	return bytes, nil
 }

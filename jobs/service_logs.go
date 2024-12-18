@@ -84,7 +84,7 @@ func collectServiceLogs(a *app.App, timestamp_key types.ConfigKey, event string,
 
 func serviceLogs(a *app.App) {
 	for {
-		if !a.MaintenanceMode.Load() {
+		if !a.MaintenanceMode() {
 			collectServiceLogs(a, "engine_log_timestamp", "engine", a.ServiceEngine)
 			collectServiceLogs(a, "matterbridge_log_timestamp", "matterbridge", a.ServiceMatterbridge)
 			collectServiceLogs(a, "mapserver_log_timestamp", "mapserver", a.ServiceMapserver)

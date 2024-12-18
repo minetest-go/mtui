@@ -46,8 +46,6 @@ func Setup(a *app.App) error {
 	fbr.HandleFunc("/zip", api.Secure(api.DownloadZip)).Methods(http.MethodGet)
 	fbr.HandleFunc("/zip", api.Secure(api.UploadZip)).Methods(http.MethodPost)
 	fbr.HandleFunc("/unzip", api.Secure(api.UnzipFile)).Methods(http.MethodPost)
-	fbr.HandleFunc("/targz", api.Secure(api.DownloadTarGZ)).Methods(http.MethodGet)
-	fbr.HandleFunc("/targz", api.Secure(api.UploadTarGZ)).Methods(http.MethodPost)
 	fbr.HandleFunc("/mkdir", api.Secure(api.Mkdir)).Methods(http.MethodPost)
 	fbr.HandleFunc("/file", api.Secure(api.DownloadFile)).Methods(http.MethodGet)
 	fbr.HandleFunc("/file", api.Secure(api.UploadFile)).Methods(http.MethodPost)

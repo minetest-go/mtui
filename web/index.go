@@ -32,7 +32,7 @@ func (a *Api) GetIndex(w http.ResponseWriter, r *http.Request) {
 		css_url = public.ThemeMap["default"]
 	}
 
-	if !a.app.MaintenanceMode.Load() {
+	if !a.app.MaintenanceMode() {
 		entry, err := a.app.Repos.ConfigRepo.GetByKey(types.ConfigThemeKey)
 		if err != nil {
 			SendError(w, 500, err)

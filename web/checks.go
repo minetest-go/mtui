@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"mtui/types"
 	"net/http"
-	"sync/atomic"
 )
 
 // check api-key (for the minetest engine calls)
@@ -114,12 +113,12 @@ func (api *Api) FeatureCheck(name string) Check {
 // maintenance mode
 
 type MaintenanceModeCheckHandler struct {
-	maint_mode *atomic.Bool
+	maint_mode func() bool
 	handler    http.Handler
 }
 
 func (h MaintenanceModeCheckHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if !h.maint_mode.Load() {
+	if !h.maint_mode() {
 		h.handler.ServeHTTP(w, r)
 	} else {
 		w.WriteHeader(http.StatusServiceUnavailable)
@@ -127,7 +126,7 @@ func (h MaintenanceModeCheckHandler) ServeHTTP(w http.ResponseWriter, r *http.Re
 	}
 }
 
-func MaintenanceModeCheck(maint_mode *atomic.Bool) func(http.Handler) http.Handler {
+func MaintenanceModeCheck(maint_mode func() bool) func(http.Handler) http.Handler {
 	return func(h http.Handler) http.Handler {
 		return MaintenanceModeCheckHandler{maint_mode: maint_mode, handler: h}
 	}

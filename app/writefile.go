@@ -24,7 +24,7 @@ func IsDatabaseFile(filename string) bool {
 func (a *App) WriteFile(filename string, data io.Reader, r *http.Request, claims *types.Claims) (int64, error) {
 
 	is_dbfile := IsDatabaseFile(filename)
-	if is_dbfile && !a.MaintenanceMode.Load() {
+	if is_dbfile && !a.MaintenanceMode() {
 		// create log entry
 		a.CreateUILogEntry(&types.Log{
 			Username: claims.Username,
@@ -33,12 +33,8 @@ func (a *App) WriteFile(filename string, data io.Reader, r *http.Request, claims
 		}, r)
 
 		// not in maintenance mode, enable it for the upload of this critical database file
-		a.MaintenanceMode.Store(true)
-		a.DetachDatabase()
-		defer func() {
-			a.AttachDatabase()
-			a.MaintenanceMode.Store(false)
-		}()
+		a.EnableMaintenanceMode()
+		defer a.DisableMaintenanceMode()
 	}
 
 	f, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)

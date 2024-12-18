@@ -10,7 +10,7 @@ import (
 
 func mediaScan(a *app.App) {
 	for {
-		if !a.MaintenanceMode.Load() {
+		if !a.MaintenanceMode() {
 			f, err := a.Repos.FeatureRepository.GetByName(types.FEATURE_MEDIASERVER)
 			if err != nil {
 				logrus.Errorf("Mediascan getFeature error: %s", err.Error())

@@ -13,7 +13,7 @@ import (
 
 func metricLoop(a *app.App, ch chan *bridge.CommandResponse) {
 	for cmd := range ch {
-		if a.MaintenanceMode.Load() {
+		if a.MaintenanceMode() {
 			continue
 		}
 

@@ -8,7 +8,7 @@ import (
 
 func metricCleanup(a *app.App) {
 	for {
-		if !a.MaintenanceMode.Load() {
+		if !a.MaintenanceMode() {
 			ts := time.Now().Add(time.Hour * -1)
 			err := a.Repos.MetricRepository.DeleteBefore(ts.UnixMilli())
 			if err != nil {

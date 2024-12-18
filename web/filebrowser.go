@@ -139,7 +139,7 @@ func (a *Api) UnzipFile(w http.ResponseWriter, r *http.Request, claims *types.Cl
 	defer f.Close()
 
 	abspath := path.Dir(filename)
-	count, err := a.app.DownloadZip(abspath, f, r, claims)
+	count, err := a.app.DownloadZip(abspath, f, r, claims, nil)
 	Send(w, true, err)
 
 	a.app.CreateUILogEntry(&types.Log{
@@ -170,13 +170,10 @@ func (a *Api) RenameFile(w http.ResponseWriter, r *http.Request, claims *types.C
 			Message:  fmt.Sprintf("User '%s' renames '%s' to '%s' enabling temporary maintenance mode", claims.Username, rel_src, rel_dst),
 		}, r)
 
-		a.app.MaintenanceMode.Store(true)
-		a.app.DetachDatabase()
-
+		a.app.EnableMaintenanceMode()
 		err = os.Rename(src, dst)
+		a.app.DisableMaintenanceMode()
 
-		a.app.AttachDatabase()
-		a.app.MaintenanceMode.Store(false)
 	} else {
 		// no maintenance mode needed
 		err = os.Rename(src, dst)
