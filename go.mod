@@ -25,7 +25,7 @@ require (
 	github.com/minetest-go/areasparser v1.0.5
 	github.com/pkg/sftp v1.13.7
 	github.com/studio-b12/gowebdav v0.9.0
-	gorm.io/driver/sqlite v1.5.6
+	gorm.io/driver/sqlite v1.5.7
 	gorm.io/gorm v1.25.12
 )
 
