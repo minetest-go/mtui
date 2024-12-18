@@ -9,8 +9,6 @@ import (
 	"time"
 
 	"github.com/dchest/captcha"
-	"github.com/go-oauth2/oauth2/v4"
-	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"github.com/vearutop/statigz"
@@ -90,11 +88,6 @@ func Setup(a *app.App) error {
 
 	apir.HandleFunc("/uimod/storage/{key}", api.SecurePriv(types.PRIV_SERVER, api.GetMtUIStorage)).Methods(http.MethodGet)
 	apir.HandleFunc("/uimod/storage/{key}", api.SecurePriv(types.PRIV_SERVER, api.SetMtUIStorage)).Methods(http.MethodPost)
-
-	apir.HandleFunc("/oauth_app", api.SecurePriv(types.PRIV_SERVER, api.GetOauthApps)).Methods(http.MethodGet)
-	apir.HandleFunc("/oauth_app", api.SecurePriv(types.PRIV_SERVER, api.SetOauthApp)).Methods(http.MethodPost)
-	apir.HandleFunc("/oauth_app/{id}", api.SecurePriv(types.PRIV_SERVER, api.GetOauthAppByID)).Methods(http.MethodGet)
-	apir.HandleFunc("/oauth_app/{id}", api.SecurePriv(types.PRIV_SERVER, api.DeleteOauthApp)).Methods(http.MethodDelete)
 
 	apir.HandleFunc("/player/skin/{playername}", api.GetPlayerSkin).Methods(http.MethodGet)
 	apir.HandleFunc("/player/info/{playername}", api.SecurePriv(types.PRIV_INTERACT, api.GetPlayerInfo)).Methods(http.MethodGet)
@@ -230,16 +223,6 @@ func Setup(a *app.App) error {
 			}
 		}
 	}
-
-	// OAuth
-	api.app.OAuthServer.SetAllowGetAccessRequest(true)
-	api.app.OAuthServer.SetAllowedGrantType(oauth2.Implicit, oauth2.AuthorizationCode, oauth2.ClientCredentials)
-	api.app.OAuthServer.SetClientInfoHandler(server.ClientFormHandler)
-	api.app.OAuthServer.UserAuthorizationHandler = api.OAuthAuthHandler
-	api.app.OAuthServer.SetUserAuthorizationHandler(api.OauthUserAuthorizationHandler)
-
-	apir.HandleFunc("/authorize", api.OAuthAuthorizeHandler)
-	apir.HandleFunc("/token", api.OAuthTokenHandler)
 
 	// index.html or /
 	r.HandleFunc("/", api.GetIndex)

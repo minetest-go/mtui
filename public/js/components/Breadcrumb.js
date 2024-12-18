@@ -35,7 +35,6 @@ export const MAIL = { icon: "envelope", name: "Mail", link: "/mail" };
 export const MODERATION = { icon: "hammer", name: "Moderation" };
 export const SERVICES = { icon: "gears", name: "Services" };
 export const ADMINISTRATION = { icon: "screwdriver-wrench", name: "Administration" };
-export const OAUTH_APPS = { icon: "passport", name: "OAuth apps", link: "/oauth-apps" };
 export const MODS = { name: "Mods", icon: "cubes", link: "/mods" };
 export const CDB = { name: "ContentDB", icon: "box-open", link: "/cdb/browse" };
 export const FILEBROWSER = { name: "Filebrowser", icon: "folder", link: "/filebrowser/" };

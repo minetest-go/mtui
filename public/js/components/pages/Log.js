@@ -63,7 +63,6 @@ const category_events = {
         "engine",
         "ws-proxy",
         "mods",
-        "oauth",
         "password",
         "mesecons",
         "atm",

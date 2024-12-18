@@ -12,7 +12,6 @@ type Repositories struct {
 	ChatLogRepo          *ChatLogRepository
 	MetricTypeRepository *MetricTypeRepository
 	MetricRepository     *MetricRepository
-	OauthAppRepo         *OauthAppRepository
 	MeseconsRepo         *MeseconsRepository
 }
 
@@ -25,7 +24,6 @@ func NewRepositories(g *gorm.DB) *Repositories {
 		ChatLogRepo:          &ChatLogRepository{g: g},
 		MetricTypeRepository: &MetricTypeRepository{g: g},
 		MetricRepository:     &MetricRepository{g: g},
-		OauthAppRepo:         &OauthAppRepository{g: g},
 		MeseconsRepo:         &MeseconsRepository{g: g},
 	}
 }

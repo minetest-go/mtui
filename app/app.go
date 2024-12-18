@@ -16,8 +16,6 @@ import (
 	"path"
 	"sync/atomic"
 
-	"github.com/go-oauth2/oauth2/v4/manage"
-	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/minetest-go/mtdb"
 	"gorm.io/gorm"
 )
@@ -38,8 +36,6 @@ type App struct {
 	Mediaserver         *mediaserver.MediaServer
 	GeoipResolver       GeoIPResolver
 	Version             string
-	OAuthMgr            *manage.Manager
-	OAuthServer         *server.Server
 	maintenanceMode     *atomic.Bool // database detached, for backup and restores
 	ServiceEngine       *dockerservice.DockerService
 	ServiceMatterbridge *dockerservice.DockerService

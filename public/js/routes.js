@@ -15,8 +15,6 @@ import Mediaserver from './components/pages/Mediaserver.js';
 import Log from './components/pages/Log.js';
 import Onboard from './components/pages/Onboard.js';
 import Xban from './components/pages/Xban.js';
-import OauthApps from './components/pages/oauth/OauthApps.js';
-import OauthAppEdit from './components/pages/oauth/OauthAppEdit.js';
 import MinetestConfig from './components/pages/administration/MinetestConfig.js';
 import UISettings from './components/pages/administration/UISettings.js';
 import Filebrowser from './components/pages/filebrowser/Filebrowser.js';
@@ -126,12 +124,6 @@ export default [{
 }, {
 	path: "/skin", component: Skin,
 	meta: { requiredPriv: "interact" }
-}, {
-	path: "/oauth-apps", component: OauthApps,
-	meta: { requiredPriv: "server" }
-}, {
-	path: "/oauth-apps/:id", component: OauthAppEdit, props: true,
-	meta: { requiredPriv: "server" }
 }, {
 	path: "/minetest-config", component: MinetestConfig,
 	meta: { requiredPriv: "server" }

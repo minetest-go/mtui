@@ -19,7 +19,6 @@ Minetest web ui
 * Mail management
 * XBan management
 * Mediaserver (remote_media)
-* OAuth provider
 * Event logging
 * Mod/game/texturepack configuration and updates (cdb, git)
 * Engine management (via Docker)
