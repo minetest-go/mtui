@@ -178,11 +178,11 @@ export default {
             </div>
             <div class="col-md-2">
                 <label>From</label>
-                <vue-datepicker v-model="from"/>
+                <vue-datepicker v-model="from" auto-apply/>
             </div>
             <div class="col-md-2">
                 <label>To</label>
-                <vue-datepicker v-model="to"/>
+                <vue-datepicker v-model="to" auto-apply/>
             </div>
             <div class="col-md-2">
                 <label>Search</label>

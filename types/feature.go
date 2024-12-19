@@ -1,6 +1,7 @@
 package types
 
 const (
+	FEATURE_API             = "api"
 	FEATURE_MEDIASERVER     = "mediaserver"
 	FEATURE_MAIL            = "mail"
 	FEATURE_AREAS           = "areas"

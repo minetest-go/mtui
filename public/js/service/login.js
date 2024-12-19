@@ -8,6 +8,7 @@ const store = Vue.reactive({
 
 export const is_logged_in = () => store.claims != null;
 export const get_claims = () => store.claims;
+export const get_privs = () => store.claims && store.claims.privileges;
 
 export const check_login = () => fetch_claims().then(c => {
     store.claims = c;

@@ -1,5 +1,5 @@
-import { changepw } from "../api/login.js";
-import { has_priv } from "../service/login.js";
+import { changepw } from "../../api/login.js";
+import { has_priv } from "../../service/login.js";
 
 export default {
     props: ["username"],

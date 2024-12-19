@@ -1,6 +1,7 @@
 import Start from './components/pages/Start.js';
 import Login from './components/pages/Login.js';
 import PlayerInfo from './components/pages/PlayerInfo.js';
+import AccessToken from './components/pages/AccessToken.js';
 import Profile from './components/pages/Profile.js';
 import Shell from './components/pages/Shell.js';
 import Lua from './components/pages/administration/Lua.js';
@@ -75,6 +76,8 @@ export default [{
 	path: "/online-players", component: OnlinePlayers
 }, {
 	path: "/profile/:name", component: PlayerInfo, props: true,
+}, {
+	path: "/token", component: AccessToken
 }, {
 	path: "/playersearch", component: PlayerSearch
 }, {

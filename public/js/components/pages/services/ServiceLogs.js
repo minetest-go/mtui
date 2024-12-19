@@ -72,11 +72,11 @@ export default {
             <div class="row">
                 <div class="col-2">
                     <label>From</label>
-                    <vue-datepicker v-model="since"/>
+                    <vue-datepicker v-model="since" auto-apply/>
                 </div>
                 <div class="col-2">
                     <label>Until</label>
-                    <vue-datepicker v-model="until"/>
+                    <vue-datepicker v-model="until" auto-apply/>
                 </div>
                 <div class="col-2">
                     <label>Live logs</label>

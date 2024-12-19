@@ -1,5 +1,5 @@
-import { get_balance, atm_transfer } from '../api/atm.js';
-import { get_claims, is_logged_in } from "../service/login.js";
+import { get_balance, atm_transfer } from '../../api/atm.js';
+import { get_claims, is_logged_in } from "../../service/login.js";
 
 
 export default {

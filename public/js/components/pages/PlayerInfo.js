@@ -1,4 +1,4 @@
-import Userprofile from "../Userprofile.js";
+import Userprofile from "../profile/Userprofile.js";
 import DefaultLayout from '../layouts/DefaultLayout.js';
 import { START, PLAYER_SEARCH } from '../Breadcrumb.js';
 

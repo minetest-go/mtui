@@ -41,6 +41,7 @@ func GetToken(r *http.Request) (string, error) {
 		return c.Value, nil
 	}
 
+	// token in header
 	auth_header := r.Header.Get("Authorization")
 	if strings.HasPrefix(auth_header, "Bearer ") {
 		auth, _ := strings.CutPrefix(auth_header, "Bearer ")
@@ -70,16 +71,40 @@ func (api *Api) SetClaims(w http.ResponseWriter, claims *types.Claims) error {
 }
 
 func (api *Api) GetClaims(r *http.Request) (*types.Claims, error) {
-	t, err := GetToken(r)
-	if err != nil {
-		return nil, err
+	var token_string string
+
+	// token in cookie
+	c, err := r.Cookie(TOKEN_COOKIE_NAME)
+	if err != nil && err != http.ErrNoCookie {
+		return nil, fmt.Errorf("error retrieving cookie: %v", err)
+	}
+	if c != nil {
+		token_string = c.Value
 	}
 
-	if t == "" {
+	if !api.app.MaintenanceMode() {
+		// check api feature
+		feature, err := api.app.Repos.FeatureRepository.GetByName(types.FEATURE_API)
+		if err != nil {
+			return nil, fmt.Errorf("error querying api-feature: %v", err)
+		}
+
+		if feature != nil && feature.Enabled {
+			// token in header
+			auth_header := r.Header.Get("Authorization")
+			if strings.HasPrefix(auth_header, "Bearer ") {
+				token_string, _ = strings.CutPrefix(auth_header, "Bearer ")
+			}
+		}
+	}
+
+	// no auth found, return 401
+	if token_string == "" {
 		return nil, err_unauthorized
 	}
 
-	token, err := jwt.ParseWithClaims(t, &types.Claims{}, func(token *jwt.Token) (any, error) {
+	// parse string to jwt token
+	token, err := jwt.ParseWithClaims(token_string, &types.Claims{}, func(token *jwt.Token) (any, error) {
 		return []byte(api.app.Config.JWTKey), nil
 	})
 
@@ -139,6 +164,13 @@ func (a *Api) CreateToken(w http.ResponseWriter, r *http.Request, claims *types.
 		SendError(w, 500, fmt.Errorf("create token error: %v", err))
 		return
 	}
+
+	a.app.CreateUILogEntry(&types.Log{
+		Username: claims.Username,
+		Event:    "login",
+		Message: fmt.Sprintf("User '%s' creates a new token with privs: '%s' expires: %s",
+			claims.Username, strings.Join(ctr.Privs, ","), time.UnixMilli(ctr.Expiry).Format(time.RFC3339)),
+	}, r)
 
 	w.Header().Add("Content-Type", "text/plain")
 	w.Write([]byte(t))

@@ -1,18 +1,18 @@
 import ChangePassword from './ChangePassword.js';
 import ATMDisplay from './ATMDisplay.js';
-import SkinPreview from './SkinPreview.js';
+import SkinPreview from '../SkinPreview.js';
 
-import { has_priv, get_claims, is_logged_in } from "../service/login.js";
-import { has_feature } from "../service/features.js";
-import { get as get_playerinfo } from '../api/playerinfo.js';
-import { get_record } from '../api/xban.js';
-import format_time from '../util/format_time.js';
-import format_duration from '../util/format_duration.js';
-import format_count from '../util/format_count.js';
-import { execute_chatcommand } from "../api/chatcommand.js";
+import { has_priv, get_claims, is_logged_in } from "../../service/login.js";
+import { has_feature } from "../../service/features.js";
+import { get as get_playerinfo } from '../../api/playerinfo.js';
+import { get_record } from '../../api/xban.js';
+import format_time from '../../util/format_time.js';
+import format_duration from '../../util/format_duration.js';
+import format_count from '../../util/format_count.js';
+import { execute_chatcommand } from "../../api/chatcommand.js";
 
 export default {
-    props: ["username"],
+    props: ["username","show_token_link"],
     data: function() {
         return {
             playerinfo: null,
@@ -37,6 +37,11 @@ export default {
         }
     },
     methods: {
+        format_time,
+        format_duration,
+        format_count,
+        has_priv,
+        has_feature,
         update_playerinfo: function() {
             get_playerinfo(this.username).then(pi => this.playerinfo = pi);
         },
@@ -49,8 +54,6 @@ export default {
                 get_record(this.username).then(r => this.xban_record = r);
             }
         },
-        has_priv: has_priv,
-        has_feature: has_feature,
         revoke_priv: function(priv) {
             execute_chatcommand(get_claims().username, `revoke ${this.username} ${priv}`)
             .then(() => this.update_playerinfo());
@@ -62,9 +65,6 @@ export default {
                 this.update_playerinfo();
             });
         },
-        format_time,
-        format_duration,
-        format_count,
         getPrivBadgeClass: function(priv) {
             if (priv == "server" || priv == "privs") {
                 return { "badge": true, "bg-danger": true };
@@ -218,6 +218,18 @@ export default {
                     </div>
                 </div>
                 <br>
+                <div class="card" v-if="show_token_link && has_feature('api')">
+                    <div class="card-header">
+                        <i class="fa-solid fa-key"></i>
+                        Access tokens
+                    </div>
+                    <div class="card-body">
+                        <router-link to="/token" class="btn btn-secondary">
+                            Configure access tokens
+                        </router-link>
+                    </div>
+                </div>
+                <br v-if="has_feature('api')">
                 <div class="card" v-if="is_moderator && has_feature('xban') && xban_record">
                     <div class="card-header">
                         <i class="fa-solid fa-clipboard"></i>

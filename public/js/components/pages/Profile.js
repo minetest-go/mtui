@@ -1,5 +1,5 @@
 import { get_claims } from '../../service/login.js';
-import Userprofile from "../Userprofile.js";
+import Userprofile from "../profile/Userprofile.js";
 import DefaultLayout from '../layouts/DefaultLayout.js';
 import { START, PLAYER_SEARCH } from '../Breadcrumb.js';
 
@@ -22,7 +22,7 @@ export default {
     },
     template: /*html*/`
     <default-layout icon="user" title="Current player profile" :breadcrumb="breadcrumb">
-        <user-profile :username="get_claims.username" v-if="get_claims"/>
+        <user-profile :username="get_claims.username" :show_token_link="true" v-if="get_claims"/>
     </default-layout>
     `
 };

@@ -1,5 +1,9 @@
 
 const ranges = [{
+    start: 60*60*24*356, suffix: "year(s)"
+},{
+    start: 60*60*24*30, suffix: "month(s)"
+},{
     start: 60*60*24*7, suffix: "week(s)"
 },{
     start: 60*60*24, suffix: "day(s)"

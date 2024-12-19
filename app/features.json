@@ -5,6 +5,9 @@
         "mods": ["areas"],
         "experimental": true
     },{
+        "name": "api",
+        "description": "Enables api-keys and access with tokens"
+    },{
         "name": "mesecons",
         "description": "Mesecons control integration",
         "mods": ["mtui", "mesecons_switch", "mesecons_button", "mesecons_lightstone"],
