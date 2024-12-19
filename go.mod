@@ -17,7 +17,7 @@ require (
 
 require (
 	github.com/Code-Hex/go-generics-cache v1.5.1
-	github.com/dchest/captcha v1.0.0
+	github.com/dchest/captcha v1.1.0
 	github.com/docker/docker v25.0.7+incompatible
 	github.com/docker/go-connections v0.5.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
