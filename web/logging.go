@@ -28,6 +28,11 @@ func loggingMiddleware(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
+		if !strings.Contains(r.URL.Path, "api/") {
+			// ignore non-api requests
+			next.ServeHTTP(w, r)
+			return
+		}
 
 		rw := NewResponseWriter(w)
 		next.ServeHTTP(rw, r)
