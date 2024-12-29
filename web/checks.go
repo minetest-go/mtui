@@ -58,13 +58,9 @@ func (api *Api) Secure(fn SecureHandlerFunc) http.HandlerFunc {
 func (api *Api) OptionalSecure(fn SecureHandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		claims, err := api.GetClaims(r)
-		if err == err_unauthorized {
-			// not logged in
+		if err != nil {
+			// not logged in or auth error
 			fn(w, r, nil)
-			return
-		} else if err != nil {
-			api.RemoveClaims(w)
-			SendError(w, http.StatusInternalServerError, err)
 			return
 		}
 		// logged in

@@ -6,6 +6,7 @@ import (
 	"mtui/types"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 func (a *Api) UploadZip(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
@@ -56,6 +57,28 @@ func (a *Api) AppendFile(w http.ResponseWriter, r *http.Request, claims *types.C
 	}
 
 	f, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+
+	offset_str := r.URL.Query().Get("offset")
+	if offset_str != "" {
+		offset, err := strconv.ParseInt(offset_str, 10, 64)
+		if err != nil {
+			SendError(w, 500, fmt.Errorf("parse offset error '%s': %v", offset_str, err))
+			return
+		}
+
+		err = f.Truncate(offset)
+		if err != nil {
+			SendError(w, 500, fmt.Errorf("truncate error, offset=%d: %v", offset, err))
+			return
+		}
+
+		_, err = f.Seek(offset, 0)
+		if err != nil {
+			SendError(w, 500, fmt.Errorf("seek error, offset=%d: %v", offset, err))
+			return
+		}
+	}
+
 	if err != nil {
 		SendError(w, 500, fmt.Errorf("openfile error for '%s': %v", filename, err))
 		return

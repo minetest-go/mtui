@@ -13,7 +13,7 @@ export async function upload_chunked(dir, filename, data, progress_callback) {
     let offset = 0;
     do {
         const chunksize = Math.min(data.size - offset, 1000*1000*2); // 2 mb chunks
-        await append(dir + "/" + tmpfilename, data.slice(offset, offset + chunksize));
+        await append(dir + "/" + tmpfilename, data.slice(offset, offset + chunksize), offset);
         offset += chunksize;
 
         if (typeof(progress_callback) == "function") {

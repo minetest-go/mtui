@@ -25,7 +25,7 @@ function postProgress(url, body, callback) {
     });
 }
 
-export const append = (filename, data) => fetch(`api/filebrowser/file?filename=${filename}`, {
+export const append = (filename, data, offset) => fetch(`api/filebrowser/file?filename=${filename}&offset=${offset}`, {
     method: "PUT",
     body: data
 });
