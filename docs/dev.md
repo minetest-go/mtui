@@ -7,6 +7,6 @@ Prerequisites:
 Starting:
 ```sh
 docker-compose up ui_webapp
-# start the minetest engine and the ui
-docker-compose up ui minetest
+# start the ui
+docker-compose up ui
 ```
