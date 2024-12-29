@@ -3,6 +3,7 @@ package app
 import (
 	"embed"
 	"encoding/json"
+	"fmt"
 	"mtui/db"
 	"mtui/types"
 )
@@ -61,4 +62,18 @@ func PopulateFeatures(repo *db.FeatureRepository, enabled_features []string) err
 	}
 
 	return nil
+}
+
+func (app *App) IsFeatureEnabled(name string) bool {
+	f, err := app.Repos.FeatureRepository.GetByName(name)
+	if err != nil {
+		fmt.Printf("feature query error: %v\n", err)
+		return false
+	}
+
+	if f != nil {
+		return f.Enabled
+	} else {
+		return false
+	}
 }

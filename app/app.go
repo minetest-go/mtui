@@ -16,6 +16,7 @@ import (
 	"path"
 	"sync/atomic"
 
+	cache "github.com/Code-Hex/go-generics-cache"
 	"github.com/minetest-go/mtdb"
 	"gorm.io/gorm"
 )
@@ -40,6 +41,7 @@ type App struct {
 	ServiceEngine       *dockerservice.DockerService
 	ServiceMatterbridge *dockerservice.DockerService
 	ServiceMapserver    *dockerservice.DockerService
+	offline_xban_cache  *cache.Cache[string, *types.XBanEntry]
 }
 
 const default_world_mt_content = `
@@ -64,14 +66,15 @@ func Create(cfg *types.Config) (*App, error) {
 	}
 
 	app := &App{
-		WorldDir:        cfg.WorldDir,
-		Bridge:          bridge.New(),
-		WSEvents:        eventbus.NewEventBus(),
-		Config:          cfg,
-		Mediaserver:     mediaserver.New(),
-		GeoipResolver:   NewGeoIPResolver(path.Join(cfg.WorldDir, "mmdb"), cfg.GeoIPAPI),
-		Version:         Version,
-		maintenanceMode: &atomic.Bool{},
+		WorldDir:           cfg.WorldDir,
+		Bridge:             bridge.New(),
+		WSEvents:           eventbus.NewEventBus(),
+		Config:             cfg,
+		Mediaserver:        mediaserver.New(),
+		GeoipResolver:      NewGeoIPResolver(path.Join(cfg.WorldDir, "mmdb"), cfg.GeoIPAPI),
+		Version:            Version,
+		maintenanceMode:    &atomic.Bool{},
+		offline_xban_cache: cache.New[string, *types.XBanEntry](),
 	}
 
 	if app.Version == "" {

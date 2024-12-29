@@ -13,7 +13,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
-	"github.com/sirupsen/logrus"
 )
 
 type LoginRequest struct {
@@ -84,23 +83,6 @@ func (a *Api) GetLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *Api) updateToken(w http.ResponseWriter, id int64, username string) (*types.Claims, error) {
-	f, err := a.app.Repos.FeatureRepository.GetByName(types.FEATURE_XBAN)
-	if err != nil {
-		return nil, fmt.Errorf("could not get feature: %v", err)
-	}
-
-	if f.Enabled {
-		// consult xban database
-		entry, err := a.app.GetOfflineXBanEntry(username)
-		if err != nil {
-			// just log in error-case, otherwise the login will be blocked
-			logrus.WithError(err).Error("could not get xban entry on login")
-		}
-		if entry != nil && entry.Banned {
-			return nil, fmt.Errorf("player is banned (reason: '%s')", entry.Reason)
-		}
-	}
-
 	privs, err := a.app.DBContext.Privs.GetByID(id)
 	if err != nil {
 		return nil, err

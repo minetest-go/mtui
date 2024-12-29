@@ -121,6 +121,18 @@ func (api *Api) GetClaims(r *http.Request) (*types.Claims, error) {
 		return nil, errors.New("internal error")
 	}
 
+	if api.app.IsFeatureEnabled(types.FEATURE_XBAN) {
+		// query xban db
+		xban, err := api.app.GetOfflineXBanEntry(claims.Username)
+		if err != nil {
+			return nil, fmt.Errorf("offline xban error: %v", err)
+		}
+
+		if xban != nil && xban.Banned {
+			return nil, fmt.Errorf("banned player, reason: '%s'", xban.Reason)
+		}
+	}
+
 	return claims, nil
 }
 
