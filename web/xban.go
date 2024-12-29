@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"mtui/bridge"
 	"mtui/types"
@@ -16,7 +17,7 @@ func SendLuaResponse(w http.ResponseWriter, err error, lr *command.LuaResponse) 
 	if err != nil {
 		SendError(w, 500, err)
 	} else if !lr.Success {
-		SendError(w, 500, fmt.Errorf(lr.Message))
+		SendError(w, 500, errors.New(lr.Message))
 	} else {
 		Send(w, lr.Result, nil)
 	}
