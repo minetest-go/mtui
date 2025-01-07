@@ -7,7 +7,16 @@ import { fetch_info } from './service/app_info.js';
 import events, { EVENT_STARTUP } from './events.js';
 import { start_polling, stop_polling, get_stats } from './service/stats.js';
 
-function start(){
+async function start(){
+	const stats = await get_stats();
+	if (!stats.maintenance) {
+		// check features only if maintenance is disabled
+		await check_features();
+	}
+
+	await fetch_info();
+	await check_login();
+
 	// start stats polling
 	start_polling();
 
@@ -34,14 +43,4 @@ function start(){
 	app.mount("#app");
 }
 
-get_stats()
-.then(stats => {
-	if (stats.maintenance) {
-		// skip feature checking
-		return;
-	}
-	return check_features();
-})
-.then(() => fetch_info())
-.then(() => check_login())
-.then(() => start());
+start().catch(e => console.error(e));
