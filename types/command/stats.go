@@ -36,11 +36,20 @@ type PlayerStats struct {
 	} `json:"info"`
 }
 
+type GlobalStats struct {
+	RegisteredNodes    types.JsonInt `json:"registered_nodes"`
+	RegisteredItems    types.JsonInt `json:"registered_items"`
+	RegisteredEntities types.JsonInt `json:"registered_entities"`
+	RegisteredABMs     types.JsonInt `json:"registered_abms"`
+}
+
 // stats from the engine
 type StatsCommand struct {
 	Uptime      types.JsonInt  `json:"uptime"`
 	MaxLag      float64        `json:"max_lag"`
 	TimeOfDay   float64        `json:"time_of_day"`
+	Mem         types.JsonInt  `json:"mem"`
+	GlobalStats *GlobalStats   `json:"global_stats"`
 	PlayerCount types.JsonInt  `json:"player_count"`
 	Players     []*PlayerStats `json:"players"`
 }

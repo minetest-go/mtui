@@ -49,6 +49,8 @@ func (a *Api) GetStats(w http.ResponseWriter, r *http.Request, claims *types.Cla
 		sc.Uptime = cs.Uptime
 		sc.PlayerCount = cs.PlayerCount
 		sc.TimeOfDay = cs.TimeOfDay
+		sc.Mem = cs.Mem
+		sc.GlobalStats = cs.GlobalStats
 		sc.Players = make([]*command.PlayerStats, cs.PlayerCount)
 
 		for i, ps := range cs.Players {
