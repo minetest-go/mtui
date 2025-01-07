@@ -106,11 +106,6 @@ func Setup(a *app.App) error {
 	apir.HandleFunc("/skin/{id}", api.Feature(types.FEATURE_SKINSDB, api.Secure(api.SetSkin))).Methods(http.MethodPost)
 	apir.HandleFunc("/skin/{id}", api.Feature(types.FEATURE_SKINSDB, api.Secure(api.RemoveSkin))).Methods(http.MethodDelete)
 
-	apir.HandleFunc("/metric_types", api.Feature(types.FEATURE_MONITORING, api.GetMetricTypes)).Methods(http.MethodGet)
-	apir.HandleFunc("/metric_types/{name}", api.Feature(types.FEATURE_MONITORING, api.GetMetricType)).Methods(http.MethodGet)
-	apir.HandleFunc("/metrics/search", api.Feature(types.FEATURE_MONITORING, api.SearchMetrics)).Methods(http.MethodPost)
-	apir.HandleFunc("/metrics/count", api.Feature(types.FEATURE_MONITORING, api.CountMetrics)).Methods(http.MethodPost)
-
 	chapi := apir.PathPrefix("/chat").Subrouter()
 	chapi.Use(SecureHandler(api.FeatureCheck("chat"), api.PrivCheck("shout")))
 	chapi.HandleFunc("/{channel}/latest", api.Secure(api.GetLatestChatLogs)).Methods(http.MethodGet)

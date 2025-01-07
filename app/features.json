@@ -49,11 +49,6 @@
         "description": "xban integration",
         "mods": ["xban2"]
     },{
-        "name": "monitoring",
-        "description": "monitoring integration",
-        "mods": ["monitoring"],
-        "experimental": true
-    },{
         "name": "otp",
         "description": "Enable otp login"
     },{

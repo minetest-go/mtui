@@ -10,7 +10,6 @@ const (
 	FEATURE_SHELL           = "shell"
 	FEATURE_MODMANAGEMENT   = "modmanagement"
 	FEATURE_XBAN            = "xban"
-	FEATURE_MONITORING      = "monitoring"
 	FEATURE_MINETEST_CONFIG = "minetest_config"
 	FEATURE_OTP             = "otp"
 	FEATURE_DOCKER          = "docker"
