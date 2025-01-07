@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"sort"
 	"strings"
 )
 
@@ -68,7 +69,16 @@ func (s Settings) Write(w io.Writer, sts SettingTypes) error {
 		sts = SettingTypes{}
 	}
 
-	for key, setting := range s {
+	// sort keys
+	keys := []string{}
+	for key := range s {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		setting := s[key]
+
 		entry := fmt.Sprintf("%s = ", key)
 		value := setting.ToStringValue(sts[key])
 
