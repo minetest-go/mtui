@@ -119,6 +119,7 @@ export default {
 		busy: is_busy,
 		games: () => get_mods_by_type("game"),
 		mods: () => get_mods_by_type("mod"),
+		worldmods: () => get_mods_by_type("worldmods"),
 		txps: () => get_mods_by_type("txp"),
 		add_name_valid: function() {
 			return (this.add_name == "" || modname_regex.test(this.add_name));
@@ -171,6 +172,7 @@ export default {
 						<td>
 							<select class="form-control" v-model="add_mod_type">
 								<option value="mod">Mod</option>
+								<option value="worldmods">Worldmods</option>
 								<option value="game">Game</option>
 								<option value="txp">Texturepack</option>
 							</select>
@@ -252,6 +254,14 @@ export default {
 					</tr>
 					<tr v-for="mod in mods" :key="mod.id">
 						<mod-row :mod="mod" :busy="busy"/>
+					</tr>
+					<tr v-if="worldmods.length > 0" class="table-secondary">
+						<td colspan="8">
+							<h4>Worldmods collection</h4>
+						</td>
+					</tr>
+					<tr v-for="worldmod in worldmods" :key="worldmod.id">
+						<mod-row :mod="worldmod" :busy="busy"/>
 					</tr>
 				</tbody>
 			</table>

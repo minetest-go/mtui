@@ -28,7 +28,7 @@ func loggingMiddleware(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
-		if !strings.Contains(r.URL.Path, "api/") {
+		if !strings.Contains(r.URL.Path, "api/") || strings.Contains(r.URL.Path, "js/api/") {
 			// ignore non-api requests
 			next.ServeHTTP(w, r)
 			return
