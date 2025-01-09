@@ -71,6 +71,10 @@ export const get_all = () => store.list;
 
 export const get_mods_by_type = type => store.list.filter(m => m.mod_type == type);
 
+export const get_mod_by_name = name => store.list.find(m => m.mod_type == "mod" && m.name == name);
+
+export const get_txp_by_name = name => store.list.find(m => m.mod_type == "txp" && m.name == name);
+
 export const get_cdb_mod = (author, name) => store.list.find(m => m.name == name && m.author == author);
 
 export const get_git_mod = name => store.list.find(m => m.name == name);
