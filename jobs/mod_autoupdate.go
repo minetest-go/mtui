@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"mtui/app"
 	"mtui/types"
+	"mtui/types/command"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -20,6 +21,8 @@ func checkAllMods(a *app.App) error {
 		return err
 	}
 
+	mods_changed := false
+
 	for _, mod := range mods {
 		if !mod.AutoUpdate {
 			continue
@@ -28,7 +31,25 @@ func checkAllMods(a *app.App) error {
 		if mod.Version != mod.LatestVersion {
 			err = a.ModManager.Update(mod, mod.LatestVersion)
 			if err != nil {
-				return err
+				logrus.WithError(err).WithFields(logrus.Fields{
+					"name":            mod.Name,
+					"version":         mod.Version,
+					"lastest_version": mod.LatestVersion,
+					"id":              mod.ID,
+				}).Error("mod auto update failed")
+
+				// log entry
+				log := &types.Log{
+					Category: types.CategoryUI,
+					Event:    "mods",
+					Message:  fmt.Sprintf("Auto-update failed for %s '%s' (%s) to version '%s'", mod.ModType, mod.Name, mod.SourceType, mod.LatestVersion),
+				}
+				err = a.Repos.LogRepository.Insert(log)
+				if err != nil {
+					return err
+				}
+
+				continue
 			}
 
 			// create log entry
@@ -41,8 +62,19 @@ func checkAllMods(a *app.App) error {
 			if err != nil {
 				return err
 			}
+
+			mods_changed = true
 		}
 	}
+
+	if mods_changed {
+		err = a.Bridge.ExecuteCommand(command.COMMAND_NOTIFY_MODS_CHANGED, nil, nil, time.Second*5)
+		if err != nil {
+			// ignore error, just log
+			logrus.WithError(err).Warn("mods updated notification failed")
+		}
+	}
+
 	return nil
 }
 

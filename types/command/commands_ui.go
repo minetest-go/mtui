@@ -8,8 +8,9 @@ import (
 )
 
 const (
-	COMMAND_CHATCMD bridge.CommandType = "execute_command"
-	COMMAND_LUA     bridge.CommandType = "lua"
+	COMMAND_CHATCMD             bridge.CommandType = "execute_command"
+	COMMAND_LUA                 bridge.CommandType = "lua"
+	COMMAND_NOTIFY_MODS_CHANGED bridge.CommandType = "notify_mods_changed"
 )
 
 type ExecuteChatCommandRequest struct {
