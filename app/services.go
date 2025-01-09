@@ -26,7 +26,7 @@ func (app *App) SetupServices() {
 			ContainerName: fmt.Sprintf("%s_engine", app.Config.DockerContainerPrefix),
 			Networks:      strings.Split(app.Config.DockerNetwork, ","),
 			DefaultConfig: &container.Config{
-				Cmd:  []string{"minetestserver", "--world", "/world", "--config", "/minetest.conf"},
+				Cmd:  []string{"--world", "/world", "--config", "/minetest.conf"},
 				Tty:  false,
 				User: fmt.Sprintf("%d", os.Getuid()),
 				Env:  no_proxy_env,

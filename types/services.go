@@ -1,9 +1,8 @@
 package types
 
 var EngineServiceImages = map[string]string{
-	"5.6.0":  "registry.gitlab.com/minetest/minetest/server:5.6.0",
 	"5.7.0":  "registry.gitlab.com/minetest/minetest/server:5.7.0",
-	"5.8.0":  "ghcr.io/minetest-hosting/minetest-docker:5.8.0",
+	"5.8.0":  "ghcr.io/luanti-hosting/minetest-docker:5.8.0",
 	"5.9.0":  "ghcr.io/minetest/minetest:5.9.0",
 	"5.10.0": "ghcr.io/minetest/minetest:5.10.0",
 }
