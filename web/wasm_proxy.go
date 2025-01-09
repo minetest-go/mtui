@@ -128,6 +128,12 @@ func (api *Api) resolveDNS(conn *websocket.Conn) error {
 }
 
 func forwardData(conn *websocket.Conn, host string, port int64) error {
+
+	logrus.WithFields(logrus.Fields{
+		"host": host,
+		"port": port,
+	}).Info("WASM WS Proxy forwarding data")
+
 	uaddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", host, port))
 	if err != nil {
 		return err
