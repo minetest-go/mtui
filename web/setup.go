@@ -149,12 +149,6 @@ func Setup(a *app.App) error {
 	atmr.HandleFunc("/balance/{name}", api.Secure(api.GetATMBalance)).Methods(http.MethodGet)
 	atmr.HandleFunc("/transfer", api.Secure(api.ATMTransfer)).Methods(http.MethodPost)
 
-	ctrlr := apir.PathPrefix("/controls").Subrouter()
-	ctrlr.Use(SecureHandler(api.PrivCheck(types.PRIV_SERVER)))
-	ctrlr.HandleFunc("/metadata", api.Secure(api.GetControlsMetadata)).Methods(http.MethodGet)
-	ctrlr.HandleFunc("/values", api.Secure(api.GetControlsValues)).Methods(http.MethodGet)
-	ctrlr.HandleFunc("", api.Secure(api.SetControl)).Methods(http.MethodPost)
-
 	meser := apir.PathPrefix("/mesecons").Subrouter()
 	meser.Use(SecureHandler(api.FeatureCheck(types.FEATURE_MESECONS)))
 	meser.HandleFunc("", api.Secure(api.GetMeseconsControls)).Methods(http.MethodGet)
