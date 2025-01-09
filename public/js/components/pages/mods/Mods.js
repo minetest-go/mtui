@@ -15,10 +15,7 @@ const ModRow = {
 	methods: {
 		remove,
 		update_mod_version,
-		toggle_autoupdate: function(mod) {
-			mod.auto_update = !mod.auto_update;
-			update_mod(mod);
-		},
+		update_mod
 	},
 	template: /*html*/`
 		<td>
@@ -29,33 +26,21 @@ const ModRow = {
 			<span v-else>{{mod.name}}</span>
 		</td>
 		<td>
+			<a :href="mod.url" v-if="mod.source_type == 'git'">{{mod.url}}</a>
 			<span class="badge bg-success" v-if="mod.source_type == 'cdb'">
 				<i class="fa-solid fa-box-open"></i>
 				ContentDB
 			</span>
-			<span class="badge bg-success" v-if="mod.source_type == 'git'">
-				<i class="fa-brands fa-git-alt"></i>
-				Git
-			</span>
-		</td>
-		<td>
-			<a :href="mod.url" v-if="mod.source_type == 'git'">{{mod.url}}</a>
 		</td>
 		<td>
 			<span class="badge bg-secondary" v-if="mod.version">{{mod.version}}</span>
+			<span class="badge bg-warning" v-if="mod.latest_version && mod.latest_version != mod.version">Latest: {{mod.latest_version}}</span>
 		</td>
 		<td>
-			<span class="badge bg-secondary" v-if="mod.latest_version">{{mod.latest_version}}</span>
-		</td>
-		<td>
-			<button class="btn btn-success" v-if="mod.auto_update" v-on:click="toggle_autoupdate(mod)" :disabled="busy">
-				<i class="fa fa-check"></i>
-				Enabled
-			</button>
-			<button class="btn btn-secondary" v-if="!mod.auto_update" v-on:click="toggle_autoupdate(mod)" :disabled="busy">
-				<i class="fa fa-times"></i>
-				Disabled
-			</button>
+			<div class="form-check">
+				<input class="form-check-input" type="checkbox" v-model="mod.auto_update" v-on:change="update_mod(mod)"/>
+				<label class="form-check-label">Auto-update</label>
+			</div>
 		</td>
 		<td>
 			<div class="btn-group">
@@ -159,10 +144,8 @@ export default {
 					<tr>
 						<th>Type</th>
 						<th>Name</th>
-						<th>Source-Type</th>
 						<th>Source</th>
 						<th>Version</th>
-						<th>Latest Version</th>
 						<th>Auto-update</th>
 						<th>Actions</th>
 					</tr>
@@ -191,18 +174,11 @@ export default {
 							</div>
 						</td>
 						<td>
-							<span class="badge bg-success">
-								<i class="fa-brands fa-git-alt"></i>
-								Git
-							</span>
-						</td>
-						<td>
 							<input class="form-control" type="text" placeholder="Source url" v-model="add_url"/>
 						</td>
 						<td>
 							<input class="form-control" type="text" placeholder="Version" v-model="add_version"/>
 						</td>
-						<td></td>
 						<td></td>
 						<td>
 							<feedback-button type="success" :fn="add" :disabled="!add_name || !add_url">
@@ -212,8 +188,6 @@ export default {
 						</td>
 					</tr>
 					<tr>
-						<td></td>
-						<td></td>
 						<td>
 							<span class="badge bg-success">
 								<i class="fa-solid fa-box-open"></i>

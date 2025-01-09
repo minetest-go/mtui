@@ -31,7 +31,7 @@ func (r *ModRepository) GetByID(id string) (*types.Mod, error) {
 }
 
 func (r *ModRepository) Update(m *types.Mod) error {
-	return r.g.Model(m).Updates(m).Error
+	return r.g.Model(m).Select("*").Updates(m).Error
 }
 
 func (r *ModRepository) Delete(id string) error {

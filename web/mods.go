@@ -152,13 +152,6 @@ func (a *Api) UpdateMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 		Event:    "mods",
 		Message:  fmt.Sprintf("User '%s' updates the metadata of  %s '%s' (%s)", claims.Username, m.ModType, m.Name, m.SourceType),
 	}, r)
-
-	// send notification to engine
-	err = a.app.Bridge.ExecuteCommand(command.COMMAND_NOTIFY_MODS_CHANGED, nil, nil, time.Second*5)
-	if err != nil {
-		// ignore error, just log
-		logrus.WithError(err).Warn("mods updated notification failed")
-	}
 }
 
 func (a *Api) DeleteMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
