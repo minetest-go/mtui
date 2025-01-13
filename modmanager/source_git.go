@@ -26,6 +26,8 @@ func (h *GitModHandler) Create(ctx *HandlerContext, mod *types.Mod) error {
 	r, err := git.PlainClone(dir, false, &git.CloneOptions{
 		URL:               mod.URL,
 		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
+		ShallowSubmodules: true,
+		Depth:             1,
 	})
 	if err != nil {
 		return fmt.Errorf("error while cloning: %v", err)
@@ -95,24 +97,29 @@ func (h *GitModHandler) Update(ctx *HandlerContext, mod *types.Mod, version stri
 
 	r, err := git.PlainOpen(dir)
 	if err != nil {
-		return err
+		return fmt.Errorf("open error: %v", err)
 	}
 
 	w, err := r.Worktree()
 	if err != nil {
-		return err
+		return fmt.Errorf("worktree open error: %v", err)
 	}
 
-	err = w.Pull(&git.PullOptions{RemoteName: "origin"})
+	err = w.Pull(&git.PullOptions{
+		RemoteName:        "origin",
+		Depth:             1,
+		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
+	})
 	if err != nil && err != git.NoErrAlreadyUpToDate {
-		return err
+		return fmt.Errorf("pull error: %v", err)
 	}
 
 	err = w.Checkout(&git.CheckoutOptions{
-		Hash: plumbing.NewHash(version),
+		Hash:  plumbing.NewHash(version),
+		Force: true,
 	})
 	if err != nil {
-		return err
+		return fmt.Errorf("checkout error: %v", err)
 	}
 
 	mod.Version = version
