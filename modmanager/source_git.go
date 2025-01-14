@@ -40,7 +40,7 @@ func (h *GitModHandler) Create(ctx *HandlerContext, mod *types.Mod) error {
 	if mod.Branch != "" {
 		// check out branch
 		err = w.Checkout(&git.CheckoutOptions{
-			Branch: plumbing.ReferenceName(mod.Branch),
+			Branch: plumbing.NewBranchReferenceName(mod.Branch),
 		})
 
 		if err == nil && mod.Version != "" {
@@ -61,10 +61,10 @@ func (h *GitModHandler) Create(ctx *HandlerContext, mod *types.Mod) error {
 			return fmt.Errorf("git error: %v", err)
 		}
 		for _, ref := range refs {
-			if ref.Name() == plumbing.ReferenceName("refs/heads/master") {
-				mod.Branch = "refs/heads/master"
-			} else if ref.Name() == plumbing.ReferenceName("refs/heads/main") {
-				mod.Branch = "refs/heads/main"
+			if ref.Name() == plumbing.Master {
+				mod.Branch = "master"
+			} else if ref.Name() == plumbing.Main {
+				mod.Branch = "main"
 			}
 		}
 	}
@@ -148,7 +148,7 @@ func (h *GitModHandler) CheckUpdate(ctx *HandlerContext, mod *types.Mod) (bool, 
 		return false, fmt.Errorf("git error: %v", err)
 	}
 	for _, ref := range refs {
-		if ref.Name() == plumbing.ReferenceName(mod.Branch) {
+		if ref.Name() == plumbing.NewBranchReferenceName(mod.Branch) {
 			mod.LatestVersion = ref.Hash().String()
 			return true, nil
 		}
