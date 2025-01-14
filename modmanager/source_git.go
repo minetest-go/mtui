@@ -27,7 +27,6 @@ func (h *GitModHandler) Create(ctx *HandlerContext, mod *types.Mod) error {
 		URL:               mod.URL,
 		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
 		ShallowSubmodules: true,
-		Depth:             1,
 	})
 	if err != nil {
 		return fmt.Errorf("error while cloning: %v", err)
