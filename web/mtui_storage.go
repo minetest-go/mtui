@@ -32,7 +32,10 @@ func (a *Api) GetMTUIPrivInfo(w http.ResponseWriter, r *http.Request, claims *ty
 	}
 
 	info := map[string]*types.PrivInfo{}
-	Send(w, info, json.Unmarshal(entry.Value, &info))
+	if entry != nil {
+		err = json.Unmarshal(entry.Value, &info)
+	}
+	Send(w, info, err)
 }
 
 func (a *Api) GetMTUIChatcommandInfo(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
@@ -42,7 +45,10 @@ func (a *Api) GetMTUIChatcommandInfo(w http.ResponseWriter, r *http.Request, cla
 	}
 
 	info := map[string]*types.ChatcommandInfo{}
-	Send(w, info, json.Unmarshal(entry.Value, &info))
+	if entry != nil {
+		err = json.Unmarshal(entry.Value, &info)
+	}
+	Send(w, info, err)
 }
 
 func (a *Api) SetMtUIStorage(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
