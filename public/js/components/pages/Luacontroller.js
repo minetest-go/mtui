@@ -11,19 +11,17 @@ export default {
         "default-layout": DefaultLayout,
         "code-editor": CodeEditor
     },
-    mounted: function() {
-        get_luacontroller({
+    mounted: async function() {
+        const res = await get_luacontroller({
             pos: {
                 x: +this.x,
                 y: +this.y,
                 z: +this.z
             }
-        })
-        .then(res => {
-            if (res.success) {
-                this.code = res.code;
-            }
         });
+        if (res.success) {
+            this.code = res.code;
+        }
     },
     data: function() {
         return {
@@ -47,27 +45,25 @@ export default {
         };
     },
     methods: {
-        program: function() {
+        program: async function() {
             this.busy = true;
-            set_luacontroller({
+            const res = await set_luacontroller({
                 pos: {
                     x: +this.x,
                     y: +this.y,
                     z: +this.z
                 },
                 code: this.code
-            })
-            .then(res => {
-                if (res.success) {
-                    this.success = true;
-                }
-                this.busy = false;
             });
+            if (res.success) {
+                this.success = true;
+            }
+            this.busy = false;
         },
-        digiline_send: function() {
+        digiline_send: async function() {
             this.digiline_busy = true;
             this.digiline_success = false;
-            digiline_send({
+            const res = await digiline_send({
                 pos: {
                     x: +this.x,
                     y: +this.y,
@@ -75,11 +71,9 @@ export default {
                 },
                 channel: this.channel,
                 msg: this.message
-            })
-            .then(res => {
-                this.digiline_success = res.success;
-                this.digiline_busy = false;
             });
+            this.digiline_success = res.success;
+            this.digiline_busy = false;
         }
     },
     template: /*html*/`
