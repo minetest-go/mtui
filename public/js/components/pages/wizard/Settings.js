@@ -80,6 +80,7 @@ export default {
         This is just a subset of the available settings, see the <router-link to="/minetest-config">minetest config</router-link> page
         <setting-suggestion name="server_name" type="string" title="Server name" description="The name of the server"/>
         <setting-suggestion name="max_users" type="int" title="Max players" description="Maximum players allowed on the server" :default_value="15"/>
+        <setting-suggestion name="default_password" type="string" title="Default password" description="Set a default password if you want an invite-only server"/>
         <setting-suggestion name="server_announce" type="bool" title="Announce" description="Announce the server in the public serverlist"/>
     </div>
     `
