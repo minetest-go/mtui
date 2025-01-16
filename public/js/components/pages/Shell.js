@@ -1,6 +1,8 @@
 import { execute_chatcommand } from "../../api/chatcommand.js";
 import { has_priv, get_claims } from "../../service/login.js";
+
 import DefaultLayout from "../layouts/DefaultLayout.js";
+import ChatcommandList from "../ChatcommandList.js";
 import { START } from "../Breadcrumb.js";
 
 const store = Vue.reactive({
@@ -16,7 +18,8 @@ const store = Vue.reactive({
 export default {
     data: () => store,
     components: {
-		"default-layout": DefaultLayout
+		"default-layout": DefaultLayout,
+        "chatcommand-list": ChatcommandList
 	},
     methods: {
         has_priv: has_priv,
@@ -85,6 +88,7 @@ export default {
                 <pre class="w-100" style="height: 300px; background-color: grey;">{{message}}</pre>
             </div>
         </div>
+        <chatcommand-list v-on:selected="cmd => { command = cmd }"/>
     </default-layout>
     `
 };

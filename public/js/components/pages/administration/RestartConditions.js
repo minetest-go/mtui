@@ -1,6 +1,6 @@
 import DefaultLayout from "../../layouts/DefaultLayout.js";
 import { RESTART_CONDITIONS } from "../../Breadcrumb.js";
-import { get_uimod_storage, set_uimod_storage } from "../../../api/uimod_storage.js";
+import { get_uimod_storage, set_uimod_storage } from "../../../api/uimod.js";
 
 export default {
     components: {
