@@ -89,6 +89,8 @@ func Setup(a *app.App) error {
 
 	apir.HandleFunc("/uimod/storage/{key}", api.SecurePriv(types.PRIV_SERVER, api.GetMtUIStorage)).Methods(http.MethodGet)
 	apir.HandleFunc("/uimod/storage/{key}", api.SecurePriv(types.PRIV_SERVER, api.SetMtUIStorage)).Methods(http.MethodPost)
+	apir.HandleFunc("/uimod/priv_info", api.SecurePriv(types.PRIV_INTERACT, api.GetMTUIPrivInfo)).Methods(http.MethodGet)
+	apir.HandleFunc("/uimod/chatcommand_info", api.SecurePriv(types.PRIV_INTERACT, api.GetMTUIChatcommandInfo)).Methods(http.MethodGet)
 
 	apir.HandleFunc("/player/skin/{playername}", api.GetPlayerSkin).Methods(http.MethodGet)
 	apir.HandleFunc("/player/info/{playername}", api.SecurePriv(types.PRIV_INTERACT, api.GetPlayerInfo)).Methods(http.MethodGet)

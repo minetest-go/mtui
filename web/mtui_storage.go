@@ -1,6 +1,7 @@
 package web
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"mtui/types"
@@ -22,6 +23,26 @@ func (a *Api) GetMtUIStorage(w http.ResponseWriter, r *http.Request, claims *typ
 	} else {
 		SendText(w, string(entry.Value))
 	}
+}
+
+func (a *Api) GetMTUIPrivInfo(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	entry, err := a.app.DBContext.ModStorage.Get("mtui", []byte("priv_info"))
+	if err != nil {
+		SendError(w, 500, err)
+	}
+
+	info := map[string]*types.PrivInfo{}
+	Send(w, info, json.Unmarshal(entry.Value, &info))
+}
+
+func (a *Api) GetMTUIChatcommandInfo(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	entry, err := a.app.DBContext.ModStorage.Get("mtui", []byte("chatcommand_info"))
+	if err != nil {
+		SendError(w, 500, err)
+	}
+
+	info := map[string]*types.ChatcommandInfo{}
+	Send(w, info, json.Unmarshal(entry.Value, &info))
 }
 
 func (a *Api) SetMtUIStorage(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
