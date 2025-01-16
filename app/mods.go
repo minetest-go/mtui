@@ -42,7 +42,7 @@ func (a *App) CreateMTUIMod() (*types.Mod, error) {
 			ModType:    types.ModTypeMod,
 			SourceType: types.SourceTypeGIT,
 			URL:        "https://github.com/minetest-go/mtui_mod.git",
-			Branch:     "refs/heads/master",
+			Branch:     "master",
 		}
 		err = a.ModManager.Create(m)
 		if err != nil {
