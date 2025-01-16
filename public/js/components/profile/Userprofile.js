@@ -1,6 +1,7 @@
 import ChangePassword from './ChangePassword.js';
 import ATMDisplay from './ATMDisplay.js';
 import SkinPreview from '../SkinPreview.js';
+import PrivBadge from '../PrivBadge.js';
 
 import { has_priv, get_claims, is_logged_in } from "../../service/login.js";
 import { has_feature } from "../../service/features.js";
@@ -9,15 +10,13 @@ import { get_record } from '../../api/xban.js';
 import format_time from '../../util/format_time.js';
 import format_duration from '../../util/format_duration.js';
 import format_count from '../../util/format_count.js';
-import { execute_chatcommand } from "../../api/chatcommand.js";
 
 export default {
     props: ["username","show_token_link"],
     data: function() {
         return {
             playerinfo: null,
-            xban_record: null,
-            new_priv: ""
+            xban_record: null
         };
     },
     mounted: function() {
@@ -26,7 +25,8 @@ export default {
     components: {
         "change-password": ChangePassword,
         "atm-display": ATMDisplay,
-        "skin-preview": SkinPreview
+        "skin-preview": SkinPreview,
+        "priv-badge": PrivBadge
     },
     computed: {
         can_change_pw: function() {
@@ -34,6 +34,9 @@ export default {
         },
         is_moderator: function() {
             return has_priv("ban") || has_priv("server");
+        },
+        can_administer: function() {
+            return has_priv("privs");
         }
     },
     methods: {
@@ -52,28 +55,6 @@ export default {
             this.xban_record = null;
             if (this.is_moderator && this.has_feature("xban")) {
                 get_record(this.username).then(r => this.xban_record = r);
-            }
-        },
-        revoke_priv: function(priv) {
-            execute_chatcommand(get_claims().username, `revoke ${this.username} ${priv}`)
-            .then(() => this.update_playerinfo());
-        },
-        grant_priv: function() {
-            execute_chatcommand(get_claims().username, `grant ${this.username} ${this.new_priv}`)
-            .then(() => {
-                this.new_priv = "";
-                this.update_playerinfo();
-            });
-        },
-        getPrivBadgeClass: function(priv) {
-            if (priv == "server" || priv == "privs") {
-                return { "badge": true, "bg-danger": true };
-            } else if (priv == "ban" || priv == "kick") {
-                return { "badge": true, "bg-primary": true };
-            } else if (priv == "otp_enabled") {
-                return { "badge": true, "bg-success": true };
-            } else {
-                return { "badge": true, "bg-secondary": true };
             }
         }
     },
@@ -104,37 +85,15 @@ export default {
                     <div class="card-header">
                         <i class="fa-solid fa-award"></i>
                         Privileges
+                        <router-link :to="'/profile/' + username + '/priveditor'" class="btn btn-sm btn-primary float-end" v-if="can_administer">
+                            <i class="fa fa-edit"></i>
+                            Edit
+                        </router-link>
                     </div>
                     <div class="card-body">
-                        <table>
-                            <tr v-for="priv in playerinfo.privs">
-                                <td>
-                                    <span v-bind:class="getPrivBadgeClass(priv)">
-                                        {{ priv }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <a class="btn btn-sm btn-warning" v-if="has_priv('privs')" v-on:click="revoke_priv(priv)">
-                                        <i class="fa fa-times"></i>
-                                        Revoke
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr v-if="has_priv('privs')">
-                                <td>
-                                    <input type="text" class="form-control" v-model="new_priv"/>
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-success"
-                                        v-if="has_priv('privs')"
-                                        :disabled="new_priv == ''"
-                                        v-on:click="grant_priv">
-                                        <i class="fa fa-plus"></i>
-                                        Grant
-                                    </button>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="container">
+                            <priv-badge :priv="priv" v-for="priv in playerinfo.privs" class="m-1"/>
+                        </div>
                     </div>
                 </div>
             </div>

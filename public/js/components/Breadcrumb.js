@@ -31,6 +31,9 @@ export default {
 
 export const START = { name: "Start", icon: "home", link: "/" };
 export const PLAYER_SEARCH = { name: "Player search", icon: "magnifying-glass", link: "/playersearch" };
+export const PLAYER_INFO = name => {
+    return { name: `Player profile for ${name}`, icon: "user", link: `/profile/${name}` };
+};
 export const MAIL = { icon: "envelope", name: "Mail", link: "/mail" };
 export const MODERATION = { icon: "hammer", name: "Moderation" };
 export const SERVICES = { icon: "gears", name: "Services" };

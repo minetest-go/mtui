@@ -1,16 +1,12 @@
 import Userprofile from "../profile/Userprofile.js";
 import DefaultLayout from '../layouts/DefaultLayout.js';
-import { START, PLAYER_SEARCH } from '../Breadcrumb.js';
+import { START, PLAYER_SEARCH, PLAYER_INFO } from '../Breadcrumb.js';
 
 export default {
     props: ["name"],
 	data: function() {
         return {
-            breadcrumb: [START, PLAYER_SEARCH, {
-                name: `Player profile for ${this.name}`,
-                icon: "user",
-                link: `/profile/${this.name}`
-            }]
+            breadcrumb: [START, PLAYER_SEARCH, PLAYER_INFO(this.name)]
         };
     },
 	components: {

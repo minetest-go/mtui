@@ -23,6 +23,7 @@ import FileEditPage from './components/pages/filebrowser/FileEditPage.js';
 import Signup from './components/pages/Signup.js';
 import Help from './components/pages/Help.js';
 import ProfilerView from './components/pages/ProfilerView.js';
+import PrivEditor from './components/pages/PrivEditor.js';
 
 import EngineService from './components/pages/services/Engine.js';
 import MatterbridgeService from './components/pages/services/Matterbridge.js';
@@ -76,6 +77,9 @@ export default [{
 	path: "/online-players", component: OnlinePlayers
 }, {
 	path: "/profile/:name", component: PlayerInfo, props: true,
+}, {
+	path: "/profile/:name/priveditor", component: PrivEditor, props: true,
+	meta: { requiredPriv: "privs" }
 }, {
 	path: "/token", component: AccessToken
 }, {
