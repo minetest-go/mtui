@@ -105,9 +105,7 @@ func (h *GitModHandler) Update(ctx *HandlerContext, mod *types.Mod, version stri
 	}
 
 	err = w.Pull(&git.PullOptions{
-		RemoteName:        "origin",
-		Depth:             1,
-		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
+		RemoteName: "origin",
 	})
 	if err != nil && err != git.NoErrAlreadyUpToDate {
 		return fmt.Errorf("pull error: %v", err)
