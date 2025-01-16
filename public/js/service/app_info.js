@@ -5,9 +5,6 @@ const store = Vue.reactive({
 	servername: ""
 });
 
-export const fetch_info = () => {
-    get_appinfo().then(i => Object.assign(store, i));
-};
-
+export const fetch_info = () => get_appinfo().then(i => Object.assign(store, i));
 export const get_version = () => store.version;
 export const get_servername = () => store.servername;
