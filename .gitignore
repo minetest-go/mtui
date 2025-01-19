@@ -1,5 +1,4 @@
 mtui
 dist
-auth.sqlite*
 docker-compose.override.yml
-cookies
+cache

@@ -34,13 +34,11 @@ services:
    - "./minetest.conf:/world/minetest.conf"
    - "./:/app"
    - "world_dir:/world"
-   - "go_dir:/go"
-   - "go_cache:/.cache"
+   - "./cache/go_dir:/go"
+   - "./cache/go_cache:/.cache"
    - "/var/run/docker.sock:/var/run/docker.sock:ro"
   working_dir: /app
   command: ["go", "run", "."]
 
 volumes:
-  go_cache: {}
-  go_dir: {}
   world_dir: {}
