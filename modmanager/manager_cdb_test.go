@@ -20,6 +20,7 @@ func TestLatestCDBRelease(t *testing.T) {
 		Author:     "BuckarooBanzay",
 	}
 	assert.NoError(t, mm.Create(mod))
+	assert.NoError(t, app.Repos.ModRepo.Create(mod))
 	assert.True(t, mod.Version != "")
 
 	mods, err := app.Repos.ModRepo.GetAll()
