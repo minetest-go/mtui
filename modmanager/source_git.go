@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"mtui/types"
 	"os"
-
-	"github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/config"
-	"github.com/go-git/go-git/v5/plumbing"
-	"github.com/go-git/go-git/v5/storage/memory"
+	"os/exec"
+	"strings"
 )
+
+func execGit(workdir string, params []string) ([]byte, error) {
+	cmd := exec.Command("git", params...)
+	cmd.Dir = workdir
+	return cmd.Output()
+}
 
 type GitModHandler struct{}
 
@@ -22,70 +25,36 @@ func (h *GitModHandler) Create(ctx *HandlerContext, mod *types.Mod) error {
 		return fmt.Errorf("error in initial cleanup: %v", err)
 	}
 
-	// clone to target dir
-	r, err := git.PlainClone(dir, false, &git.CloneOptions{
-		URL:               mod.URL,
-		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
-		ShallowSubmodules: true,
-	})
+	// clone repo with default branch
+	result, err := execGit("/", []string{"clone", mod.URL, dir})
 	if err != nil {
-		return fmt.Errorf("error while cloning: %v", err)
+		return fmt.Errorf("clone error: %v, '%s'", err, result)
 	}
 
-	w, err := r.Worktree()
-	if err != nil {
-		return fmt.Errorf("error switching to worktree: %v", err)
-	}
-
-	if mod.Branch != "" {
-		// check out branch
-		err = w.Checkout(&git.CheckoutOptions{
-			Branch: plumbing.NewBranchReferenceName(mod.Branch),
-		})
-
-		if err == nil && mod.Version != "" {
-			// checkout specified hash
-			err = w.Reset(&git.ResetOptions{
-				Commit: plumbing.NewHash(mod.Version),
-				Mode:   git.HardReset,
-			})
-		}
-	} else {
-		// default to master or main
-		rem := git.NewRemote(memory.NewStorage(), &config.RemoteConfig{
-			Name: "origin",
-			URLs: []string{mod.URL},
-		})
-		refs, err := rem.List(&git.ListOptions{})
+	if mod.Branch == "" {
+		// extract default branch
+		result, err = execGit(dir, []string{"rev-parse", "--abbrev-re", "HEAD"})
 		if err != nil {
-			return fmt.Errorf("git error: %v", err)
+			return fmt.Errorf("rev-parse branch error: %v, '%s'", err, result)
 		}
-		for _, ref := range refs {
-			if ref.Name() == plumbing.Master {
-				mod.Branch = "master"
-			} else if ref.Name() == plumbing.Main {
-				mod.Branch = "main"
-			}
-		}
+		mod.Branch = strings.TrimSpace(string(result))
+		mod.Branch = strings.ReplaceAll(mod.Branch, "\n", "")
 	}
 
 	if mod.Version != "" {
-		// check out specified version (no tracking branch)
-		err = w.Checkout(&git.CheckoutOptions{
-			Hash: plumbing.NewHash(mod.Version),
-		})
+		result, err = execGit(dir, []string{"checkout", mod.Version})
+		if err != nil {
+			return fmt.Errorf("checkout error: %v, '%s'", err, result)
+		}
 	}
 
+	result, err = execGit(dir, []string{"rev-parse", "HEAD"})
 	if err != nil {
-		return fmt.Errorf("error in checkout: %v", err)
+		return fmt.Errorf("rev-parse error: %v, '%s'", err, result)
 	}
 
-	ref, err := r.Head()
-	if err != nil {
-		return fmt.Errorf("error switching head: %v", err)
-	}
-
-	mod.Version = ref.Hash().String()
+	mod.Version = strings.TrimSpace(string(result))
+	mod.Version = strings.ReplaceAll(mod.Version, "\n", "")
 	mod.LatestVersion = mod.Version
 
 	return ctx.Repo.Create(mod)
@@ -94,29 +63,14 @@ func (h *GitModHandler) Create(ctx *HandlerContext, mod *types.Mod) error {
 func (h *GitModHandler) Update(ctx *HandlerContext, mod *types.Mod, version string) error {
 	dir := getDir(ctx.WorldDir, mod)
 
-	r, err := git.PlainOpen(dir)
+	result, err := execGit(dir, []string{"fetch", "--recurse-submodules"})
 	if err != nil {
-		return fmt.Errorf("open error: %v", err)
+		return fmt.Errorf("fetch error: %v, '%s'", err, result)
 	}
 
-	w, err := r.Worktree()
+	result, err = execGit(dir, []string{"checkout", version, "--recurse-submodules"})
 	if err != nil {
-		return fmt.Errorf("worktree open error: %v", err)
-	}
-
-	err = w.Pull(&git.PullOptions{
-		RemoteName: "origin",
-	})
-	if err != nil && err != git.NoErrAlreadyUpToDate {
-		return fmt.Errorf("pull error: %v", err)
-	}
-
-	err = w.Checkout(&git.CheckoutOptions{
-		Hash:  plumbing.NewHash(version),
-		Force: true,
-	})
-	if err != nil {
-		return fmt.Errorf("checkout error: %v", err)
+		return fmt.Errorf("checkout error: %v, '%s'", err, result)
 	}
 
 	mod.Version = version
@@ -136,21 +90,23 @@ func (h *GitModHandler) Remove(ctx *HandlerContext, mod *types.Mod) error {
 }
 
 func (h *GitModHandler) CheckUpdate(ctx *HandlerContext, mod *types.Mod) (bool, error) {
-	rem := git.NewRemote(memory.NewStorage(), &config.RemoteConfig{
-		Name: "origin",
-		URLs: []string{mod.URL},
-	})
+	dir := getDir(ctx.WorldDir, mod)
 
-	refs, err := rem.List(&git.ListOptions{})
+	result, err := execGit(dir, []string{"ls-remote", mod.URL, mod.Branch})
 	if err != nil {
-		return false, fmt.Errorf("git error: %v", err)
-	}
-	for _, ref := range refs {
-		if ref.Name() == plumbing.NewBranchReferenceName(mod.Branch) {
-			mod.LatestVersion = ref.Hash().String()
-			return true, nil
-		}
+		return false, fmt.Errorf("ls-remote error: %v, '%s'", err, result)
 	}
 
-	return false, nil
+	str := strings.ReplaceAll(string(result), "\n", "")
+	str = strings.TrimSpace(str)
+	parts := strings.Split(str, "\t")
+	if len(parts) != 2 {
+		return false, fmt.Errorf("can't parse result: '%s'", str)
+	}
+	if len(parts[0]) != 40 {
+		return false, fmt.Errorf("can't parse hash: '%s'", parts[0])
+	}
+
+	mod.LatestVersion = parts[0]
+	return mod.LatestVersion != mod.Version, nil
 }

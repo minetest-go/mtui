@@ -84,3 +84,25 @@ func TestCheckoutHash(t *testing.T) {
 	assert.Equal(t, 0, len(mods))
 
 }
+
+func TestCheckoutGame(t *testing.T) {
+	//t.Skip() // slow test, enable on demand
+
+	app := CreateTestApp(t)
+	mm := modmanager.New(app.WorldDir, app.Repos.ModRepo)
+
+	// checkout master branch on specified commit
+	mod := &types.Mod{
+		Name:       "game",
+		ModType:    types.ModTypeGame,
+		SourceType: types.SourceTypeGIT,
+		URL:        "https://github.com/ubc-minetest-classroom/minetest_classroom",
+		Branch:     "main",
+	}
+	assert.NoError(t, mm.Create(mod))
+	assert.NotEqual(t, "", mod.ID)
+	assert.True(t, mod.Version != "")
+
+	// remove
+	assert.NoError(t, mm.Remove(mod))
+}

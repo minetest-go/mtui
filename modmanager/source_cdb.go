@@ -194,8 +194,7 @@ func (h *ContentDBModHandler) CheckUpdate(ctx *HandlerContext, mod *types.Mod) (
 	v := updates[fmt.Sprintf("%s/%s", mod.Author, mod.Name)]
 	if v > 0 {
 		mod.LatestVersion = fmt.Sprintf("%d", v)
-		return true, nil
 	}
 
-	return false, nil
+	return mod.LatestVersion != mod.Version, nil
 }

@@ -19,6 +19,12 @@ func (a *Api) GetMods(w http.ResponseWriter, r *http.Request, claims *types.Clai
 	Send(w, mods, err)
 }
 
+func (a *Api) GetMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	vars := mux.Vars(r)
+	mod, err := a.app.Repos.ModRepo.GetByID(vars["id"])
+	Send(w, mod, err)
+}
+
 func (a *Api) UpdateModVersion(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	vars := mux.Vars(r)
 	id := vars["id"]
