@@ -16,8 +16,8 @@ type HandlerContext struct {
 }
 
 type SourceTypeHandler interface {
-	Create(ctx *HandlerContext, mod *types.Mod) error
-	Update(ctx *HandlerContext, mod *types.Mod, version string) error
-	Remove(ctx *HandlerContext, mod *types.Mod) error
-	CheckUpdate(ctx *HandlerContext, mod *types.Mod) (bool, error)
+	Create(world_dir string, mod *types.Mod) error
+	Update(world_dir string, mod *types.Mod, version string) error
+	Remove(world_dir string, mod *types.Mod) error
+	CheckUpdate(world_dir string, mod *types.Mod) (bool, error)
 }

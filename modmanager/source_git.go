@@ -16,8 +16,8 @@ func execGit(workdir string, params []string) ([]byte, error) {
 
 type GitModHandler struct{}
 
-func (h *GitModHandler) Create(ctx *HandlerContext, mod *types.Mod) error {
-	dir := getDir(ctx.WorldDir, mod)
+func (h *GitModHandler) Create(world_dir string, mod *types.Mod) error {
+	dir := getDir(world_dir, mod)
 
 	// prune dir before re-installing
 	err := os.RemoveAll(dir)
@@ -57,11 +57,11 @@ func (h *GitModHandler) Create(ctx *HandlerContext, mod *types.Mod) error {
 	mod.Version = strings.ReplaceAll(mod.Version, "\n", "")
 	mod.LatestVersion = mod.Version
 
-	return ctx.Repo.Create(mod)
+	return nil
 }
 
-func (h *GitModHandler) Update(ctx *HandlerContext, mod *types.Mod, version string) error {
-	dir := getDir(ctx.WorldDir, mod)
+func (h *GitModHandler) Update(world_dir string, mod *types.Mod, version string) error {
+	dir := getDir(world_dir, mod)
 
 	result, err := execGit(dir, []string{"fetch", "--recurse-submodules"})
 	if err != nil {
@@ -74,24 +74,19 @@ func (h *GitModHandler) Update(ctx *HandlerContext, mod *types.Mod, version stri
 	}
 
 	mod.Version = version
-	return ctx.Repo.Update(mod)
+	return nil
 
 }
 
-func (h *GitModHandler) Remove(ctx *HandlerContext, mod *types.Mod) error {
-	dir := getDir(ctx.WorldDir, mod)
-
-	err := os.RemoveAll(dir)
-	if err != nil {
-		return err
-	}
-
-	return ctx.Repo.Delete(mod.ID)
+func (h *GitModHandler) Remove(world_dir string, mod *types.Mod) error {
+	dir := getDir(world_dir, mod)
+	return os.RemoveAll(dir)
 }
 
-func (h *GitModHandler) CheckUpdate(ctx *HandlerContext, mod *types.Mod) (bool, error) {
-	dir := getDir(ctx.WorldDir, mod)
+func (h *GitModHandler) CheckUpdate(world_dir string, mod *types.Mod) (bool, error) {
+	dir := getDir(world_dir, mod)
 
+	previous_version := mod.LatestVersion
 	result, err := execGit(dir, []string{"ls-remote", mod.URL, mod.Branch})
 	if err != nil {
 		return false, fmt.Errorf("ls-remote error: %v, '%s'", err, result)
@@ -108,5 +103,5 @@ func (h *GitModHandler) CheckUpdate(ctx *HandlerContext, mod *types.Mod) (bool, 
 	}
 
 	mod.LatestVersion = parts[0]
-	return mod.LatestVersion != mod.Version, nil
+	return mod.LatestVersion != previous_version, nil
 }

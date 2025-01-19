@@ -17,8 +17,8 @@ var cached_cli = cdb.NewCachedClient(cli, time.Hour)
 
 type ContentDBModHandler struct{}
 
-func (h *ContentDBModHandler) installMod(ctx *HandlerContext, mod *types.Mod, release *cdb.PackageRelease) error {
-	dir := getDir(ctx.WorldDir, mod)
+func (h *ContentDBModHandler) installMod(world_dir string, mod *types.Mod, release *cdb.PackageRelease) error {
+	dir := getDir(world_dir, mod)
 
 	// download release
 	z, err := cli.DownloadZip(release)
@@ -100,7 +100,7 @@ func (h *ContentDBModHandler) installMod(ctx *HandlerContext, mod *types.Mod, re
 	return nil
 }
 
-func (h *ContentDBModHandler) getLatestRelease(_ *HandlerContext, mod *types.Mod) (*cdb.PackageRelease, error) {
+func (h *ContentDBModHandler) getLatestRelease(mod *types.Mod) (*cdb.PackageRelease, error) {
 	releases, err := cli.GetReleases(mod.Author, mod.Name)
 	if err != nil {
 		return nil, fmt.Errorf("could not fetch releases: %v", err)
@@ -111,7 +111,7 @@ func (h *ContentDBModHandler) getLatestRelease(_ *HandlerContext, mod *types.Mod
 	return releases[0], nil
 }
 
-func (h *ContentDBModHandler) Create(ctx *HandlerContext, mod *types.Mod) error {
+func (h *ContentDBModHandler) Create(world_dir string, mod *types.Mod) error {
 	pkg, err := cli.GetDetails(mod.Author, mod.Name)
 	if err != nil {
 		return fmt.Errorf("could not fetch details: %v", err)
@@ -123,7 +123,7 @@ func (h *ContentDBModHandler) Create(ctx *HandlerContext, mod *types.Mod) error 
 	var release *cdb.PackageRelease
 	if mod.Version == "" {
 		// no version specified, fetch latest
-		release, err = h.getLatestRelease(ctx, mod)
+		release, err = h.getLatestRelease(mod)
 		if err != nil {
 			return fmt.Errorf("could not fetch latest release: %v", err)
 		}
@@ -143,16 +143,16 @@ func (h *ContentDBModHandler) Create(ctx *HandlerContext, mod *types.Mod) error 
 		}
 	}
 
-	err = h.installMod(ctx, mod, release)
+	err = h.installMod(world_dir, mod, release)
 	if err != nil {
 		return fmt.Errorf("install error: %v", err)
 	}
 
 	mod.LatestVersion = mod.Version
-	return ctx.Repo.Create(mod)
+	return nil
 }
 
-func (h *ContentDBModHandler) Update(ctx *HandlerContext, mod *types.Mod, version string) error {
+func (h *ContentDBModHandler) Update(world_dir string, mod *types.Mod, version string) error {
 
 	release_id, err := strconv.Atoi(version)
 	if err != nil {
@@ -164,28 +164,23 @@ func (h *ContentDBModHandler) Update(ctx *HandlerContext, mod *types.Mod, versio
 		return fmt.Errorf("could not get release %d: %v", release_id, err)
 	}
 
-	err = h.installMod(ctx, mod, release)
+	err = h.installMod(world_dir, mod, release)
 	if err != nil {
 		return fmt.Errorf("could not update mod: %v", err)
 	}
 
 	mod.Version = fmt.Sprintf("%d", release.ID)
-	return ctx.Repo.Update(mod)
+	return nil
 }
 
-func (h *ContentDBModHandler) Remove(ctx *HandlerContext, mod *types.Mod) error {
-	dir := getDir(ctx.WorldDir, mod)
+func (h *ContentDBModHandler) Remove(world_dir string, mod *types.Mod) error {
+	dir := getDir(world_dir, mod)
 
 	// remove dir
-	err := os.RemoveAll(dir)
-	if err != nil {
-		return fmt.Errorf("could not remove dir '%s': %v", dir, err)
-	}
-
-	return ctx.Repo.Delete(mod.ID)
+	return os.RemoveAll(dir)
 }
 
-func (h *ContentDBModHandler) CheckUpdate(ctx *HandlerContext, mod *types.Mod) (bool, error) {
+func (h *ContentDBModHandler) CheckUpdate(world_dir string, mod *types.Mod) (bool, error) {
 	updates, err := cached_cli.GetUpdates()
 	if err != nil {
 		return false, fmt.Errorf("could not get updates: %v", err)
@@ -194,7 +189,8 @@ func (h *ContentDBModHandler) CheckUpdate(ctx *HandlerContext, mod *types.Mod) (
 	v := updates[fmt.Sprintf("%s/%s", mod.Author, mod.Name)]
 	if v > 0 {
 		mod.LatestVersion = fmt.Sprintf("%d", v)
+		return true, nil
 	}
 
-	return mod.LatestVersion != mod.Version, nil
+	return false, nil
 }

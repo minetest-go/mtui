@@ -5,43 +5,32 @@ import (
 	"mtui/types"
 )
 
+var modHandlers = map[types.SourceType]SourceTypeHandler{
+	types.SourceTypeGIT: &GitModHandler{},
+	types.SourceTypeCDB: &ContentDBModHandler{},
+}
+
 type ModManager struct {
-	world_dir      string
-	repo           *db.ModRepository
-	handlercontext *HandlerContext
-	handlers       map[types.SourceType]SourceTypeHandler
+	world_dir string
 }
 
 func New(world_dir string, repo *db.ModRepository) *ModManager {
 	return &ModManager{
 		world_dir: world_dir,
-		repo:      repo,
-		handlercontext: &HandlerContext{
-			WorldDir: world_dir,
-			Repo:     repo,
-		},
-		handlers: map[types.SourceType]SourceTypeHandler{
-			types.SourceTypeGIT: &GitModHandler{},
-			types.SourceTypeCDB: &ContentDBModHandler{},
-		},
 	}
 }
 
-func (m *ModManager) Mod(id string) (*types.Mod, error) {
-	return m.repo.GetByID(id)
-}
-
 func (m *ModManager) Create(mod *types.Mod) error {
-	handler := m.handlers[mod.SourceType]
-	return handler.Create(m.handlercontext, mod)
+	handler := modHandlers[mod.SourceType]
+	return handler.Create(m.world_dir, mod)
 }
 
 func (m *ModManager) Update(mod *types.Mod, version string) error {
-	handler := m.handlers[mod.SourceType]
-	return handler.Update(m.handlercontext, mod, version)
+	handler := modHandlers[mod.SourceType]
+	return handler.Update(m.world_dir, mod, version)
 }
 
 func (m *ModManager) Remove(mod *types.Mod) error {
-	handler := m.handlers[mod.SourceType]
-	return handler.Remove(m.handlercontext, mod)
+	handler := modHandlers[mod.SourceType]
+	return handler.Remove(m.world_dir, mod)
 }

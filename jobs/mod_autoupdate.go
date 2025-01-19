@@ -3,6 +3,7 @@ package jobs
 import (
 	"fmt"
 	"mtui/app"
+	"mtui/modmanager"
 	"mtui/types"
 	"mtui/types/command"
 	"time"
@@ -11,24 +12,21 @@ import (
 )
 
 func checkAllMods(a *app.App) error {
-	err := a.ModManager.CheckUpdates()
+	mods, err := a.Repos.ModRepo.GetAll()
 	if err != nil {
 		return err
 	}
 
-	mods, err := a.Repos.ModRepo.GetAll()
+	changed_mods, err := modmanager.CheckUpdates(a.WorldDir, mods)
 	if err != nil {
 		return err
 	}
 
 	mods_changed := false
 
-	for _, mod := range mods {
-		if !mod.AutoUpdate {
-			continue
-		}
+	for _, mod := range changed_mods {
 
-		if mod.Version != mod.LatestVersion {
+		if mod.Version != mod.LatestVersion && mod.AutoUpdate {
 			err = a.ModManager.Update(mod, mod.LatestVersion)
 			if err != nil {
 				logrus.WithError(err).WithFields(logrus.Fields{
@@ -64,6 +62,11 @@ func checkAllMods(a *app.App) error {
 			}
 
 			mods_changed = true
+		}
+
+		err = a.Repos.ModRepo.Update(mod)
+		if err != nil {
+			return err
 		}
 	}
 

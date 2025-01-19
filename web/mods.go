@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"mtui/minetestconfig/depanalyzer"
+	"mtui/modmanager"
 	"mtui/types"
 	"mtui/types/command"
 	"net/http"
@@ -30,7 +31,7 @@ func (a *Api) UpdateModVersion(w http.ResponseWriter, r *http.Request, claims *t
 	id := vars["id"]
 	version := vars["version"]
 
-	m, err := a.app.ModManager.Mod(id)
+	m, err := a.app.Repos.ModRepo.GetByID(id)
 	if err != nil {
 		SendError(w, 500, err)
 		return
@@ -134,7 +135,7 @@ func (a *Api) UpdateMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	m, err := a.app.ModManager.Mod(id)
+	m, err := a.app.Repos.ModRepo.GetByID(id)
 	if err != nil {
 		SendError(w, 500, err)
 		return
@@ -164,7 +165,7 @@ func (a *Api) DeleteMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	m, err := a.app.ModManager.Mod(id)
+	m, err := a.app.Repos.ModRepo.GetByID(id)
 	if err != nil {
 		SendError(w, 500, err)
 		return
@@ -195,8 +196,14 @@ func (a *Api) DeleteMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 }
 
 func (a *Api) ModsCheckUpdates(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	err := a.app.ModManager.CheckUpdates()
-	Send(w, true, err)
+	mods, err := a.app.Repos.ModRepo.GetAll()
+	if err != nil {
+		SendError(w, 500, err)
+		return
+	}
+
+	updated_mods, err := modmanager.CheckUpdates(a.app.WorldDir, mods)
+	Send(w, updated_mods, err)
 }
 
 func (a *Api) ModsValidate(w http.ResponseWriter, r *http.Request, claims *types.Claims) {

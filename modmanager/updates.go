@@ -2,27 +2,22 @@ package modmanager
 
 import (
 	"fmt"
+	"mtui/types"
 )
 
-func (m *ModManager) CheckUpdates() error {
-	mods, err := m.repo.GetAll()
-	if err != nil {
-		return fmt.Errorf("get all mods failed: %v", err)
-	}
+func CheckUpdates(world_dir string, mods []*types.Mod) ([]*types.Mod, error) {
+	updated_mods := []*types.Mod{}
 
 	for _, mod := range mods {
-		h := m.handlers[mod.SourceType]
-		updated, err := h.CheckUpdate(m.handlercontext, mod)
+		h := modHandlers[mod.SourceType]
+		updated, err := h.CheckUpdate(world_dir, mod)
 		if err != nil {
-			return fmt.Errorf("update check failed for mod '%s': %v", mod.Name, err)
+			return nil, fmt.Errorf("update check failed for mod '%s': %v", mod.Name, err)
 		}
 		if updated {
-			err = m.repo.Update(mod)
-			if err != nil {
-				return fmt.Errorf("failed to update mod-data for '%s': %v", mod.Name, err)
-			}
+			updated_mods = append(updated_mods, mod)
 		}
 	}
 
-	return nil
+	return updated_mods, nil
 }

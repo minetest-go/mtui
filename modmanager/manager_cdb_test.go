@@ -27,8 +27,9 @@ func TestLatestCDBRelease(t *testing.T) {
 	assert.NotNil(t, mods)
 	assert.Equal(t, 1, len(mods))
 
-	err = mm.CheckUpdates()
+	changed_mods, err := modmanager.CheckUpdates(app.WorldDir, mods)
 	assert.NoError(t, err)
+	assert.NotNil(t, changed_mods)
 
 	mod, err = app.Repos.ModRepo.GetByID(mod.ID)
 	assert.NoError(t, err)

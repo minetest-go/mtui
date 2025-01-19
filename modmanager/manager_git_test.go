@@ -65,8 +65,9 @@ func TestCheckoutHash(t *testing.T) {
 	assert.Equal(t, 1, len(mods))
 
 	// check remote status
-	err = mm.CheckUpdates()
+	changed, err := modmanager.CheckUpdates(app.WorldDir, mods)
 	assert.NoError(t, err)
+	assert.NotNil(t, changed)
 
 	mod, err = app.Repos.ModRepo.GetByID(mod.ID)
 	assert.NoError(t, err)
@@ -86,7 +87,7 @@ func TestCheckoutHash(t *testing.T) {
 }
 
 func TestCheckoutGame(t *testing.T) {
-	//t.Skip() // slow test, enable on demand
+	t.Skip() // slow test, enable on demand
 
 	app := CreateTestApp(t)
 	mm := modmanager.New(app.WorldDir, app.Repos.ModRepo)
