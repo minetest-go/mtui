@@ -1,7 +1,6 @@
 package modmanager
 
 import (
-	"mtui/db"
 	"mtui/types"
 )
 
@@ -14,7 +13,7 @@ type ModManager struct {
 	world_dir string
 }
 
-func New(world_dir string, repo *db.ModRepository) *ModManager {
+func New(world_dir string) *ModManager {
 	return &ModManager{
 		world_dir: world_dir,
 	}

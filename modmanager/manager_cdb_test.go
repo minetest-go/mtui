@@ -10,7 +10,7 @@ import (
 
 func TestLatestCDBRelease(t *testing.T) {
 	app := CreateTestApp(t)
-	mm := modmanager.New(app.WorldDir, app.Repos.ModRepo)
+	mm := modmanager.New(app.WorldDir)
 
 	// checkout master
 	mod := &types.Mod{
