@@ -22,9 +22,8 @@ type ModStatus string
 const (
 	ModStatusCreated    ModStatus = "created"
 	ModStatusProcessing ModStatus = "processing"
-	ModStatusnstalled   ModStatus = "installed"
+	ModStatusInstalled  ModStatus = "installed"
 	ModStatusError      ModStatus = "error"
-	ModStatusRemoving   ModStatus = "removing"
 )
 
 type Mod struct {
