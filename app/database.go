@@ -67,7 +67,7 @@ func (a *App) AttachDatabase() error {
 
 	a.Repos = db.NewRepositories(g)
 	a.Mail = mail.New(dbctx)
-	a.ModManager = modmanager.New(a.WorldDir)
+	a.ModManager = modmanager.New(a.WorldDir, a.Repos.ModRepo)
 
 	return nil
 }

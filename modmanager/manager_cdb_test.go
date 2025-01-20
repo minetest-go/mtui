@@ -10,7 +10,7 @@ import (
 
 func TestLatestCDBRelease(t *testing.T) {
 	app := CreateTestApp(t)
-	mm := modmanager.New(app.WorldDir)
+	mm := modmanager.New(app.WorldDir, app.Repos.ModRepo)
 
 	// checkout master
 	mod := &types.Mod{
@@ -20,7 +20,6 @@ func TestLatestCDBRelease(t *testing.T) {
 		Author:     "BuckarooBanzay",
 	}
 	assert.NoError(t, mm.Create(mod))
-	assert.NoError(t, app.Repos.ModRepo.Create(mod))
 	assert.True(t, mod.Version != "")
 
 	mods, err := app.Repos.ModRepo.GetAll()
@@ -28,9 +27,8 @@ func TestLatestCDBRelease(t *testing.T) {
 	assert.NotNil(t, mods)
 	assert.Equal(t, 1, len(mods))
 
-	changed_mods, err := modmanager.CheckUpdates(app.WorldDir, mods)
+	err = mm.CheckUpdates()
 	assert.NoError(t, err)
-	assert.NotNil(t, changed_mods)
 
 	mod, err = app.Repos.ModRepo.GetByID(mod.ID)
 	assert.NoError(t, err)

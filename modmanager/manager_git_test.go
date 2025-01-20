@@ -10,7 +10,7 @@ import (
 
 func TestCheckoutBranch(t *testing.T) {
 	app := CreateTestApp(t)
-	mm := modmanager.New(app.WorldDir)
+	mm := modmanager.New(app.WorldDir, app.Repos.ModRepo)
 
 	// checkout master
 	mod := &types.Mod{
@@ -21,7 +21,6 @@ func TestCheckoutBranch(t *testing.T) {
 		Branch:     "master",
 	}
 	assert.NoError(t, mm.Create(mod))
-	assert.NoError(t, app.Repos.ModRepo.Create(mod))
 	assert.True(t, mod.Version != "")
 
 	mods, err := app.Repos.ModRepo.GetAll()
@@ -32,7 +31,7 @@ func TestCheckoutBranch(t *testing.T) {
 
 func TestCheckoutHash(t *testing.T) {
 	app := CreateTestApp(t)
-	mm := modmanager.New(app.WorldDir)
+	mm := modmanager.New(app.WorldDir, app.Repos.ModRepo)
 
 	// checkout master branch on specified commit
 	mod := &types.Mod{
@@ -44,7 +43,6 @@ func TestCheckoutHash(t *testing.T) {
 		Version:    "fe34e3f3cd3e066ba0be76f9df46c11e66411496",
 	}
 	assert.NoError(t, mm.Create(mod))
-	assert.NoError(t, app.Repos.ModRepo.Create(mod))
 	assert.NotEqual(t, "", mod.ID)
 	assert.Equal(t, "fe34e3f3cd3e066ba0be76f9df46c11e66411496", mod.Version)
 
@@ -67,12 +65,8 @@ func TestCheckoutHash(t *testing.T) {
 	assert.Equal(t, 1, len(mods))
 
 	// check remote status
-	changed, err := modmanager.CheckUpdates(app.WorldDir, mods)
+	err = mm.CheckUpdates()
 	assert.NoError(t, err)
-	assert.NotNil(t, changed)
-	for _, changed_mod := range changed {
-		assert.NoError(t, app.Repos.ModRepo.Update(changed_mod))
-	}
 
 	mod, err = app.Repos.ModRepo.GetByID(mod.ID)
 	assert.NoError(t, err)
@@ -84,7 +78,6 @@ func TestCheckoutHash(t *testing.T) {
 
 	// remove
 	assert.NoError(t, mm.Remove(mod))
-	assert.NoError(t, app.Repos.ModRepo.Delete(mod.ID))
 	mods, err = app.Repos.ModRepo.GetAll()
 	assert.NoError(t, err)
 	assert.NotNil(t, mods)
@@ -96,7 +89,7 @@ func TestCheckoutGame(t *testing.T) {
 	t.Skip() // slow test, enable on demand
 
 	app := CreateTestApp(t)
-	mm := modmanager.New(app.WorldDir)
+	mm := modmanager.New(app.WorldDir, app.Repos.ModRepo)
 
 	// checkout master branch on specified commit
 	mod := &types.Mod{

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"mtui/minetestconfig/depanalyzer"
-	"mtui/modmanager"
 	"mtui/types"
 	"mtui/types/command"
 	"net/http"
@@ -196,14 +195,7 @@ func (a *Api) DeleteMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 }
 
 func (a *Api) ModsCheckUpdates(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	mods, err := a.app.Repos.ModRepo.GetAll()
-	if err != nil {
-		SendError(w, 500, err)
-		return
-	}
-
-	updated_mods, err := modmanager.CheckUpdates(a.app.WorldDir, mods)
-	Send(w, updated_mods, err)
+	Send(w, true, a.app.ModManager.CheckUpdates())
 }
 
 func (a *Api) ModsValidate(w http.ResponseWriter, r *http.Request, claims *types.Claims) {

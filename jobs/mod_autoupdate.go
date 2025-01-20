@@ -3,7 +3,6 @@ package jobs
 import (
 	"fmt"
 	"mtui/app"
-	"mtui/modmanager"
 	"mtui/types"
 	"mtui/types/command"
 	"time"
@@ -12,19 +11,19 @@ import (
 )
 
 func checkAllMods(a *app.App) error {
-	mods, err := a.Repos.ModRepo.GetAll()
+	err := a.ModManager.CheckUpdates()
 	if err != nil {
-		return err
+		return fmt.Errorf("update check error: %v", err)
 	}
 
-	changed_mods, err := modmanager.CheckUpdates(a.WorldDir, mods)
+	mods, err := a.Repos.ModRepo.GetAll()
 	if err != nil {
-		return err
+		return fmt.Errorf("error fetching mods: %v", err)
 	}
 
 	mods_changed := false
 
-	for _, mod := range changed_mods {
+	for _, mod := range mods {
 
 		if mod.Version != mod.LatestVersion && mod.AutoUpdate {
 			err = a.ModManager.Update(mod, mod.LatestVersion)
@@ -62,11 +61,6 @@ func checkAllMods(a *app.App) error {
 			}
 
 			mods_changed = true
-		}
-
-		err = a.Repos.ModRepo.Update(mod)
-		if err != nil {
-			return err
 		}
 	}
 
