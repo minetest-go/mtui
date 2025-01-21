@@ -30,6 +30,10 @@ func (r *ModRepository) GetByID(id string) (*types.Mod, error) {
 	return FindSingle[types.Mod](r.g.Where(types.Mod{ID: id}))
 }
 
+func (r *ModRepository) GetByStatus(status types.ModStatus) ([]*types.Mod, error) {
+	return FindMulti[types.Mod](r.g.Where(types.Mod{Status: status}))
+}
+
 func (r *ModRepository) Update(m *types.Mod) error {
 	return r.g.Model(m).Select("*").Updates(m).Error
 }

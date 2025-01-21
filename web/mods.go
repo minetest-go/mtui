@@ -19,12 +19,18 @@ func (a *Api) GetMods(w http.ResponseWriter, r *http.Request, claims *types.Clai
 	Send(w, mods, err)
 }
 
+func (a *Api) GetMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	vars := mux.Vars(r)
+	mod, err := a.app.Repos.ModRepo.GetByID(vars["id"])
+	Send(w, mod, err)
+}
+
 func (a *Api) UpdateModVersion(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 	version := vars["version"]
 
-	m, err := a.app.ModManager.Mod(id)
+	m, err := a.app.Repos.ModRepo.GetByID(id)
 	if err != nil {
 		SendError(w, 500, err)
 		return
@@ -68,8 +74,6 @@ func (a *Api) CreateMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 		return
 	}
 
-	Send(w, m, a.app.ModManager.Create(m))
-
 	// create log entry
 	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
@@ -77,12 +81,22 @@ func (a *Api) CreateMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 		Message:  fmt.Sprintf("User '%s' creates the %s '%s' (%s) in version '%s'", claims.Username, m.ModType, m.Name, m.SourceType, m.Version),
 	}, r)
 
-	// send notification to engine
-	err = a.app.Bridge.ExecuteCommand(command.COMMAND_NOTIFY_MODS_CHANGED, nil, nil, time.Second*5)
-	if err != nil {
-		// ignore error, just log
-		logrus.WithError(err).Warn("mods updated notification failed")
-	}
+	Send(w, m, nil)
+
+	go func() {
+		err = a.app.ModManager.Create(m)
+		if err != nil {
+			logrus.WithError(err).Error("mod create")
+			return
+		}
+
+		// send notification to engine
+		err = a.app.Bridge.ExecuteCommand(command.COMMAND_NOTIFY_MODS_CHANGED, nil, nil, time.Second*5)
+		if err != nil {
+			// ignore error, just log
+			logrus.WithError(err).Warn("mods updated notification failed")
+		}
+	}()
 }
 
 func (a *Api) CreateMTUIMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
@@ -128,7 +142,7 @@ func (a *Api) UpdateMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	m, err := a.app.ModManager.Mod(id)
+	m, err := a.app.Repos.ModRepo.GetByID(id)
 	if err != nil {
 		SendError(w, 500, err)
 		return
@@ -144,21 +158,28 @@ func (a *Api) UpdateMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 		return
 	}
 
-	Send(w, m, a.app.Repos.ModRepo.Update(m))
-
 	// create log entry
 	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "mods",
 		Message:  fmt.Sprintf("User '%s' updates the metadata of  %s '%s' (%s)", claims.Username, m.ModType, m.Name, m.SourceType),
 	}, r)
+
+	Send(w, m, nil)
+
+	go func() {
+		err = a.app.Repos.ModRepo.Update(m)
+		if err != nil {
+			logrus.WithError(err).Error("mod update")
+		}
+	}()
 }
 
 func (a *Api) DeleteMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	m, err := a.app.ModManager.Mod(id)
+	m, err := a.app.Repos.ModRepo.GetByID(id)
 	if err != nil {
 		SendError(w, 500, err)
 		return
@@ -168,11 +189,6 @@ func (a *Api) DeleteMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 		return
 	}
 
-	err = a.app.ModManager.Remove(m)
-	if err != nil {
-		SendError(w, 500, err)
-	}
-
 	// create log entry
 	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
@@ -180,17 +196,24 @@ func (a *Api) DeleteMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 		Message:  fmt.Sprintf("User '%s' deletes the %s '%s' (%s)", claims.Username, m.ModType, m.Name, m.SourceType),
 	}, r)
 
-	// send notification to engine
-	err = a.app.Bridge.ExecuteCommand(command.COMMAND_NOTIFY_MODS_CHANGED, nil, nil, time.Second*5)
-	if err != nil {
-		// ignore error, just log
-		logrus.WithError(err).Warn("mods updated notification failed")
-	}
+	go func() {
+		err = a.app.ModManager.Remove(m)
+		if err != nil {
+			logrus.WithError(err).Error("mod delete")
+			return
+		}
+
+		// send notification to engine
+		err = a.app.Bridge.ExecuteCommand(command.COMMAND_NOTIFY_MODS_CHANGED, nil, nil, time.Second*5)
+		if err != nil {
+			// ignore error, just log
+			logrus.WithError(err).Warn("mods updated notification failed")
+		}
+	}()
 }
 
 func (a *Api) ModsCheckUpdates(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	err := a.app.ModManager.CheckUpdates()
-	Send(w, true, err)
+	Send(w, true, a.app.ModManager.CheckUpdates())
 }
 
 func (a *Api) ModsValidate(w http.ResponseWriter, r *http.Request, claims *types.Claims) {

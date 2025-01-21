@@ -15,5 +15,6 @@ RUN CGO_ENABLED=1 go build -ldflags="-s -w -extldflags=-static -X mtui/app.Versi
 
 FROM alpine:3.21.2
 COPY --from=go-builder /data/mtui /bin/mtui
+RUN apk update && apk add git
 EXPOSE 8080
 ENTRYPOINT ["/bin/mtui"]

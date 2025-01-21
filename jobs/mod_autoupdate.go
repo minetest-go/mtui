@@ -13,22 +13,19 @@ import (
 func checkAllMods(a *app.App) error {
 	err := a.ModManager.CheckUpdates()
 	if err != nil {
-		return err
+		return fmt.Errorf("update check error: %v", err)
 	}
 
 	mods, err := a.Repos.ModRepo.GetAll()
 	if err != nil {
-		return err
+		return fmt.Errorf("error fetching mods: %v", err)
 	}
 
 	mods_changed := false
 
 	for _, mod := range mods {
-		if !mod.AutoUpdate {
-			continue
-		}
 
-		if mod.Version != mod.LatestVersion {
+		if mod.Version != mod.LatestVersion && mod.AutoUpdate {
 			err = a.ModManager.Update(mod, mod.LatestVersion)
 			if err != nil {
 				logrus.WithError(err).WithFields(logrus.Fields{

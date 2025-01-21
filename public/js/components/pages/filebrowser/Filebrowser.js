@@ -199,10 +199,10 @@ export default {
                                 <cdb-package-link v-if="mod.source_type == 'cdb'" :author="mod.author" :name="mod.name"/>
                             </span>
                             <span v-if="result.dir == '/worldmods' && item.is_dir" v-for="mod in [get_mod_by_name(item.name)]" class="float-end">
-                                <cdb-package-link v-if="mod.source_type == 'cdb'" :author="mod.author" :name="mod.name"/>
+                                <cdb-package-link v-if="mod && mod.source_type == 'cdb'" :author="mod.author" :name="mod.name"/>
                             </span>
                             <span v-if="result.dir == '/textures' && item.is_dir" v-for="mod in [get_txp_by_name(item.name)]" class="float-end">
-                                <cdb-package-link v-if="mod.source_type == 'cdb'" :author="mod.author" :name="mod.name"/>
+                                <cdb-package-link v-if="mod && mod.source_type == 'cdb'" :author="mod.author" :name="mod.name"/>
                             </span>
                         </td>
                         <td>

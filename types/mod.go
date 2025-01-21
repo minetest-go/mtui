@@ -17,10 +17,21 @@ const (
 	SourceTypeManual SourceType = "manual"
 )
 
+type ModStatus string
+
+const (
+	ModStatusCreated    ModStatus = "created"
+	ModStatusProcessing ModStatus = "processing"
+	ModStatusInstalled  ModStatus = "installed"
+	ModStatusError      ModStatus = "error"
+)
+
 type Mod struct {
 	ID            string     `json:"id" gorm:"primarykey;column:id"`
 	Name          string     `json:"name" gorm:"column:name"`
 	Author        string     `json:"author" gorm:"column:author"`
+	Status        ModStatus  `json:"mod_status" gorm:"column:status"`
+	Message       string     `json:"message" gorm:"column:message"`
 	ModType       ModType    `json:"mod_type" gorm:"column:mod_type"`
 	SourceType    SourceType `json:"source_type" gorm:"column:source_type"`
 	URL           string     `json:"url" gorm:"column:url"`
