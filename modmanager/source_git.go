@@ -33,7 +33,7 @@ func (h *GitModHandler) Create(world_dir string, mod *types.Mod) error {
 
 	if mod.Branch == "" {
 		// extract default branch
-		result, err = execGit(dir, []string{"rev-parse", "--abbrev-re", "HEAD"})
+		result, err = execGit(dir, []string{"rev-parse", "--abbrev-ref", "HEAD"})
 		if err != nil {
 			return fmt.Errorf("rev-parse branch error: %v, '%s'", err, result)
 		}
