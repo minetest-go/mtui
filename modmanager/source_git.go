@@ -26,7 +26,7 @@ func (h *GitModHandler) Create(world_dir string, mod *types.Mod) error {
 	}
 
 	// clone repo with default branch
-	result, err := execGit("/", []string{"clone", mod.URL, dir})
+	result, err := execGit("/", []string{"clone", "--recurse-submodules", mod.URL, dir})
 	if err != nil {
 		return fmt.Errorf("clone error: %v, '%s'", err, result)
 	}

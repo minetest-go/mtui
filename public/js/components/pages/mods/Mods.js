@@ -1,4 +1,13 @@
-import { add, remove, get_mods_by_type, is_busy, get_git_mod, update_mod, update_mod_version, check_updates, add_mtui } from '../../../service/mods.js';
+import {
+	add, remove,
+	get_mods_by_type,
+	get_git_mod,
+	update_mod,
+	update_mod_version,
+	check_updates,
+	add_mtui,
+	update
+} from '../../../service/mods.js';
 import { update_settings } from '../../../service/mtconfig.js';
 
 import FeedbackButton from '../../FeedbackButton.js';
@@ -8,7 +17,7 @@ import { START, ADMINISTRATION, MODS } from '../../Breadcrumb.js';
 import { has_feature } from '../../../service/features.js';
 
 const ModRow = {
-	props: ["mod", "busy"],
+	props: ["mod"],
 	components: {
 		"cdb-package-link": CDBPackageLink
 	},
@@ -31,28 +40,32 @@ const ModRow = {
 				<i class="fa-solid fa-box-open"></i>
 				ContentDB
 			</span>
+			<div v-if="mod.mod_status == 'error'" class="badge bg-danger">
+				{{mod.message}}
+			</div>
 		</td>
 		<td>
 			<span class="badge bg-secondary" v-if="mod.version">{{mod.version}}</span>
 			<span class="badge bg-warning" v-if="mod.latest_version && mod.latest_version != mod.version">Latest: {{mod.latest_version}}</span>
 		</td>
 		<td>
-			<div class="form-check">
+			<div class="form-check" v-if="mod.mod_status == 'installed'">
 				<input class="form-check-input" type="checkbox" v-model="mod.auto_update" v-on:change="update_mod(mod)"/>
 				<label class="form-check-label">Auto-update</label>
 			</div>
 		</td>
 		<td>
 			<div class="btn-group">
-				<button class="btn btn-primary" v-on:click="update_mod_version(mod, mod.latest_version)" :disabled="busy || mod.version == mod.latest_version">
+				<button class="btn btn-primary" v-on:click="update_mod_version(mod, mod.latest_version)" :disabled="mod.version == mod.latest_version" v-if="mod.mod_status == 'installed'">
 					<i class="fa fa-download"></i>
 					Update
 				</button>
-				<button class="btn btn-danger" v-on:click="remove(mod.id)" :disabled="busy">
+				<button class="btn btn-danger" v-on:click="remove(mod.id)" v-if="mod.mod_status != 'processing'">
 					<i class="fa fa-trash"></i>
 					Remove
 				</button>
 			</div>
+			<i class="fa fa-spin fa-spinner" v-if="mod.mod_status == 'processing'"></i>
 		</td>
 	`
 };
@@ -72,24 +85,30 @@ export default {
 			add_source_type: "git",
 			add_url: "",
 			add_version: "",
-			breadcrumb: [START, ADMINISTRATION, MODS]
+			breadcrumb: [START, ADMINISTRATION, MODS],
+			update_handle: null,
+			busy: false
 		};
 	},
+	created: function() {
+        this.update_handle = setInterval(update, 2000);
+    },
+    unmounted: function() {
+        clearInterval(this.update_handle);
+    },
 	methods: {
-		add: function() {
-			return add({
+		add: async function() {
+			await add({
 				name: this.add_name,
 				mod_type: this.add_mod_type,
 				source_type: this.add_source_type,
 				url: this.add_url,
 				branch: "",
 				version: this.add_version
-			})
-			.then(() => {
-				this.add_name = "";
-				this.add_url = "";
-				this.add_version = "";
 			});
+			this.add_name = "";
+			this.add_url = "";
+			this.add_version = "";
 		},
 		add_mtui_mod: async function() {
 			await add_mtui();
@@ -97,11 +116,14 @@ export default {
 				await update_settings();
 			}
 		},
-		get_git_mod: get_git_mod,
-		check_updates: check_updates
+		get_git_mod,
+		check_updates: async function() {
+			this.busy = true;
+			await check_updates();
+			this.busy = false;
+		}
 	},
 	computed: {
-		busy: is_busy,
 		games: () => get_mods_by_type("game"),
 		mods: () => get_mods_by_type("mod"),
 		worldmods: () => get_mods_by_type("worldmods"),
@@ -114,7 +136,6 @@ export default {
 		<default-layout icon="cubes" title="Mods" :breadcrumb="breadcrumb">
 			<h4>
 				Mod management
-				<i class="fa-solid fa-spinner fa-spin" v-if="busy"></i>
 			</h4>
 			<div class="alert alert-warning" v-if="!get_git_mod('mtui')">
 				<div class="row">
@@ -134,7 +155,7 @@ export default {
 				<div class="col-10"></div>
 				<div class="col-2">
 					<button class="btn btn-primary w-100" v-on:click="check_updates" :disabled="busy">
-						<i class="fa fa-refresh"></i>
+						<i class="fa fa-refresh" v-bind:class="{'fa-spin': busy}"></i>
 						Check for updates
 					</button>
 				</div>
@@ -211,7 +232,7 @@ export default {
 						</td>
 					</tr>
 					<tr v-for="mod in games" :key="mod.id">
-						<mod-row :mod="mod" :busy="busy"/>
+						<mod-row :mod="mod"/>
 					</tr>
 					<tr v-if="txps.length > 0" class="table-secondary">
 						<td colspan="8">
@@ -219,7 +240,7 @@ export default {
 						</td>
 					</tr>
 					<tr v-for="mod in txps" :key="mod.id">
-						<mod-row :mod="mod" :busy="busy"/>
+						<mod-row :mod="mod"/>
 					</tr>
 					<tr v-if="mods.length > 0" class="table-secondary">
 						<td colspan="8">
@@ -227,7 +248,7 @@ export default {
 						</td>
 					</tr>
 					<tr v-for="mod in mods" :key="mod.id">
-						<mod-row :mod="mod" :busy="busy"/>
+						<mod-row :mod="mod"/>
 					</tr>
 					<tr v-if="worldmods.length > 0" class="table-secondary">
 						<td colspan="8">
@@ -235,7 +256,7 @@ export default {
 						</td>
 					</tr>
 					<tr v-for="worldmod in worldmods" :key="worldmod.id">
-						<mod-row :mod="worldmod" :busy="busy"/>
+						<mod-row :mod="worldmod"/>
 					</tr>
 				</tbody>
 			</table>
