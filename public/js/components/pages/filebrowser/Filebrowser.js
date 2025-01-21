@@ -196,7 +196,7 @@ export default {
                                 {{item.name}}
                             </span>
                             <span v-if="result.dir == '' && item.name == 'game'" v-for="mod in [get_game()]" class="float-end">
-                                <cdb-package-link v-if="mod.source_type == 'cdb'" :author="mod.author" :name="mod.name"/>
+                                <cdb-package-link v-if="mod && mod.source_type == 'cdb'" :author="mod.author" :name="mod.name"/>
                             </span>
                             <span v-if="result.dir == '/worldmods' && item.is_dir" v-for="mod in [get_mod_by_name(item.name)]" class="float-end">
                                 <cdb-package-link v-if="mod && mod.source_type == 'cdb'" :author="mod.author" :name="mod.name"/>
