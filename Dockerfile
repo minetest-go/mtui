@@ -3,7 +3,7 @@ COPY public /public
 WORKDIR /public
 RUN npm ci && npm run bundle
 
-FROM golang:1.24.0 as go-builder
+FROM golang:1.24.1 as go-builder
 ARG MTUI_VERSION="docker-dev"
 WORKDIR /data
 COPY go.* /data/
