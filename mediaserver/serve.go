@@ -11,24 +11,52 @@ import (
 	"github.com/gorilla/mux"
 )
 
+func sendIndex(w http.ResponseWriter, hashes [][]byte) {
+	headers := w.Header()
+	headers.Add("Content-Type", "octet/stream")
+	headers.Add("Content-Length", fmt.Sprintf("%d", 6+(len(hashes)*20)))
+
+	w.Write(MEDIA_HEADER)
+	w.Write(MEDIA_VERSION)
+	for _, hash := range hashes {
+		w.Write(hash)
+	}
+}
+
 // adopted from: https://github.com/minetest-tools/mtmediasrv/blob/master/main.go#L58
 func (m *MediaServer) ServeHTTPIndex(w http.ResponseWriter, r *http.Request) {
-	header := make([]byte, 4)
-	version := make([]byte, 2)
 
-	r.Body.Read(header)
-	r.Body.Read(version)
+	// hashes to send
+	hashes := [][]byte{}
 
+	if r.Method == http.MethodGet {
+		// simple GET send everything
+		for hash := range m.Media {
+			b, _ := hex.DecodeString(hash)
+			hashes = append(hashes, b)
+		}
+
+		sendIndex(w, hashes)
+		return
+	}
+
+	// only POST allowed from here on
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	if !bytes.Equal(header, []byte("MTHS")) {
+	// check sent version
+	header := make([]byte, 4)
+	version := make([]byte, 2)
+	r.Body.Read(header)
+	r.Body.Read(version)
+
+	if !bytes.Equal(header, MEDIA_HEADER) {
 		http.Error(w, "invalid MTHS header", http.StatusInternalServerError)
 		return
 	}
-	if !bytes.Equal(version, []byte{0, 1}) {
+	if !bytes.Equal(version, MEDIA_VERSION) {
 		http.Error(w, "unsupported MTHS version", http.StatusInternalServerError)
 		return
 	}
@@ -46,25 +74,15 @@ func (m *MediaServer) ServeHTTPIndex(w http.ResponseWriter, r *http.Request) {
 	}
 	r.Body.Close()
 
-	// Iterate over client hashes and remove hashes that we don't have from it
-	resultmap := map[string]bool{}
 	for _, v := range clientarr {
 		if m.Media[v] != "" {
-			resultmap[v] = true
+			// we have the media for the hash
+			b, _ := hex.DecodeString(v)
+			hashes = append(hashes, b)
 		}
 	}
 
-	// formulate response
-	headers := w.Header()
-	headers.Add("Content-Type", "octet/stream")
-	headers.Add("Content-Length", fmt.Sprintf("%d", 6+(len(resultmap)*20)))
-
-	w.Write([]byte(header))
-	w.Write([]byte(version))
-	for k := range resultmap {
-		b, _ := hex.DecodeString(k)
-		w.Write([]byte(b))
-	}
+	sendIndex(w, hashes)
 }
 
 func (m *MediaServer) ServeHTTPFetch(w http.ResponseWriter, r *http.Request) {

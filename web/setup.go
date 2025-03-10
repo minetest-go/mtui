@@ -162,7 +162,7 @@ func Setup(a *app.App) error {
 
 	msr := apir.PathPrefix("/media").Subrouter()
 	msr.Use(SecureHandler(api.FeatureCheck(types.FEATURE_MEDIASERVER)))
-	msr.HandleFunc("/index.mth", a.Mediaserver.ServeHTTPIndex).Methods(http.MethodPost)
+	msr.HandleFunc("/index.mth", a.Mediaserver.ServeHTTPIndex).Methods(http.MethodPost, http.MethodGet)
 	msr.HandleFunc("/stats", api.GetMediaStats).Methods(http.MethodGet)
 	msr.HandleFunc("/{hash}", a.Mediaserver.ServeHTTPFetch).Methods(http.MethodGet)
 	msr.HandleFunc("/scan", api.SecurePriv(types.PRIV_SERVER, api.ScanMedia)).Methods(http.MethodPost)

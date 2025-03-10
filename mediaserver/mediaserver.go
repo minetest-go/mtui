@@ -2,6 +2,9 @@ package mediaserver
 
 import "go.uber.org/atomic"
 
+var MEDIA_HEADER []byte = []byte("MTHS")
+var MEDIA_VERSION = []byte{0, 1}
+
 type MediaServer struct {
 	// file extensions
 	extensions []string
