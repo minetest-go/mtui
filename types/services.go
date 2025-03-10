@@ -5,10 +5,11 @@ var EngineServiceImages = map[string]string{
 	"5.8.0":  "ghcr.io/luanti-hosting/minetest-docker:5.8.0",
 	"5.9.0":  "ghcr.io/minetest/minetest:5.9.0",
 	"5.10.0": "ghcr.io/minetest/minetest:5.10.0",
+	"5.11.0": "ghcr.io/luanti-org/luanti:5.11.0",
 }
 
 // for auto install
-var EngineServiceLatest = "5.10.0"
+var EngineServiceLatest = "5.11.0"
 
 var MatterbridgeServiceImages = map[string]string{
 	"1.26.0": "42wim/matterbridge:1.26.0",
