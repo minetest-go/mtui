@@ -28,6 +28,6 @@
     "@stylistic/eslint-plugin-js": "^4.0.0",
     "eslint": "^9.7.0",
     "eslint-plugin-vue": "^9.27.0",
-    "rollup": "4.34.8"
+    "rollup": "4.36.0"
   }
 }
