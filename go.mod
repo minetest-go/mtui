@@ -20,7 +20,7 @@ require (
 require (
 	github.com/Code-Hex/go-generics-cache v1.5.1
 	github.com/dchest/captcha v1.1.0
-	github.com/docker/docker v25.0.8+incompatible
+	github.com/docker/docker v28.0.2+incompatible
 	github.com/docker/go-connections v0.5.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/mattn/go-sqlite3 v1.14.24
@@ -45,6 +45,7 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/kr/fs v0.1.0 // indirect
+	github.com/moby/docker-image-spec v1.3.1 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
