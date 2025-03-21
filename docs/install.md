@@ -15,3 +15,14 @@ Environment variables:
 * `ENABLE_FEATURES` manually enabled features
 * `MINETEST_CONFIG` set this to the `minetest.conf` location to enable the settings-management
 
+# Using docker-compose
+You must use file `docker-compose.yml` from this entire repository directory, because it pulls in the app files from this repository. You cannot run it in a bare directory.
+
+Container `ui_webapp` builds the app, and does not run it. So you only need to do this until it finishes building:
+```
+docker-compose up ui_webapp
+```
+When the app is completely built, then you can run only container *ui*.
+```
+docker-compose up -d ui
+```
