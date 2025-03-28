@@ -22,7 +22,7 @@ require (
 	github.com/dchest/captcha v1.1.0
 	github.com/docker/docker v25.0.8+incompatible
 	github.com/docker/go-connections v0.5.0
-	github.com/golang-jwt/jwt/v5 v5.2.1
+	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/minetest-go/areasparser v1.0.5
 	github.com/pkg/sftp v1.13.7
