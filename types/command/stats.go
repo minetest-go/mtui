@@ -20,6 +20,7 @@ type PlayerStats struct {
 		Y types.JsonInt `json:"y"`
 		Z types.JsonInt `json:"z"`
 	} `json:"pos"`
+	Loc   string       `json:"loc"`
 
 	Info *struct {
 		Address              string        `json:"address"`

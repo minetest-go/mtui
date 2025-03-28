@@ -34,6 +34,7 @@ export default {
                     <th>Name</th>
                     <th>Health</th>
                     <th v-if="has_priv('ban')">Position</th>
+                    <th v-if="has_priv('ban')">Location</th>
                     <th v-if="has_priv('ban')">Address</th>
                     <th v-if="has_priv('ban')">Protocol-Version</th>
                     <th v-if="has_priv('ban')">Connected since</th>
@@ -55,6 +56,9 @@ export default {
                     </td>
                     <td v-if="has_priv('ban')">
                         {{Math.floor(player.pos.x)}}/{{Math.floor(player.pos.y)}}/{{Math.floor(player.pos.z)}}
+                    </td>
+                    <td v-if="has_priv('ban')">
+                        {{player.loc}}
                     </td>
                     <td v-if="has_priv('ban')">
                         {{player.info.address}}

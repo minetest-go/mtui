@@ -64,6 +64,7 @@ func (a *Api) GetStats(w http.ResponseWriter, r *http.Request, claims *types.Cla
 			if claims != nil && claims.HasPriv("ban") {
 				// infos for provileged users
 				p.Pos = ps.Pos
+				p.Loc = ps.Loc
 				p.Info = ps.Info
 			}
 
