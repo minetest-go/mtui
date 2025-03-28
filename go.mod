@@ -6,7 +6,6 @@ toolchain go1.24.0
 
 require (
 	github.com/HimbeerserverDE/srp v0.0.0
-	github.com/go-git/go-git/v5 v5.13.1
 	github.com/golang-migrate/migrate/v4 v4.17.1
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/websocket v1.5.3
