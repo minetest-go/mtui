@@ -2,3 +2,4 @@ mtui
 dist
 docker-compose.override.yml
 cache
+*.sqlite*
