@@ -19,6 +19,7 @@ import (
 
 var version_flag = flag.Bool("version", false, "show the current version and exit")
 var help_flag = flag.Bool("help", false, "shows all options")
+var port_flag = flag.String("port", "8080", "the port to use")
 
 func main() {
 	flag.Parse()
@@ -74,10 +75,10 @@ func main() {
 	// start jobs
 	jobs.Start(a)
 
-	server := &http.Server{Addr: ":8080", Handler: nil}
+	server := &http.Server{Addr: fmt.Sprintf(":%s", *port_flag), Handler: nil}
 
 	go func() {
-		logrus.WithFields(logrus.Fields{"port": 8080}).Info("Listening")
+		logrus.WithFields(logrus.Fields{"port": *port_flag}).Info("Listening")
 		err = server.ListenAndServe()
 		if err != nil {
 			panic(err)
