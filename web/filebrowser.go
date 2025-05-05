@@ -97,7 +97,7 @@ func (a *Api) Mkdir(w http.ResponseWriter, r *http.Request, claims *types.Claims
 		return
 	}
 
-	err = os.MkdirAll(absdir, 0644)
+	err = os.MkdirAll(absdir, 0755)
 	Send(w, true, err)
 
 	a.app.CreateUILogEntry(&types.Log{
