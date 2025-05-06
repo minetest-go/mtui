@@ -22,7 +22,7 @@ require (
 	github.com/docker/docker v25.0.8+incompatible
 	github.com/docker/go-connections v0.5.0
 	github.com/golang-jwt/jwt/v5 v5.2.2
-	github.com/mattn/go-sqlite3 v1.14.27
+	github.com/mattn/go-sqlite3 v1.14.28
 	github.com/minetest-go/areasparser v1.0.5
 	github.com/pkg/sftp v1.13.9
 	github.com/studio-b12/gowebdav v0.10.0
