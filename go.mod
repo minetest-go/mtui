@@ -62,7 +62,7 @@ require (
 require (
 	github.com/Microsoft/go-winio v0.6.1 // indirect
 	github.com/ProtonMail/go-crypto v1.1.3 // indirect
-	github.com/andybalholm/brotli v1.0.5 // indirect
+	github.com/andybalholm/brotli v1.1.1 // indirect
 	github.com/boombuler/barcode v1.0.1 // indirect
 	github.com/cloudflare/circl v1.3.7 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
@@ -88,7 +88,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/uuid v1.6.0
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/vearutop/statigz v1.4.3
+	github.com/vearutop/statigz v1.5.0
 	golang.org/x/mod v0.19.0 // indirect
 	golang.org/x/sys v0.32.0 // indirect
 	golang.org/x/tools v0.23.0 // indirect
