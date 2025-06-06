@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/pkg/sftp"
+	"github.com/sirupsen/logrus"
 	"github.com/studio-b12/gowebdav"
 	"golang.org/x/crypto/ssh"
 )
@@ -54,6 +55,7 @@ var backupjobs = map[string]*BackupJobInfo{}
 func backupJob(a *app.App, job *CreateBackupJob, info *BackupJobInfo, c *types.Claims) {
 	var output io.WriteCloser
 	var err error
+	var errchan = make(chan error, 1)
 
 	switch job.Type {
 	case BackupJobTypeSCP:
@@ -71,6 +73,7 @@ func backupJob(a *app.App, job *CreateBackupJob, info *BackupJobInfo, c *types.C
 		if err != nil {
 			info.Status = BackupJobFailure
 			info.Message = fmt.Sprintf("ssh dial failed: %v", err)
+			logrus.WithFields(logrus.Fields{"err": err, "msg": info.Message}).Error("backup failed")
 			return
 		}
 		defer client.Close()
@@ -79,6 +82,7 @@ func backupJob(a *app.App, job *CreateBackupJob, info *BackupJobInfo, c *types.C
 		if err != nil {
 			info.Status = BackupJobFailure
 			info.Message = fmt.Sprintf("sftp open failed: %v", err)
+			logrus.WithFields(logrus.Fields{"err": err, "msg": info.Message}).Error("backup failed")
 			return
 		}
 		defer sc.Close()
@@ -87,6 +91,7 @@ func backupJob(a *app.App, job *CreateBackupJob, info *BackupJobInfo, c *types.C
 		if err != nil {
 			info.Status = BackupJobFailure
 			info.Message = fmt.Sprintf("sftp create failed: %v", err)
+			logrus.WithFields(logrus.Fields{"err": err, "msg": info.Message}).Error("backup failed")
 			return
 		}
 		defer file.Close()
@@ -98,6 +103,7 @@ func backupJob(a *app.App, job *CreateBackupJob, info *BackupJobInfo, c *types.C
 		if err != nil {
 			info.Status = BackupJobFailure
 			info.Message = fmt.Sprintf("webdav connection failed: %v", err)
+			logrus.WithFields(logrus.Fields{"err": err, "msg": info.Message}).Error("backup failed")
 			return
 		}
 
@@ -107,14 +113,14 @@ func backupJob(a *app.App, job *CreateBackupJob, info *BackupJobInfo, c *types.C
 		go func() {
 			err := c.WriteStream(job.Filename, pr, 0644)
 			if err != nil {
-				info.Status = BackupJobFailure
-				info.Message = fmt.Sprintf("webdav stream failed: %v", err)
+				errchan <- fmt.Errorf("webdav stream failed: %v", err)
 			}
 		}()
 
 	default:
 		info.Status = BackupJobFailure
 		info.Message = fmt.Sprintf("unknown job type: %s", job.Type)
+		logrus.WithFields(logrus.Fields{"err": err, "msg": info.Message}).Error("backup failed")
 		return
 	}
 
@@ -126,6 +132,7 @@ func backupJob(a *app.App, job *CreateBackupJob, info *BackupJobInfo, c *types.C
 		if err != nil {
 			info.Status = BackupJobFailure
 			info.Message = fmt.Sprintf("encryption failed: %v", err)
+			logrus.WithFields(logrus.Fields{"err": err, "msg": info.Message}).Error("backup failed")
 			return
 		}
 	}
@@ -140,7 +147,24 @@ func backupJob(a *app.App, job *CreateBackupJob, info *BackupJobInfo, c *types.C
 	if err != nil {
 		info.Status = BackupJobFailure
 		info.Message = fmt.Sprintf("backup failed: %v", err)
+		logrus.WithFields(logrus.Fields{"err": err, "msg": info.Message}).Error("backup failed")
 		return
+	}
+	err = output.Close()
+	if err != nil {
+		info.Status = BackupJobFailure
+		info.Message = fmt.Sprintf("backup finalize failed: %v", err)
+		logrus.WithFields(logrus.Fields{"err": err, "msg": info.Message}).Error("backup failed")
+		return
+	}
+	select {
+	case err = <-errchan:
+		// there was an async error
+		info.Status = BackupJobFailure
+		info.Message = err.Error()
+		logrus.WithFields(logrus.Fields{"err": err, "msg": info.Message}).Error("backup failed")
+		return
+	default:
 	}
 
 	info.Message = fmt.Sprintf("Backup complete with %d bytes and %d files", bytes, filecount)
