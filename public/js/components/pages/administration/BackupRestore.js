@@ -7,10 +7,16 @@ import { get_mods_by_type, remove as remove_mod, add_mtui, add_beerchat, add_map
 
 import DefaultLayout from "../../layouts/DefaultLayout.js";
 import { START } from "../../Breadcrumb.js";
+import BackupZipDownload from "../../backup/BackupZipDownload.js";
+import CloudBackup from "../../backup/CloudBackup.js";
+import CloudRestore from "../../backup/CloudRestore.js";
 
 export default {
     components: {
-        "default-layout": DefaultLayout
+        "default-layout": DefaultLayout,
+        "backup-zip-download": BackupZipDownload,
+        "cloud-backup": CloudBackup,
+        "cloud-restore": CloudRestore
     },
     data: function() {
         return {
@@ -89,19 +95,7 @@ export default {
     template: /*html*/`
         <default-layout title="Backup/Restore" icon="upload" :breadcrumb="breadcrumb">
             <div class="row">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            Download backup <i class="fa fa-download"></i>
-                        </div>
-                        <div class="card-body">
-                            <a class="btn btn-primary" href="api/filebrowser/zip?dir=/">
-                                <i class="fa fa-file-zipper"></i>
-                                Download world-backup as zip-file
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                <backup-zip-download class="col-md-6"/>
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-header">
@@ -143,6 +137,29 @@ export default {
                                     {{restore_message}}
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            Upload backup to S3 cloud-storage <i class="fa fa-cloud-arrow-up"></i>
+                        </div>
+                        <div class="card-body">
+                            <cloud-backup/>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            Download backup from S3 cloud-storage and restore <i class="fa fa-cloud-arrow-down"></i>
+                        </div>
+                        <div class="card-body">
+                            <cloud-restore/>
                         </div>
                     </div>
                 </div>
