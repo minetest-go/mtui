@@ -1,5 +1,6 @@
 import DefaultLayout from "../../layouts/DefaultLayout.js";
 import { START, FILEBROWSER } from "../../Breadcrumb.js";
+import ConfirmationPrompt from "../../ConfirmationPrompt.js";
 import CDBPackageLink from "../../CDBPackageLink.js";
 
 import { browse, get_download_url, mkdir, remove, rename } from "../../../api/filebrowser.js";
@@ -14,7 +15,8 @@ export default {
     props: ["pathMatch"],
     components: {
         "default-layout": DefaultLayout,
-        "cdb-package-link": CDBPackageLink
+        "cdb-package-link": CDBPackageLink,
+        "confirmation-prompt": ConfirmationPrompt
     },
     data: function() {
         return {
@@ -237,47 +239,40 @@ export default {
                     </tr>
                 </tbody>
             </table>
-            <div class="modal show" style="display: block;" tabindex="-1" v-show="prepare_delete">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5">Confirm deletion</h1>
-                        <button type="button" class="btn-close" v-on:click="prepare_delete = null"></button>
-                    </div>
-                    <div class="modal-body">
-                        Confirm deletion of <i>{{prepare_delete}}</i>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-success" v-on:click="prepare_delete = null">Abort</button>
-                        <button type="button" class="btn btn-danger" v-on:click="confirm_delete">
-                            <i class="fa fa-trash"></i>
-                            Confirm deletion
-                        </button>
-                    </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal show" style="display: block;" tabindex="-1" v-show="move_name">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5">Rename file</h1>
-                        <button type="button" class="btn-close" v-on:click="move_name = null"></button>
-                    </div>
-                    <div class="modal-body">
-                        Move file <i>{{move_name}}</i>
-                        <input type="text" class="form-control" placeholder="New name" v-model="move_target"/>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" v-on:click="move_name = null">Abort</button>
-                        <button type="button" class="btn btn-warning" v-on:click="confirm_move" :disabled="!move_target || move_target == move_name">
-                            <i class="fa fa-shuffle"></i>
-                            Confirm rename
-                        </button>
-                    </div>
-                    </div>
-                </div>
-            </div>
+            <confirmation-prompt
+                title="Confirm deletion"
+                :show="prepare_delete"
+                v-on:confirm="confirm_delete()"
+                v-on:abort="prepare_delete = null"
+                >
+                <template v-slot:default>
+                    Confirm deletion of <i>{{prepare_delete}}</i>
+                </template>
+
+                <template v-slot:confirm_button>
+                    <i class="fa fa-trash"></i>
+                    Confirm deletion
+                </template>
+            </confirmation-prompt>
+
+            <confirmation-prompt
+                title="Rename file"
+                :show="move_name"
+                v-on:confirm="confirm_move()"
+                v-on:abort="move_name = null"
+                :confirm_disabled="!move_target || move_target == move_name"
+                >
+                <template v-slot:default>
+                    Move file <i>{{move_name}}</i>
+                    <input type="text" class="form-control" placeholder="New name" v-model="move_target"/>
+                </template>
+
+                <template v-slot:confirm_button>
+                    <i class="fa fa-shuffle"></i>
+                    Confirm rename
+                </template>
+            </confirmation-prompt>
+
         </default-layout>
     `
 };
