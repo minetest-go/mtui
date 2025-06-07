@@ -134,6 +134,8 @@ github.com/minetest-go/areasparser v1.0.5 h1:kyfb7mk4S7Gvx5N42uJK8ze3BAbfj8uyLsv
 github.com/minetest-go/areasparser v1.0.5/go.mod h1:NvohBk60WBrAbfvgmJccCEblz9I/Ygba4k9V81rwoNc=
 github.com/minetest-go/mtdb v1.1.52 h1:HWTnqVG6ozkZOr2nr8T1W4+S9j1UhJXXoA706k8NgHY=
 github.com/minetest-go/mtdb v1.1.52/go.mod h1:JmyS0eIF/5yZADQT41+f14UktGmsJnXk07ou0yRkMcE=
+github.com/minetest-go/mtdb v1.1.53 h1:lNcGDHNQxoow540o3HDQtXWFWpKOOFpYOBxucLPlBfU=
+github.com/minetest-go/mtdb v1.1.53/go.mod h1:nl2yR9coe8wfSQuc+a0xWhp1X5J/nlNvL0qtwwr5m7s=
 github.com/moby/term v0.5.0 h1:xt8Q1nalod/v7BqbG21f8mQPqH+xAaC9C3N3wfWbVP0=
 github.com/moby/term v0.5.0/go.mod h1:8FzsFHVUBGZdbDsJw/ot+X+d5HLUbvklYLJ9uGfcI3Y=
 github.com/morikuni/aec v1.0.0 h1:nP9CBfwrvYnBRgY6qfDQkygYDmYwOilePFkwzv4dU8A=
