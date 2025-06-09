@@ -133,7 +133,7 @@ func restoreJob(a *app.App, job *CreateRestoreJob, info *RestoreJobInfo, c *type
 	}
 
 	filecount := 0
-	bytes, err := a.DownloadZip(a.WorldDir, reader, nil, c, &app.DownloadZipOpts{
+	bytes, err := a.DownloadAndUnzip(a.WorldDir, reader, nil, c, &app.DownloadZipOpts{
 		Callback: func(files, bytes int64, currentfile string) {
 			info.Message = fmt.Sprintf("Copying file '%s' (progress: %d bytes, %d files)", currentfile, bytes, files)
 			filecount++

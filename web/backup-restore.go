@@ -81,11 +81,16 @@ func (a *Api) startBackupJob(job *CreateBackupRestoreJob, c *types.Claims) error
 		}
 	}
 
+	filecount := 0
+	bytecount := int64(0)
+
 	// write zip file to output
 	go func() {
 		_, err := a.app.StreamZip(a.app.WorldDir, output, &app.StreamZipOpts{
 			Callback: func(files, bytes int64, currentfile string) {
 				progress_percent := float64(bytes) / float64(estimated_size) * 100
+				filecount++
+				bytecount = bytes
 
 				backupRestoreInfo.Store(&BackupRestoreInfo{
 					Type:            job.Type,
@@ -103,10 +108,16 @@ func (a *Api) startBackupJob(job *CreateBackupRestoreJob, c *types.Claims) error
 	}()
 
 	// read file content from input
-	_, err = s3.PutObject(context.Background(), job.Bucket, job.Filename, pr, -1, minio.PutObjectOptions{})
+	info, err := s3.PutObject(context.Background(), job.Bucket, job.Filename, pr, -1, minio.PutObjectOptions{})
 	if err != nil {
 		return fmt.Errorf("s3 upload error: %v", err)
 	}
+
+	a.app.CreateUILogEntry(&types.Log{
+		Username: c.Username,
+		Event:    "backup",
+		Message:  fmt.Sprintf("Backup complete with %d bytes and %d files (zipped size: %d bytes)", bytecount, filecount, info.Size),
+	}, nil)
 
 	return nil
 }
@@ -123,6 +134,11 @@ func (a *Api) startRestoreJob(job *CreateBackupRestoreJob, c *types.Claims) erro
 	}
 	defer obj.Close()
 
+	stat, err := obj.Stat()
+	if err != nil {
+		return fmt.Errorf("s3 stat error: %v", err)
+	}
+
 	var input io.Reader = obj
 	if job.FileKey != "" {
 		input, err = app.EncryptedReader(job.FileKey, obj)
@@ -131,14 +147,54 @@ func (a *Api) startRestoreJob(job *CreateBackupRestoreJob, c *types.Claims) erro
 		}
 	}
 
-	_, err = a.app.DownloadZip(a.app.WorldDir, input, nil, c, &app.DownloadZipOpts{
+	// wrap into counted reader
+	input = app.NewCountedReader(input, func(bytes int64) {
+		progress := float64(bytes) / float64(stat.Size)
+		backupRestoreInfo.Store(&BackupRestoreInfo{
+			Type:            job.Type,
+			ProgressPercent: progress * 50,
+			Message:         fmt.Sprintf("Downloading zip file: %d / %d bytes", bytes, stat.Size),
+			State:           BackupRestoreJobRunning,
+		})
+	})
+
+	tempfile, err := a.app.DownloadToTempfile(input)
+	if err != nil {
+		return fmt.Errorf("temp download: %v", err)
+	}
+
+	uncompressed_bytes, err := a.app.GetUncompressedZipSize(tempfile)
+	if err != nil {
+		return fmt.Errorf("size estimation failed: %v", err)
+	}
+
+	filecount := 0
+	_, err = a.app.Unzip(a.app.WorldDir, tempfile, nil, c, &app.DownloadZipOpts{
 		Callback: func(files, bytes int64, currentfile string) {
-			//TODO: progress
+			progress := float64(bytes) / float64(uncompressed_bytes)
+			backupRestoreInfo.Store(&BackupRestoreInfo{
+				Type:            job.Type,
+				ProgressPercent: (progress * 50) + 50,
+				Message:         fmt.Sprintf("Unzipping files: %d / %d bytes", bytes, stat.Size),
+				State:           BackupRestoreJobRunning,
+			})
+			filecount++
 		},
 	})
 	if err != nil {
-		return fmt.Errorf("download zip error: %v", err)
+		return fmt.Errorf("unzip error: %v", err)
 	}
+
+	err = a.app.ReconfigureSystemMods()
+	if err != nil {
+		return fmt.Errorf("ReconfigureSystemMods error: %v", err)
+	}
+
+	a.app.CreateUILogEntry(&types.Log{
+		Username: c.Username,
+		Event:    "backup",
+		Message:  fmt.Sprintf("Restore complete with %d bytes and %d files", uncompressed_bytes, filecount),
+	}, nil)
 
 	return nil
 }

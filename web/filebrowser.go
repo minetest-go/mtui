@@ -139,7 +139,7 @@ func (a *Api) UnzipFile(w http.ResponseWriter, r *http.Request, claims *types.Cl
 	defer f.Close()
 
 	abspath := path.Dir(filename)
-	count, err := a.app.DownloadZip(abspath, f, r, claims, nil)
+	count, err := a.app.Unzip(abspath, filename, r, claims, nil)
 	Send(w, true, err)
 
 	a.app.CreateUILogEntry(&types.Log{
