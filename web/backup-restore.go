@@ -59,7 +59,7 @@ func getS3Client(job *CreateBackupRestoreJob) (*minio.Client, error) {
 	})
 }
 
-func (a *Api) startBackupJob(job *CreateBackupRestoreJob) error {
+func (a *Api) startBackupJob(job *CreateBackupRestoreJob, c *types.Claims) error {
 	// calculate estimated directory size
 	estimated_size, err := a.getDirectorySize(a.app.WorldDir)
 	if err != nil {
@@ -111,8 +111,35 @@ func (a *Api) startBackupJob(job *CreateBackupRestoreJob) error {
 	return nil
 }
 
-func (a *Api) startRestoreJob(job *CreateBackupRestoreJob) error {
-	// TODO
+func (a *Api) startRestoreJob(job *CreateBackupRestoreJob, c *types.Claims) error {
+	s3, err := getS3Client(job)
+	if err != nil {
+		return fmt.Errorf("get s3 client error: %v", err)
+	}
+
+	obj, err := s3.GetObject(context.Background(), job.Bucket, job.Filename, minio.GetObjectOptions{})
+	if err != nil {
+		return fmt.Errorf("client getObject error: %v", err)
+	}
+	defer obj.Close()
+
+	var input io.Reader = obj
+	if job.FileKey != "" {
+		input, err = app.EncryptedReader(job.FileKey, obj)
+		if err != nil {
+			return fmt.Errorf("encryption setup: %v", err)
+		}
+	}
+
+	_, err = a.app.DownloadZip(a.app.WorldDir, input, nil, c, &app.DownloadZipOpts{
+		Callback: func(files, bytes int64, currentfile string) {
+			//TODO: progress
+		},
+	})
+	if err != nil {
+		return fmt.Errorf("download zip error: %v", err)
+	}
+
 	return nil
 }
 
@@ -132,7 +159,7 @@ func (a *Api) CreateBackupRestoreJob(w http.ResponseWriter, r *http.Request, c *
 		return
 	}
 
-	var job_fn func(*CreateBackupRestoreJob) error
+	var job_fn func(*CreateBackupRestoreJob, *types.Claims) error
 
 	switch job.Type {
 	case BackupJob:
@@ -146,7 +173,7 @@ func (a *Api) CreateBackupRestoreJob(w http.ResponseWriter, r *http.Request, c *
 
 	// start job
 	go func() {
-		err := job_fn(job)
+		err := job_fn(job, c)
 		if err != nil {
 			backupRestoreInfo.Store(&BackupRestoreInfo{
 				Type:    job.Type,
