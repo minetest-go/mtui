@@ -188,15 +188,9 @@ func (a *Api) RenameFile(w http.ResponseWriter, r *http.Request, claims *types.C
 	}, r)
 }
 
-func (a *Api) GetDirectorySize(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	_, absdir, err := a.get_sanitized_dir(r)
-	if err != nil {
-		SendError(w, 500, err)
-		return
-	}
-
+func (a *Api) getDirectorySize(absdir string) (int64, error) {
 	count := int64(0)
-	err = filepath.Walk(absdir, func(filePath string, info os.FileInfo, err error) error {
+	err := filepath.Walk(absdir, func(filePath string, info os.FileInfo, err error) error {
 		if info.IsDir() {
 			return nil
 		}
@@ -216,5 +210,16 @@ func (a *Api) GetDirectorySize(w http.ResponseWriter, r *http.Request, claims *t
 		return nil
 	})
 
+	return count, err
+}
+
+func (a *Api) GetDirectorySize(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	_, absdir, err := a.get_sanitized_dir(r)
+	if err != nil {
+		SendError(w, 500, err)
+		return
+	}
+
+	count, err := a.getDirectorySize(absdir)
 	Send(w, count, err)
 }

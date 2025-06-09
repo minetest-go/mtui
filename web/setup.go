@@ -51,15 +51,10 @@ func Setup(a *app.App) error {
 	fbr.HandleFunc("/file", api.Secure(api.AppendFile)).Methods(http.MethodPut)
 	fbr.HandleFunc("/rename", api.Secure(api.RenameFile)).Methods(http.MethodPost)
 
-	// backup job
-	apibj := r.PathPrefix("/api/backupjob").Subrouter()
-	apibj.HandleFunc("", api.SecurePriv(types.PRIV_SERVER, api.CreateBackupJob)).Methods(http.MethodPost)
-	apibj.HandleFunc("/{id}", api.SecurePriv(types.PRIV_SERVER, api.GetBackupJobInfo)).Methods(http.MethodGet)
-
-	// restore job
-	apirj := r.PathPrefix("/api/restorejob").Subrouter()
-	apirj.HandleFunc("", api.SecurePriv(types.PRIV_SERVER, api.CreateRestoreJob)).Methods(http.MethodPost)
-	apirj.HandleFunc("/{id}", api.SecurePriv(types.PRIV_SERVER, api.GetRestoreJobInfo)).Methods(http.MethodGet)
+	// backup-restore job
+	apibj := r.PathPrefix("/api/backup-restore").Subrouter()
+	apibj.HandleFunc("", api.GetBackupRestoreJobInfo).Methods(http.MethodGet)
+	apibj.HandleFunc("/create", api.SecurePriv(types.PRIV_SERVER, api.CreateBackupRestoreJob)).Methods(http.MethodPost)
 
 	// maintenance mode middleware enabled routes below
 	apir := r.PathPrefix("/api").Subrouter()
