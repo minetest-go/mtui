@@ -201,12 +201,7 @@ func (a *Api) getDirectorySize(absdir string) (int64, error) {
 			return nil
 		}
 
-		fi, err := os.Stat(filePath)
-		if err != nil {
-			return fmt.Errorf("stat error: '%s': %v", filePath, err)
-		}
-
-		count += fi.Size()
+		count += info.Size()
 		return nil
 	})
 

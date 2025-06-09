@@ -8,6 +8,7 @@ import (
 	"mtui/app"
 	"mtui/types"
 	"net/http"
+	"os"
 	"sync/atomic"
 
 	"github.com/minio/minio-go/v7"
@@ -66,8 +67,8 @@ func (a *Api) startBackupJob(job *CreateBackupRestoreJob, c *types.Claims) error
 		return fmt.Errorf("directory size estimation: %v", err)
 	}
 
-	// increase estimation by 25% (compression overhead and stuff)
-	estimated_size += int64(float64(estimated_size) * 0.25)
+	// increase estimation (compression overhead and stuff)
+	estimated_size += int64(float64(estimated_size) * 0.1)
 
 	s3, err := getS3Client(job)
 	if err != nil {
@@ -111,7 +112,7 @@ func (a *Api) startBackupJob(job *CreateBackupRestoreJob, c *types.Claims) error
 	}()
 
 	// read file content from input
-	info, err := s3.PutObject(context.Background(), job.Bucket, job.Filename, pr, estimated_size, minio.PutObjectOptions{})
+	info, err := s3.PutObject(context.Background(), job.Bucket, job.Filename, pr, -1, minio.PutObjectOptions{})
 	if err != nil {
 		return fmt.Errorf("s3 upload error: %v", err)
 	}
@@ -156,7 +157,7 @@ func (a *Api) startRestoreJob(job *CreateBackupRestoreJob, c *types.Claims) erro
 		backupRestoreInfo.Store(&BackupRestoreInfo{
 			Type:            job.Type,
 			ProgressPercent: progress * 50,
-			Message:         fmt.Sprintf("Downloading zip file: %d / %d bytes", bytes, stat.Size),
+			Message:         fmt.Sprintf("Step 1/2: downloading zip file, %d / %d bytes", bytes, stat.Size),
 			State:           BackupRestoreJobRunning,
 		})
 	})
@@ -165,6 +166,7 @@ func (a *Api) startRestoreJob(job *CreateBackupRestoreJob, c *types.Claims) erro
 	if err != nil {
 		return fmt.Errorf("temp download: %v", err)
 	}
+	defer os.Remove(tempfile)
 
 	uncompressed_bytes, err := a.app.GetUncompressedZipSize(tempfile)
 	if err != nil {
@@ -178,7 +180,7 @@ func (a *Api) startRestoreJob(job *CreateBackupRestoreJob, c *types.Claims) erro
 			backupRestoreInfo.Store(&BackupRestoreInfo{
 				Type:            job.Type,
 				ProgressPercent: (progress * 50) + 50,
-				Message:         fmt.Sprintf("Unzipping files: %d / %d bytes", bytes, stat.Size),
+				Message:         fmt.Sprintf("Step 2/2: unzipping file '%s' (%d / %d bytes)", currentfile, bytes, stat.Size),
 				State:           BackupRestoreJobRunning,
 			})
 			filecount++
@@ -187,6 +189,9 @@ func (a *Api) startRestoreJob(job *CreateBackupRestoreJob, c *types.Claims) erro
 	if err != nil {
 		return fmt.Errorf("unzip error: %v", err)
 	}
+
+	// disable maintenance mode
+	a.app.DisableMaintenanceMode()
 
 	err = a.app.ReconfigureSystemMods()
 	if err != nil {

@@ -31,9 +31,10 @@ export default {
         update: async function() {
             this.info = await get_backup_restore_info();
         },
-        backup: async function() {
+        create_job: async function(type) {
+            this.restore_confirm = null;
             await create_backup_restore_job({
-                type: "backup",
+                type: type,
                 endpoint: this.endpoint,
                 key_id: this.key_id,
                 access_key: this.access_key,
@@ -41,9 +42,6 @@ export default {
                 filename: this.filename,
                 file_key: this.file_key
             });
-        },
-        restore: function() {
-            this.restore_confirm = null;
         }
     },
     computed: {
@@ -110,14 +108,14 @@ export default {
                         File key (optional)
                     </td>
                     <td>
-                        <input class="form-control" type="text" v-model="file_key" placeholder="File key for encryption/decryption" :disabled="job_in_progress"/>
+                        <input class="form-control" type="password" v-model="file_key" placeholder="File key for encryption/decryption" :disabled="job_in_progress"/>
                     </td>
                 </tr>
                 <tr>
                     <td></td>
                     <td>
                         <span class="btn-group w-100">
-                            <button class="btn btn-primary" :disabled="!inputs_valid || job_in_progress" v-on:click="backup">
+                            <button class="btn btn-primary" :disabled="!inputs_valid || job_in_progress" v-on:click="create_job('backup')">
                                 <i class="fa fa-cloud-arrow-up"></i>
                                 Backup
                             </button>
@@ -130,7 +128,7 @@ export default {
                             title="Confirm restore"
                             :show="restore_confirm"
                             v-on:abort="restore_confirm = false"
-                            v-on:confirm="restore">
+                            v-on:confirm="create_job('restore')">
                             <b>Warning: </b> All existing world-data will be overwritten by a backup-restore!
                         </confirmation-prompt>
                     </td>
@@ -138,10 +136,21 @@ export default {
                 <tr v-if="info">
                     <td>Status</td>
                     <td>
-                        <span>Type: {{info.type}}</span>
-                        <span>State: {{info.state}}</span>
-                        <span>Message: {{info.message}}</span>
-                        <span>Progress: {{info.progress_percent}}</span>
+                        <div class="progress" v-if="info.state == 'running'">
+                            <div class="progress-bar overflow-visible progress-bar-striped progress-bar-animated" v-bind:style="{ width: info.progress_percent+'%' }">
+                                {{info.message}}
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning" v-if="info.state == 'error'">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <b>Job failed:</b> {{info.message}}
+                        </div>
+
+                        <div class="alert alert-info" v-if="info.state == 'success'">
+                            <i class="fa-solid fa-info"></i>
+                            Job done
+                        </div>
                     </td>
                 </tr>
             </tbody>
