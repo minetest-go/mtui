@@ -8,15 +8,13 @@ import { get_mods_by_type, remove as remove_mod, add_mtui, add_beerchat, add_map
 import DefaultLayout from "../../layouts/DefaultLayout.js";
 import { START } from "../../Breadcrumb.js";
 import BackupZipDownload from "../../backup/BackupZipDownload.js";
-import CloudBackup from "../../backup/CloudBackup.js";
-import CloudRestore from "../../backup/CloudRestore.js";
+import CloudBackupRestore from "../../backup/CloudBackupRestore.js";
 
 export default {
     components: {
         "default-layout": DefaultLayout,
         "backup-zip-download": BackupZipDownload,
-        "cloud-backup": CloudBackup,
-        "cloud-restore": CloudRestore
+        "cloud-backup-restore": CloudBackupRestore
     },
     data: function() {
         return {
@@ -146,22 +144,14 @@ export default {
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-header">
-                            Upload backup to S3 cloud-storage <i class="fa fa-cloud-arrow-up"></i>
+                            Backup/Restore from/to S3 cloud-storage <i class="fa fa-cloud"></i>
                         </div>
                         <div class="card-body">
-                            <cloud-backup/>
+                            <cloud-backup-restore/>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            Download backup from S3 cloud-storage and restore <i class="fa fa-cloud-arrow-down"></i>
-                        </div>
-                        <div class="card-body">
-                            <cloud-restore/>
-                        </div>
-                    </div>
                 </div>
             </div>
         </default-layout>

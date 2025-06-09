@@ -73,7 +73,7 @@ func (a *Api) startBackupJob(job *CreateBackupRestoreJob, c *types.Claims) error
 
 	pr, pw := io.Pipe()
 
-	var output io.Writer
+	var output io.Writer = pw
 	if job.FileKey != "" {
 		output, err = app.EncryptedWriter(job.FileKey, pw)
 		if err != nil {
