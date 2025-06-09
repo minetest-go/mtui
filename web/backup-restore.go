@@ -66,6 +66,9 @@ func (a *Api) startBackupJob(job *CreateBackupRestoreJob, c *types.Claims) error
 		return fmt.Errorf("directory size estimation: %v", err)
 	}
 
+	// increase estimation by 25% (compression overhead and stuff)
+	estimated_size += int64(float64(estimated_size) * 0.25)
+
 	s3, err := getS3Client(job)
 	if err != nil {
 		return fmt.Errorf("get s3 client error: %v", err)
@@ -108,7 +111,7 @@ func (a *Api) startBackupJob(job *CreateBackupRestoreJob, c *types.Claims) error
 	}()
 
 	// read file content from input
-	info, err := s3.PutObject(context.Background(), job.Bucket, job.Filename, pr, -1, minio.PutObjectOptions{})
+	info, err := s3.PutObject(context.Background(), job.Bucket, job.Filename, pr, estimated_size, minio.PutObjectOptions{})
 	if err != nil {
 		return fmt.Errorf("s3 upload error: %v", err)
 	}

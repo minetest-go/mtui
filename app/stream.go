@@ -28,7 +28,7 @@ func (a *App) StreamZip(path string, w io.Writer, opts *StreamZipOpts) (int64, e
 
 	bytes := int64(0)
 	files := int64(0)
-	buf := make([]byte, 1024*1024*10) // 10 mb buffer
+	buf := make([]byte, 1024*1024*5) // 5 mb buffer
 
 	err := filepath.Walk(path, func(filePath string, info os.FileInfo, err error) error {
 		if info.IsDir() {
@@ -70,7 +70,11 @@ func (a *App) StreamZip(path string, w io.Writer, opts *StreamZipOpts) (int64, e
 		}
 		defer fsFile.Close()
 
-		fc, err := io.CopyBuffer(zipFile, fsFile, buf)
+		cr := NewCountedReader(fsFile, func(i int64) {
+			opts.Callback(files, bytes+i, relPath)
+		})
+
+		fc, err := io.CopyBuffer(zipFile, cr, buf)
 		if err != nil {
 			return err
 		}
@@ -103,6 +107,10 @@ func (a *App) GetUncompressedZipSize(filename string) (int64, error) {
 }
 
 func (a *App) Unzip(abspath string, filename string, req *http.Request, c *types.Claims, opts *DownloadZipOpts) (int64, error) {
+	if opts == nil {
+		opts = &DownloadZipOpts{}
+	}
+
 	zr, err := zip.OpenReader(filename)
 	if err != nil {
 		return 0, fmt.Errorf("openreader errror: %v", err)
