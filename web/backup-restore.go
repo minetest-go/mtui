@@ -76,20 +76,22 @@ func (a *Api) startBackupJob(job *CreateBackupRestoreJob, c *types.Claims) error
 	}
 
 	pr, pw := io.Pipe()
-
-	var output io.Writer = pw
-	if job.FileKey != "" {
-		output, err = app.EncryptedWriter(job.FileKey, pw)
-		if err != nil {
-			return fmt.Errorf("encryption setup: %v", err)
-		}
-	}
+	errchan := make(chan error, 1)
 
 	filecount := 0
 	bytecount := int64(0)
 
 	// write zip file to output
 	go func() {
+		var output io.WriteCloser = pw
+		if job.FileKey != "" {
+			output, err = app.EncryptedWriter(job.FileKey, pw)
+			if err != nil {
+				errchan <- err
+				return
+			}
+		}
+
 		_, err := a.app.StreamZip(a.app.WorldDir, output, &app.StreamZipOpts{
 			Callback: func(files, bytes int64, currentfile string) {
 				progress_percent := float64(bytes) / float64(estimated_size) * 100
@@ -105,9 +107,9 @@ func (a *Api) startBackupJob(job *CreateBackupRestoreJob, c *types.Claims) error
 			},
 		})
 		if err != nil {
-			pw.CloseWithError(fmt.Errorf("stream zip error: %v", err))
+			errchan <- err
 		} else {
-			pw.Close()
+			output.Close()
 		}
 	}()
 
@@ -115,6 +117,12 @@ func (a *Api) startBackupJob(job *CreateBackupRestoreJob, c *types.Claims) error
 	info, err := s3.PutObject(context.Background(), job.Bucket, job.Filename, pr, -1, minio.PutObjectOptions{})
 	if err != nil {
 		return fmt.Errorf("s3 upload error: %v", err)
+	}
+
+	select {
+	case err = <-errchan:
+		return fmt.Errorf("async stream error: %v", err)
+	default:
 	}
 
 	a.app.CreateUILogEntry(&types.Log{

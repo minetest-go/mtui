@@ -22,6 +22,7 @@ func (a *App) StreamZip(path string, w io.Writer, opts *StreamZipOpts) (int64, e
 	if opts == nil {
 		opts = &StreamZipOpts{}
 	}
+	fmt.Printf("zip.NewWriter\n")
 
 	zw := zip.NewWriter(w)
 	defer zw.Close()
@@ -31,6 +32,7 @@ func (a *App) StreamZip(path string, w io.Writer, opts *StreamZipOpts) (int64, e
 	buf := make([]byte, 1024*1024*5) // 5 mb buffer
 
 	err := filepath.Walk(path, func(filePath string, info os.FileInfo, err error) error {
+		fmt.Printf("filepath.Walk: %s\n", filePath)
 		if info.IsDir() {
 			return nil
 		}
