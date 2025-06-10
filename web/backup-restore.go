@@ -157,7 +157,7 @@ func (a *Api) startRestoreJob(job *CreateBackupRestoreJob, c *types.Claims) erro
 		backupRestoreInfo.Store(&BackupRestoreInfo{
 			Type:            job.Type,
 			ProgressPercent: progress * 50,
-			Message:         fmt.Sprintf("Step 1/2: downloading zip file, %d / %d bytes", bytes, stat.Size),
+			Message:         fmt.Sprintf("Step 1/2: downloading zip file %s (%d / %d bytes)", job.Filename, bytes, stat.Size),
 			State:           BackupRestoreJobRunning,
 		})
 	})

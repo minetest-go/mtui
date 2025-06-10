@@ -4,12 +4,12 @@ import { get_maintenance } from "../../service/stats.js";
 import ConfirmationPrompt from "../ConfirmationPrompt.js";
 
 const store = Vue.reactive({
-    endpoint: "",
-    key_id: "",
-    access_key: "",
-    bucket: "",
-    filename: "world.zip",
-    file_key: "",
+    endpoint: localStorage.getItem("backup-restore-endpoint") || "",
+    key_id: localStorage.getItem("backup-restore-key-id") || "",
+    access_key: localStorage.getItem("backup-restore-access-key") || "",
+    bucket: localStorage.getItem("backup-restore-bucket") || "",
+    filename: localStorage.getItem("backup-restore-file-name") || "world.zip",
+    file_key: localStorage.getItem("backup-restore-file-key") || "",
     handle: null,
     info: null,
     restore_confirm: null
@@ -32,6 +32,13 @@ export default {
             this.info = await get_backup_restore_info();
         },
         create_job: async function(type) {
+            localStorage.setItem("backup-restore-endpoint", this.endpoint);
+            localStorage.setItem("backup-restore-key-id", this.key_id);
+            localStorage.setItem("backup-restore-access-key", this.access_key);
+            localStorage.setItem("backup-restore-bucket", this.bucket);
+            localStorage.setItem("backup-restore-file-key", this.file_key);
+            localStorage.setItem("backup-restore-file-name", this.filename);
+
             this.restore_confirm = null;
             await create_backup_restore_job({
                 type: type,
@@ -138,7 +145,7 @@ export default {
                     <td>
                         <div class="progress" v-if="info.state == 'running'">
                             <div class="progress-bar overflow-visible progress-bar-striped progress-bar-animated" v-bind:style="{ width: info.progress_percent+'%' }">
-                                {{info.message}}
+                                {{info.message}} {{Math.floor(info.progress_percent / 10)*10}} %
                             </div>
                         </div>
 
