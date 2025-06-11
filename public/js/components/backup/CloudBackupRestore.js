@@ -145,7 +145,7 @@ export default {
                     <td>
                         <div class="progress" v-if="info.state == 'running'">
                             <div class="progress-bar overflow-visible progress-bar-striped progress-bar-animated" v-bind:style="{ width: info.progress_percent+'%' }">
-                                {{info.message}} {{Math.floor(info.progress_percent / 10)*10}} %
+                                {{info.message}} {{Math.floor(info.progress_percent * 10)/10}} %
                             </div>
                         </div>
 
