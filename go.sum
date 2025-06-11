@@ -145,6 +145,8 @@ github.com/minetest-go/areasparser v1.0.5 h1:kyfb7mk4S7Gvx5N42uJK8ze3BAbfj8uyLsv
 github.com/minetest-go/areasparser v1.0.5/go.mod h1:NvohBk60WBrAbfvgmJccCEblz9I/Ygba4k9V81rwoNc=
 github.com/minetest-go/mtdb v1.1.52 h1:HWTnqVG6ozkZOr2nr8T1W4+S9j1UhJXXoA706k8NgHY=
 github.com/minetest-go/mtdb v1.1.52/go.mod h1:JmyS0eIF/5yZADQT41+f14UktGmsJnXk07ou0yRkMcE=
+github.com/minetest-go/mtdb v1.1.53 h1:lNcGDHNQxoow540o3HDQtXWFWpKOOFpYOBxucLPlBfU=
+github.com/minetest-go/mtdb v1.1.53/go.mod h1:nl2yR9coe8wfSQuc+a0xWhp1X5J/nlNvL0qtwwr5m7s=
 github.com/minio/crc64nvme v1.0.1 h1:DHQPrYPdqK7jQG/Ls5CTBZWeex/2FMS3G5XGkycuFrY=
 github.com/minio/crc64nvme v1.0.1/go.mod h1:eVfm2fAzLlxMdUGc0EEBGSMmPwmXD5XiNRpnu9J3bvg=
 github.com/minio/md5-simd v1.1.2 h1:Gdi1DZK69+ZVMoNHRXJyNcxrMA4dSxoYHZSQbirFg34=

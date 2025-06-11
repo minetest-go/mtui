@@ -9,7 +9,7 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.17.1
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/websocket v1.5.3
-	github.com/minetest-go/mtdb v1.1.52
+	github.com/minetest-go/mtdb v1.1.53
 	github.com/oschwald/geoip2-golang v1.11.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.10.0
@@ -24,6 +24,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/mattn/go-sqlite3 v1.14.28
 	github.com/minetest-go/areasparser v1.0.5
+	github.com/minio/minio-go/v7 v7.0.92
 	gorm.io/driver/sqlite v1.5.7
 	gorm.io/gorm v1.30.0
 )
@@ -49,7 +50,6 @@ require (
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/minio/crc64nvme v1.0.1 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
-	github.com/minio/minio-go/v7 v7.0.92 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.2 // indirect
 	github.com/philhofer/fwd v1.1.3-0.20240916144458-20a13a1f6b7c // indirect
