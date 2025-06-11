@@ -9,7 +9,7 @@ import (
 	"io"
 )
 
-// EncryptedWriter wraps w with an OFB cipher stream.
+// EncryptedWriter wraps w with an CTR cipher stream.
 func EncryptedWriter(key string, w io.Writer) (*cipher.StreamWriter, error) {
 
 	// generate random initial value
@@ -29,11 +29,11 @@ func EncryptedWriter(key string, w io.Writer) (*cipher.StreamWriter, error) {
 		return nil, err
 	}
 
-	stream := cipher.NewOFB(block, iv)
+	stream := cipher.NewCTR(block, iv)
 	return &cipher.StreamWriter{S: stream, W: w}, nil
 }
 
-// EncryptedReader wraps r with an OFB cipher stream.
+// EncryptedReader wraps r with an CTR cipher stream.
 func EncryptedReader(key string, r io.Reader) (*cipher.StreamReader, error) {
 
 	// read initial value
@@ -48,7 +48,7 @@ func EncryptedReader(key string, r io.Reader) (*cipher.StreamReader, error) {
 		return nil, err
 	}
 
-	stream := cipher.NewOFB(block, iv)
+	stream := cipher.NewCTR(block, iv)
 	return &cipher.StreamReader{S: stream, R: r}, nil
 }
 

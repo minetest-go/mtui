@@ -22,15 +22,17 @@ func (a *App) StreamZip(path string, w io.Writer, opts *StreamZipOpts) (int64, e
 	if opts == nil {
 		opts = &StreamZipOpts{}
 	}
+	fmt.Printf("zip.NewWriter\n")
 
 	zw := zip.NewWriter(w)
 	defer zw.Close()
 
 	bytes := int64(0)
 	files := int64(0)
-	buf := make([]byte, 1024*1024*10) // 10 mb buffer
+	buf := make([]byte, 1024*1024*5) // 5 mb buffer
 
 	err := filepath.Walk(path, func(filePath string, info os.FileInfo, err error) error {
+		fmt.Printf("filepath.Walk: %s\n", filePath)
 		if info.IsDir() {
 			return nil
 		}
@@ -70,7 +72,11 @@ func (a *App) StreamZip(path string, w io.Writer, opts *StreamZipOpts) (int64, e
 		}
 		defer fsFile.Close()
 
-		fc, err := io.CopyBuffer(zipFile, fsFile, buf)
+		cr := NewCountedReader(fsFile, func(i int64) {
+			opts.Callback(files, bytes+i, relPath)
+		})
+
+		fc, err := io.CopyBuffer(zipFile, cr, buf)
 		if err != nil {
 			return err
 		}
@@ -87,25 +93,27 @@ type DownloadZipOpts struct {
 	Callback StreamProgressCallback
 }
 
-func (a *App) DownloadZip(abspath string, r io.Reader, req *http.Request, c *types.Claims, opts *DownloadZipOpts) (int64, error) {
+func (a *App) GetUncompressedZipSize(filename string) (int64, error) {
+	zr, err := zip.OpenReader(filename)
+	if err != nil {
+		return 0, fmt.Errorf("openreader errror: %v", err)
+	}
+	defer zr.Close()
 
+	// total uncompressed size
+	uncompressed_bytes := uint64(0)
+	for _, f := range zr.File {
+		uncompressed_bytes += f.UncompressedSize64
+	}
+	return int64(uncompressed_bytes), nil
+}
+
+func (a *App) Unzip(abspath string, filename string, req *http.Request, c *types.Claims, opts *DownloadZipOpts) (int64, error) {
 	if opts == nil {
 		opts = &DownloadZipOpts{}
 	}
 
-	tf, err := os.CreateTemp(os.TempDir(), "mtui-zip-upload")
-	if err != nil {
-		return 0, fmt.Errorf("createtemp error: %v", err)
-	}
-	defer os.Remove(tf.Name())
-
-	buf := make([]byte, 1024*1024*1) // 1 mb buffer
-	_, err = io.CopyBuffer(tf, r, buf)
-	if err != nil {
-		return 0, fmt.Errorf("copybuffer error: %v", err)
-	}
-
-	zr, err := zip.OpenReader(tf.Name())
+	zr, err := zip.OpenReader(filename)
 	if err != nil {
 		return 0, fmt.Errorf("openreader errror: %v", err)
 	}
@@ -146,4 +154,33 @@ func (a *App) DownloadZip(abspath string, r io.Reader, req *http.Request, c *typ
 	}
 
 	return bytes, nil
+}
+
+func (a *App) DownloadToTempfile(r io.Reader) (string, error) {
+	tf, err := os.CreateTemp(os.TempDir(), "mtui-upload")
+	if err != nil {
+		return "", fmt.Errorf("createtemp error: %v", err)
+	}
+
+	buf := make([]byte, 1024*1024*1) // 1 mb buffer
+	_, err = io.CopyBuffer(tf, r, buf)
+	if err != nil {
+		return "", fmt.Errorf("copybuffer error: %v", err)
+	}
+
+	return tf.Name(), nil
+}
+
+func (a *App) DownloadAndUnzip(abspath string, r io.Reader, req *http.Request, c *types.Claims, opts *DownloadZipOpts) (int64, error) {
+
+	if opts == nil {
+		opts = &DownloadZipOpts{}
+	}
+
+	tempfile, err := a.DownloadToTempfile(r)
+	if err != nil {
+		return 0, fmt.Errorf("temp file error: %v", err)
+	}
+
+	return a.Unzip(abspath, tempfile, req, c, opts)
 }

@@ -139,7 +139,7 @@ func (a *Api) UnzipFile(w http.ResponseWriter, r *http.Request, claims *types.Cl
 	defer f.Close()
 
 	abspath := path.Dir(filename)
-	count, err := a.app.DownloadZip(abspath, f, r, claims, nil)
+	count, err := a.app.Unzip(abspath, filename, r, claims, nil)
 	Send(w, true, err)
 
 	a.app.CreateUILogEntry(&types.Log{
@@ -188,15 +188,9 @@ func (a *Api) RenameFile(w http.ResponseWriter, r *http.Request, claims *types.C
 	}, r)
 }
 
-func (a *Api) GetDirectorySize(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	_, absdir, err := a.get_sanitized_dir(r)
-	if err != nil {
-		SendError(w, 500, err)
-		return
-	}
-
+func (a *Api) getDirectorySize(absdir string) (int64, error) {
 	count := int64(0)
-	err = filepath.Walk(absdir, func(filePath string, info os.FileInfo, err error) error {
+	err := filepath.Walk(absdir, func(filePath string, info os.FileInfo, err error) error {
 		if info.IsDir() {
 			return nil
 		}
@@ -207,14 +201,20 @@ func (a *Api) GetDirectorySize(w http.ResponseWriter, r *http.Request, claims *t
 			return nil
 		}
 
-		fi, err := os.Stat(filePath)
-		if err != nil {
-			return fmt.Errorf("stat error: '%s': %v", filePath, err)
-		}
-
-		count += fi.Size()
+		count += info.Size()
 		return nil
 	})
 
+	return count, err
+}
+
+func (a *Api) GetDirectorySize(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	_, absdir, err := a.get_sanitized_dir(r)
+	if err != nil {
+		SendError(w, 500, err)
+		return
+	}
+
+	count, err := a.getDirectorySize(absdir)
 	Send(w, count, err)
 }

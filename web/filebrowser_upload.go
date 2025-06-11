@@ -16,7 +16,7 @@ func (a *Api) UploadZip(w http.ResponseWriter, r *http.Request, claims *types.Cl
 		return
 	}
 
-	count, err := a.app.DownloadZip(absdir, r.Body, r, claims, nil)
+	count, err := a.app.DownloadAndUnzip(absdir, r.Body, r, claims, nil)
 	if err != nil {
 		SendError(w, 500, err)
 		return

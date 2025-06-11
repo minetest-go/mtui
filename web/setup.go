@@ -51,23 +51,19 @@ func Setup(a *app.App) error {
 	fbr.HandleFunc("/file", api.Secure(api.AppendFile)).Methods(http.MethodPut)
 	fbr.HandleFunc("/rename", api.Secure(api.RenameFile)).Methods(http.MethodPost)
 
-	// backup job
-	apibj := r.PathPrefix("/api/backupjob").Subrouter()
-	apibj.HandleFunc("", api.SecurePriv(types.PRIV_SERVER, api.CreateBackupJob)).Methods(http.MethodPost)
-	apibj.HandleFunc("/{id}", api.SecurePriv(types.PRIV_SERVER, api.GetBackupJobInfo)).Methods(http.MethodGet)
+	// backup-restore job
+	apibj := r.PathPrefix("/api/backup-restore").Subrouter()
+	apibj.HandleFunc("", api.GetBackupRestoreJobInfo).Methods(http.MethodGet)
+	apibj.HandleFunc("/create", api.SecurePriv(types.PRIV_SERVER, api.CreateBackupRestoreJob)).Methods(http.MethodPost)
 
-	// restore job
-	apirj := r.PathPrefix("/api/restorejob").Subrouter()
-	apirj.HandleFunc("", api.SecurePriv(types.PRIV_SERVER, api.CreateRestoreJob)).Methods(http.MethodPost)
-	apirj.HandleFunc("/{id}", api.SecurePriv(types.PRIV_SERVER, api.GetRestoreJobInfo)).Methods(http.MethodGet)
+	r.HandleFunc("/api/appinfo", api.GetAppInfo)
+	r.HandleFunc("/api/themes", api.SecurePriv(types.PRIV_SERVER, api.GetThemes))
 
 	// maintenance mode middleware enabled routes below
 	apir := r.PathPrefix("/api").Subrouter()
 	apir.Use(MaintenanceModeCheck(a.MaintenanceMode))
 
 	apir.HandleFunc("/healthcheck", api.HealthCheck)
-	apir.HandleFunc("/appinfo", api.GetAppInfo)
-	apir.HandleFunc("/themes", api.SecurePriv(types.PRIV_SERVER, api.GetThemes))
 
 	apir.HandleFunc("/features", api.GetFeatures).Methods(http.MethodGet)
 	apir.HandleFunc("/feature", api.SecurePriv(types.PRIV_SERVER, api.SetFeature)).Methods(http.MethodPost)
