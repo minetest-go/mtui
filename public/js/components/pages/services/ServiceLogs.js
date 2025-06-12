@@ -70,15 +70,15 @@ export default {
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-2">
+                <div class="col-md-2">
                     <label>From</label>
                     <vue-datepicker v-model="since" auto-apply/>
                 </div>
-                <div class="col-2">
+                <div class="col-md- 2">
                     <label>Until</label>
                     <vue-datepicker v-model="until" auto-apply/>
                 </div>
-                <div class="col-2">
+                <div class="col-md-2">
                     <label>Live logs</label>
                     <button class="btn btn-outline-secondary w-100" v-on:click="live = true" v-if="!live">
                         Disabled
@@ -89,13 +89,13 @@ export default {
                         <i class="fa fa-play"></i>
                     </button>
                 </div>
-                <div class="col-2">
+                <div class="col-md-2">
                     <label>Log search</label>
                     <button class="btn btn-primary w-100" v-on:click="fetch_logs" :disabled="live">
                         Search
                     </button>
                 </div>
-                <div class="col-2">
+                <div class="col-md-2">
                     <label>Clear logs</label>
                     <button class="btn btn-secondary w-100" v-on:click="clear_logs">
                         Clear
