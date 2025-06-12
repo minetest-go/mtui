@@ -24,7 +24,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/mattn/go-sqlite3 v1.14.28
 	github.com/minetest-go/areasparser v1.0.5
-	github.com/minio/minio-go/v7 v7.0.92
+	github.com/minio/minio-go/v7 v7.0.93
 	gorm.io/driver/sqlite v1.5.7
 	gorm.io/gorm v1.30.0
 )
