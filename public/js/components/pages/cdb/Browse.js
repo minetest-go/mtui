@@ -1,5 +1,6 @@
 
 import { search_packages } from "../../../api/cdb.js";
+import { get_cdb_mod } from "../../../service/mods.js";
 import Preview from "./Preview.js";
 import DefaultLayout from "../../layouts/DefaultLayout.js";
 import { START, ADMINISTRATION, MODS, CDB } from "../../Breadcrumb.js";
@@ -33,18 +34,18 @@ export default {
         }
     },
     methods: {
-        search: function() {
+        get_cdb_mod,
+        search: async function() {
             this.busy = true;
             this.packages = [];
-            search_packages({
+            store.packages = await search_packages({
                 type: [store.type],
                 query: store.query,
                 limit: 42,
                 sort: "score",
                 order: "desc"
-            })
-            .then(pkgs => store.packages = pkgs)
-            .finally(() => this.busy = false);
+            });
+            this.busy = false;
         }
     },
     template: /*html*/`
@@ -75,7 +76,12 @@ export default {
         </div>
         <hr>
         <div style="display: flex; flex-wrap: wrap;">
-            <package-preview v-for="pkg in packages" v-if="packages" :pkg="pkg"></package-preview>
+            <package-preview
+                v-for="pkg in packages"
+                v-if="packages"
+                :pkg="pkg"
+                :installed="get_cdb_mod(pkg.author, pkg.name)">
+            </package-preview>
         </div>
     </default-layout>
     `

@@ -64,22 +64,20 @@ export default {
             }]
         };
     },
-    created: function() {
-        get_package(this.author, this.name)
-        .then(pkg => {
-            const mod = get_cdb_mod(pkg.author, pkg.name);
-            pkg.installed = !!mod;
-            if (pkg.type == "mod") {
-                // resolve mod dependencies
-                validate()
-                .then(r => this.installed_mods = r.installed)
-                .then(() => this.fetch_dependencies());
-            }
-            this.pkg = pkg;
-        });
+    created: async function() {
+        const pkg = await get_package(this.author, this.name);
+        const mod = get_cdb_mod(pkg.author, pkg.name);
+        pkg.installed = !!mod;
+        if (pkg.type == "mod") {
+            // resolve mod dependencies
+            const r = await validate();
+            this.installed_mods = r.installed;
+            await this.fetch_dependencies();
+        }
+        this.pkg = pkg;
     },
     methods: {
-        fetch_dependencies: function() {
+        fetch_dependencies: async function() {
             this.missing_dep = false;
             this.busy = true;
 
@@ -89,41 +87,39 @@ export default {
                 selected_packages.push(this.selected_package_map[modname]);
             });
 
-            return resolve_package({
+            const deps = await resolve_package({
                 package: `${this.author}/${this.name}`,
                 installed_mods: this.installed_mods,
                 selected_packages: selected_packages
-            })
-            .then(deps => {
-                deps.forEach(d => {
-                    d.busy = false;
-                    if (!d.installed && d.choices.length == 0) {
-                        // not installed and no installation candidate
-                        this.missing_dep = true;
-                    }
-                });
-                this.deps = deps;
-                this.busy = false;
             });
+            deps.forEach(d => {
+                d.busy = false;
+                if (!d.installed && d.choices.length == 0) {
+                    // not installed and no installation candidate
+                    this.missing_dep = true;
+                }
+            });
+            this.deps = deps;
+            this.busy = false;
         },
-        install_next: function() {
+        install_next: async function() {
             this.install_busy = true;
             const next_dep = this.deps.find(d => !d.installed);
 
             if (!next_dep && !this.pkg.installed) {
                 // install root dep
-                add({
+                await add({
                     author: this.pkg.author,
                     name: this.pkg.name,
                     mod_type: this.pkg.type,
                     source_type: "cdb"
-                })
-                .then(() => {
-                    this.install_busy = false;
-                    this.pkg.installed = true;
                 });
+                this.install_busy = false;
+                this.pkg.installed = true;
 
                 update_settings();
+                // go back to cdb browser
+                this.$router.push("/cdb/browse");
                 return;
             }
 
@@ -131,27 +127,27 @@ export default {
                 // no more packages
                 this.install_busy = false;
                 update_settings();
+                // go back to cdb browser
+                this.$router.push("/cdb/browse");
                 return;
             }
 
             const parts = next_dep.selected.split("/");
             next_dep.busy = true;
 
-            add({
+            await add({
                 author: parts[0],
 				name: parts[1],
 				mod_type: "mod",
 				source_type: "cdb"
-			})
-            .then(() => {
-                next_dep.installed = true;
-                next_dep.busy = false;
-                this.install_next();
-            });
+			});
+            next_dep.installed = true;
+            next_dep.busy = false;
+            await this.install_next();
         },
-        select_dep: function(modname, dep) {
+        select_dep: async function(modname, dep) {
             this.selected_package_map[modname] = dep;
-            this.fetch_dependencies();
+            await this.fetch_dependencies();
         }
     },
     template: /*html*/`

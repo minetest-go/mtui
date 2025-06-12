@@ -1,6 +1,6 @@
 
 export default {
-    props: ["pkg", "install_button"],
+    props: ["pkg", "install_button", "installed"],
     computed: {
         thumbnail: function() {
             return this.pkg.thumbnail.replaceAll("/thumbnails/1", "/thumbnails/2");
@@ -18,6 +18,10 @@ export default {
                 </router-link>
             </h5>
             <h6 class="card-subtitle mb-2 text-body-secondary">by {{pkg.author}}</h6>
+            <span v-if="installed" class="badge bg-success">
+                <i class="fa fa-check"></i>
+                Installed
+            </span>
             <p class="card-text">{{pkg.short_description}}</p>
             <button class="btn btn-success"
                 style="position: absolute; bottom: 15px; right: 15px;"

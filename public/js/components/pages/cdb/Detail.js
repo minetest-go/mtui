@@ -17,12 +17,11 @@ export default {
             breadcrumb: [START, ADMINISTRATION, MODS, CDB, CDB_DETAIL(this.author, this.name)]
         };
     },
-    created: function() {
-        get_package(this.author, this.name)
-        .then(p => this.pkg = p);
+    created: async function() {
+        this.pkg = await get_package(this.author, this.name);
 
-        get_dependencies(this.author, this.name)
-        .then(d => this.deps = d[`${this.author}/${this.name}`]);
+        const d = await get_dependencies(this.author, this.name);
+        this.deps = d[`${this.author}/${this.name}`];
     },
     methods: {
         markdown: function(txt) {
@@ -95,6 +94,10 @@ export default {
                             <i class="fa-solid fa-plus"></i>
                             Install
                         </router-link>
+                        <span v-else class="badge bg-success">
+                            <i class="fa fa-check"></i>
+                            Installed
+                        </span>
                     </div>
                 </div>
             </div>

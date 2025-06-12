@@ -7,6 +7,7 @@
   },
   "scripts": {
     "eslint": "eslint js/",
+    "eslint-fix": "eslint --fix js/",
     "bundle": "rollup -c rollup.config.mjs"
   },
   "author": "",
