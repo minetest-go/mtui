@@ -184,12 +184,28 @@ func (s *DockerService) Create(image string) error {
 		return fmt.Errorf("could not create container: %v", err)
 	}
 
+	// normal network without alias
 	for _, name := range s.cfg.Networks {
 		err = cli.NetworkConnect(ctx, name, resp.ID, &network.EndpointSettings{
 			NetworkID: name,
 		})
 		if err != nil {
 			return fmt.Errorf("could not connect container %s to network %s: %v", resp.ID, name, err)
+		}
+	}
+
+	// internal networks with alias
+	for _, name := range s.cfg.InternalNetworks {
+		aliases := []string{}
+		if s.cfg.InternalName != "" {
+			aliases = append(aliases, s.cfg.InternalName)
+		}
+		err = cli.NetworkConnect(ctx, name, resp.ID, &network.EndpointSettings{
+			NetworkID: name,
+			Aliases:   aliases,
+		})
+		if err != nil {
+			return fmt.Errorf("could not connect container %s to internal network %s: %v", resp.ID, name, err)
 		}
 	}
 

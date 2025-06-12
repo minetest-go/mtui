@@ -23,8 +23,10 @@ func (app *App) SetupServices() {
 		os.MkdirAll(path.Join(app.Config.WorldDir, "textures"), 0777)
 
 		app.ServiceEngine = dockerservice.New(&dockerservice.Config{
-			ContainerName: fmt.Sprintf("%s_engine", app.Config.DockerContainerPrefix),
-			Networks:      strings.Split(app.Config.DockerNetwork, ","),
+			ContainerName:    fmt.Sprintf("%s_engine", app.Config.DockerContainerPrefix),
+			InternalName:     "engine",
+			Networks:         strings.Split(app.Config.DockerNetwork, ","),
+			InternalNetworks: strings.Split(app.Config.DockerNetworkInternal, ","),
 			DefaultConfig: &container.Config{
 				Cmd:  []string{"--world", "/world", "--config", "/minetest.conf"},
 				Tty:  false,
@@ -66,8 +68,10 @@ func (app *App) SetupServices() {
 
 		// matterbridge
 		app.ServiceMatterbridge = dockerservice.New(&dockerservice.Config{
-			ContainerName: fmt.Sprintf("%s_matterbridge", app.Config.DockerContainerPrefix),
-			Networks:      strings.Split(app.Config.DockerNetwork, ","),
+			ContainerName:    fmt.Sprintf("%s_matterbridge", app.Config.DockerContainerPrefix),
+			InternalName:     "matterbridge",
+			Networks:         strings.Split(app.Config.DockerNetwork, ","),
+			InternalNetworks: strings.Split(app.Config.DockerNetworkInternal, ","),
 			DefaultConfig: &container.Config{
 				Env: no_proxy_env,
 			},
@@ -88,13 +92,14 @@ func (app *App) SetupServices() {
 		// mapserver
 		tfns := fmt.Sprintf("%s-mapserver", app.Config.DockerContainerPrefix)
 		app.ServiceMapserver = dockerservice.New(&dockerservice.Config{
-			ContainerName: fmt.Sprintf("%s_mapserver", app.Config.DockerContainerPrefix),
-			Networks:      strings.Split(app.Config.DockerNetwork, ","),
+			ContainerName:    fmt.Sprintf("%s_mapserver", app.Config.DockerContainerPrefix),
+			InternalName:     "mapserver",
+			Networks:         strings.Split(app.Config.DockerNetwork, ","),
+			InternalNetworks: strings.Split(app.Config.DockerNetworkInternal, ","),
 			DefaultConfig: &container.Config{
 				Env:        no_proxy_env,
 				WorkingDir: "/world",
 				Labels: map[string]string{
-					"promtail":               "true",
 					"traefik.enable":         "true",
 					"traefik.docker.network": "terminator",
 					"traefik.http.services." + tfns + ".loadbalancer.server.port":            "8080",

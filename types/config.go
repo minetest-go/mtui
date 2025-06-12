@@ -19,7 +19,6 @@ type Config struct {
 	Servername              string
 	EnabledFeatures         []string
 	InstallMtuiMod          bool
-	AutoReconfigureMods     bool
 	LogRetention            string
 	LogStreamURL            string
 	LogStreamAuthorization  string
@@ -30,6 +29,7 @@ type Config struct {
 	WASMMinetestHost        string
 	DockerHostname          string
 	DockerNetwork           string
+	DockerNetworkInternal   string
 	DockerWorlddir          string
 	DockerContainerPrefix   string
 	DockerAutoInstallEngine bool
@@ -50,7 +50,6 @@ func NewConfig(world_dir string) *Config {
 		Servername:              os.Getenv("SERVER_NAME"),
 		EnabledFeatures:         strings.Split(os.Getenv("ENABLE_FEATURES"), ","),
 		InstallMtuiMod:          os.Getenv("INSTALL_MTUI_MOD") == "true",
-		AutoReconfigureMods:     os.Getenv("AUTORECONFIGURE_MODS") == "true",
 		LogRetention:            os.Getenv("LOG_RETENTION"),
 		LogStreamURL:            os.Getenv("LOG_STREAM_URL"),
 		LogStreamAuthorization:  os.Getenv("LOG_STREAM_AUTHORIZATION"),
@@ -61,6 +60,7 @@ func NewConfig(world_dir string) *Config {
 		WASMMinetestHost:        os.Getenv("WASM_MINETEST_HOST"),
 		DockerHostname:          os.Getenv("DOCKER_HOSTNAME"),
 		DockerNetwork:           os.Getenv("DOCKER_NETWORK"),
+		DockerNetworkInternal:   os.Getenv("DOCKER_INTERNAL_NETWORK"),
 		DockerWorlddir:          os.Getenv("DOCKER_WORLD_DIR"),
 		DockerContainerPrefix:   os.Getenv("DOCKER_CONTAINER_PREFIX"),
 		DockerAutoInstallEngine: os.Getenv("DOCKER_AUTOINSTALL_ENGINE") == "true",

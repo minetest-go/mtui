@@ -201,11 +201,6 @@ func (a *Api) startRestoreJob(job *CreateBackupRestoreJob, c *types.Claims) erro
 	// disable maintenance mode
 	a.app.DisableMaintenanceMode()
 
-	err = a.app.ReconfigureSystemMods()
-	if err != nil {
-		return fmt.Errorf("ReconfigureSystemMods error: %v", err)
-	}
-
 	a.app.CreateUILogEntry(&types.Log{
 		Username: c.Username,
 		Event:    "backup",

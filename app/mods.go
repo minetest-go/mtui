@@ -113,11 +113,6 @@ func (a *App) CreateBeerchatMod() (*types.Mod, error) {
 		}
 	}
 
-	// settings for mtui key/url
-	if a.Config.DockerContainerPrefix == "" {
-		return m, nil
-	}
-
 	for _, fname := range []string{types.FEATURE_DOCKER, types.FEATURE_MINETEST_CONFIG} {
 		feature, err := a.Repos.FeatureRepository.GetByName(fname)
 		if err != nil {
@@ -139,7 +134,7 @@ func (a *App) CreateBeerchatMod() (*types.Mod, error) {
 	}
 
 	cfg["beerchat.matterbridge_url"] = &minetestconfig.Setting{
-		Value: fmt.Sprintf("http://%s_matterbridge:4242", a.Config.DockerContainerPrefix),
+		Value: "http://matterbridge:4242",
 	}
 	cfg["beerchat.matterbridge_token"] = &minetestconfig.Setting{
 		Value: "my-token",
@@ -176,11 +171,6 @@ func (a *App) CreateMapserverMod() (*types.Mod, error) {
 		}
 	}
 
-	// settings for mtui key/url
-	if a.Config.DockerContainerPrefix == "" {
-		return m, nil
-	}
-
 	for _, fname := range []string{types.FEATURE_DOCKER, types.FEATURE_MINETEST_CONFIG} {
 		feature, err := a.Repos.FeatureRepository.GetByName(fname)
 		if err != nil {
@@ -202,7 +192,7 @@ func (a *App) CreateMapserverMod() (*types.Mod, error) {
 	}
 
 	cfg["mapserver.url"] = &minetestconfig.Setting{
-		Value: fmt.Sprintf("http://%s_mapserver:8080", a.Config.DockerContainerPrefix),
+		Value: "http://mapserver:8080",
 	}
 
 	a.AddHTTPMod("mapserver", cfg)

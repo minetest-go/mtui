@@ -4,7 +4,9 @@ import "github.com/docker/docker/api/types/container"
 
 type Config struct {
 	ContainerName     string
+	InternalName      string
 	Networks          []string
+	InternalNetworks  []string
 	DefaultConfig     *container.Config
 	DefaultHostConfig *container.HostConfig
 }
