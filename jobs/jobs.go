@@ -9,6 +9,10 @@ func Start(a *app.App) {
 	go modAutoUpdate(a)
 	go serviceLogs(a)
 
+	if a.Config.TailEngineLogfile != "" {
+		go tailLogfile(a)
+	}
+
 	if a.Config.LogStreamURL != "" {
 		go logStream(a)
 	}

@@ -23,6 +23,7 @@ type Config struct {
 	LogStreamURL            string
 	LogStreamAuthorization  string
 	MinetestConfig          string
+	TailEngineLogfile       string
 	GeoIPAPI                string
 	DockerMinetestConfig    string
 	DockerMinetestPort      int
@@ -54,6 +55,7 @@ func NewConfig(world_dir string) *Config {
 		LogStreamURL:            os.Getenv("LOG_STREAM_URL"),
 		LogStreamAuthorization:  os.Getenv("LOG_STREAM_AUTHORIZATION"),
 		MinetestConfig:          os.Getenv("MINETEST_CONFIG"),
+		TailEngineLogfile:       os.Getenv("TAIL_ENGINE_LOGFILE"),
 		GeoIPAPI:                os.Getenv("GEOIP_API"),
 		DockerMinetestConfig:    os.Getenv("DOCKER_MINETEST_CONFIG"),
 		DockerMinetestPort:      int(port),
