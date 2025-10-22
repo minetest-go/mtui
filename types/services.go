@@ -6,6 +6,7 @@ var EngineServiceImages = map[string]string{
 	"5.11.0": "ghcr.io/luanti-org/luanti:5.11.0",
 	"5.12.0": "ghcr.io/luanti-org/luanti:5.12.0",
 	"5.13.0": "ghcr.io/luanti-org/luanti:5.13.0",
+	"5.14.0": "ghcr.io/luanti-org/luanti:5.14.0",
 }
 
 // for auto install
