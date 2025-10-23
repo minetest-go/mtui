@@ -73,7 +73,9 @@ func (a *App) StreamZip(path string, w io.Writer, opts *StreamZipOpts) (int64, e
 		defer fsFile.Close()
 
 		cr := NewCountedReader(fsFile, func(i int64) {
-			opts.Callback(files, bytes+i, relPath)
+			if opts.Callback != nil {
+				opts.Callback(files, bytes+i, relPath)
+			}
 		})
 
 		fc, err := io.CopyBuffer(zipFile, cr, buf)
