@@ -10,7 +10,7 @@ var EngineServiceImages = map[string]string{
 }
 
 // for auto install
-var EngineServiceLatest = "5.13.0"
+var EngineServiceLatest = "5.14.0"
 
 var MatterbridgeServiceImages = map[string]string{
 	"1.26.0": "42wim/matterbridge:1.26.0",

@@ -16,7 +16,6 @@
     "@fortawesome/fontawesome-free": "^6.7.2",
     "@vuepic/vue-datepicker": "^11.0.0",
     "bootstrap": "^5.3.3",
-    "bootswatch": "^5.3.3",
     "codemirror": "^5.65.15",
     "dompurify": "^3.2.3",
     "marked": "^15.0.0",

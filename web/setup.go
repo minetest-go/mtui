@@ -57,7 +57,6 @@ func Setup(a *app.App) error {
 	apibj.HandleFunc("/create", api.SecurePriv(types.PRIV_SERVER, api.CreateBackupRestoreJob)).Methods(http.MethodPost)
 
 	r.HandleFunc("/api/appinfo", api.GetAppInfo)
-	r.HandleFunc("/api/themes", api.SecurePriv(types.PRIV_SERVER, api.GetThemes))
 
 	// maintenance mode middleware enabled routes below
 	apir := r.PathPrefix("/api").Subrouter()

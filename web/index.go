@@ -3,14 +3,12 @@ package web
 import (
 	"html/template"
 	"mtui/public"
-	"mtui/types"
 	"net/http"
 )
 
 type IndexModel struct {
-	BootstrapCSSUrl string
-	ServerName      string
-	Webdev          bool
+	ServerName string
+	Webdev     bool
 }
 
 func (a *Api) GetIndex(w http.ResponseWriter, r *http.Request) {
@@ -26,28 +24,9 @@ func (a *Api) GetIndex(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	css_url := public.ThemeMap[a.app.Config.DefaultTheme]
-	if css_url == "" {
-		// not found, fall back to default
-		css_url = public.ThemeMap["default"]
-	}
-
-	if !a.app.MaintenanceMode() {
-		entry, err := a.app.Repos.ConfigRepo.GetByKey(types.ConfigThemeKey)
-		if err != nil {
-			SendError(w, 500, err)
-			return
-		}
-
-		if entry != nil && public.ThemeMap[entry.Value] != "" {
-			css_url = public.ThemeMap[entry.Value]
-		}
-	}
-
 	m := &IndexModel{
-		BootstrapCSSUrl: css_url,
-		ServerName:      a.app.Config.Servername,
-		Webdev:          a.app.Config.Webdev,
+		ServerName: a.app.Config.Servername,
+		Webdev:     a.app.Config.Webdev,
 	}
 
 	w.Header().Set("Cross-Origin-Embedder-Policy", "credentialless")

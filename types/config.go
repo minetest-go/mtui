@@ -14,7 +14,6 @@ type Config struct {
 	CookieDomain            string
 	CookieSecure            bool
 	CookiePath              string
-	DefaultTheme            string
 	Webdev                  bool
 	Servername              string
 	EnabledFeatures         []string
@@ -44,7 +43,6 @@ func NewConfig(world_dir string) *Config {
 		CookieDomain:            os.Getenv("COOKIE_DOMAIN"),
 		CookieSecure:            os.Getenv("COOKIE_SECURE") == "true",
 		CookiePath:              os.Getenv("COOKIE_PATH"),
-		DefaultTheme:            os.Getenv("DEFAULT_THEME"),
 		APIKey:                  os.Getenv("API_KEY"),
 		JWTKey:                  os.Getenv("JWT_KEY"),
 		Webdev:                  os.Getenv("WEBDEV") == "true",

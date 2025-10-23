@@ -8,6 +8,7 @@ import StatsDisplay from './StatsDisplay.js';
 import ServiceStatus from "./pages/services/ServiceStatus.js";
 import NavDropdown from "./NavDropdown.js";
 import SkinPreview from "./SkinPreview.js";
+import ThemeSwitcher from "./ThemeSwitcher.js";
 
 export default {
 	data: function() {
@@ -35,7 +36,8 @@ export default {
 		"stats-display": StatsDisplay,
 		"service-status": ServiceStatus,
 		"nav-dropdown": NavDropdown,
-		"skin-preview": SkinPreview
+		"skin-preview": SkinPreview,
+		"theme-switcher": ThemeSwitcher
 	},
 	template: /*html*/`
 		<nav class="navbar navbar-expand-lg navbar-dark" v-bind:class="{'bg-dark': !maintenance, 'bg-warning': maintenance}">
@@ -135,11 +137,6 @@ export default {
 							</router-link>
 						</li>
 						<li v-if="!maintenance">
-							<router-link to="/ui/settings" class="dropdown-item">
-								<i class="fa-solid fa-list-check"></i> UI Settings
-							</router-link>
-						</li>
-						<li v-if="!maintenance">
 							<router-link to="/features" class="dropdown-item">
 								<i class="fa fa-tags"></i> Features
 							</router-link>
@@ -192,6 +189,7 @@ export default {
 							Logout
 						</button>
 					</div>
+					<theme-switcher/>
 				</div>
 			</div>
 		</nav>
