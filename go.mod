@@ -2,7 +2,7 @@ module mtui
 
 go 1.24.0
 
-toolchain go1.24.4
+toolchain go1.25.6
 
 require (
 	github.com/HimbeerserverDE/srp v0.0.0
