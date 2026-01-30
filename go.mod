@@ -23,7 +23,7 @@ require (
 	github.com/docker/go-connections v0.5.0
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/hpcloud/tail v1.0.0
-	github.com/mattn/go-sqlite3 v1.14.32
+	github.com/mattn/go-sqlite3 v1.14.33
 	github.com/minetest-go/areasparser v1.0.5
 	github.com/minio/minio-go/v7 v7.0.95
 	gorm.io/driver/sqlite v1.6.0
