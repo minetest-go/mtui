@@ -74,7 +74,7 @@ export default {
                     <label>From</label>
                     <vue-datepicker v-model="since" auto-apply/>
                 </div>
-                <div class="col-md- 2">
+                <div class="col-md-2">
                     <label>Until</label>
                     <vue-datepicker v-model="until" auto-apply/>
                 </div>
