@@ -27,7 +27,7 @@ require (
 	github.com/minetest-go/areasparser v1.0.5
 	github.com/minio/minio-go/v7 v7.0.95
 	gorm.io/driver/sqlite v1.6.0
-	gorm.io/gorm v1.31.0
+	gorm.io/gorm v1.31.1
 )
 
 require (
