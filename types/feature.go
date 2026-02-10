@@ -1,27 +1,29 @@
 package types
 
+type FeatureName string
+
 const (
-	FEATURE_API             = "api"
-	FEATURE_MEDIASERVER     = "mediaserver"
-	FEATURE_MAIL            = "mail"
-	FEATURE_AREAS           = "areas"
-	FEATURE_SKINSDB         = "skinsdb"
-	FEATURE_LUASHELL        = "luashell"
-	FEATURE_SHELL           = "shell"
-	FEATURE_MODMANAGEMENT   = "modmanagement"
-	FEATURE_XBAN            = "xban"
-	FEATURE_MINETEST_CONFIG = "minetest_config"
-	FEATURE_OTP             = "otp"
-	FEATURE_DOCKER          = "docker"
-	FEATURE_SIGNUP          = "signup"
-	FEATURE_MESECONS        = "mesecons"
-	FEATURE_ATM             = "atm"
-	FEATURE_MINETEST_WEB    = "minetest_web"
+	FEATURE_API             FeatureName = "api"
+	FEATURE_MEDIASERVER     FeatureName = "mediaserver"
+	FEATURE_MAIL            FeatureName = "mail"
+	FEATURE_AREAS           FeatureName = "areas"
+	FEATURE_SKINSDB         FeatureName = "skinsdb"
+	FEATURE_LUASHELL        FeatureName = "luashell"
+	FEATURE_SHELL           FeatureName = "shell"
+	FEATURE_MODMANAGEMENT   FeatureName = "modmanagement"
+	FEATURE_XBAN            FeatureName = "xban"
+	FEATURE_MINETEST_CONFIG FeatureName = "minetest_config"
+	FEATURE_OTP             FeatureName = "otp"
+	FEATURE_DOCKER          FeatureName = "docker"
+	FEATURE_SIGNUP          FeatureName = "signup"
+	FEATURE_MESECONS        FeatureName = "mesecons"
+	FEATURE_ATM             FeatureName = "atm"
+	FEATURE_MINETEST_WEB    FeatureName = "minetest_web"
 )
 
 type Feature struct {
-	Name    string `json:"name" gorm:"primarykey;column:name"`
-	Enabled bool   `json:"enabled" gorm:"column:enabled"`
+	Name    FeatureName `json:"name" gorm:"primarykey;column:name"`
+	Enabled bool        `json:"enabled" gorm:"column:enabled"`
 }
 
 func (m *Feature) TableName() string {

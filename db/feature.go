@@ -22,6 +22,6 @@ func (r *FeatureRepository) GetAll() ([]*types.Feature, error) {
 	return FindMulti[types.Feature](r.g)
 }
 
-func (r *FeatureRepository) GetByName(name string) (*types.Feature, error) {
+func (r *FeatureRepository) GetByName(name types.FeatureName) (*types.Feature, error) {
 	return FindSingle[types.Feature](r.g.Where(types.Feature{Name: name}))
 }

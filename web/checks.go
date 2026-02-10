@@ -89,7 +89,7 @@ func (api *Api) PrivCheck(required_priv string) Check {
 	}
 }
 
-func (api *Api) FeatureCheck(name string) Check {
+func (api *Api) FeatureCheck(name types.FeatureName) Check {
 	return func(w http.ResponseWriter, r *http.Request) bool {
 		feature, err := api.app.Repos.FeatureRepository.GetByName(name)
 		if err != nil {
@@ -171,7 +171,7 @@ func (api *Api) SecurePriv(required_priv string, fn SecureHandlerFunc) http.Hand
 }
 
 // check if a feature is enabled
-func (api *Api) Feature(name string, fn http.HandlerFunc) http.HandlerFunc {
+func (api *Api) Feature(name types.FeatureName, fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		feature, err := api.app.Repos.FeatureRepository.GetByName(name)
 		if err != nil {

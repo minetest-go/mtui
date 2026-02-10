@@ -9,11 +9,11 @@ import (
 )
 
 type AvailableFeature struct {
-	Name         string   `json:"name"`
-	Description  string   `json:"description"`
-	Mods         []string `json:"mods"`
-	Experimental bool     `json:"experimental"`
-	Enabled      bool     `json:"enabled"`
+	Name         types.FeatureName `json:"name"`
+	Description  string            `json:"description"`
+	Mods         []string          `json:"mods"`
+	Experimental bool              `json:"experimental"`
+	Enabled      bool              `json:"enabled"`
 }
 
 //go:embed features.json
@@ -44,7 +44,7 @@ func PopulateFeatures(repo *db.FeatureRepository, enabled_features []string) err
 		if feature == nil {
 			// check if the feature was enabled in the env-vars
 			for _, ef := range enabled_features {
-				if ef == available_feature.Name {
+				if ef == string(available_feature.Name) {
 					available_feature.Enabled = true
 					break
 				}
@@ -64,7 +64,7 @@ func PopulateFeatures(repo *db.FeatureRepository, enabled_features []string) err
 	return nil
 }
 
-func (app *App) IsFeatureEnabled(name string) bool {
+func (app *App) IsFeatureEnabled(name types.FeatureName) bool {
 	if app.MaintenanceMode() {
 		// can't query db, return always false
 		return false

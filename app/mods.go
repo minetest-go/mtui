@@ -55,7 +55,7 @@ func (a *App) CreateMTUIMod() (*types.Mod, error) {
 		return m, nil
 	}
 
-	for _, fname := range []string{types.FEATURE_DOCKER, types.FEATURE_MINETEST_CONFIG} {
+	for _, fname := range []types.FeatureName{types.FEATURE_DOCKER, types.FEATURE_MINETEST_CONFIG} {
 		feature, err := a.Repos.FeatureRepository.GetByName(fname)
 		if err != nil {
 			return nil, fmt.Errorf("feature get error: %v", err)
@@ -113,7 +113,7 @@ func (a *App) CreateBeerchatMod() (*types.Mod, error) {
 		}
 	}
 
-	for _, fname := range []string{types.FEATURE_DOCKER, types.FEATURE_MINETEST_CONFIG} {
+	for _, fname := range []types.FeatureName{types.FEATURE_DOCKER, types.FEATURE_MINETEST_CONFIG} {
 		feature, err := a.Repos.FeatureRepository.GetByName(fname)
 		if err != nil {
 			return nil, fmt.Errorf("feature get error: %v", err)
@@ -171,7 +171,7 @@ func (a *App) CreateMapserverMod() (*types.Mod, error) {
 		}
 	}
 
-	for _, fname := range []string{types.FEATURE_DOCKER, types.FEATURE_MINETEST_CONFIG} {
+	for _, fname := range []types.FeatureName{types.FEATURE_DOCKER, types.FEATURE_MINETEST_CONFIG} {
 		feature, err := a.Repos.FeatureRepository.GetByName(fname)
 		if err != nil {
 			return nil, fmt.Errorf("feature get error: %v", err)

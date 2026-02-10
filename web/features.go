@@ -9,7 +9,7 @@ import (
 )
 
 func (a *Api) GetFeatures(w http.ResponseWriter, r *http.Request) {
-	feature_map := make(map[string]*app.AvailableFeature)
+	feature_map := make(map[types.FeatureName]*app.AvailableFeature)
 
 	available_features, err := app.GetAvailableFeatures()
 	if err != nil {
