@@ -38,3 +38,10 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Image cleanup
+        uses: dataaxiom/ghcr-cleanup-action@v1
+        with:
+          dry-run: false
+          delete-untagged: true
+          keep-n-tagged: 10
