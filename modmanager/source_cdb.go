@@ -58,7 +58,14 @@ func (h *ContentDBModHandler) installMod(world_dir string, mod *types.Mod, relea
 		switch mod.ModType {
 		case types.ModTypeMod, types.ModTypeTexturepack:
 			if strip_basedir {
-				fullpath = path.Join(path.Dir(dir), f.Name)
+				first_slash_index := strings.Index(f.Name, "/")
+				if first_slash_index > 0 {
+					// strip first directory in zip file
+					fullpath = path.Join(path.Dir(dir), mod.Name, f.Name[first_slash_index+1:])
+				} else {
+					// fallback, no directory found (and no init.lua, possibly an error)
+					fullpath = path.Join(path.Dir(dir), f.Name)
+				}
 			} else {
 				fullpath = path.Join(dir, f.Name)
 			}
