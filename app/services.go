@@ -83,7 +83,7 @@ func (app *App) SetupServices() {
 					{
 						Type:   mount.TypeBind,
 						Source: path.Join(app.Config.DockerWorlddir, "matterbridge.toml"),
-						Target: "/etc/matterbridge/matterbridge.toml",
+						Target: "/matterbridge.toml",
 					},
 				},
 			},

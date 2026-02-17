@@ -14,7 +14,7 @@ var EngineServiceImages = map[string]string{
 var EngineServiceLatest = "5.15.0"
 
 var MatterbridgeServiceImages = map[string]string{
-	"1.26.0": "42wim/matterbridge:1.26.0",
+	"1.26.0": "ghcr.io/42wim/matterbridge:1.26.0",
 }
 
 var MapserverServiceImages = map[string]string{
