@@ -39,6 +39,14 @@ func ParseSettingTypes(data []byte) (SettingTypes, error) {
 
 		if strings.HasPrefix(line, "[") {
 			// category
+			if !strings.Contains(line, "]") {
+				// no end tag
+				continue
+			}
+
+			// category string until first "]"
+			line = line[0:strings.Index(line, "]")]
+
 			category_depth := strings.Count(line, "*")
 			category := strings.NewReplacer("[", "", "]", "", "*", "").Replace(line)
 			if len(categories) > category_depth {
@@ -71,16 +79,22 @@ func ParseSettingTypes(data []byte) (SettingTypes, error) {
 
 		i1 := strings.Index(line, "(")
 		i2 := strings.Index(line, ")")
-
 		if i1 < 0 || i2 < 0 {
 			// invalid short desc
 			continue
 		}
-
 		s.ShortDescription = line[i1+1 : i2]
-
 		// remove parsed desc from line
 		line = line[i2+2:]
+
+		i1 = strings.Index(line, "[")
+		i2 = strings.Index(line, "]")
+		if i1 >= 0 && i2 >= 0 {
+			// mapgen/server/client "label"
+			s.Label = line[i1+1 : i2]
+			// strip for further processing
+			line = line[i2+2:]
+		}
 
 		i1 = strings.Index(line, " ")
 		if i1 < 0 {

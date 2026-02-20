@@ -6,6 +6,7 @@ type SettingType struct {
 	Category         []string `json:"topic"` // stacked list of categories ["Advanced", "Developer Options", "Mod Security"]
 	LongDescription  string   `json:"long_description"`
 	ShortDescription string   `json:"short_description"`
+	Label            string   `json:"label"`   // client, server, mapgen
 	Type             string   `json:"type"`    // int, string, float, bool, enum
 	Choices          []string `json:"choices"` // enum choices
 	Default          *Setting `json:"default"`

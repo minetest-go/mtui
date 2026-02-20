@@ -234,6 +234,14 @@ func TestGetServerSettingTypes(t *testing.T) {
 	assert.Equal(t, "Mapgen", mgv7_spflags.Category[0])
 	assert.Equal(t, "Mapgen V7", mgv7_spflags.Category[1])
 
+	chunksize := ss["chunksize"]
+	assert.NotNil(t, chunksize)
+	assert.Equal(t, "int", chunksize.Type)
+	assert.NotNil(t, chunksize.Default)
+	assert.Equal(t, "5", chunksize.Default.Value)
+	assert.Equal(t, float64(1), *chunksize.Min)
+	assert.Equal(t, float64(10), *chunksize.Max)
+
 	bind_address := ss["bind_address"]
 	assert.NotNil(t, bind_address)
 	assert.Equal(t, "", bind_address.Default.Value)
