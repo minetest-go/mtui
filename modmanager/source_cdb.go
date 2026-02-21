@@ -115,7 +115,12 @@ func (h *ContentDBModHandler) getLatestRelease(mod *types.Mod) (*cdb.PackageRele
 	if len(releases) == 0 {
 		return nil, fmt.Errorf("no releases for package '%s/%s'", mod.Author, mod.Name)
 	}
-	return releases[0], nil
+	for _, release := range releases {
+		if release.URL != "" {
+			return release, nil
+		}
+	}
+	return nil, fmt.Errorf("no valid download url found")
 }
 
 func (h *ContentDBModHandler) Create(world_dir string, mod *types.Mod) error {

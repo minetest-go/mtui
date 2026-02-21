@@ -72,3 +72,23 @@ func TestShortnamesMod(t *testing.T) {
 	assert.NotNil(t, fi)
 	assert.True(t, fi.IsDir())
 }
+
+func TestCraftoplusMod(t *testing.T) {
+	app := CreateTestApp(t)
+	mm := modmanager.New(app.WorldDir, app.Repos.ModRepo)
+
+	// checkout master
+	mod := &types.Mod{
+		Name:       "craftoplus",
+		ModType:    types.ModTypeMod,
+		SourceType: types.SourceTypeCDB,
+		Author:     "Mish7913",
+	}
+	assert.NoError(t, mm.Create(mod))
+	assert.True(t, mod.Version != "")
+
+	fi, err := os.Stat(path.Join(app.WorldDir, "worldmods", "craftoplus"))
+	assert.NoError(t, err)
+	assert.NotNil(t, fi)
+	assert.True(t, fi.IsDir())
+}
