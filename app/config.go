@@ -53,7 +53,7 @@ func (a *App) GetSettingTypes() (minetestconfig.SettingTypes, error) {
 		return nil, fmt.Errorf("could not get settingtypes for worldmods dir: %v", err)
 	}
 
-	gamest, err := minetestconfig.GetAllSettingTypes(path.Join(a.Config.WorldDir, "game/mods"))
+	gamest, err := minetestconfig.GetAllSettingTypes(path.Join(a.Config.WorldDir, "game"))
 	if err != nil {
 		return nil, fmt.Errorf("could not get settingtypes for game/mods dir: %v", err)
 	}
