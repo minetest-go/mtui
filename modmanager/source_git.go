@@ -79,7 +79,14 @@ func (h *GitModHandler) Update(world_dir string, mod *types.Mod, version string)
 }
 
 func (h *GitModHandler) Remove(world_dir string, mod *types.Mod) error {
+	if mod.Name == "" {
+		return nil
+	}
 	dir := getDir(world_dir, mod)
+	if dir == "" {
+		return nil
+	}
+
 	return os.RemoveAll(dir)
 }
 

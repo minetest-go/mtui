@@ -186,7 +186,13 @@ func (h *ContentDBModHandler) Update(world_dir string, mod *types.Mod, version s
 }
 
 func (h *ContentDBModHandler) Remove(world_dir string, mod *types.Mod) error {
+	if mod.Name == "" {
+		return nil
+	}
 	dir := getDir(world_dir, mod)
+	if dir == "" {
+		return nil
+	}
 
 	// remove dir
 	return os.RemoveAll(dir)
