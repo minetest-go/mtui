@@ -9,7 +9,7 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.17.1
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/websocket v1.5.3
-	github.com/minetest-go/mtdb v1.1.53
+	github.com/minetest-go/mtdb v1.1.54
 	github.com/oschwald/geoip2-golang v1.13.0
 	github.com/sirupsen/logrus v1.9.4
 	github.com/stretchr/testify v1.11.1

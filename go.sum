@@ -165,6 +165,8 @@ github.com/minetest-go/mtdb v1.1.52 h1:HWTnqVG6ozkZOr2nr8T1W4+S9j1UhJXXoA706k8Ng
 github.com/minetest-go/mtdb v1.1.52/go.mod h1:JmyS0eIF/5yZADQT41+f14UktGmsJnXk07ou0yRkMcE=
 github.com/minetest-go/mtdb v1.1.53 h1:lNcGDHNQxoow540o3HDQtXWFWpKOOFpYOBxucLPlBfU=
 github.com/minetest-go/mtdb v1.1.53/go.mod h1:nl2yR9coe8wfSQuc+a0xWhp1X5J/nlNvL0qtwwr5m7s=
+github.com/minetest-go/mtdb v1.1.54 h1:LfhFbzj/ke+q+V8bADvegTKPxIWcCxtXNg/0HEJmam8=
+github.com/minetest-go/mtdb v1.1.54/go.mod h1:nl2yR9coe8wfSQuc+a0xWhp1X5J/nlNvL0qtwwr5m7s=
 github.com/minio/crc64nvme v1.0.1 h1:DHQPrYPdqK7jQG/Ls5CTBZWeex/2FMS3G5XGkycuFrY=
 github.com/minio/crc64nvme v1.0.1/go.mod h1:eVfm2fAzLlxMdUGc0EEBGSMmPwmXD5XiNRpnu9J3bvg=
 github.com/minio/crc64nvme v1.0.2 h1:6uO1UxGAD+kwqWWp7mBFsi5gAse66C4NXO8cmcVculg=
