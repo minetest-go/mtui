@@ -71,7 +71,14 @@ func (h *ContentDBModHandler) installMod(world_dir string, mod *types.Mod, relea
 			}
 		case types.ModTypeGame:
 			if strip_basedir {
-				fullpath = path.Join(dir, strings.TrimPrefix(f.Name, fmt.Sprintf("%s/", mod.Name)))
+				firstSlashIndex := strings.Index(f.Name, "/")
+				if firstSlashIndex > 0 {
+					// strip first directory
+					fullpath = path.Join(dir, f.Name[firstSlashIndex+1:])
+				} else {
+					// fallback
+					fullpath = path.Join(dir, strings.TrimPrefix(f.Name, fmt.Sprintf("%s/", mod.Name)))
+				}
 			} else {
 				fullpath = path.Join(dir, f.Name)
 			}
