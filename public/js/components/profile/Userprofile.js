@@ -12,14 +12,14 @@ import format_duration from '../../util/format_duration.js';
 import format_count from '../../util/format_count.js';
 
 export default {
-    props: ["username","show_token_link"],
-    data: function() {
+    props: ["username", "show_token_link"],
+    data: function () {
         return {
             playerinfo: null,
             xban_record: null
         };
     },
-    mounted: function() {
+    mounted: function () {
         this.update();
     },
     components: {
@@ -29,13 +29,13 @@ export default {
         "priv-badge": PrivBadge
     },
     computed: {
-        can_change_pw: function() {
+        can_change_pw: function () {
             return (is_logged_in() && get_claims().username == this.username) || has_priv("password");
         },
-        is_moderator: function() {
-            return has_priv("ban") || has_priv("server");
+        is_moderator: function () {
+            return has_priv("ban");
         },
-        can_administer: function() {
+        can_administer: function () {
             return has_priv("privs");
         }
     },
@@ -45,10 +45,10 @@ export default {
         format_count,
         has_priv,
         has_feature,
-        update_playerinfo: function() {
+        update_playerinfo: function () {
             get_playerinfo(this.username).then(pi => this.playerinfo = pi);
         },
-        update: function() {
+        update: function () {
             this.playerinfo = null;
             this.update_playerinfo();
 
