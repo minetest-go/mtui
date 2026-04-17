@@ -20,7 +20,7 @@ require (
 	github.com/Code-Hex/go-generics-cache v1.5.1
 	github.com/dchest/captcha v1.1.0
 	github.com/docker/docker v25.0.14+incompatible
-	github.com/docker/go-connections v0.6.0
+	github.com/docker/go-connections v0.7.0
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/hpcloud/tail v1.0.0
 	github.com/mattn/go-sqlite3 v1.14.42
@@ -72,7 +72,7 @@ require (
 )
 
 require (
-	github.com/Microsoft/go-winio v0.6.1 // indirect
+	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/ProtonMail/go-crypto v1.1.3 // indirect
 	github.com/andybalholm/brotli v1.1.1 // indirect
 	github.com/boombuler/barcode v1.0.1 // indirect
