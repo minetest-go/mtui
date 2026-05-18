@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.0.0",
-    "@vuepic/vue-datepicker": "^11.0.0",
+    "@vuepic/vue-datepicker": "^12.0.0",
     "bootstrap": "^5.3.3",
     "codemirror": "^5.65.15",
     "dompurify": "^3.2.3",
