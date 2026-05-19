@@ -122,7 +122,7 @@ export function init(){
     };
 
     const script_el = document.createElement("script");
-    script_el.src = "wasm/minetest.js";
+    script_el.src = "wasm/luanti.js";
     document.body.appendChild(script_el);
 
     return ready;
@@ -142,7 +142,7 @@ export function execute(args) {
     const canvas_el = document.getElementById("canvas");
     canvas_el.style.display = "block";
 
-    const [argc, argv] = makeArgv(["./minetest", ...args]);
+    const [argc, argv] = makeArgv(["./luanti", ...args]);
     emloop_invoke_main(argc, argv);
 
     emloop_init_sound();
