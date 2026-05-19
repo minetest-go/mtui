@@ -1,4 +1,3 @@
-version: "3.6"
 
 services:
  ui_webapp:
@@ -25,13 +24,12 @@ services:
    INSTALL_MTUI_MOD: "true"
    MINETEST_CONFIG: "/world/minetest.conf"
    GEOIP_API: "https://hosting.minetest.ch/api/geoip"
-   DOCKER_MINETEST_CONFIG: "${PWD}/minetest.conf"
+   DOCKER_MINETEST_CONFIG: "/world/minetest.conf"
    DOCKER_MINETEST_PORT: 30000
    DOCKER_HOSTNAME: "ui"
-   DOCKER_NETWORK: "mtui_default"
+#   DOCKER_NETWORK: "mtui_default"
    DOCKER_INTERNAL_NETWORK: "mtui_internal"
-   DOCKER_WORLD_DIR: "/var/lib/docker/volumes/mtui_world_dir/_data"
-#   DOCKER_WORLD_DIR: "/var/snap/docker/common/var-lib-docker/volumes/mtui_world_dir/_data"
+   DOCKER_WORLD_DIR: "/world"
    DOCKER_CONTAINER_PREFIX: "mtui"
    DOCKER_AUTOINSTALL_ENGINE: "true"
   ports:
@@ -42,12 +40,29 @@ services:
    - "world_dir:/world"
    - "./cache/go_dir:/go"
    - "./cache/go_cache:/.cache"
-   - "/var/run/docker.sock:/var/run/docker.sock:ro"
+   - "docker-socket:/var/run/"
   working_dir: /app
   command: ["go", "run", "."]
 
+ dind:
+  image: docker:29.5.0-dind
+  restart: always
+  privileged: true
+  volumes:
+  - "docker-socket:/var/run/"
+  - "dind-data:/var/lib/docker"
+  - "world_dir:/world"
+  - "./runner:/runner"
+  environment:
+    DOCKER_TLS_CERTDIR: ""
+  command:
+  - --storage-driver=overlay2
+  - --tls=false
+
 volumes:
   world_dir: {}
+  docker-socket: {}
+  dind-data: {}
 
 networks:
   mtui_internal:
