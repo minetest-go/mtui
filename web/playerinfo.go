@@ -3,7 +3,7 @@ package web
 import (
 	"encoding/json"
 	"fmt"
-	"mtui/public"
+	"mtui/frontend"
 	"mtui/types"
 	"net/http"
 	"os"
@@ -178,7 +178,7 @@ func (a *Api) GetPlayerSkin(w http.ResponseWriter, r *http.Request) {
 	playername := vars["playername"]
 
 	// default skin
-	skin, err := public.Webapp.ReadFile("pics/character.png")
+	skin, err := frontend.Webapp.ReadFile("pics/character.png")
 	if err != nil {
 		SendError(w, 500, err)
 		return

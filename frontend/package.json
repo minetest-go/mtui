@@ -1,0 +1,34 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "eslint": "eslint js/",
+    "eslint-fix": "eslint --fix js/",
+    "test": "vitest run",
+    "dev": "vite",
+    "build": "vite build",
+    "watch": "NODE_ENV=development vite build -w -m development"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.0.0",
+    "@vuepic/vue-datepicker": "^13.0.0",
+    "bootstrap": "^5.3.3",
+    "codemirror": "^5.65.15",
+    "dompurify": "^3.2.3",
+    "marked": "^18.0.0",
+    "vue": "^3.5.13",
+    "vue-router": "^5.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "@vitejs/plugin-vue": "^6.0.7",
+    "eslint": "^9.7.0",
+    "eslint-plugin-vue": "^10.0.0",
+    "vite": "^8.0.14",
+    "vitest": "^4.1.7"
+  }
+}
