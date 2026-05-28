@@ -1,8 +1,10 @@
 package web
 
 import (
+	"fmt"
+	"io/fs"
 	"mtui/app"
-	"mtui/public"
+	"mtui/frontend"
 	"mtui/types"
 	"net/http"
 	"os"
@@ -10,9 +12,6 @@ import (
 
 	"github.com/dchest/captcha"
 	"github.com/gorilla/mux"
-	"github.com/sirupsen/logrus"
-	"github.com/vearutop/statigz"
-	"github.com/vearutop/statigz/brotli"
 )
 
 func Setup(a *app.App) error {
@@ -212,20 +211,21 @@ func Setup(a *app.App) error {
 		}
 	}
 
-	// index.html or /
-	r.HandleFunc("/", api.GetIndex)
-	r.HandleFunc("/index.html", api.GetIndex)
-
 	// static files
-	var fsh http.Handler
-	if a.Config.Webdev {
-		logrus.WithFields(logrus.Fields{"dir": "public"}).Info("Using live mode")
-		fs := http.FileServer(http.FS(os.DirFS("public")))
-		fsh = fs
+	var webfs http.FileSystem
+	if os.Getenv("WEBDEV") == "true" {
+		fmt.Println("using live mode")
+		webfs = http.FS(os.DirFS("public/dist"))
 	} else {
-		logrus.Info("Using embed mode")
-		fsh = statigz.FileServer(public.Webapp, brotli.AddEncoding)
+		fmt.Println("using embed mode")
+		subfs, err := fs.Sub(frontend.Webapp, "dist")
+		if err != nil {
+			panic(err)
+		}
+		webfs = http.FS(subfs)
+
 	}
+	fsh := http.FileServer(webfs)
 
 	// set additional headers for wasm env
 	r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

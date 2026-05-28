@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html style="height: 100%">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<meta name="theme-color" content="#000">
+
+		<!-- styles -->
+		<link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css"/>
+		<link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/all.min.css"/>
+		<link rel="stylesheet" href="node_modules/@vuepic/vue-datepicker/dist/main.css"/>
+		<link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css"/>
+		<style>
+			.CodeMirror {
+				border: 1px solid #eee;
+				height: auto;
+			}
+		</style>
+
+		<title>Minetest Web UI</title>
+	</head>
+    <body style="height: 100%; margin: 0px;">
+		<!-- app root -->
+		<app id="app">
+			<div class="row">
+				<div class="col-4"></div>
+				<div class="col-4 text-center">
+					<div style="height: 250px;"></div>
+					<i class="fa fa-spinner fa-spin"></i>
+					Loading the mtui app...
+				</div>
+				<div class="col-4"></div>
+			</div>
+		</app>
+
+		<!-- app bootstrap -->
+		<script src="js/main.js" type="module"></script>
+	</body>
+</html>

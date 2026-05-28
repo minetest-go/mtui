@@ -1,12 +1,20 @@
 version: "3.6"
 
 services:
- ui_webapp:
-  image: node:22.22.3
+ npm:
+  image: node:24.16.0
   volumes:
-   - "./:/app"
-  working_dir: /app/public
-  command: ["npm", "ci"]
+    - "./public:/app"
+  user: root
+  working_dir: "/app"
+  command: "bash -c 'npm i && npm run build'"
+
+ watch:
+  image: node:24.16.0
+  volumes:
+    - "./public:/app"
+  working_dir: /app
+  command: "bash -c 'npm i && npm run watch'"
 
  ui:
   image: golang:1.26.2
