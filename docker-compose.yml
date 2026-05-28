@@ -4,17 +4,17 @@ services:
  npm:
   image: node:24.16.0
   volumes:
-    - "./public:/app"
+    - "./frontend:/app"
   user: root
   working_dir: "/app"
-  command: "bash -c 'npm i && npm run build'"
+  command: "bash -c 'npm ci'"
 
  watch:
   image: node:24.16.0
   volumes:
-    - "./public:/app"
+    - "./frontend:/app"
   working_dir: /app
-  command: "bash -c 'npm i && npm run watch'"
+  command: "bash -c 'npm run watch'"
 
  ui:
   image: golang:1.26.2

@@ -1,7 +1,7 @@
 FROM node:22.22.3 as bundle-builder
 COPY frontend /frontend
 WORKDIR /frontend
-RUN ls -lha && npm ci && npm run bundle
+RUN npm ci && npm run build
 
 FROM golang:1.26.2 as go-builder
 ARG MTUI_VERSION="docker-dev"

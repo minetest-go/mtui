@@ -215,7 +215,7 @@ func Setup(a *app.App) error {
 	var webfs http.FileSystem
 	if os.Getenv("WEBDEV") == "true" {
 		fmt.Println("using live mode")
-		webfs = http.FS(os.DirFS("public/dist"))
+		webfs = http.FS(os.DirFS("frontend/dist"))
 	} else {
 		fmt.Println("using embed mode")
 		subfs, err := fs.Sub(frontend.Webapp, "dist")
