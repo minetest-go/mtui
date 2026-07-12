@@ -6,6 +6,18 @@ import (
 	"strings"
 )
 
+func (c *Config) MinetestCommand() []string {
+	cmd := []string{"--world", "/world", "--config", "/minetest.conf"}
+	if c.DockerMinetestLogLevel != "" && c.DockerMinetestLogLevel != "action" {
+		cmd = append(cmd, "--"+c.DockerMinetestLogLevel)
+	}
+	logfile := c.DockerMinetestLogfile
+	if logfile == "" {
+		logfile = "/world/debug.txt"
+	}
+	return append(cmd, "--logfile", logfile)
+}
+
 // env provided configuration flags
 type Config struct {
 	WorldDir                string
@@ -26,6 +38,8 @@ type Config struct {
 	GeoIPAPI                string
 	DockerMinetestConfig    string
 	DockerMinetestPort      int
+	DockerMinetestLogLevel  string
+	DockerMinetestLogfile   string
 	WASMMinetestHost        string
 	DockerHostname          string
 	DockerNetwork           string
@@ -57,6 +71,8 @@ func NewConfig(world_dir string) *Config {
 		GeoIPAPI:                os.Getenv("GEOIP_API"),
 		DockerMinetestConfig:    os.Getenv("DOCKER_MINETEST_CONFIG"),
 		DockerMinetestPort:      int(port),
+		DockerMinetestLogLevel:  os.Getenv("DOCKER_MINETEST_LOG_LEVEL"),
+		DockerMinetestLogfile:   os.Getenv("DOCKER_MINETEST_LOGFILE"),
 		WASMMinetestHost:        os.Getenv("WASM_MINETEST_HOST"),
 		DockerHostname:          os.Getenv("DOCKER_HOSTNAME"),
 		DockerNetwork:           os.Getenv("DOCKER_NETWORK"),
