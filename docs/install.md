@@ -14,6 +14,8 @@ Environment variables:
 * `SERVER_NAME` Server-name to display on the ui
 * `ENABLE_FEATURES` manually enabled features
 * `MINETEST_CONFIG` set this to the `minetest.conf` location to enable the settings-management
+* `DOCKER_MINETEST_LOG_LEVEL` Luanti console level, defaults to "action". Possible values: "action", "info", "verbose", "trace" and "quiet"
+* `DOCKER_MINETEST_LOGFILE` engine container logfile path, defaults to "/world/debug.txt"
 
 # Using docker-compose
 You must use file `docker-compose.yml` from this entire repository directory, because it pulls in the app files from this repository. You cannot run it in a bare directory.
