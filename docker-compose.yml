@@ -27,6 +27,8 @@ services:
    GEOIP_API: "https://hosting.minetest.ch/api/geoip"
    DOCKER_MINETEST_CONFIG: "${PWD}/minetest.conf"
    DOCKER_MINETEST_PORT: 30000
+   DOCKER_MINETEST_LOG_LEVEL: "info"
+   DOCKER_MINETEST_LOGFILE: "/world/debug.txt"
    DOCKER_HOSTNAME: "ui"
    DOCKER_NETWORK: "mtui_default"
    DOCKER_INTERNAL_NETWORK: "mtui_internal"

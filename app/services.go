@@ -28,7 +28,7 @@ func (app *App) SetupServices() {
 			Networks:         strings.Split(app.Config.DockerNetwork, ","),
 			InternalNetworks: strings.Split(app.Config.DockerNetworkInternal, ","),
 			DefaultConfig: &container.Config{
-				Cmd:  []string{"--world", "/world", "--config", "/minetest.conf"},
+				Cmd:  app.Config.MinetestCommand(),
 				Tty:  false,
 				User: fmt.Sprintf("%d", os.Getuid()),
 				Env:  no_proxy_env,
