@@ -9,7 +9,7 @@ services:
   command: ["npm", "ci"]
 
  ui:
-  image: golang:1.26.2
+  image: golang:1.27.1
   networks:
    default: {}
    mtui_internal:
