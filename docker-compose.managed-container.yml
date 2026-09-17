@@ -1,0 +1,35 @@
+
+services:
+ ui:
+  networks:
+   default: {}
+   mtui_internal:
+    aliases:
+      - mtui
+  environment:
+   WORLD_DIR: "/world"
+   ENABLE_FEATURES: "api,shell,luashell,minetest_config,docker,modmanagement,signup,chat,minetest_web"
+   MINETEST_CONFIG: "/world/minetest.conf"
+   GEOIP_API: "https://hosting.minetest.ch/api/geoip"
+   DOCKER_MINETEST_CONFIG: "${PWD}/minetest.conf"
+   DOCKER_MINETEST_PORT: 30000
+   DOCKER_HOSTNAME: "ui"
+   DOCKER_NETWORK: "mtui_default"
+   DOCKER_INTERNAL_NETWORK: "mtui_internal"
+   DOCKER_WORLD_DIR: "/var/lib/docker/volumes/mtui_world_dir/_data"
+#   DOCKER_WORLD_DIR: "/var/snap/docker/common/var-lib-docker/volumes/mtui_world_dir/_data"
+   DOCKER_CONTAINER_PREFIX: "mtui"
+   DOCKER_AUTOINSTALL_ENGINE: "true"
+  ports:
+    - 8080:8080
+  volumes:
+   - "./minetest.conf:/world/minetest.conf"
+   - "./:/app"
+   - "world_dir:/world"
+   - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  working_dir: /app
+  command: ["go", "run", "."]
+
+networks:
+  mtui_internal:
+    name: mtui_internal

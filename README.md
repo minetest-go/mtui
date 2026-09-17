@@ -33,6 +33,22 @@ Planned:
 
 * See [docs](./docs/mtui.md)
 
+# Dev
+
+Setup with externally managed luanti (outside mtui, inside compose):
+
+```sh
+docker compose -f docker-compose.yml -f docker-compose.external-luanti.yml up
+```
+
+Setup with managed luanti container (mtui manages docker containers):
+
+```sh
+docker compose -f docker-compose.yml -f docker-compose.managed-container.yml up
+```
+
+
+
 # License
 
 * Code: `MIT`

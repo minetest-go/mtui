@@ -1,0 +1,13 @@
+
+services:
+ ui:
+  environment:
+   WORLD_DIR: "/world"
+   ENABLE_FEATURES: "api,shell,luashell,minetest_config,docker,modmanagement,signup,chat,minetest_web"
+   MINETEST_CONFIG: "/world/minetest.conf"
+  volumes:
+   - "./minetest.conf:/world/minetest.conf"
+   - "./:/app"
+   - "world_dir:/world"
+  working_dir: /app
+  command: ["go", "run", "."]
