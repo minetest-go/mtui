@@ -23,10 +23,10 @@
     "vue-router": "^5.0.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.7.0",
+    "@eslint/js": "^10.0.0",
     "@rollup/plugin-terser": "^1.0.0",
     "@stylistic/eslint-plugin-js": "^4.0.0",
-    "eslint": "^9.7.0",
+    "eslint": "^10.0.0",
     "eslint-plugin-vue": "^10.0.0",
     "rollup": "4.60.4"
   }
