@@ -1,7 +1,7 @@
 import DefaultLayout from "../layouts/DefaultLayout.js";
 import { START } from "../Breadcrumb.js";
 
-import { init, execute, is_supported } from "../../util/wasm_helper.js";
+import { init, execute, is_supported, set_basedir, set_proxy } from "../../util/wasm_helper.js";
 import { get_join_password } from "../../api/join_password.js";
 import { get_claims } from "../../service/login.js";
 
@@ -22,22 +22,21 @@ export default {
         };
     },
     methods: {
-        play: function() {
-            get_join_password()
-            .then(pw => {
-                const claims = get_claims();
-                this.unmount();
-                init()
-                .then(() => {
-                    execute([
-                        "--go",
-                        "--address", "engine",
-                        "--port", "30000",
-                        "--name", claims.username,
-                        "--password", pw
-                    ]);
-                });    
-            });
+        play: async function() {
+            const pw = await get_join_password();
+            const claims = get_claims();
+            this.unmount();
+            set_proxy(location.protocol.replace("http", "ws") + "//" + location.host + location.pathname + "api/wasm/proxy");
+            set_basedir("wasm");
+
+            await init();
+            execute([
+                "--go",
+                "--address", "luanti",
+                "--port", "30000",
+                "--name", claims.username,
+                "--password", pw
+            ]);
 
         }
     },

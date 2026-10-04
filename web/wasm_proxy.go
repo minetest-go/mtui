@@ -49,6 +49,8 @@ func (api *Api) handleProxyConnection(conn *websocket.Conn) error {
 	}
 	defer conn.Close()
 
+	fmt.Printf("handleProxyConnection: '%s'\n", data)
+
 	parts := strings.Split(string(data), " ")
 	if len(parts) != 5 {
 		return fmt.Errorf("invalid command: '%s'", data)
@@ -56,7 +58,7 @@ func (api *Api) handleProxyConnection(conn *websocket.Conn) error {
 	if parts[0] != "PROXY" {
 		return fmt.Errorf("command not implemented: '%s'", parts[0])
 	}
-	if parts[1] != "IPV4" {
+	if parts[1] != "IPV4" && parts[1] != "IPV6" {
 		return fmt.Errorf("ip version not implemented: '%s'", parts[1])
 	}
 	protocol := parts[2]
@@ -74,7 +76,7 @@ func (api *Api) handleProxyConnection(conn *websocket.Conn) error {
 	}).Info("WASM WS Proxy connecting")
 
 	// only allow dns requests and minetest-protocol forwarding
-	if host == "10.0.0.1" && port == 53 && protocol == "TCP" {
+	if (host == "10.0.0.1" || host == "fd00::1") && port == 53 && protocol == "TCP" {
 		err = api.resolveDNS(conn)
 	} else if protocol == "UDP" {
 		// override port/host for local minetest connection
@@ -119,7 +121,9 @@ func (api *Api) resolveDNS(conn *websocket.Conn) error {
 		return fmt.Errorf("host not found")
 	}
 
-	err = conn.WriteMessage(websocket.BinaryMessage, []byte(ips[0]))
+	fmt.Printf("Resolved host '%s' to ip: '%s'\n", host, ips[0])
+
+	err = conn.WriteMessage(websocket.BinaryMessage, []byte("fd00::1"))
 	if err != nil {
 		return err
 	}

@@ -11,21 +11,46 @@ function makeArgv(args) {
     return [i, argv];
 }
 
-let emloop_pause, emloop_unpause, emloop_init_sound, emloop_invoke_main, emloop_install_pack;
-let irrlicht_resize, irrlicht_force_pointerlock;
+let emloop_invoke_main, emloop_install_pack;
+let irrlicht_resize;
 let emsocket_init, emsocket_set_proxy;
 
-window.emloop_request_animation_frame = function() {
-    emloop_pause();
-    window.requestAnimationFrame(() => { emloop_unpause(); });
-};
+let basedir = "wasm";
+let proxy = "ws://proxy:8080"
+
+let pack_promise_resolver;
+
+window.emloop_pack_progress = function(name, fraction) {
+    console.log("emloop_pack_progress", {name, fraction});
+}
+
+window.emloop_pack_installed = function(name) {
+    console.log("emloop_pack_installed", {name})
+    if (pack_promise_resolver) {
+        pack_promise_resolver();
+        pack_promise_resolver = null;
+    }
+}
+
+window.emloop_exited = function(status) {
+    console.log("emloop_exited", {status})
+    location.reload()
+}
 
 export function is_supported() {
     return !!window.SharedArrayBuffer;
 }
 
-function addPack(name) {
-    return fetch(`wasm/packs/${name}.pack`)
+export function set_basedir(d) {
+    basedir = d;
+}
+
+export function set_proxy(p) {
+    proxy = p;
+}
+
+export function addPack(name) {
+    fetch(`${basedir}/packs/${name}.pack`)
     .then(r => r.blob())
     .then(blob => blob.arrayBuffer())
     .then(ab => new Uint8Array(ab))
@@ -33,8 +58,11 @@ function addPack(name) {
         const len = u8arr.byteLength;
         const offset = _malloc(len);
         HEAPU8.set(u8arr, offset);
-        emloop_install_pack(stringToNewUTF8(name), offset, len);
+        const version = '';
+        emloop_install_pack(stringToNewUTF8(name), stringToNewUTF8(version), offset, len);
     });
+
+    return new Promise(resolve => pack_promise_resolver = resolve);
 }
 
 function setProgress(msg) {
@@ -43,13 +71,9 @@ function setProgress(msg) {
 
 export const ready = new Promise((resolve, reject) => {
     window.emloop_ready = function() {
-        emloop_pause = cwrap("emloop_pause", null, []);
-        emloop_unpause = cwrap("emloop_unpause", null, []);
-        emloop_init_sound = cwrap("emloop_init_sound", null, []);
         emloop_invoke_main = cwrap("emloop_invoke_main", null, ["number", "number"]);
         emloop_install_pack = cwrap("emloop_install_pack", null, ["number", "number", "number"]);
         irrlicht_resize = cwrap("irrlicht_resize", null, ["number", "number"]);
-        irrlicht_force_pointerlock = cwrap("irrlicht_force_pointerlock", null);
         emsocket_init = cwrap("emsocket_init", null, []);
         emsocket_set_proxy = cwrap("emsocket_set_proxy", null, ["number"]);
 
@@ -122,7 +146,7 @@ export function init(){
     };
 
     const script_el = document.createElement("script");
-    script_el.src = "wasm/luanti.js";
+    script_el.src = `${basedir}/luanti.js`;
     document.body.appendChild(script_el);
 
     return ready;
@@ -133,7 +157,6 @@ export function resize() {
     const height = window.innerHeight|| document.documentElement.clientHeight|| document.body.clientHeight;
 
     irrlicht_resize(width, height);
-    irrlicht_force_pointerlock();
 }
 
 export function execute(args) {
@@ -145,13 +168,11 @@ export function execute(args) {
     const [argc, argv] = makeArgv(["./luanti", ...args]);
     emloop_invoke_main(argc, argv);
 
-    emloop_init_sound();
     emsocket_init();
-    emsocket_set_proxy(stringToNewUTF8(location.protocol.replace("http", "ws") + "//" + location.host + location.pathname + "api/wasm/proxy"));
+    emsocket_set_proxy(stringToNewUTF8(proxy));
 
     resize();
     window.addEventListener('resize', resize);
-    window.emloop_request_animation_frame();
 }
 
 function show_error(err) {
