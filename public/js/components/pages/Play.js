@@ -22,25 +22,21 @@ export default {
         };
     },
     methods: {
-        play: function() {
-            get_join_password()
-            .then(pw => {
-                const claims = get_claims();
-                this.unmount();
-                set_proxy(location.protocol.replace("http", "ws") + "//" + location.host + location.pathname + "api/wasm/proxy");
-                set_basedir("wasm");
+        play: async function() {
+            const pw = await get_join_password();
+            const claims = get_claims();
+            this.unmount();
+            set_proxy(location.protocol.replace("http", "ws") + "//" + location.host + location.pathname + "api/wasm/proxy");
+            set_basedir("wasm");
 
-                init()
-                .then(() => {
-                    execute([
-                        "--go",
-                        "--address", "engine",
-                        "--port", "30000",
-                        "--name", claims.username,
-                        "--password", pw
-                    ]);
-                });    
-            });
+            await init();
+            execute([
+                "--go",
+                "--address", "luanti",
+                "--port", "30000",
+                "--name", claims.username,
+                "--password", pw
+            ]);
 
         }
     },

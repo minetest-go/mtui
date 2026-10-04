@@ -13,10 +13,10 @@ services:
    WORLD_DIR: "/world"
    WEBDEV: "true"
    API_KEY: "mykey"
-   LOGLEVEL: debug
+   #LOGLEVEL: debug
    SERVER_NAME: "dev-server"
-   WASM_MINETEST_HOST: "localhost"
-   ENABLE_FEATURES: "api,shell,luashell,minetest_config,docker,modmanagement,signup,chat,minetest_web"
+   WASM_MINETEST_HOST: "luanti"
+   ENABLE_FEATURES: "api,shell,luashell,minetest_config,modmanagement,signup,chat,minetest_web"
    MINETEST_CONFIG: "/world/minetest.conf"
   ports:
     - 8080:8080
@@ -29,6 +29,18 @@ services:
    - "/var/run/docker.sock:/var/run/docker.sock:ro"
   working_dir: /app
   command: ["go", "run", "."]
+
+ luanti:
+  image: ghcr.io/luanti-org/luanti:5.17.0
+  user: root
+  restart: always
+  volumes:
+   - "./minetest.conf:/root/.minetest/worlds/world/minetest.conf"
+   - "./world.mt:/root/.minetest/worlds/world/world.mt"
+   - "world_dir:/root/.minetest/worlds/world"
+  ports:
+   - "30000:30000/udp"
+  command: ["--config", "/root/.minetest/worlds/world/minetest.conf", "--logfile", "/root/.minetest/worlds/world/debug.txt"]
 
 volumes:
   world_dir: {}
