@@ -15,6 +15,7 @@ services:
    API_KEY: "mykey"
    LOGLEVEL: debug
    SERVER_NAME: "dev-server"
+   WASM_MINETEST_HOST: "localhost"
    ENABLE_FEATURES: "api,shell,luashell,minetest_config,docker,modmanagement,signup,chat,minetest_web"
    MINETEST_CONFIG: "/world/minetest.conf"
   ports:
