@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"mtui/minetestconfig"
 	"mtui/types"
+	"os"
 	"strings"
 )
 
@@ -50,12 +51,16 @@ func (a *App) CreateMTUIMod() (*types.Mod, error) {
 		}
 	}
 
-	// settings for mtui key/url
-	if a.Config.DockerHostname == "" {
-		return m, nil
+	// determine hostname
+	hostname, err := os.Hostname()
+	if err != nil {
+		return nil, fmt.Errorf("could not get hostname: %v", err)
+	}
+	if a.Config.DockerHostname != "" {
+		hostname = a.Config.DockerHostname
 	}
 
-	for _, fname := range []types.FeatureName{types.FEATURE_DOCKER, types.FEATURE_MINETEST_CONFIG} {
+	for _, fname := range []types.FeatureName{types.FEATURE_MINETEST_CONFIG} {
 		feature, err := a.Repos.FeatureRepository.GetByName(fname)
 		if err != nil {
 			return nil, fmt.Errorf("feature get error: %v", err)
@@ -76,7 +81,7 @@ func (a *App) CreateMTUIMod() (*types.Mod, error) {
 	}
 
 	cfg["mtui.url"] = &minetestconfig.Setting{
-		Value: fmt.Sprintf("http://%s:8080", a.Config.DockerHostname),
+		Value: fmt.Sprintf("http://%s:8080", hostname),
 	}
 	cfg["mtui.key"] = &minetestconfig.Setting{
 		Value: a.Config.APIKey,

@@ -32,12 +32,10 @@ services:
   ports:
     - 8080:8080
   volumes:
-   - "./minetest.conf:/world/minetest.conf"
    - "./:/app"
    - "world_dir:/world"
    - "./cache/go_dir:/go"
-   - "./cache/go_cache:/.cache"
-   - "/var/run/docker.sock:/var/run/docker.sock:ro"
+   - "./cache/go_cache:/root/.cache"
   working_dir: /app
   command: ["go", "run", "."]
 
@@ -46,7 +44,6 @@ services:
   user: root
   restart: always
   volumes:
-   - "./minetest.conf:/root/.minetest/worlds/world/minetest.conf"
    - "./world.mt:/root/.minetest/worlds/world/world.mt"
    - "world_dir:/root/.minetest/worlds/world"
   ports:
