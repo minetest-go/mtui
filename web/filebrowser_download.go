@@ -17,7 +17,7 @@ func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types
 		return
 	}
 
-	if app.IsSqliteDatabase(filename) && !a.app.MaintenanceMode() {
+	if app.IsSqliteDatabase(filename) {
 		tmppath, err := app.CreateSqliteSnapshot(filename)
 		if err != nil {
 			SendError(w, 500, fmt.Errorf("error creating snapshot of '%s': %v", filename, err))

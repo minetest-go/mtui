@@ -30,7 +30,6 @@ func (a *Api) StatsEventListener(c chan *bridge.CommandResponse) {
 
 type StatResponse struct {
 	*command.StatsCommand
-	Maintenance bool `json:"maintenance"`
 }
 
 func (a *Api) GetStats(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
@@ -38,7 +37,6 @@ func (a *Api) GetStats(w http.ResponseWriter, r *http.Request, claims *types.Cla
 	sc := &StatResponse{
 		StatsCommand: &command.StatsCommand{},
 	}
-	sc.Maintenance = a.app.MaintenanceMode()
 
 	last_updated := current_stats_updated.Load()
 	seconds_ago := time.Now().Unix() - last_updated

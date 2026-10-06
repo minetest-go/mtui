@@ -99,9 +99,3 @@ Add, remove and update your mods
 Builtin HTTP Remote media server to offload media-transfers from clients
 
 ![](./img/RemoteMediaServer.png)
-
-## Maintenance mode
-
-For consistent backups
-
-![](./img/MaintenanceMode.png)

@@ -82,19 +82,17 @@ func (api *Api) GetClaims(r *http.Request) (*types.Claims, error) {
 		token_string = c.Value
 	}
 
-	if !api.app.MaintenanceMode() {
-		// check api feature
-		feature, err := api.app.Repos.FeatureRepository.GetByName(types.FEATURE_API)
-		if err != nil {
-			return nil, fmt.Errorf("error querying api-feature: %v", err)
-		}
+	// check api feature
+	feature, err := api.app.Repos.FeatureRepository.GetByName(types.FEATURE_API)
+	if err != nil {
+		return nil, fmt.Errorf("error querying api-feature: %v", err)
+	}
 
-		if feature != nil && feature.Enabled {
-			// token in header
-			auth_header := r.Header.Get("Authorization")
-			if strings.HasPrefix(auth_header, "Bearer ") {
-				token_string, _ = strings.CutPrefix(auth_header, "Bearer ")
-			}
+	if feature != nil && feature.Enabled {
+		// token in header
+		auth_header := r.Header.Get("Authorization")
+		if strings.HasPrefix(auth_header, "Bearer ") {
+			token_string, _ = strings.CutPrefix(auth_header, "Bearer ")
 		}
 	}
 

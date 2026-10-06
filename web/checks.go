@@ -106,28 +106,6 @@ func (api *Api) FeatureCheck(name types.FeatureName) Check {
 	}
 }
 
-// maintenance mode
-
-type MaintenanceModeCheckHandler struct {
-	maint_mode func() bool
-	handler    http.Handler
-}
-
-func (h MaintenanceModeCheckHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if !h.maint_mode() {
-		h.handler.ServeHTTP(w, r)
-	} else {
-		w.WriteHeader(http.StatusServiceUnavailable)
-		w.Write([]byte("Maintenance mode active"))
-	}
-}
-
-func MaintenanceModeCheck(maint_mode func() bool) func(http.Handler) http.Handler {
-	return func(h http.Handler) http.Handler {
-		return MaintenanceModeCheckHandler{maint_mode: maint_mode, handler: h}
-	}
-}
-
 type SecureHandlerImpl struct {
 	checks  []Check
 	handler http.Handler

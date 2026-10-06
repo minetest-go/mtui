@@ -5,8 +5,7 @@ export const store = Vue.reactive({
     uptime: null,
     time_of_day: null,
     player_count: null,
-    players: [],
-    maintenance: null
+    players: []
 });
 
 var handle;
@@ -18,4 +17,3 @@ export const stop_polling = () => clearInterval(handle);
 
 export const get_player_count = () => store.player_count;
 export const get_players = () => store.players;
-export const get_maintenance = () => store.maintenance;

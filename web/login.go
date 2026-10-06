@@ -53,7 +53,7 @@ func (a *Api) GetLogin(w http.ResponseWriter, r *http.Request) {
 		SendError(w, 401, fmt.Errorf("unauthorized"))
 	} else if err != nil {
 		SendError(w, 500, err)
-	} else if !a.app.MaintenanceMode() && !claims.ApiToken {
+	} else if !claims.ApiToken {
 		// refresh token
 		auth_entry, err := a.app.DBContext.Auth.GetByUsername(claims.Username)
 		if err != nil {
@@ -77,7 +77,7 @@ func (a *Api) GetLogin(w http.ResponseWriter, r *http.Request) {
 		}
 
 	} else {
-		// maintenance mode, send back existing claims
+		// send back existing claims
 		Send(w, claims, nil)
 	}
 }

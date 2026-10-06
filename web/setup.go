@@ -27,9 +27,6 @@ func Setup(a *app.App) error {
 	}
 
 	// always on api
-	r.HandleFunc("/api/maintenance", api.SecurePriv(types.PRIV_SERVER, api.GetMaintenanceMode)).Methods(http.MethodGet)
-	r.HandleFunc("/api/maintenance", api.SecurePriv(types.PRIV_SERVER, api.EnableMaintenanceMode)).Methods(http.MethodPut)
-	r.HandleFunc("/api/maintenance", api.SecurePriv(types.PRIV_SERVER, api.DisableMaintenanceMode)).Methods(http.MethodDelete)
 	r.HandleFunc("/api/stats", api.OptionalSecure(api.GetStats)).Methods(http.MethodGet)
 	r.HandleFunc("/api/login", api.GetLogin).Methods(http.MethodGet)
 
@@ -51,17 +48,9 @@ func Setup(a *app.App) error {
 	fbr.HandleFunc("/file", api.Secure(api.AppendFile)).Methods(http.MethodPut)
 	fbr.HandleFunc("/rename", api.Secure(api.RenameFile)).Methods(http.MethodPost)
 
-	// backup-restore job
-	apibj := r.PathPrefix("/api/backup-restore").Subrouter()
-	apibj.HandleFunc("", api.GetBackupRestoreJobInfo).Methods(http.MethodGet)
-	apibj.HandleFunc("/create", api.SecurePriv(types.PRIV_SERVER, api.CreateBackupRestoreJob)).Methods(http.MethodPost)
-
 	r.HandleFunc("/api/appinfo", api.GetAppInfo)
 
-	// maintenance mode middleware enabled routes below
 	apir := r.PathPrefix("/api").Subrouter()
-	apir.Use(MaintenanceModeCheck(a.MaintenanceMode))
-
 	apir.HandleFunc("/healthcheck", api.HealthCheck)
 
 	apir.HandleFunc("/features", api.GetFeatures).Methods(http.MethodGet)

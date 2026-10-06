@@ -45,7 +45,7 @@ func (a *App) StreamZip(path string, w io.Writer, opts *StreamZipOpts) (int64, e
 		relPath := strings.TrimPrefix(filePath, path)
 		relPath = strings.TrimPrefix(relPath, "/")
 
-		if IsSqliteDatabase(filePath) && !a.MaintenanceMode() {
+		if IsSqliteDatabase(filePath) {
 			tmppath, err := CreateSqliteSnapshot(filePath)
 			if err != nil {
 				return fmt.Errorf("sqlite snapshot error for '%s': %v", filePath, err)

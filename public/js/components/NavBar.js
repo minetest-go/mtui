@@ -1,6 +1,6 @@
 import { has_priv, is_logged_in, get_claims, logout } from "../service/login.js";
 import { has_feature } from "../service/features.js";
-import { get_player_count, get_maintenance } from "../service/stats.js";
+import { get_player_count } from "../service/stats.js";
 import { get_unread_count } from '../service/mail.js';
 import { engine, matterbridge, mapserver } from "../service/service.js";
 
@@ -29,8 +29,7 @@ export default {
 		get_player_count: get_player_count,
 		is_logged_in: is_logged_in,
 		get_claims: get_claims,
-		get_unread_count: get_unread_count,
-		maintenance: get_maintenance
+		get_unread_count: get_unread_count
 	},
 	components: {
 		"stats-display": StatsDisplay,
@@ -40,7 +39,7 @@ export default {
 		"theme-switcher": ThemeSwitcher
 	},
 	template: /*html*/`
-		<nav class="navbar navbar-expand-lg navbar-dark" v-bind:class="{'bg-dark': !maintenance, 'bg-warning': maintenance}">
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 			<div class="container-fluid">
 				<router-link to="/" class="navbar-brand">Minetest Web UI</router-link>
 				<ul class="navbar-nav me-auto mb-2 mb-lg-0" v-if="is_logged_in">
@@ -49,40 +48,40 @@ export default {
 							<i class="fa fa-home"></i> Home
 						</router-link>
 					</li>
-					<li class="nav-item" v-if="has_feature('minetest_web') && !maintenance">
+					<li class="nav-item" v-if="has_feature('minetest_web')">
 						<router-link to="/play" class="nav-link">
 							<i class="fa fa-play"></i> Play
 						</router-link>
 					</li>
-					<li class="nav-item" v-if="has_priv('interact') && !maintenance">
+					<li class="nav-item" v-if="has_priv('interact')">
 						<router-link to="/playersearch" class="nav-link">
 							<i class="fa fa-magnifying-glass"></i> Player search
 						</router-link>
 					</li>
-					<li class="nav-item" v-if="has_priv('interact') && has_feature('shell') && !maintenance">
+					<li class="nav-item" v-if="has_priv('interact') && has_feature('shell')">
 						<router-link to="/shell" class="nav-link">
 							<i class="fa-solid fa-terminal"></i> Shell
 						</router-link>
 					</li>
-					<li class="nav-item" v-if="has_priv('shout') && has_feature('chat') && !maintenance">
+					<li class="nav-item" v-if="has_priv('shout') && has_feature('chat')">
 						<router-link to="/chat" class="nav-link">
 							<i class="fa-solid fa-comment"></i> Chat
 						</router-link>
 					</li>
-					<li class="nav-item" v-if="has_priv('interact') && has_feature('mesecons') && !maintenance">
+					<li class="nav-item" v-if="has_priv('interact') && has_feature('mesecons')">
 						<router-link to="/mesecons" class="nav-link">
 							<i class="fa-solid fa-microchip"></i> Mesecons
 						</router-link>
 					</li>
 					<li class="nav-item">
-						<router-link to="/online-players" class="nav-link" v-if="!maintenance">
+						<router-link to="/online-players" class="nav-link">
 							<i class="fa fa-users"></i> Online players
 							<span class="badge rounded-pill bg-info">
 								{{get_player_count}}
 							</span>
 						</router-link>
 					</li>
-					<li class="nav-item" v-if="has_feature('mail') && !maintenance">
+					<li class="nav-item" v-if="has_feature('mail')">
 						<router-link to="/mail" class="nav-link">
 							<i class="fa-solid fa-envelope"></i> Mail
 							<span class="badge rounded-pill bg-info" v-if="get_unread_count">
@@ -90,12 +89,12 @@ export default {
 							</span>
 						</router-link>
 					</li>
-					<li class="nav-item" v-if="has_feature('skinsdb') && !maintenance">
+					<li class="nav-item" v-if="has_feature('skinsdb')">
 						<router-link to="/skin" class="nav-link">
 							<i class="fa-solid fa-user-astronaut"></i> Skin
 						</router-link>
 					</li>
-					<nav-dropdown v-if="has_priv('ban') && !maintenance" icon="hammer" name="Moderation">
+					<nav-dropdown v-if="has_priv('ban')" icon="hammer" name="Moderation">
 						<li v-if="has_feature('xban')">
 							<router-link to="/xban" class="dropdown-item">
 								<i class="fa fa-ban"></i> XBan
@@ -107,7 +106,7 @@ export default {
 							</router-link>
 						</li>	
 					</nav-dropdown>
-					<nav-dropdown v-if="has_feature('docker') && has_priv('server') && !maintenance" icon="gears" name="Services">
+					<nav-dropdown v-if="has_feature('docker') && has_priv('server')" icon="gears" name="Services">
 						<li>
 							<router-link to="/services/engine" class="dropdown-item">
 								<i class="fa fa-gear"></i>
@@ -136,39 +135,34 @@ export default {
 								<i class="fa-solid fa-folder"></i> Filebrowser
 							</router-link>
 						</li>
-						<li v-if="!maintenance">
+						<li>
 							<router-link to="/features" class="dropdown-item">
 								<i class="fa fa-tags"></i> Features
 							</router-link>
 						</li>
-						<li v-if="has_feature('luashell') && !maintenance">
+						<li v-if="has_feature('luashell')">
 							<router-link to="/lua" class="dropdown-item">
 								<i class="fa-solid fa-terminal"></i> Lua
 							</router-link>
 						</li>
-						<li v-if="has_feature('minetest_config') && !maintenance">
+						<li v-if="has_feature('minetest_config')">
 							<router-link to="/minetest-config" class="dropdown-item">
 								<i class="fa fa-cog"></i> Minetest config
 							</router-link>
 						</li>
-						<li v-if="has_feature('modmanagement') && !maintenance">
+						<li v-if="has_feature('modmanagement')">
 							<router-link to="/mods" class="dropdown-item">
 								<i class="fa fa-cubes"></i> Mods
 							</router-link>
 						</li>
-						<li v-if="has_feature('mediaserver') && !maintenance">
+						<li v-if="has_feature('mediaserver')">
 							<router-link to="/mediaserver" class="dropdown-item">
 								<i class="fa fa-photo-film"></i> Mediaserver
 							</router-link>
 						</li>
-						<li v-if="!maintenance">
+						<li>
 							<router-link to="/restart-conditions" class="dropdown-item">
 								<i class="fa fa-refresh"></i> Restart conditions
-							</router-link>
-						</li>
-						<li>
-							<router-link to="/backup" class="dropdown-item">
-								<i class="fa fa-upload"></i> Backup/Restore
 							</router-link>
 						</li>
 					</nav-dropdown>
@@ -184,7 +178,7 @@ export default {
 								</span>
 							</router-link>
 						</button>
-						<button class="btn btn-secondary" v-on:click="logout" v-if="!maintenance">
+						<button class="btn btn-secondary" v-on:click="logout">
 							<i class="fa-solid fa-right-from-bracket"></i>
 							Logout
 						</button>

@@ -65,11 +65,6 @@ func PopulateFeatures(repo *db.FeatureRepository, enabled_features []string) err
 }
 
 func (app *App) IsFeatureEnabled(name types.FeatureName) bool {
-	if app.MaintenanceMode() {
-		// can't query db, return always false
-		return false
-	}
-
 	f, err := app.Repos.FeatureRepository.GetByName(name)
 	if err != nil {
 		fmt.Printf("feature query error: %v\n", err)

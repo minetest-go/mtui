@@ -15,6 +15,7 @@ services:
 
  ui:
   image: golang:1.26.2
+  hostname: ui
   environment:
    WORLD_DIR: "/world"
    WEBDEV: "true"

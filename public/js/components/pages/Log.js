@@ -54,7 +54,6 @@ const category_events = {
         "skin",
         "settings",
         "filebrowser",
-        "maintenance",
         "lua",
         "chat",
         "chatcommand",

@@ -162,24 +162,7 @@ func (a *Api) RenameFile(w http.ResponseWriter, r *http.Request, claims *types.C
 		return
 	}
 
-	if app.IsDatabaseFile(dst) {
-		// go into maintenance-mode during rename
-		a.app.CreateUILogEntry(&types.Log{
-			Username: claims.Username,
-			Event:    "maintenance",
-			Message:  fmt.Sprintf("User '%s' renames '%s' to '%s' enabling temporary maintenance mode", claims.Username, rel_src, rel_dst),
-		}, r)
-
-		a.app.EnableMaintenanceMode()
-		err = os.Rename(src, dst)
-		a.app.DisableMaintenanceMode()
-
-	} else {
-		// no maintenance mode needed
-		err = os.Rename(src, dst)
-	}
-
-	Send(w, true, err)
+	Send(w, true, os.Rename(src, dst))
 
 	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,

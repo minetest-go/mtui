@@ -28,10 +28,6 @@ export default {
                 <i class="fa-solid fa-sun" style="color: yellow;" v-if="hour >= 6 && hour < 18"></i>
                 <i class="fa-solid fa-moon" style="color: lightblue;" v-else></i>
             </span>
-            <span class="badge bg-danger" v-if="maintenance">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                Maintenance mode enabled
-            </span>
         </span>
     `
 };

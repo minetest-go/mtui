@@ -17,12 +17,10 @@ func logCleanup(a *app.App) {
 		}
 	}
 	for {
-		if !a.MaintenanceMode() {
-			ts := time.Now().Add(log_retention * -1)
-			err := a.Repos.LogRepository.DeleteBefore(ts.UnixMilli())
-			if err != nil {
-				fmt.Printf("Log cleanup error: %s\n", err.Error())
-			}
+		ts := time.Now().Add(log_retention * -1)
+		err := a.Repos.LogRepository.DeleteBefore(ts.UnixMilli())
+		if err != nil {
+			fmt.Printf("Log cleanup error: %s\n", err.Error())
 		}
 
 		// re-schedule

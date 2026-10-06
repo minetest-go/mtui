@@ -86,11 +86,9 @@ func uploadLogs(a *app.App) error {
 
 func logStream(a *app.App) {
 	for {
-		if !a.MaintenanceMode() {
-			err := uploadLogs(a)
-			if err != nil {
-				logrus.WithError(err).Warn("couldn't stream logs")
-			}
+		err := uploadLogs(a)
+		if err != nil {
+			logrus.WithError(err).Warn("couldn't stream logs")
 		}
 
 		// re-schedule

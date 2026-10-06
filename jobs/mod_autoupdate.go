@@ -77,11 +77,9 @@ func checkAllMods(a *app.App) error {
 
 func modAutoUpdate(a *app.App) {
 	for {
-		if !a.MaintenanceMode() {
-			err := checkAllMods(a)
-			if err != nil {
-				logrus.WithError(err).Warn("mod auto-update failed")
-			}
+		err := checkAllMods(a)
+		if err != nil {
+			logrus.WithError(err).Warn("mod auto-update failed")
 		}
 		time.Sleep(time.Minute * 30)
 	}

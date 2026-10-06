@@ -14,7 +14,6 @@ import (
 	"mtui/types"
 	"os"
 	"path"
-	"sync/atomic"
 
 	cache "github.com/Code-Hex/go-generics-cache"
 	"github.com/minetest-go/mtdb"
@@ -37,7 +36,6 @@ type App struct {
 	Mediaserver         *mediaserver.MediaServer
 	GeoipResolver       GeoIPResolver
 	Version             string
-	maintenanceMode     *atomic.Bool // database detached, for backup and restores
 	ServiceEngine       *dockerservice.DockerService
 	ServiceMatterbridge *dockerservice.DockerService
 	ServiceMapserver    *dockerservice.DockerService
@@ -73,7 +71,6 @@ func Create(cfg *types.Config) (*App, error) {
 		Mediaserver:        mediaserver.New(),
 		GeoipResolver:      NewGeoIPResolver(path.Join(cfg.WorldDir, "mmdb"), cfg.GeoIPAPI),
 		Version:            Version,
-		maintenanceMode:    &atomic.Bool{},
 		offline_xban_cache: cache.New[string, *types.XBanEntry](),
 	}
 
