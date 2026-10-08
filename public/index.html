@@ -5,21 +5,9 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1"/>
 		<meta name="theme-color" content="#000">
 
-		<!-- styles -->
-		<link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css"/>
-		<link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/all.min.css"/>
-		<link rel="stylesheet" href="node_modules/@vuepic/vue-datepicker/dist/main.css"/>
-		<link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css"/>
-		<style>
-			.CodeMirror {
-				border: 1px solid #eee;
-				height: auto;
-			}
-		</style>
-
 		<title>Minetest Web UI</title>
 	</head>
-    <body style="height: 100%; margin: 0px;">
+	<body style="height: 100%; margin: 0px;">
 		<!-- app root -->
 		<app id="app">
 			<div class="row">
@@ -34,18 +22,6 @@
 		</app>
 
 		<!-- app bootstrap -->
-		<script src="node_modules/vue/dist/vue.global.prod.js"></script>
-		<script src="node_modules/vue-router/dist/vue-router.global.prod.js"></script>
-		<script src="node_modules/marked/lib/marked.umd.js"></script>
-		<script src="node_modules/dompurify/dist/purify.min.js"></script>
-		<script src="node_modules/@vuepic/vue-datepicker/dist/vue-datepicker.iife.js"></script>
-		<script src="node_modules/codemirror/lib/codemirror.js"></script>
-		<script src="node_modules/codemirror/mode/lua/lua.js"></script>
-		<script src="node_modules/codemirror/mode/javascript/javascript.js"></script>
-		<script src="node_modules/codemirror/mode/htmlmixed/htmlmixed.js"></script>
-		<script src="node_modules/codemirror/mode/xml/xml.js"></script>
-		<script src="node_modules/codemirror/mode/css/css.js"></script>
-		<script src="node_modules/codemirror/mode/toml/toml.js"></script>
-		<script src="js/bundle.js"></script>
+		<script type="module" src="./js/main.js"></script>
 	</body>
 </html>

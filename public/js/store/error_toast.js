@@ -1,5 +1,6 @@
+import { reactive } from "vue";
 
-export default Vue.reactive({
+export default reactive({
     title: "",
     message: "",
     url: "",

@@ -1,9 +1,10 @@
+import { reactive } from "vue";
 import { get_all, get_settingtypes, set, remove } from "../api/mtconfig.js";
 import events, { EVENT_LOGGED_IN } from "../events.js";
 import { has_priv } from "./login.js";
 import { has_feature } from "./features.js";
 
-export const store = Vue.reactive({
+export const store = reactive({
     settingtypes: {},
     settings: {},
     filtered_settings: {},

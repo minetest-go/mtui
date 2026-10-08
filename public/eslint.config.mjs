@@ -5,7 +5,7 @@ import stylisticJs from '@stylistic/eslint-plugin-js';
 
 export default [
   {
-    ignores: ["js/bundle.js"]
+    ignores: ["dist/"]
   },
   {
     files: ["**/*.js"]
@@ -13,13 +13,6 @@ export default [
   {
     languageOptions: {
       globals: {
-        Vue: "readonly",
-        VueRouter: "readonly",
-        CodeMirror: "readonly",
-        Chart: "readonly",
-        VueDatePicker: "readonly",
-        DOMPurify: "readonly",
-        marked: "readonly",
         ...globals.browser
       }
     }
@@ -34,4 +27,18 @@ export default [
   },
   pluginJs.configs.recommended,
   ...pluginVue.configs["flat/essential"],
+  {
+    // legacy patterns in the existing components
+    rules: {
+      "vue/multi-word-component-names": "off",
+      "vue/require-v-for-key": "off",
+      "vue/valid-v-for": "off",
+      "vue/no-mutating-props": "off",
+      "vue/no-async-in-computed-properties": "off",
+      "vue/no-textarea-mustache": "off",
+      "vue/return-in-computed-property": "off",
+      "vue/no-use-v-if-with-v-for": "off",
+      "vue/no-unused-components": "off"
+    }
+  }
 ];
