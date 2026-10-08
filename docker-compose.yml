@@ -14,7 +14,7 @@ services:
     start_period: 10s
 
  ui:
-  image: golang:1.26.2
+  image: golang:1.27.2
   hostname: ui
   environment:
    WORLD_DIR: "/world"
