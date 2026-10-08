@@ -25,15 +25,10 @@ import Help from './components/pages/Help.js';
 import ProfilerView from './components/pages/ProfilerView.js';
 import PrivEditor from './components/pages/PrivEditor.js';
 
-import EngineService from './components/pages/services/Engine.js';
-import MatterbridgeService from './components/pages/services/Matterbridge.js';
-import MapserverService from './components/pages/services/Mapserver.js';
-
 import Mods from './components/pages/mods/Mods.js';
 import ContentBrowse from './components/pages/cdb/Browse.js';
 import ContentdbDetail from './components/pages/cdb/Detail.js';
 import InstallCDB from './components/pages/cdb/Install.js';
-import Wizard from './components/pages/wizard/Wizard.js';
 import Chat from './components/pages/Chat.js';
 import Mesecons from './components/pages/Mesecons.js';
 import Luacontroller from './components/pages/Luacontroller.js';
@@ -59,9 +54,6 @@ export default [{
 }, {
 	path: "/chat", component: Chat,
 	meta: { requiredPriv: "shout" }
-}, {
-	path: "/wizard/:step", component: Wizard, props: true,
-	meta: { requiredPriv: "server" }
 }, {
 	path: "/xban", component: Xban,
 	meta: { requiredPriv: "ban" }
@@ -128,15 +120,6 @@ export default [{
 	meta: { requiredPriv: "interact" }
 }, {
 	path: "/minetest-config", component: MinetestConfig,
-	meta: { requiredPriv: "server" }
-}, {
-	path: "/services/engine", component: EngineService,
-	meta: { requiredPriv: "server" }
-}, {
-	path: "/services/matterbridge", component: MatterbridgeService,
-	meta: { requiredPriv: "server" }
-}, {
-	path: "/services/mapserver", component: MapserverService,
 	meta: { requiredPriv: "server" }
 }, {
 	path:"/ui/settings", component: UISettings,

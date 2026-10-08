@@ -38,14 +38,6 @@ export default {
                         You can come back here at any time with the "Help" button on the
                         <router-link to="/">Start</router-link> page.
                     </p>
-                    <h4>First steps</h4>
-                    <p>
-                        You might want to start with the
-                        <router-link to="/wizard/1" class="btn btn-primary" v-if="has_feature('docker') && has_feature('minetest_config') && has_feature('modmanagement')">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i> Setup wizard
-                        </router-link>
-                    </p>
-
                 </div>
                 <div class="col-2"></div>
             </div>

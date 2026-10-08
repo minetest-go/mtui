@@ -184,23 +184,6 @@ func Setup(a *app.App) error {
 	cfgr.HandleFunc("/settings/{key}", api.SecurePriv(types.PRIV_SERVER, api.SetMTConfig)).Methods(http.MethodPost)
 	cfgr.HandleFunc("/settings/{key}", api.SecurePriv(types.PRIV_SERVER, api.DeleteMTConfig)).Methods(http.MethodDelete)
 
-	if api.app.ServiceEngine != nil {
-		servapi := apir.PathPrefix("/service").Subrouter()
-		servapi.Use(SecureHandler(api.FeatureCheck(types.FEATURE_DOCKER)))
-
-		CreateServiceApi(api.app.ServiceEngine, api, servapi, "engine", types.EngineServiceImages)
-		CreateServiceApi(api.app.ServiceMatterbridge, api, servapi, "matterbridge", types.MatterbridgeServiceImages)
-		CreateServiceApi(api.app.ServiceMapserver, api, servapi, "mapserver", types.MapserverServiceImages)
-
-		if api.app.Config.DockerAutoInstallEngine {
-			status, err := api.app.ServiceEngine.Status()
-			if err == nil && status != nil && !status.Created {
-				// silently install default engine
-				go api.app.ServiceEngine.Create(types.EngineServiceImages[types.EngineServiceLatest])
-			}
-		}
-	}
-
 	// index.html or /
 	r.HandleFunc("/", api.GetIndex)
 	r.HandleFunc("/index.html", api.GetIndex)

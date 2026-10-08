@@ -53,10 +53,6 @@ export default {
 				<i class="fa-solid fa-circle-question"></i> Help
 			</router-link>
 			&nbsp;
-			<router-link to="/wizard/1" class="btn btn-primary" v-if="has_priv('server') && has_feature('docker') && has_feature('minetest_config') && has_feature('modmanagement')">
-				<i class="fa-solid fa-wand-magic-sparkles"></i> Setup wizard
-			</router-link>
-			&nbsp;
 			<a class="btn btn-secondary" href="https://github.com/minetest-go/mtui" target="new">
 				<i class="fa-brands fa-github"></i> Source
 			</a>

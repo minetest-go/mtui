@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"mtui/bridge"
 	"mtui/db"
-	"mtui/dockerservice"
 	"mtui/eventbus"
 	"mtui/mail"
 	"mtui/mediaserver"
@@ -23,23 +22,20 @@ import (
 var Version string
 
 type App struct {
-	DBContext           *mtdb.Context
-	DB                  *sql.DB
-	G                   *gorm.DB
-	WorldDir            string
-	Repos               *db.Repositories
-	ModManager          *modmanager.ModManager
-	Bridge              *bridge.Bridge
-	WSEvents            *eventbus.EventBus
-	Mail                *mail.Mail
-	Config              *types.Config
-	Mediaserver         *mediaserver.MediaServer
-	GeoipResolver       GeoIPResolver
-	Version             string
-	ServiceEngine       *dockerservice.DockerService
-	ServiceMatterbridge *dockerservice.DockerService
-	ServiceMapserver    *dockerservice.DockerService
-	offline_xban_cache  *cache.Cache[string, *types.XBanEntry]
+	DBContext          *mtdb.Context
+	DB                 *sql.DB
+	G                  *gorm.DB
+	WorldDir           string
+	Repos              *db.Repositories
+	ModManager         *modmanager.ModManager
+	Bridge             *bridge.Bridge
+	WSEvents           *eventbus.EventBus
+	Mail               *mail.Mail
+	Config             *types.Config
+	Mediaserver        *mediaserver.MediaServer
+	GeoipResolver      GeoIPResolver
+	Version            string
+	offline_xban_cache *cache.Cache[string, *types.XBanEntry]
 }
 
 const default_world_mt_content = `
@@ -134,9 +130,6 @@ func Create(cfg *types.Config) (*App, error) {
 		}
 		cfg.APIKey = apiKey.Value
 	}
-
-	// docker services, if available
-	app.SetupServices()
 
 	// (re-)install mtui mod if specified
 	if cfg.InstallMtuiMod {

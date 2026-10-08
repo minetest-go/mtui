@@ -55,10 +55,6 @@
         "name": "minetest_config",
         "description": "minetest configuration management"
     },{
-        "name": "docker",
-        "description": "docker container management for external services",
-        "experimental": true
-    },{
         "name": "signup",
         "description": "Allow account-signup on the web-interface"
     },{

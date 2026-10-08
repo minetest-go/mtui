@@ -2,22 +2,13 @@ import { has_priv, is_logged_in, get_claims, logout } from "../service/login.js"
 import { has_feature } from "../service/features.js";
 import { get_player_count } from "../service/stats.js";
 import { get_unread_count } from '../service/mail.js';
-import { engine, matterbridge, mapserver } from "../service/service.js";
 
 import StatsDisplay from './StatsDisplay.js';
-import ServiceStatus from "./pages/services/ServiceStatus.js";
 import NavDropdown from "./NavDropdown.js";
 import SkinPreview from "./SkinPreview.js";
 import ThemeSwitcher from "./ThemeSwitcher.js";
 
 export default {
-	data: function() {
-		return {
-			engine,
-			matterbridge,
-			mapserver
-		};
-	},
 	methods: {
 		has_priv: has_priv,
 		has_feature: has_feature,
@@ -33,7 +24,6 @@ export default {
 	},
 	components: {
 		"stats-display": StatsDisplay,
-		"service-status": ServiceStatus,
 		"nav-dropdown": NavDropdown,
 		"skin-preview": SkinPreview,
 		"theme-switcher": ThemeSwitcher
@@ -105,29 +95,6 @@ export default {
 								<i class="fa fa-magnifying-glass"></i> Logs
 							</router-link>
 						</li>	
-					</nav-dropdown>
-					<nav-dropdown v-if="has_feature('docker') && has_priv('server')" icon="gears" name="Services">
-						<li>
-							<router-link to="/services/engine" class="dropdown-item">
-								<i class="fa fa-gear"></i>
-								Minetest engine
-								<service-status :status="engine.store.status"/>
-							</router-link>
-						</li>
-						<li>
-							<router-link to="/services/matterbridge" class="dropdown-item">
-								<i class="fa fa-gear"></i>
-								Matterbridge
-								<service-status :status="matterbridge.store.status"/>
-							</router-link>
-						</li>
-						<li>
-							<router-link to="/services/mapserver" class="dropdown-item">
-								<i class="fa fa-gear"></i>
-								Mapserver
-								<service-status :status="mapserver.store.status"/>
-							</router-link>
-						</li>
 					</nav-dropdown>
 					<nav-dropdown v-if="has_priv('server')" icon="screwdriver-wrench" name="Administration">
 						<li>
