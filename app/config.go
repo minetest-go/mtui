@@ -19,6 +19,15 @@ func (a *App) ReadMTConfig(sts minetestconfig.SettingTypes) (minetestconfig.Sett
 	mtconfig_mutex.RLock()
 	defer mtconfig_mutex.RUnlock()
 
+	fi, _ := os.Stat(a.Config.MinetestConfig)
+	if fi == nil {
+		// init cfg
+		err := os.WriteFile(a.Config.MinetestConfig, []byte{}, os.ModeAppend)
+		if err != nil {
+			return nil, fmt.Errorf("error initializing config: %v", err)
+		}
+	}
+
 	data, err := os.ReadFile(a.Config.MinetestConfig)
 	if err != nil {
 		return nil, fmt.Errorf("error reading config from '%s': %v", a.Config.MinetestConfig, err)

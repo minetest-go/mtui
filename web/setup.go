@@ -185,7 +185,7 @@ func Setup(a *app.App) error {
 
 	// static files
 	logrus.Info("Using embed mode")
-	fsh := statigz.FileServer(public.Webapp, brotli.AddEncoding)
+	fsh := statigz.FileServer(public.Webapp, brotli.AddEncoding, statigz.FSPrefix(public.Prefix))
 
 	// set additional headers for wasm env
 	r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

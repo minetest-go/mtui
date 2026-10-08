@@ -1,6 +1,7 @@
+import { reactive } from "vue";
 import { get_appinfo } from "../api/app_info.js";
 
-const store = Vue.reactive({
+const store = reactive({
 	version: "",
 	servername: ""
 });

@@ -1,6 +1,7 @@
+import { reactive } from "vue";
 import { get_features, set_feature as set } from "../api/features.js";
 
-export const store = Vue.reactive({});
+export const store = reactive({});
 
 export async function check_features() {
     const f = await get_features();

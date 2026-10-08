@@ -1,3 +1,4 @@
+import { reactive } from "vue";
 import {
     list_mods,
     create_mod,
@@ -14,7 +15,7 @@ import events, { EVENT_LOGGED_IN } from '../events.js';
 import { has_priv } from './login.js';
 import { has_feature } from './features.js';
 
-const store = Vue.reactive({
+const store = reactive({
     list: [],
     busy: false,
     has_mtui_mod: false,

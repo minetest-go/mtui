@@ -44,10 +44,10 @@ docker compose up
 * Code: `MIT`
 * Textures:
   * `CC BY-SA 3.0`
-    * `public/pics/sam.png` [minetest_game](https://github.com/minetest/minetest_game)
-    * `public/pics/character.png` [minetest_game](https://github.com/minetest/minetest_game)
-    * `public/pics/mesecons*.png` [mesecons](https://github.com/minetest-mods/mesecons)
-    * `public/pics/mooncontroller_top.png` [mooncontroller](https://github.com/mt-mods/mooncontroller)
-    * `public/pics/jeija*.png` [mesecons](https://github.com/minetest-mods/mesecons)
+    * `public/static/pics/sam.png` [minetest_game](https://github.com/minetest/minetest_game)
+    * `public/static/pics/character.png` [minetest_game](https://github.com/minetest/minetest_game)
+    * `public/static/pics/mesecons*.png` [mesecons](https://github.com/minetest-mods/mesecons)
+    * `public/static/pics/mooncontroller_top.png` [mooncontroller](https://github.com/mt-mods/mooncontroller)
+    * `public/static/pics/jeija*.png` [mesecons](https://github.com/minetest-mods/mesecons)
   * `WTFPL`
-    * `public/pics/lcd_lcd.png` [digilines](https://github.com/minetest-mods/digilines)
+    * `public/static/pics/lcd_lcd.png` [digilines](https://github.com/minetest-mods/digilines)

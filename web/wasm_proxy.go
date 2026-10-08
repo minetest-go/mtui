@@ -83,13 +83,8 @@ func (api *Api) handleProxyConnection(conn *websocket.Conn) error {
 			// fallback
 			host = "mtui_engine"
 		}
-		port = int64(api.app.Config.DockerMinetestPort)
-		if port == 0 {
-			// fallback
-			port = 30000
-		}
 
-		err = forwardData(conn, host, port)
+		err = forwardData(conn, host, 30000)
 	} else {
 		return fmt.Errorf("unsupported command: '%s'", data)
 	}

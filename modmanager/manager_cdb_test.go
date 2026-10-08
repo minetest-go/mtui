@@ -11,6 +11,8 @@ import (
 )
 
 func TestLatestCDBRelease(t *testing.T) {
+	t.SkipNow() // cdb is rate limited now :(
+
 	app := CreateTestApp(t)
 	mm := modmanager.New(app.WorldDir, app.Repos.ModRepo)
 
@@ -54,6 +56,8 @@ func TestLatestCDBRelease(t *testing.T) {
 }
 
 func TestShortnamesMod(t *testing.T) {
+	t.SkipNow() // cdb is rate limited now :(
+
 	app := CreateTestApp(t)
 	mm := modmanager.New(app.WorldDir, app.Repos.ModRepo)
 
@@ -74,6 +78,8 @@ func TestShortnamesMod(t *testing.T) {
 }
 
 func TestCraftoplusMod(t *testing.T) {
+	t.SkipNow() // cdb is rate limited now :(
+
 	app := CreateTestApp(t)
 	mm := modmanager.New(app.WorldDir, app.Repos.ModRepo)
 

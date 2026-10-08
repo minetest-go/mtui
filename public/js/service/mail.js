@@ -1,8 +1,9 @@
+import { reactive } from "vue";
 import { list_inbox, list_outbox, list_contacts } from "../api/mail.js";
 import events, { EVENT_LOGGED_IN } from "../events.js";
 import { has_feature } from "./features.js";
 
-const store = Vue.reactive({
+const store = reactive({
     busy: false,
     inbox: [],
     outbox: [],

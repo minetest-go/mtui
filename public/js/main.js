@@ -1,4 +1,14 @@
-import App from './app.js';
+import { createApp } from 'vue';
+import { createRouter, createWebHashHistory } from 'vue-router';
+import VueDatePicker from '@vuepic/vue-datepicker';
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import '@vuepic/vue-datepicker/dist/main.css';
+import 'codemirror/lib/codemirror.css';
+import './style.css';
+
+import App from './App.vue';
 import routes from './routes.js';
 import { check_login } from './service/login.js';
 import { check_features } from './service/features.js';
@@ -18,8 +28,8 @@ async function start(){
 	start_polling();
 
 	// create router instance
-	const router = VueRouter.createRouter({
-		history: VueRouter.createWebHashHistory(),
+	const router = createRouter({
+		history: createWebHashHistory(),
 		routes: routes
 	});
 
@@ -30,7 +40,7 @@ async function start(){
 	events.emit(EVENT_STARTUP);
 
 	// start vue
-	const app = Vue.createApp(App);
+	const app = createApp(App);
 	app.component('vue-datepicker', VueDatePicker);
 	app.use(router);
 	app.provide("unmount", () => {

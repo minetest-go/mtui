@@ -5,13 +5,18 @@ services:
   volumes:
    - "./:/app"
   working_dir: /app/public
-  command: bash -c 'npm i --package-lock-only && sleep infinity'
+  environment:
+   API_TARGET: "http://ui:8080"
+  ports:
+   - 5173:5173
+  # builds the embedded webapp for the backend, then starts the vite dev server
+  command: bash -c 'npm ci && npm run build && npm run dev -- --host'
   healthcheck:
-    test: ["CMD", "pgrep", "sleep"]
+    test: ["CMD", "test", "-f", "/app/public/dist/index.html"]
     interval: 5s
     timeout: 10s
     retries: 30
-    start_period: 10s
+    start_period: 120s
 
  ui:
   image: golang:1.26.2

@@ -1,14 +1,12 @@
 {
   "name": "app",
   "version": "1.0.0",
-  "main": "index.js",
-  "directories": {
-    "doc": "doc"
-  },
   "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "eslint": "eslint js/",
-    "eslint-fix": "eslint --fix js/",
-    "bundle": "rollup -c rollup.config.mjs"
+    "eslint-fix": "eslint --fix js/"
   },
   "author": "",
   "license": "ISC",
@@ -24,10 +22,11 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.7.0",
-    "@rollup/plugin-terser": "^1.0.0",
     "@stylistic/eslint-plugin-js": "^4.0.0",
     "eslint": "^9.7.0",
     "eslint-plugin-vue": "^10.0.0",
-    "rollup": "4.60.4"
-  }
+    "vite": "^7.0.0",
+    "@vitejs/plugin-vue": "^6.0.0"
+  },
+  "type": "module"
 }

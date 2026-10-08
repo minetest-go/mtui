@@ -1,6 +1,7 @@
+import { reactive } from "vue";
 import { fetch_stats } from "../api/stats.js";
 
-export const store = Vue.reactive({
+export const store = reactive({
     max_lag: null,
     uptime: null,
     time_of_day: null,

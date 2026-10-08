@@ -178,7 +178,7 @@ func (a *Api) GetPlayerSkin(w http.ResponseWriter, r *http.Request) {
 	playername := vars["playername"]
 
 	// default skin
-	skin, err := public.Webapp.ReadFile("pics/character.png")
+	skin, err := public.Webapp.ReadFile(public.Prefix + "/pics/character.png")
 	if err != nil {
 		SendError(w, 500, err)
 		return
