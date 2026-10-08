@@ -2,7 +2,6 @@ package types
 
 import (
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -23,14 +22,10 @@ type Config struct {
 	MinetestConfig         string
 	TailEngineLogfile      string
 	GeoIPAPI               string
-	DockerMinetestConfig   string
-	DockerMinetestPort     int
 	WASMMinetestHost       string
 }
 
 func NewConfig(world_dir string) *Config {
-	port, _ := strconv.ParseInt(os.Getenv("DOCKER_MINETEST_PORT"), 10, 64)
-
 	return &Config{
 		WorldDir:               world_dir,
 		CookieDomain:           os.Getenv("COOKIE_DOMAIN"),
@@ -47,8 +42,6 @@ func NewConfig(world_dir string) *Config {
 		MinetestConfig:         os.Getenv("MINETEST_CONFIG"),
 		TailEngineLogfile:      os.Getenv("TAIL_ENGINE_LOGFILE"),
 		GeoIPAPI:               os.Getenv("GEOIP_API"),
-		DockerMinetestConfig:   os.Getenv("DOCKER_MINETEST_CONFIG"),
-		DockerMinetestPort:     int(port),
 		WASMMinetestHost:       os.Getenv("WASM_MINETEST_HOST"),
 	}
 }
