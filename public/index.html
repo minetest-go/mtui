@@ -17,7 +17,7 @@
 			}
 		</style>
 
-		<title>Minetest Web UI {{if .ServerName}}[{{.ServerName}}]{{end}}</title>
+		<title>Minetest Web UI</title>
 	</head>
     <body style="height: 100%; margin: 0px;">
 		<!-- app root -->
@@ -34,13 +34,8 @@
 		</app>
 
 		<!-- app bootstrap -->
-		{{if .Webdev}}
-		<script src="node_modules/vue/dist/vue.global.js"></script>
-		<script src="node_modules/vue-router/dist/vue-router.global.js"></script>
-		{{else}}
 		<script src="node_modules/vue/dist/vue.global.prod.js"></script>
 		<script src="node_modules/vue-router/dist/vue-router.global.prod.js"></script>
-		{{end}}
 		<script src="node_modules/marked/lib/marked.umd.js"></script>
 		<script src="node_modules/dompurify/dist/purify.min.js"></script>
 		<script src="node_modules/@vuepic/vue-datepicker/dist/vue-datepicker.iife.js"></script>
@@ -51,10 +46,6 @@
 		<script src="node_modules/codemirror/mode/xml/xml.js"></script>
 		<script src="node_modules/codemirror/mode/css/css.js"></script>
 		<script src="node_modules/codemirror/mode/toml/toml.js"></script>
-		{{if .Webdev}}
-		<script src="js/main.js" type="module"></script>
-		{{else}}
 		<script src="js/bundle.js"></script>
-		{{end}}
 	</body>
 </html>

@@ -14,7 +14,6 @@ type Config struct {
 	CookieDomain           string
 	CookieSecure           bool
 	CookiePath             string
-	Webdev                 bool
 	Servername             string
 	EnabledFeatures        []string
 	InstallMtuiMod         bool
@@ -39,7 +38,6 @@ func NewConfig(world_dir string) *Config {
 		CookiePath:             os.Getenv("COOKIE_PATH"),
 		APIKey:                 os.Getenv("API_KEY"),
 		JWTKey:                 os.Getenv("JWT_KEY"),
-		Webdev:                 os.Getenv("WEBDEV") == "true",
 		Servername:             os.Getenv("SERVER_NAME"),
 		EnabledFeatures:        strings.Split(os.Getenv("ENABLE_FEATURES"), ","),
 		InstallMtuiMod:         os.Getenv("INSTALL_MTUI_MOD") == "true",

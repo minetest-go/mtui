@@ -5,7 +5,6 @@ import (
 	"mtui/public"
 	"mtui/types"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/dchest/captcha"
@@ -184,20 +183,9 @@ func Setup(a *app.App) error {
 	cfgr.HandleFunc("/settings/{key}", api.SecurePriv(types.PRIV_SERVER, api.SetMTConfig)).Methods(http.MethodPost)
 	cfgr.HandleFunc("/settings/{key}", api.SecurePriv(types.PRIV_SERVER, api.DeleteMTConfig)).Methods(http.MethodDelete)
 
-	// index.html or /
-	r.HandleFunc("/", api.GetIndex)
-	r.HandleFunc("/index.html", api.GetIndex)
-
 	// static files
-	var fsh http.Handler
-	if a.Config.Webdev {
-		logrus.WithFields(logrus.Fields{"dir": "public"}).Info("Using live mode")
-		fs := http.FileServer(http.FS(os.DirFS("public")))
-		fsh = fs
-	} else {
-		logrus.Info("Using embed mode")
-		fsh = statigz.FileServer(public.Webapp, brotli.AddEncoding)
-	}
+	logrus.Info("Using embed mode")
+	fsh := statigz.FileServer(public.Webapp, brotli.AddEncoding)
 
 	// set additional headers for wasm env
 	r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

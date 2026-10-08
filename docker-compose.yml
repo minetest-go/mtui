@@ -18,7 +18,6 @@ services:
   hostname: ui
   environment:
    WORLD_DIR: "/world"
-   WEBDEV: "true"
    API_KEY: "mykey"
    #LOGLEVEL: debug
    SERVER_NAME: "dev-server"
