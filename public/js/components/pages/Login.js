@@ -9,7 +9,6 @@ export default {
         return {
             username: "",
             password: "",
-            otp_code: "",
             busy: false,
             error_message: "",
             can_oboard: false,
@@ -37,7 +36,7 @@ export default {
         login: function() {
             this.busy = true;
             this.error_message = "";
-            login(this.username, this.password, this.otp_code)
+            login(this.username, this.password)
             .then(success => {
                 this.busy = false;
                 if (!success) {
@@ -76,13 +75,6 @@ export default {
                         placeholder="Password"
                         :disabled="is_logged_in"
                         v-model="password"/>
-                    <input type="text"
-                        maxlength="6"
-                        class="form-control"
-                        placeholder="OTP Code (optional)"
-                        :disabled="is_logged_in"
-                        v-if="has_feature('otp')"
-                        v-model="otp_code"/>
                     <button class="btn btn-primary w-100" v-if="!is_logged_in" type="submit" :disabled="!validInput">
                         <i class="fa-solid fa-right-to-bracket"></i>
                         Login

@@ -20,8 +20,8 @@ export const check_login = () => fetch_claims().then(c => {
 
 export const has_priv = priv => store.claims && store.claims.privileges.find(e => e == priv);
 
-export const login = (username, password, otp_code) => {
-    return api_login(username, password, otp_code)
+export const login = (username, password) => {
+    return api_login(username, password)
     .then(success => {
         if (success) {
             return check_login();

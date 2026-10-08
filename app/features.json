@@ -49,9 +49,6 @@
         "description": "xban integration",
         "mods": ["xban2"]
     },{
-        "name": "otp",
-        "description": "Enable otp login"
-    },{
         "name": "minetest_config",
         "description": "minetest configuration management"
     },{

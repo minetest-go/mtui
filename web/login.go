@@ -11,14 +11,11 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/pquerna/otp"
-	"github.com/pquerna/otp/totp"
 )
 
 type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
-	OTPCode  string `json:"otp_code"`
 }
 
 var tan_map = make(map[string]string)
@@ -168,52 +165,6 @@ func (a *Api) DoLogin(w http.ResponseWriter, r *http.Request) {
 
 		// remove tan (single-use)
 		delete(tan_map, req.Username)
-	}
-
-	// check otp code if applicable
-	privs, err := a.app.DBContext.Privs.GetByID(*auth_entry.ID)
-	if err != nil {
-		SendError(w, 500, err)
-		return
-	}
-
-	otp_enabled := false
-	for _, priv := range privs {
-		if priv.Privilege == "otp_enabled" {
-			otp_enabled = true
-			break
-		}
-	}
-	if otp_enabled {
-		secret_entry, err := a.app.DBContext.ModStorage.Get("otp", []byte(fmt.Sprintf("%s_secret", req.Username)))
-		if err != nil {
-			SendError(w, 500, err)
-			return
-		}
-
-		if secret_entry != nil {
-			otp_ok, err := totp.ValidateCustom(req.OTPCode, string(secret_entry.Value), time.Now(), totp.ValidateOpts{
-				Digits:    6,
-				Period:    30,
-				Algorithm: otp.AlgorithmSHA1,
-			})
-
-			if err != nil {
-				SendError(w, 500, err)
-				return
-			}
-
-			if !otp_ok {
-				SendError(w, 403, fmt.Errorf("otp code wrong"))
-				// create log entry
-				a.app.CreateUILogEntry(&types.Log{
-					Username: req.Username,
-					Event:    "login",
-					Message:  fmt.Sprintf("User '%s' provided wrong otp code", req.Username),
-				}, r)
-				return
-			}
-		}
 	}
 
 	claims, err := a.updateToken(w, *auth_entry.ID, auth_entry.Name)

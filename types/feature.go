@@ -13,7 +13,6 @@ const (
 	FEATURE_MODMANAGEMENT   FeatureName = "modmanagement"
 	FEATURE_XBAN            FeatureName = "xban"
 	FEATURE_MINETEST_CONFIG FeatureName = "minetest_config"
-	FEATURE_OTP             FeatureName = "otp"
 	FEATURE_SIGNUP          FeatureName = "signup"
 	FEATURE_MESECONS        FeatureName = "mesecons"
 	FEATURE_ATM             FeatureName = "atm"
