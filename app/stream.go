@@ -125,9 +125,12 @@ func (a *App) Unzip(abspath string, filename string, req *http.Request, c *types
 	files := int64(0)
 
 	for _, f := range zr.File {
+		if !filepath.IsLocal(f.Name) {
+			return 0, fmt.Errorf("illegal file path in zip: '%s'", f.Name)
+		}
 		targetfile := path.Join(abspath, f.Name)
 		dirname := path.Dir(targetfile)
-		err = os.MkdirAll(dirname, 0644)
+		err = os.MkdirAll(dirname, 0755)
 		if err != nil {
 			return 0, fmt.Errorf("mkdirall error: %v", err)
 		}

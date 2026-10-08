@@ -42,6 +42,7 @@ func (r *ApiGeoIPResolver) Resolve(ipstr string) *GeoipResult {
 	if err != nil {
 		return nil
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
 		return nil
 	}
@@ -51,7 +52,6 @@ func (r *ApiGeoIPResolver) Resolve(ipstr string) *GeoipResult {
 	if err != nil {
 		return nil
 	}
-	defer resp.Body.Close()
 
 	r.cache_lock.Lock()
 	r.cache[ipstr] = result

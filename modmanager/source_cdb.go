@@ -7,6 +7,7 @@ import (
 	"mtui/types"
 	"os"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -52,6 +53,9 @@ func (h *ContentDBModHandler) installMod(world_dir string, mod *types.Mod, relea
 			// can't do anything with those
 			continue
 		}
+		if !filepath.IsLocal(f.Name) {
+			return fmt.Errorf("illegal file path in zip: '%s'", f.Name)
+		}
 
 		// the target file to extract to
 		var fullpath string
@@ -88,19 +92,20 @@ func (h *ContentDBModHandler) installMod(world_dir string, mod *types.Mod, relea
 
 		// create basedir if it does not exist
 		basedir := path.Dir(fullpath)
-		err = os.MkdirAll(basedir, 0777)
+		err = os.MkdirAll(basedir, 0755)
 		if err != nil {
 			return fmt.Errorf("could not create directory '%s': %v", basedir, err)
-		}
-
-		target, err := os.OpenFile(fullpath, os.O_CREATE|os.O_RDWR, 0644)
-		if err != nil {
-			return fmt.Errorf("could not open target file '%s': %v", fullpath, err)
 		}
 
 		r, err := f.Open()
 		if err != nil {
 			return fmt.Errorf("could not open zip-entry '%s': %v", f.Name, err)
+		}
+
+		target, err := os.OpenFile(fullpath, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
+		if err != nil {
+			r.Close()
+			return fmt.Errorf("could not open target file '%s': %v", fullpath, err)
 		}
 
 		_, err = io.Copy(target, r)
