@@ -21,17 +21,8 @@ Minetest web ui
 * Mediaserver (remote_media)
 * Event logging
 * Mod/game/texturepack configuration and updates (cdb, git)
-* Engine management (via Docker)
 * File browser
 * Minetest config management
-
-Planned:
-* Mapserver management (via Docker)
-* Matterbridge management (via Docker)
-
-# Docs
-
-* See [docs](./docs/mtui.md)
 
 # Dev
 
