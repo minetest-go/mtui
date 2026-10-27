@@ -38,6 +38,7 @@ services:
     - 8080:8080
   volumes:
    - "./:/app"
+   - "./world.mt:/world/world.mt"
    - "world_dir:/world"
    - "./cache/go_dir:/go"
    - "./cache/go_cache:/root/.cache"
