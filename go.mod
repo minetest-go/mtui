@@ -24,7 +24,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.44
 	github.com/minetest-go/areasparser v1.0.5
 	gorm.io/driver/sqlite v1.6.0
-	gorm.io/gorm v1.31.1
+	gorm.io/gorm v1.31.2
 )
 
 require (
