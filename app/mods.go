@@ -42,7 +42,7 @@ func (a *App) CreateMTUIMod() (*types.Mod, error) {
 			Name:       "mtui",
 			ModType:    types.ModTypeMod,
 			SourceType: types.SourceTypeGIT,
-			URL:        "https://github.com/minetest-go/mtui_mod.git",
+			URL:        "https://github.com/luanti-golang/mtui_mod.git",
 			Branch:     "master",
 		}
 		err = a.ModManager.Create(m)
