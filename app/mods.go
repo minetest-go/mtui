@@ -2,17 +2,17 @@ package app
 
 import (
 	"fmt"
-	"mtui/minetestconfig"
+	"mtui/luanticonfig"
 	"mtui/types"
 	"os"
 	"strings"
 )
 
-func (a *App) AddHTTPMod(modname string, cfg minetestconfig.Settings) {
+func (a *App) AddHTTPMod(modname string, cfg luanticonfig.Settings) {
 	http_mods := cfg["secure.http_mods"]
 	if http_mods == nil || http_mods.Value == "" {
 		// create new
-		http_mods = &minetestconfig.Setting{
+		http_mods = &luanticonfig.Setting{
 			Value: modname,
 		}
 		cfg["secure.http_mods"] = http_mods
@@ -57,7 +57,7 @@ func (a *App) CreateMTUIMod() (*types.Mod, error) {
 		return nil, fmt.Errorf("could not get hostname: %v", err)
 	}
 
-	for _, fname := range []types.FeatureName{types.FEATURE_MINETEST_CONFIG} {
+	for _, fname := range []types.FeatureName{types.FEATURE_LUANTI_CONFIG} {
 		feature, err := a.Repos.FeatureRepository.GetByName(fname)
 		if err != nil {
 			return nil, fmt.Errorf("feature get error: %v", err)
@@ -77,10 +77,10 @@ func (a *App) CreateMTUIMod() (*types.Mod, error) {
 		return nil, fmt.Errorf("read config error: %v", err)
 	}
 
-	cfg["mtui.url"] = &minetestconfig.Setting{
+	cfg["mtui.url"] = &luanticonfig.Setting{
 		Value: fmt.Sprintf("http://%s:8080", hostname),
 	}
-	cfg["mtui.key"] = &minetestconfig.Setting{
+	cfg["mtui.key"] = &luanticonfig.Setting{
 		Value: a.Config.APIKey,
 	}
 
@@ -115,7 +115,7 @@ func (a *App) CreateBeerchatMod() (*types.Mod, error) {
 		}
 	}
 
-	for _, fname := range []types.FeatureName{types.FEATURE_MINETEST_CONFIG} {
+	for _, fname := range []types.FeatureName{types.FEATURE_LUANTI_CONFIG} {
 		feature, err := a.Repos.FeatureRepository.GetByName(fname)
 		if err != nil {
 			return nil, fmt.Errorf("feature get error: %v", err)
@@ -135,10 +135,10 @@ func (a *App) CreateBeerchatMod() (*types.Mod, error) {
 		return nil, fmt.Errorf("read config error: %v", err)
 	}
 
-	cfg["beerchat.matterbridge_url"] = &minetestconfig.Setting{
+	cfg["beerchat.matterbridge_url"] = &luanticonfig.Setting{
 		Value: "http://matterbridge:4242",
 	}
-	cfg["beerchat.matterbridge_token"] = &minetestconfig.Setting{
+	cfg["beerchat.matterbridge_token"] = &luanticonfig.Setting{
 		Value: "my-token",
 	}
 
@@ -173,7 +173,7 @@ func (a *App) CreateMapserverMod() (*types.Mod, error) {
 		}
 	}
 
-	for _, fname := range []types.FeatureName{types.FEATURE_MINETEST_CONFIG} {
+	for _, fname := range []types.FeatureName{types.FEATURE_LUANTI_CONFIG} {
 		feature, err := a.Repos.FeatureRepository.GetByName(fname)
 		if err != nil {
 			return nil, fmt.Errorf("feature get error: %v", err)
@@ -193,7 +193,7 @@ func (a *App) CreateMapserverMod() (*types.Mod, error) {
 		return nil, fmt.Errorf("read config error: %v", err)
 	}
 
-	cfg["mapserver.url"] = &minetestconfig.Setting{
+	cfg["mapserver.url"] = &luanticonfig.Setting{
 		Value: "http://mapserver:8080",
 	}
 

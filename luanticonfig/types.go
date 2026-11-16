@@ -1,4 +1,4 @@
-package minetestconfig
+package luanticonfig
 
 type Settings map[string]*Setting
 

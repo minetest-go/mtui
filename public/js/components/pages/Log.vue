@@ -164,7 +164,7 @@ export default {
           <div class="col-md-2">
               <label>Category</label>
               <select class="form-control" v-model="category">
-                  <option value="minetest">Minetest</option>
+                  <option value="minetest">Luanti</option>
                   <option value="ui">UI</option>
                   <option value="service">Service</option>
               </select>

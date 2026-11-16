@@ -1,4 +1,4 @@
-package minetestconfig
+package luanticonfig
 
 import (
 	"bufio"
@@ -6,7 +6,7 @@ import (
 	"embed"
 	"fmt"
 	"io/fs"
-	"mtui/minetestconfig/depanalyzer"
+	"mtui/luanticonfig/depanalyzer"
 	"os"
 	"path"
 	"path/filepath"

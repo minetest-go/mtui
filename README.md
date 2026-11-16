@@ -1,12 +1,12 @@
 # mtui
 
-Minetest web ui
+Luanti web ui
 
-![](https://github.com/minetest-go/mtui/workflows/test/badge.svg)
-![](https://github.com/minetest-go/mtui/workflows/build/badge.svg)
+![](https://github.com/luanti-golang/mtui/workflows/test/badge.svg)
+![](https://github.com/luanti-golang/mtui/workflows/build/badge.svg)
 
-![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/minetest-go/mtui)
-[![Go Report Card](https://goreportcard.com/badge/github.com/minetest-go/mtui)](https://goreportcard.com/report/github.com/minetest-go/mtui)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/luanti-golang/mtui)
+[![Go Report Card](https://goreportcard.com/badge/github.com/luanti-golang/mtui)](https://goreportcard.com/report/github.com/luanti-golang/mtui)
 
 # Features
 
@@ -21,7 +21,7 @@ Minetest web ui
 * Event logging
 * Mod/game/texturepack configuration and updates (cdb, git)
 * File browser
-* Minetest config management
+* Luanti config management
 
 # Dev
 

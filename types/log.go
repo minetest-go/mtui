@@ -22,7 +22,7 @@ type LogCategory string
 
 const (
 	CategoryUI       LogCategory = "ui"
-	CategoryMinetest LogCategory = "minetest"
+	CategoryLuanti LogCategory = "minetest"
 	CategoryService  LogCategory = "service"
 )
 

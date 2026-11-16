@@ -3,7 +3,7 @@ package web
 import (
 	"encoding/json"
 	"fmt"
-	"mtui/minetestconfig"
+	"mtui/luanticonfig"
 	"mtui/types"
 	"mtui/types/command"
 	"net/http"
@@ -42,7 +42,7 @@ func (a *Api) SetMTConfig(w http.ResponseWriter, r *http.Request, claims *types.
 	vars := mux.Vars(r)
 	key := vars["key"]
 
-	s := &minetestconfig.Setting{}
+	s := &luanticonfig.Setting{}
 	err := json.NewDecoder(r.Body).Decode(s)
 	if err != nil {
 		SendError(w, 500, err)
@@ -71,7 +71,7 @@ func (a *Api) SetMTConfig(w http.ResponseWriter, r *http.Request, claims *types.
 	st := sts[key]
 	if st == nil {
 		// default to string type
-		st = &minetestconfig.SettingType{Type: "string"}
+		st = &luanticonfig.SettingType{Type: "string"}
 	}
 
 	// create log entry
@@ -131,7 +131,7 @@ func (a *Api) DeleteMTConfig(w http.ResponseWriter, r *http.Request, claims *typ
 
 	st := sts[key]
 	if st == nil {
-		st = &minetestconfig.SettingType{Type: "string"}
+		st = &luanticonfig.SettingType{Type: "string"}
 	}
 
 	// create log entry

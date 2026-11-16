@@ -3,7 +3,7 @@ package web
 import (
 	"encoding/json"
 	"fmt"
-	"mtui/minetestconfig/depanalyzer"
+	"mtui/luanticonfig/depanalyzer"
 	"mtui/types"
 	"mtui/types/command"
 	"net/http"

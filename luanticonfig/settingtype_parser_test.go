@@ -1,7 +1,7 @@
-package minetestconfig_test
+package luanticonfig_test
 
 import (
-	"mtui/minetestconfig"
+	"mtui/luanticonfig"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -30,7 +30,7 @@ client_unload_unused_data_timeout (Mapblock unload timeout) float 600.0 0.0
 `
 
 func TestSettingParserminetestSettings(t *testing.T) {
-	sts, err := minetestconfig.ParseSettingTypes([]byte(minetest_setting))
+	sts, err := luanticonfig.ParseSettingTypes([]byte(minetest_setting))
 	assert.NoError(t, err)
 	assert.NotNil(t, sts)
 	assert.Equal(t, 3, len(sts))
@@ -81,7 +81,7 @@ wrench.compress_data (Compress item metadata) bool true
 `
 
 func TestSettingParserMod(t *testing.T) {
-	sts, err := minetestconfig.ParseSettingTypes([]byte(mod_settings))
+	sts, err := luanticonfig.ParseSettingTypes([]byte(mod_settings))
 	assert.NoError(t, err)
 	assert.NotNil(t, sts)
 	assert.Equal(t, 3, len(sts))
@@ -130,7 +130,7 @@ hudbars_bar_type (HUD bars style) enum progress_bar progress_bar,statbar_classic
 `
 
 func TestEnumSetting(t *testing.T) {
-	sts, err := minetestconfig.ParseSettingTypes([]byte(setting_with_enum))
+	sts, err := luanticonfig.ParseSettingTypes([]byte(setting_with_enum))
 	assert.NoError(t, err)
 	assert.NotNil(t, sts)
 	assert.Equal(t, 1, len(sts))
@@ -148,7 +148,7 @@ func TestEnumSetting(t *testing.T) {
 }
 
 func TestNoiseParams2D(t *testing.T) {
-	sts, err := minetestconfig.ParseSettingTypes([]byte("mgfractal_np_seabed (Seabed noise) noise_params_2d -14, 9, (600, 601, 602), 41900, 5, 0.6, 2.0, eased"))
+	sts, err := luanticonfig.ParseSettingTypes([]byte("mgfractal_np_seabed (Seabed noise) noise_params_2d -14, 9, (600, 601, 602), 41900, 5, 0.6, 2.0, eased"))
 	assert.NoError(t, err)
 	assert.NotNil(t, sts)
 	assert.Equal(t, 1, len(sts))
@@ -171,7 +171,7 @@ func TestNoiseParams2D(t *testing.T) {
 }
 
 func TestTypeV3F(t *testing.T) {
-	sts, err := minetestconfig.ParseSettingTypes([]byte("mgfractal_scale (Scale) v3f (4096.0, 1024.0, 2048.0)"))
+	sts, err := luanticonfig.ParseSettingTypes([]byte("mgfractal_scale (Scale) v3f (4096.0, 1024.0, 2048.0)"))
 	assert.NoError(t, err)
 	assert.NotNil(t, sts)
 	assert.Equal(t, 1, len(sts))
@@ -204,7 +204,7 @@ x3 (desc3) string
 `
 
 func TestNestedSettings(t *testing.T) {
-	sts, err := minetestconfig.ParseSettingTypes([]byte(nested_settings))
+	sts, err := luanticonfig.ParseSettingTypes([]byte(nested_settings))
 	assert.NoError(t, err)
 	assert.NotNil(t, sts)
 	assert.Equal(t, 2, len(sts))
@@ -224,7 +224,7 @@ func TestNestedSettings(t *testing.T) {
 }
 
 func TestGetServerSettingTypes(t *testing.T) {
-	ss, err := minetestconfig.GetServerSettingTypes()
+	ss, err := luanticonfig.GetServerSettingTypes()
 	assert.NoError(t, err)
 	assert.NotNil(t, ss)
 

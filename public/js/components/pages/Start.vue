@@ -35,7 +35,7 @@ export default {
   <default-layout icon="home" title="Start" :breadcrumb="breadcrumb">
   	<div class="text-center">
   		<h3>
-  			Minetest Web UI
+  			Luanti Web UI
   			<small class="text-muted" v-if="servername">{{servername}}</small>
   		</h3>
   		<span v-if="version">
@@ -57,7 +57,7 @@ export default {
   			<i class="fa-solid fa-circle-question"></i> Help
   		</router-link>
   		&nbsp;
-  		<a class="btn btn-secondary" href="https://github.com/minetest-go/mtui" target="new">
+  		<a class="btn btn-secondary" href="https://github.com/luanti-golang/mtui" target="new">
   			<i class="fa-brands fa-github"></i> Source
   		</a>
   		<hr/>

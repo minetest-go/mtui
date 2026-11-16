@@ -15,7 +15,7 @@ import (
 	"path"
 
 	cache "github.com/Code-Hex/go-generics-cache"
-	"github.com/minetest-go/mtdb"
+	"github.com/luanti-golang/mtdb"
 	"gorm.io/gorm"
 )
 

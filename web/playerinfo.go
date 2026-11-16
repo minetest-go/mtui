@@ -11,8 +11,8 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/minetest-go/mtdb/auth"
-	"github.com/minetest-go/mtdb/player"
+	"github.com/luanti-golang/mtdb/auth"
+	"github.com/luanti-golang/mtdb/player"
 )
 
 type PlayerInfo struct {

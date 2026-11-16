@@ -18,7 +18,7 @@ export default {
             search: "",
             only_configured: true,
             breadcrumb: [START, ADMINISTRATION, {
-                name: "Minetest config",
+                name: "Luanti config",
                 icon: "cog",
                 link: "/minetest-config"
             }]
@@ -40,7 +40,7 @@ export default {
 </script>
 
 <template>
-  <default-layout icon="cog" title="Minetest config" :breadcrumb="breadcrumb">
+  <default-layout icon="cog" title="Luanti config" :breadcrumb="breadcrumb">
       <div class="row">
           <div class="col-6">
               <input type="text" class="form-control" v-model="search" placeholder="Search settings"/>

@@ -14,7 +14,7 @@ func TestLogRepo(t *testing.T) {
 
 	l := &types.Log{
 		Event:    "myevent",
-		Category: types.CategoryMinetest,
+		Category: types.CategoryLuanti,
 	}
 	assert.NoError(t, repo.Insert(l))
 	assert.NotEqual(t, "", l.ID)
@@ -52,7 +52,7 @@ func TestLogRepo(t *testing.T) {
 	assert.Equal(t, 1, len(events))
 	assert.Equal(t, "myevent", events[0])
 
-	events, err = repo.GetEvents(types.CategoryMinetest)
+	events, err = repo.GetEvents(types.CategoryLuanti)
 	assert.NoError(t, err)
 	assert.NotNil(t, events)
 	assert.Equal(t, 0, len(events))

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/minetest-go/mtdb"
-	"github.com/minetest-go/mtdb/mod_storage"
+	"github.com/luanti-golang/mtdb"
+	"github.com/luanti-golang/mtdb/mod_storage"
 )
 
 type Mail struct {

@@ -9,7 +9,7 @@ import (
 	"path"
 	"testing"
 
-	authdb "github.com/minetest-go/mtdb/auth"
+	authdb "github.com/luanti-golang/mtdb/auth"
 	"github.com/stretchr/testify/assert"
 )
 

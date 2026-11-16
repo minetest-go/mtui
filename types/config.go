@@ -19,10 +19,10 @@ type Config struct {
 	LogRetention           string
 	LogStreamURL           string
 	LogStreamAuthorization string
-	MinetestConfig         string
+	LuantiConfig         string
 	TailEngineLogfile      string
 	GeoIPAPI               string
-	WASMMinetestHost       string
+	WASMLuantiHost       string
 }
 
 func NewConfig(world_dir string) *Config {
@@ -39,9 +39,9 @@ func NewConfig(world_dir string) *Config {
 		LogRetention:           os.Getenv("LOG_RETENTION"),
 		LogStreamURL:           os.Getenv("LOG_STREAM_URL"),
 		LogStreamAuthorization: os.Getenv("LOG_STREAM_AUTHORIZATION"),
-		MinetestConfig:         os.Getenv("MINETEST_CONFIG"),
+		LuantiConfig:         os.Getenv("MINETEST_CONFIG"),
 		TailEngineLogfile:      os.Getenv("TAIL_ENGINE_LOGFILE"),
 		GeoIPAPI:               os.Getenv("GEOIP_API"),
-		WASMMinetestHost:       os.Getenv("WASM_MINETEST_HOST"),
+		WASMLuantiHost:       os.Getenv("WASM_MINETEST_HOST"),
 	}
 }

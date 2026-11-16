@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"mtui/auth"
 
-	dbauth "github.com/minetest-go/mtdb/auth"
+	dbauth "github.com/luanti-golang/mtdb/auth"
 )
 
 func (a *App) CreateUser(username, password string, overwrite bool, privs []string) (*dbauth.AuthEntry, error) {

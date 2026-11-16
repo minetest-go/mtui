@@ -21,7 +21,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v6
         with:
-          images: ghcr.io/minetest-go/mtui
+          images: ghcr.io/luanti-golang/mtui
 
       - name: Log in to the Container registry
         uses: docker/login-action@v4

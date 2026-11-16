@@ -5,7 +5,7 @@ import (
 	"mtui/types/command"
 	"time"
 
-	"github.com/minetest-go/mtdb/player"
+	"github.com/luanti-golang/mtdb/player"
 )
 
 func (a *App) Healthcheck() error {

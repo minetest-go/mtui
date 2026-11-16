@@ -7,8 +7,8 @@ import (
 	"mtui/modmanager"
 	"path"
 
-	"github.com/minetest-go/mtdb"
-	"github.com/minetest-go/mtdb/worldconfig"
+	"github.com/luanti-golang/mtdb"
+	"github.com/luanti-golang/mtdb/worldconfig"
 	"github.com/sirupsen/logrus"
 )
 

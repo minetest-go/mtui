@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"path"
 
-	"github.com/minetest-go/areasparser"
+	"github.com/luanti-golang/areasparser"
 
 	"github.com/gorilla/mux"
 )

@@ -16,7 +16,7 @@ import Mediaserver from './components/pages/Mediaserver.vue';
 import Log from './components/pages/Log.vue';
 import Onboard from './components/pages/Onboard.vue';
 import Xban from './components/pages/Xban.vue';
-import MinetestConfig from './components/pages/administration/MinetestConfig.vue';
+import LuantiConfig from './components/pages/administration/LuantiConfig.vue';
 import UISettings from './components/pages/administration/UISettings.vue';
 import Filebrowser from './components/pages/filebrowser/Filebrowser.vue';
 import FileEditPage from './components/pages/filebrowser/FileEditPage.vue';
@@ -119,7 +119,7 @@ export default [{
 	path: "/skin", component: Skin,
 	meta: { requiredPriv: "interact" }
 }, {
-	path: "/minetest-config", component: MinetestConfig,
+	path: "/minetest-config", component: LuantiConfig,
 	meta: { requiredPriv: "server" }
 }, {
 	path:"/ui/settings", component: UISettings,

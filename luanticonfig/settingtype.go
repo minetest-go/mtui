@@ -1,4 +1,4 @@
-package minetestconfig
+package luanticonfig
 
 // setting with type information
 type SettingType struct {

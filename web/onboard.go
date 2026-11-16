@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"sync/atomic"
 
-	dbauth "github.com/minetest-go/mtdb/auth"
+	dbauth "github.com/luanti-golang/mtdb/auth"
 )
 
 var onboardFinished atomic.Bool

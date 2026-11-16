@@ -1,7 +1,7 @@
 package depanalyzer_test
 
 import (
-	"mtui/minetestconfig/depanalyzer"
+	"mtui/luanticonfig/depanalyzer"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

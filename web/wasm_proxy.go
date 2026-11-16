@@ -78,7 +78,7 @@ func (api *Api) handleProxyConnection(conn *websocket.Conn) error {
 		err = api.resolveDNS(conn)
 	} else if protocol == "UDP" {
 		// override port/host for local minetest connection
-		host = api.app.Config.WASMMinetestHost
+		host = api.app.Config.WASMLuantiHost
 		if host == "" {
 			// fallback
 			host = "mtui_engine"
@@ -95,7 +95,7 @@ func (api *Api) resolveDNS(conn *websocket.Conn) error {
 	conn.WriteMessage(websocket.TextMessage, []byte("PROXY OK"))
 
 	// fixed host to resolve
-	host := api.app.Config.WASMMinetestHost
+	host := api.app.Config.WASMLuantiHost
 	if host == "" {
 		// fallback
 		host = "mtui_engine"

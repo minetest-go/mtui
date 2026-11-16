@@ -1,4 +1,4 @@
-package minetestconfig
+package luanticonfig
 
 import (
 	"fmt"

@@ -12,11 +12,11 @@ const (
 	FEATURE_SHELL           FeatureName = "shell"
 	FEATURE_MODMANAGEMENT   FeatureName = "modmanagement"
 	FEATURE_XBAN            FeatureName = "xban"
-	FEATURE_MINETEST_CONFIG FeatureName = "minetest_config"
+	FEATURE_LUANTI_CONFIG FeatureName = "minetest_config"
 	FEATURE_SIGNUP          FeatureName = "signup"
 	FEATURE_MESECONS        FeatureName = "mesecons"
 	FEATURE_ATM             FeatureName = "atm"
-	FEATURE_MINETEST_WEB    FeatureName = "minetest_web"
+	FEATURE_LUANTI_WEB    FeatureName = "minetest_web"
 )
 
 type Feature struct {

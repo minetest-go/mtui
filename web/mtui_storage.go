@@ -8,7 +8,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/minetest-go/mtdb/mod_storage"
+	"github.com/luanti-golang/mtdb/mod_storage"
 )
 
 func (a *Api) GetMtUIStorage(w http.ResponseWriter, r *http.Request, claims *types.Claims) {

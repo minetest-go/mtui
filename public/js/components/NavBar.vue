@@ -35,7 +35,7 @@ export default {
 <template>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   	<div class="container-fluid">
-  		<router-link to="/" class="navbar-brand">Minetest Web UI</router-link>
+  		<router-link to="/" class="navbar-brand">Luanti Web UI</router-link>
   		<ul class="navbar-nav me-auto mb-2 mb-lg-0" v-if="is_logged_in">
   			<li class="nav-item" v-if="has_priv('interact')">
   				<router-link to="/" class="nav-link">
@@ -118,7 +118,7 @@ export default {
   				</li>
   				<li v-if="has_feature('minetest_config')">
   					<router-link to="/minetest-config" class="dropdown-item">
-  						<i class="fa fa-cog"></i> Minetest config
+  						<i class="fa fa-cog"></i> Luanti config
   					</router-link>
   				</li>
   				<li v-if="has_feature('modmanagement')">

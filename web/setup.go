@@ -151,7 +151,7 @@ func Setup(a *app.App) error {
 	msr.HandleFunc("/scan", api.SecurePriv(types.PRIV_SERVER, api.ScanMedia)).Methods(http.MethodPost)
 
 	prr := apir.PathPrefix("/wasm").Subrouter()
-	prr.Use(SecureHandler(api.FeatureCheck(types.FEATURE_MINETEST_WEB)))
+	prr.Use(SecureHandler(api.FeatureCheck(types.FEATURE_LUANTI_WEB)))
 	prr.HandleFunc("/proxy", api.Secure(api.HandleProxy))
 	prr.HandleFunc("/joinpassword", api.Secure(api.RequestJoinPassword)).Methods(http.MethodGet)
 
@@ -177,7 +177,7 @@ func Setup(a *app.App) error {
 	cdbapi.HandleFunc("/detail/{author}/{name}/dependencies", api.Secure(api.GetCDBPackageDependencies)).Methods(http.MethodGet)
 
 	cfgr := apir.PathPrefix("/mtconfig").Subrouter()
-	cfgr.Use(SecureHandler(api.FeatureCheck(types.FEATURE_MINETEST_CONFIG)))
+	cfgr.Use(SecureHandler(api.FeatureCheck(types.FEATURE_LUANTI_CONFIG)))
 	cfgr.HandleFunc("/settingtypes", api.SecurePriv(types.PRIV_SERVER, api.GetSettingTypes))
 	cfgr.HandleFunc("/settings", api.SecurePriv(types.PRIV_SERVER, api.GetMTConfig)).Methods(http.MethodGet)
 	cfgr.HandleFunc("/settings/{key}", api.SecurePriv(types.PRIV_SERVER, api.SetMTConfig)).Methods(http.MethodPost)

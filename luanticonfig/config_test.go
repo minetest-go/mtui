@@ -1,8 +1,8 @@
-package minetestconfig_test
+package luanticonfig_test
 
 import (
 	"bytes"
-	"mtui/minetestconfig"
+	"mtui/luanticonfig"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -32,11 +32,11 @@ mycoord (some coord) v3f (0,0,0)
 `
 
 func TestParse(t *testing.T) {
-	sts, err := minetestconfig.ParseSettingTypes([]byte(simple_settingtypes))
+	sts, err := luanticonfig.ParseSettingTypes([]byte(simple_settingtypes))
 	assert.NoError(t, err)
 	assert.NotNil(t, sts)
 
-	cfg := minetestconfig.Settings{}
+	cfg := luanticonfig.Settings{}
 	buf := bytes.NewBuffer([]byte(simple_config))
 	err = cfg.Read(buf, sts)
 	assert.NoError(t, err)
