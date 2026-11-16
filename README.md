@@ -7,7 +7,6 @@ Minetest web ui
 
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/minetest-go/mtui)
 [![Go Report Card](https://goreportcard.com/badge/github.com/minetest-go/mtui)](https://goreportcard.com/report/github.com/minetest-go/mtui)
-[![Coverage Status](https://coveralls.io/repos/github/minetest-go/mtui/badge.svg)](https://coveralls.io/github/minetest-go/mtui)
 
 # Features
 

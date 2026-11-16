@@ -1,3 +1,4 @@
+// Deprecated: this repository moved to github.com/luanti-golang/mtui, use versions >= v1.94
 module mtui
 
 go 1.25.0
