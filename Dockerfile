@@ -12,7 +12,7 @@ COPY . /data
 COPY --from=bundle-builder /public/dist /data/public/dist
 RUN CGO_ENABLED=1 go build -ldflags="-s -w -extldflags=-static -X mtui/app.Version=$MTUI_VERSION" .
 
-FROM alpine:3.23.4
+FROM alpine:3.24.4
 COPY --from=go-builder /data/mtui /bin/mtui
 RUN apk update && apk add git
 EXPOSE 8080
