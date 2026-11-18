@@ -96,6 +96,7 @@ func (api *Api) newMCPServer(claims *types.Claims) *mcp.Server {
 	})
 
 	api.registerMCPTools(s, claims)
+	api.registerMCPWriteTools(s, claims)
 	return s
 }
 

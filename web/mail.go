@@ -67,17 +67,21 @@ func (a *Api) isValidRecipient(recipient string) (bool, error) {
 	return auth_entry != nil, nil
 }
 
-func (a *Api) checkRecipient(w http.ResponseWriter, recipient string) bool {
+type errInvalidRecipient string
+
+func (e errInvalidRecipient) Error() string {
+	return fmt.Sprintf("invalid recipient: '%s'", string(e))
+}
+
+func (a *Api) checkRecipient(recipient string) error {
 	v, err := a.isValidRecipient(recipient)
 	if err != nil {
-		SendError(w, 500, err)
-		return false
+		return err
 	}
 	if !v {
-		SendError(w, 404, fmt.Errorf("invalid recipient: '%s'", recipient))
-		return false
+		return errInvalidRecipient(recipient)
 	}
-	return true
+	return nil
 }
 
 func (a *Api) SendMail(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
@@ -88,56 +92,52 @@ func (a *Api) SendMail(w http.ResponseWriter, r *http.Request, claims *types.Cla
 		return
 	}
 
+	err = a.sendMail(claims, m)
+	if _, ok := err.(errInvalidRecipient); ok {
+		SendError(w, 404, err)
+		return
+	}
+	Send(w, m, err)
+}
+
+// sendMail validates the recipients and delivers the message from the user to the recipient
+func (a *Api) sendMail(claims *types.Claims, m *mail.Message) error {
 	// populate fixed fields
 	m.ID = uuid.NewString()
 	m.From = claims.Username
 	m.Time = float64(time.Now().Unix())
 
-	if !a.checkRecipient(w, m.To) {
-		return
-	}
+	recipients := []string{m.To}
 	if m.CC != nil {
-		for _, s := range strings.Split(*m.CC, ",") {
-			if !a.checkRecipient(w, s) {
-				return
-			}
-		}
+		recipients = append(recipients, strings.Split(*m.CC, ",")...)
 	}
 	if m.BCC != nil {
-		for _, s := range strings.Split(*m.BCC, ",") {
-			if !a.checkRecipient(w, s) {
-				return
-			}
+		recipients = append(recipients, strings.Split(*m.BCC, ",")...)
+	}
+	for _, rcpt := range recipients {
+		if err := a.checkRecipient(rcpt); err != nil {
+			return err
 		}
 	}
 
 	// insert into senders outbox
 	e, err := a.app.Mail.GetEntry(claims.Username)
 	if err != nil {
-		SendError(w, 500, err)
-		return
+		return err
 	}
 	e.Outbox = append(e.Outbox, m)
 	err = a.app.Mail.SetEntry(claims.Username, e)
 	if err != nil {
-		SendError(w, 500, err)
-		return
+		return err
 	}
 
 	// insert into receivers inbox
 	e, err = a.app.Mail.GetEntry(m.To)
 	if err != nil {
-		SendError(w, 500, err)
-		return
+		return err
 	}
 	e.Inbox = append(e.Inbox, m)
-	err = a.app.Mail.SetEntry(m.To, e)
-	if err != nil {
-		SendError(w, 500, err)
-		return
-	}
-
-	SendJson(w, m)
+	return a.app.Mail.SetEntry(m.To, e)
 }
 
 func (a *Api) DeleteMail(w http.ResponseWriter, r *http.Request, claims *types.Claims) {

@@ -34,22 +34,26 @@ func (a *Api) SendChat(w http.ResponseWriter, r *http.Request, c *types.Claims) 
 		SendError(w, 500, err)
 		return
 	}
+	err = a.sendChat(c, msg, r)
+	Send(w, msg, err)
+}
+
+// sendChat stores and relays the chat message to the engine with the user as sender
+func (a *Api) sendChat(c *types.Claims, msg *command.ChatMessage, r *http.Request) error {
 	msg.Name = c.Username
 
-	err = a.app.Repos.ChatLogRepo.Insert(&types.ChatLog{
+	err := a.app.Repos.ChatLogRepo.Insert(&types.ChatLog{
 		Channel: msg.Channel,
 		Name:    c.Username,
 		Message: msg.Message,
 	})
 	if err != nil {
-		SendError(w, 500, err)
-		return
+		return err
 	}
 
 	err = a.app.Bridge.SendCommand(command.COMMAND_CHAT_SEND, msg)
 	if err != nil {
-		SendError(w, 500, err)
-		return
+		return err
 	}
 
 	log := &types.Log{
@@ -59,6 +63,5 @@ func (a *Api) SendChat(w http.ResponseWriter, r *http.Request, c *types.Claims) 
 		Message:  fmt.Sprintf("'%s' writes '%s' in channel '%s'", c.Username, msg.Message, msg.Channel),
 	}
 	a.app.ResolveLogGeoIP(log, r)
-	err = a.app.Repos.LogRepository.Insert(log)
-	Send(w, msg, err)
+	return a.app.Repos.LogRepository.Insert(log)
 }

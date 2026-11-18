@@ -59,15 +59,7 @@ func (a *Api) getBannedRecords() (any, error) {
 			return banned
 		`,
 	}
-	resp := &command.LuaResponse{}
-	err := a.app.Bridge.ExecuteCommand(command.COMMAND_LUA, req, resp, time.Second*5)
-	if err != nil {
-		return nil, err
-	}
-	if !resp.Success {
-		return nil, errors.New(resp.Message)
-	}
-	return resp.Result, nil
+	return a.executeLuaResult(req.Code)
 }
 
 func (a *Api) GetBanRecord(w http.ResponseWriter, r *http.Request) {
@@ -78,59 +70,25 @@ func (a *Api) GetBanRecord(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *Api) BanPlayer(w http.ResponseWriter, r *http.Request) {
-	claims, err := a.GetClaims(r)
-	if err != nil {
-		SendError(w, 500, err)
-		return
-	}
-
-	banr := &types.XBanRequest{}
-	err = json.NewDecoder(r.Body).Decode(banr)
-	if err != nil {
-		SendError(w, 500, err)
-		return
-	}
-
-	req := &command.LuaRequest{
-		Code: fmt.Sprintf("return xban.ban_player('%s', '%s', nil, '%s')",
-			bridge.SanitizeLuaString(banr.Playername),
-			bridge.SanitizeLuaString(claims.Username),
-			bridge.SanitizeLuaString(banr.Reason),
-		),
-	}
-	resp := &command.LuaResponse{}
-	err = a.app.Bridge.ExecuteCommand(command.COMMAND_LUA, req, resp, time.Second*5)
-	SendLuaResponse(w, err, resp)
+	a.xbanAction(w, r, func(c *types.Claims, banr *types.XBanRequest) (any, error) {
+		return a.banPlayer(c, banr.Playername, banr.Reason, nil)
+	})
 }
 
 func (a *Api) TempBanPlayer(w http.ResponseWriter, r *http.Request) {
-	claims, err := a.GetClaims(r)
-	if err != nil {
-		SendError(w, 500, err)
-		return
-	}
-
-	banr := &types.XBanRequest{}
-	err = json.NewDecoder(r.Body).Decode(banr)
-	if err != nil {
-		SendError(w, 500, err)
-		return
-	}
-
-	req := &command.LuaRequest{
-		Code: fmt.Sprintf("return xban.ban_player('%s', '%s', %d, '%s')",
-			bridge.SanitizeLuaString(banr.Playername),
-			bridge.SanitizeLuaString(claims.Username),
-			banr.Time,
-			bridge.SanitizeLuaString(banr.Reason),
-		),
-	}
-	resp := &command.LuaResponse{}
-	err = a.app.Bridge.ExecuteCommand(command.COMMAND_LUA, req, resp, time.Second*5)
-	SendLuaResponse(w, err, resp)
+	a.xbanAction(w, r, func(c *types.Claims, banr *types.XBanRequest) (any, error) {
+		seconds := int64(banr.Time)
+		return a.banPlayer(c, banr.Playername, banr.Reason, &seconds)
+	})
 }
 
 func (a *Api) UnbanPlayer(w http.ResponseWriter, r *http.Request) {
+	a.xbanAction(w, r, func(c *types.Claims, banr *types.XBanRequest) (any, error) {
+		return a.unbanPlayer(c, banr.Playername)
+	})
+}
+
+func (a *Api) xbanAction(w http.ResponseWriter, r *http.Request, fn func(*types.Claims, *types.XBanRequest) (any, error)) {
 	claims, err := a.GetClaims(r)
 	if err != nil {
 		SendError(w, 500, err)
@@ -144,15 +102,43 @@ func (a *Api) UnbanPlayer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	req := &command.LuaRequest{
-		Code: fmt.Sprintf("return xban.unban_player('%s', '%s')",
-			bridge.SanitizeLuaString(banr.Playername),
-			bridge.SanitizeLuaString(claims.Username),
-		),
+	res, err := fn(claims, banr)
+	Send(w, res, err)
+}
+
+// banPlayer bans the player with the user as source, a nil duration is a permanent ban
+func (a *Api) banPlayer(claims *types.Claims, playername, reason string, seconds *int64) (any, error) {
+	duration := "nil"
+	if seconds != nil {
+		duration = fmt.Sprintf("%d", *seconds)
 	}
+	return a.executeLuaResult(fmt.Sprintf("return xban.ban_player('%s', '%s', %s, '%s')",
+		bridge.SanitizeLuaString(playername),
+		bridge.SanitizeLuaString(claims.Username),
+		duration,
+		bridge.SanitizeLuaString(reason),
+	))
+}
+
+func (a *Api) unbanPlayer(claims *types.Claims, playername string) (any, error) {
+	return a.executeLuaResult(fmt.Sprintf("return xban.unban_player('%s', '%s')",
+		bridge.SanitizeLuaString(playername),
+		bridge.SanitizeLuaString(claims.Username),
+	))
+}
+
+// executeLuaResult runs the code in the engine and returns the result or the lua error
+func (a *Api) executeLuaResult(code string) (any, error) {
+	req := &command.LuaRequest{Code: code}
 	resp := &command.LuaResponse{}
-	err = a.app.Bridge.ExecuteCommand(command.COMMAND_LUA, req, resp, time.Second*5)
-	SendLuaResponse(w, err, resp)
+	err := a.app.Bridge.ExecuteCommand(command.COMMAND_LUA, req, resp, time.Second*5)
+	if err != nil {
+		return nil, err
+	}
+	if !resp.Success {
+		return nil, errors.New(resp.Message)
+	}
+	return resp.Result, nil
 }
 
 func (a *Api) CleanupBanDB(w http.ResponseWriter, r *http.Request) {

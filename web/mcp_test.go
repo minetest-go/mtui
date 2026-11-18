@@ -8,9 +8,12 @@ import (
 	"mtui/web"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path"
 	"strings"
 	"testing"
 
+	authdb "github.com/luanti-golang/mtdb/auth"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 )
@@ -119,4 +122,100 @@ func TestMCP(t *testing.T) {
 	assert.NoError(t, err)
 	assert.False(t, res.IsError)
 	assert.Contains(t, res.Content[0].(*mcp.TextContent).Text, `"count":1`)
+}
+
+func connectMCP(t *testing.T, url, token string) *mcp.ClientSession {
+	client := mcp.NewClient(&mcp.Implementation{Name: "test", Version: "1"}, nil)
+	session, err := client.Connect(context.Background(), &mcp.StreamableClientTransport{
+		Endpoint:   url,
+		HTTPClient: &http.Client{Transport: &bearerTransport{token: token}},
+	}, nil)
+	assert.NoError(t, err)
+	return session
+}
+
+func callMCP(t *testing.T, session *mcp.ClientSession, name string, args map[string]any) (string, bool) {
+	res, err := session.CallTool(context.Background(), &mcp.CallToolParams{Name: name, Arguments: args})
+	assert.NoError(t, err)
+	return res.Content[0].(*mcp.TextContent).Text, res.IsError
+}
+
+func TestMCPWriteTools(t *testing.T) {
+	api, app := CreateTestApi(t)
+
+	// grant all relevant privs and features
+	auth_entry, err := app.DBContext.Auth.GetByUsername("singleplayer")
+	assert.NoError(t, err)
+	for _, priv := range []string{"shout", "ban", "server"} {
+		assert.NoError(t, app.DBContext.Privs.Create(&authdb.PrivilegeEntry{ID: *auth_entry.ID, Privilege: priv}))
+	}
+	for _, f := range []types.FeatureName{types.FEATURE_API, types.FEATURE_MAIL, types.FEATURE_XBAN, types.FEATURE_MODMANAGEMENT,
+		types.FEATURE_LUANTI_CONFIG, types.FEATURE_SHELL, "chat"} {
+		assert.NoError(t, app.Repos.FeatureRepository.Set(&types.Feature{Name: f, Enabled: true}))
+	}
+	app.Config.LuantiConfig = path.Join(app.WorldDir, "minetest.conf")
+	assert.NoError(t, os.WriteFile(app.Config.LuantiConfig, []byte("max_users = 10\n"), 0644))
+
+	srv := httptest.NewServer(api.MCPHandler())
+	defer srv.Close()
+	session := connectMCP(t, srv.URL, loginToken(t, api))
+	defer session.Close()
+
+	// all tools listed, write tools are not read-only
+	tools, err := session.ListTools(context.Background(), nil)
+	assert.NoError(t, err)
+	byName := map[string]*mcp.Tool{}
+	for _, tool := range tools.Tools {
+		byName[tool.Name] = tool
+	}
+	for _, name := range []string{"send_chat", "ban_player", "unban_player", "list_inbox", "send_mail", "search_contentdb",
+		"resolve_contentdb_dependencies", "install_contentdb_package", "install_git_mod", "update_mod_version",
+		"set_luanti_setting", "delete_luanti_setting", "execute_chatcommand"} {
+		tool := byName[name]
+		if assert.NotNil(t, tool, name) {
+			assert.NotNil(t, tool.Annotations, name)
+		}
+	}
+	assert.False(t, byName["ban_player"].Annotations.ReadOnlyHint)
+	assert.True(t, *byName["ban_player"].Annotations.DestructiveHint)
+	assert.True(t, byName["list_inbox"].Annotations.ReadOnlyHint)
+
+	// mail roundtrip
+	_, isErr := callMCP(t, session, "send_mail", map[string]any{"to": "singleplayer", "subject": "hi", "body": "hello there"})
+	assert.False(t, isErr)
+	text, isErr := callMCP(t, session, "list_inbox", map[string]any{"unread_only": true})
+	assert.False(t, isErr)
+	assert.Contains(t, text, "hello there")
+	assert.Contains(t, text, `"total":1`)
+	text, isErr = callMCP(t, session, "send_mail", map[string]any{"to": "nobody", "subject": "x", "body": "y"})
+	assert.True(t, isErr)
+	assert.Contains(t, text, "invalid recipient")
+
+	// input validation before anything reaches the engine
+	text, isErr = callMCP(t, session, "ban_player", map[string]any{"name": "bob", "reason": "grief", "duration": "forever"})
+	assert.True(t, isErr)
+	assert.Contains(t, text, "invalid duration")
+	_, isErr = callMCP(t, session, "ban_player", map[string]any{"name": "bob", "reason": ""})
+	assert.True(t, isErr)
+	_, isErr = callMCP(t, session, "execute_chatcommand", map[string]any{"command": " / "})
+	assert.True(t, isErr)
+	_, isErr = callMCP(t, session, "send_chat", map[string]any{"message": "  "})
+	assert.True(t, isErr)
+
+	// settings
+	_, isErr = callMCP(t, session, "set_luanti_setting", map[string]any{"key": "my_custom", "value": "a \" quote"})
+	assert.False(t, isErr)
+	text, isErr = callMCP(t, session, "get_luanti_settings", map[string]any{"filter": "my_custom"})
+	assert.False(t, isErr)
+	assert.Contains(t, text, `a \" quote`)
+	_, isErr = callMCP(t, session, "delete_luanti_setting", map[string]any{"key": "my_custom"})
+	assert.False(t, isErr)
+	text, _ = callMCP(t, session, "get_luanti_settings", map[string]any{"filter": "my_custom"})
+	assert.Equal(t, "{}", text)
+
+	// git install with an existing name is rejected
+	assert.NoError(t, app.Repos.ModRepo.Create(&types.Mod{Name: "existing", SourceType: types.SourceTypeGIT, ModType: types.ModTypeMod}))
+	text, isErr = callMCP(t, session, "install_git_mod", map[string]any{"name": "existing", "url": "https://example.com/x.git"})
+	assert.True(t, isErr)
+	assert.Contains(t, text, "already installed")
 }

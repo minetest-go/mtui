@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"mtui/luanticonfig/depanalyzer"
 	"mtui/types"
@@ -25,31 +26,35 @@ func (a *Api) GetMod(w http.ResponseWriter, r *http.Request, claims *types.Claim
 	Send(w, mod, err)
 }
 
+var errModNotFound = errors.New("not found")
+
 func (a *Api) UpdateModVersion(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
 	vars := mux.Vars(r)
-	id := vars["id"]
-	version := vars["version"]
-
-	m, err := a.app.Repos.ModRepo.GetByID(id)
-	if err != nil {
-		SendError(w, 500, err)
+	m, err := a.updateModVersion(claims, vars["id"], vars["version"], r)
+	if err == errModNotFound {
+		SendError(w, 404, err)
 		return
 	}
+	Send(w, m, err)
+}
+
+// updateModVersion updates the mod to the given version and notifies the engine
+func (a *Api) updateModVersion(claims *types.Claims, id, version string, r *http.Request) (*types.Mod, error) {
+	m, err := a.app.Repos.ModRepo.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
 	if m == nil {
-		SendError(w, 404, fmt.Errorf("not found"))
-		return
+		return nil, errModNotFound
 	}
 
 	err = a.app.ModManager.Update(m, version)
 	if err != nil {
-		SendError(w, 500, err)
-		return
+		return nil, err
 	}
 
 	// update locally
 	m.Version = version
-
-	SendJson(w, m)
 
 	// create log entry
 	a.app.CreateUILogEntry(&types.Log{
@@ -58,12 +63,8 @@ func (a *Api) UpdateModVersion(w http.ResponseWriter, r *http.Request, claims *t
 		Message:  fmt.Sprintf("User '%s' updated the %s '%s' (%s) to version '%s'", claims.Username, m.ModType, m.Name, m.SourceType, m.Version),
 	}, r)
 
-	// send notification to engine
-	err = a.app.Bridge.ExecuteCommand(command.COMMAND_NOTIFY_MODS_CHANGED, nil, nil, time.Second*5)
-	if err != nil {
-		// ignore error, just log
-		logrus.WithError(err).Warn("mods updated notification failed")
-	}
+	go a.notifyModsChanged()
+	return m, nil
 }
 
 func (a *Api) CreateMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
@@ -74,29 +75,42 @@ func (a *Api) CreateMod(w http.ResponseWriter, r *http.Request, claims *types.Cl
 		return
 	}
 
-	// create log entry
+	a.logModCreate(claims, m, r)
+	Send(w, m, nil)
+
+	go func() {
+		err := a.createMod(m)
+		if err != nil {
+			logrus.WithError(err).Error("mod create")
+		}
+	}()
+}
+
+func (a *Api) logModCreate(claims *types.Claims, m *types.Mod, r *http.Request) {
 	a.app.CreateUILogEntry(&types.Log{
 		Username: claims.Username,
 		Event:    "mods",
 		Message:  fmt.Sprintf("User '%s' creates the %s '%s' (%s) in version '%s'", claims.Username, m.ModType, m.Name, m.SourceType, m.Version),
 	}, r)
+}
 
-	Send(w, m, nil)
+// createMod installs the mod (blocking) and notifies the engine
+func (a *Api) createMod(m *types.Mod) error {
+	err := a.app.ModManager.Create(m)
+	if err != nil {
+		return err
+	}
 
-	go func() {
-		err = a.app.ModManager.Create(m)
-		if err != nil {
-			logrus.WithError(err).Error("mod create")
-			return
-		}
+	a.notifyModsChanged()
+	return nil
+}
 
-		// send notification to engine
-		err = a.app.Bridge.ExecuteCommand(command.COMMAND_NOTIFY_MODS_CHANGED, nil, nil, time.Second*5)
-		if err != nil {
-			// ignore error, just log
-			logrus.WithError(err).Warn("mods updated notification failed")
-		}
-	}()
+func (a *Api) notifyModsChanged() {
+	err := a.app.Bridge.ExecuteCommand(command.COMMAND_NOTIFY_MODS_CHANGED, nil, nil, time.Second*5)
+	if err != nil {
+		// ignore error, just log
+		logrus.WithError(err).Warn("mods updated notification failed")
+	}
 }
 
 func (a *Api) CreateMTUIMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
