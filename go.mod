@@ -13,7 +13,7 @@ require (
 	github.com/oschwald/geoip2-golang v1.13.0
 	github.com/sirupsen/logrus v1.10.2
 	github.com/stretchr/testify v1.12.1
-	go.uber.org/atomic v1.11.0
+	go.uber.org/atomic v1.12.0
 )
 
 require (
