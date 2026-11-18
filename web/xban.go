@@ -43,6 +43,11 @@ func (a *Api) GetBanDBStatus(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *Api) GetBannedRecords(w http.ResponseWriter, r *http.Request) {
+	result, err := a.getBannedRecords()
+	Send(w, result, err)
+}
+
+func (a *Api) getBannedRecords() (any, error) {
 	req := &command.LuaRequest{
 		Code: `
 			local banned = {}
@@ -56,7 +61,13 @@ func (a *Api) GetBannedRecords(w http.ResponseWriter, r *http.Request) {
 	}
 	resp := &command.LuaResponse{}
 	err := a.app.Bridge.ExecuteCommand(command.COMMAND_LUA, req, resp, time.Second*5)
-	SendLuaResponse(w, err, resp)
+	if err != nil {
+		return nil, err
+	}
+	if !resp.Success {
+		return nil, errors.New(resp.Message)
+	}
+	return resp.Result, nil
 }
 
 func (a *Api) GetBanRecord(w http.ResponseWriter, r *http.Request) {

@@ -101,6 +101,11 @@ func (api *Api) GetClaims(r *http.Request) (*types.Claims, error) {
 		return nil, err_unauthorized
 	}
 
+	return api.parseClaims(token_string)
+}
+
+// parseClaims validates the jwt token string and checks the xban status of the user
+func (api *Api) parseClaims(token_string string) (*types.Claims, error) {
 	// parse string to jwt token
 	token, err := jwt.ParseWithClaims(token_string, &types.Claims{}, func(token *jwt.Token) (any, error) {
 		return []byte(api.app.Config.JWTKey), nil

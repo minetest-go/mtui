@@ -33,7 +33,11 @@ type StatResponse struct {
 }
 
 func (a *Api) GetStats(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	Send(w, buildStats(claims), nil)
+}
 
+// buildStats returns the current server stats, privileged fields are only filled in with the "ban" priv
+func buildStats(claims *types.Claims) *StatResponse {
 	sc := &StatResponse{
 		StatsCommand: &command.StatsCommand{},
 	}
@@ -70,5 +74,5 @@ func (a *Api) GetStats(w http.ResponseWriter, r *http.Request, claims *types.Cla
 		}
 	}
 
-	Send(w, sc, nil)
+	return sc
 }

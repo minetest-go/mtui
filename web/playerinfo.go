@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"mtui/public"
 	"mtui/types"
@@ -90,40 +91,63 @@ func mapPlayerInfo(auth *auth.AuthEntry, privs []*auth.PrivilegeEntry, player *p
 	return info
 }
 
-func (a *Api) GetPlayerInfo(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	vars := mux.Vars(r)
-	playername := vars["playername"]
+var errPlayerNotFound = errors.New("player not found")
 
+// getPlayerInfo assembles the player info for a single player
+func (a *Api) getPlayerInfo(playername string, claims *types.Claims) (*PlayerInfo, error) {
 	auth, err := a.app.DBContext.Auth.GetByUsername(playername)
 	if err != nil {
-		SendError(w, 500, err)
-		return
+		return nil, err
 	}
 	if auth == nil {
-		SendError(w, 404, fmt.Errorf("player not found"))
-		return
+		return nil, errPlayerNotFound
 	}
+	return a.mapAuthEntry(auth, claims)
+}
 
-	privs, err := a.app.DBContext.Privs.GetByID(*auth.ID)
+// searchPlayers returns the player infos for all matching auth entries
+func (a *Api) searchPlayers(s *auth.AuthSearch, claims *types.Claims) ([]*PlayerInfo, error) {
+	list, err := a.app.DBContext.Auth.Search(s)
 	if err != nil {
-		SendError(w, 500, err)
-		return
+		return nil, err
 	}
+	result := make([]*PlayerInfo, len(list))
+	for i, entry := range list {
+		result[i], err = a.mapAuthEntry(entry, claims)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return result, nil
+}
 
-	player, err := a.app.DBContext.Player.GetPlayer(playername)
+func (a *Api) mapAuthEntry(entry *auth.AuthEntry, claims *types.Claims) (*PlayerInfo, error) {
+	privs, err := a.app.DBContext.Privs.GetByID(*entry.ID)
 	if err != nil {
-		SendError(w, 500, err)
-		return
+		return nil, err
 	}
 
-	md, err := a.app.DBContext.PlayerMetadata.GetPlayerMetadata(playername)
+	player, err := a.app.DBContext.Player.GetPlayer(entry.Name)
 	if err != nil {
-		SendError(w, 500, err)
-		return
+		return nil, err
 	}
 
-	info := mapPlayerInfo(auth, privs, player, md, claims)
-	SendJson(w, info)
+	md, err := a.app.DBContext.PlayerMetadata.GetPlayerMetadata(entry.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	return mapPlayerInfo(entry, privs, player, md, claims), nil
+}
+
+func (a *Api) GetPlayerInfo(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	vars := mux.Vars(r)
+	info, err := a.getPlayerInfo(vars["playername"], claims)
+	if err == errPlayerNotFound {
+		SendError(w, 404, err)
+		return
+	}
+	Send(w, info, err)
 }
 
 func (a *Api) SearchPlayer(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
@@ -134,30 +158,7 @@ func (a *Api) SearchPlayer(w http.ResponseWriter, r *http.Request, claims *types
 		return
 	}
 
-	list, err := a.app.DBContext.Auth.Search(s)
-	result := make([]*PlayerInfo, len(list))
-	for i, auth := range list {
-		privs, err := a.app.DBContext.Privs.GetByID(*auth.ID)
-		if err != nil {
-			SendError(w, 500, err)
-			return
-		}
-
-		player, err := a.app.DBContext.Player.GetPlayer(auth.Name)
-		if err != nil {
-			SendError(w, 500, err)
-			return
-		}
-
-		md, err := a.app.DBContext.PlayerMetadata.GetPlayerMetadata(auth.Name)
-		if err != nil {
-			SendError(w, 500, err)
-			return
-		}
-
-		result[i] = mapPlayerInfo(auth, privs, player, md, claims)
-	}
-
+	result, err := a.searchPlayers(s, claims)
 	Send(w, result, err)
 }
 

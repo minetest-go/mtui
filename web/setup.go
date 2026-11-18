@@ -52,6 +52,9 @@ func Setup(a *app.App) error {
 	apir := r.PathPrefix("/api").Subrouter()
 	apir.HandleFunc("/healthcheck", api.HealthCheck)
 
+	// model context protocol endpoint (api-feature and bearer token required)
+	apir.Handle("/mcp", api.MCPHandler())
+
 	apir.HandleFunc("/features", api.GetFeatures).Methods(http.MethodGet)
 	apir.HandleFunc("/feature", api.SecurePriv(types.PRIV_SERVER, api.SetFeature)).Methods(http.MethodPost)
 
