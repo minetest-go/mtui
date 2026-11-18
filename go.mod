@@ -1,12 +1,12 @@
 module mtui
 
-go 1.25.0
+go 1.25.11
 
 toolchain go1.27.4
 
 require (
 	github.com/HimbeerserverDE/srp v0.0.0
-	github.com/golang-migrate/migrate/v4 v4.17.1
+	github.com/golang-migrate/migrate/v4 v4.20.1
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/websocket v1.5.3
 	github.com/luanti-golang/mtdb v1.1.57
@@ -33,7 +33,7 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
-	golang.org/x/text v0.36.0 // indirect
+	golang.org/x/text v0.38.0 // indirect
 	gopkg.in/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 )
@@ -41,19 +41,17 @@ require (
 require (
 	github.com/andybalholm/brotli v1.1.1 // indirect
 	github.com/google/jsonschema-go v0.4.3 // indirect
-	github.com/hashicorp/errwrap v1.1.0 // indirect
-	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/lib/pq v1.12.3 // indirect
 	github.com/oschwald/maxminddb-golang v1.13.0 // indirect
 	github.com/segmentio/asm v1.1.3 // indirect
 	github.com/segmentio/encoding v0.5.4 // indirect
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
-	golang.org/x/oauth2 v0.35.0 // indirect
+	golang.org/x/oauth2 v0.36.0 // indirect
 )
 
 require (
 	github.com/google/uuid v1.6.0
 	github.com/vearutop/statigz v1.5.0
-	golang.org/x/sys v0.43.0 // indirect
+	golang.org/x/sys v0.46.0 // indirect
 )
