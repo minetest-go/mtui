@@ -22,9 +22,15 @@ func (a *App) ReadMTConfig(sts luanticonfig.SettingTypes) (luanticonfig.Settings
 	fi, _ := os.Stat(a.Config.LuantiConfig)
 	if fi == nil {
 		// init cfg
-		err := os.WriteFile(a.Config.LuantiConfig, []byte{}, os.ModeAppend)
+		err := os.WriteFile(a.Config.LuantiConfig, []byte{}, 0644)
 		if err != nil {
 			return nil, fmt.Errorf("error initializing config: %v", err)
+		}
+	} else if fi.Mode().Perm() == 0 {
+		// repair configs created with mode 0000 by earlier versions
+		err := os.Chmod(a.Config.LuantiConfig, 0644)
+		if err != nil {
+			return nil, fmt.Errorf("error fixing config permissions: %v", err)
 		}
 	}
 

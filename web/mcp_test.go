@@ -191,6 +191,33 @@ func TestMCPWriteTools(t *testing.T) {
 	assert.True(t, isErr)
 	assert.Contains(t, text, "invalid recipient")
 
+	// cc/bcc are delivered once to every unique recipient, unknown ones are all reported
+	for _, name := range []string{"alice", "bob", "carol"} {
+		assert.NoError(t, app.DBContext.Auth.Create(&authdb.AuthEntry{Name: name, Password: "x"}))
+	}
+	text, isErr = callMCP(t, session, "send_mail", map[string]any{"to": "alice", "cc": "bob, ghost1", "bcc": "ghost2", "subject": "x", "body": "y"})
+	assert.True(t, isErr)
+	assert.Contains(t, text, "'ghost1', 'ghost2'")
+
+	text, isErr = callMCP(t, session, "send_mail", map[string]any{"to": "alice,bob", "cc": "bob carol", "bcc": "singleplayer", "subject": "multi", "body": "to all"})
+	assert.False(t, isErr)
+	assert.Contains(t, text, `"to":"alice, bob"`)
+	assert.Contains(t, text, `"cc":"bob, carol"`)
+	for _, name := range []string{"alice", "bob", "carol", "singleplayer"} {
+		e, err := app.Mail.GetEntry(name)
+		assert.NoError(t, err)
+		count := 0
+		for _, m := range e.Inbox {
+			if m.Subject == "multi" {
+				count++
+			}
+		}
+		assert.Equal(t, 1, count, name)
+	}
+	e, err := app.Mail.GetEntry("singleplayer")
+	assert.NoError(t, err)
+	assert.Equal(t, 2, len(e.Outbox), "one outbox entry per sent mail ('hi' and 'multi')")
+
 	// input validation before anything reaches the engine
 	text, isErr = callMCP(t, session, "ban_player", map[string]any{"name": "bob", "reason": "grief", "duration": "forever"})
 	assert.True(t, isErr)

@@ -98,7 +98,9 @@ type mcpInboxInput struct {
 }
 
 type mcpSendMailInput struct {
-	To      string `json:"to" jsonschema:"recipient player name"`
+	To      string `json:"to" jsonschema:"recipient player name(s), comma separated"`
+	CC      string `json:"cc,omitempty" jsonschema:"carbon copy player name(s), comma separated"`
+	BCC     string `json:"bcc,omitempty" jsonschema:"blind carbon copy player name(s), comma separated"`
 	Subject string `json:"subject"`
 	Body    string `json:"body"`
 }
@@ -227,10 +229,10 @@ func (api *Api) registerMCPWriteTools(s *mcp.Server, claims *types.Claims) {
 
 	addMCPTool(api, s, claims, mailGuard, &mcp.Tool{
 		Name:        "send_mail",
-		Description: "Sends an ingame mail from your player to another player.",
+		Description: "Sends an ingame mail from your player to one or more players.",
 		Annotations: mcpWrite(false, false, true),
 	}, func(ctx context.Context, c *types.Claims, in mcpSendMailInput) (any, error) {
-		m := &mail.Message{To: in.To, Subject: in.Subject, Body: in.Body}
+		m := &mail.Message{To: in.To, CC: optString(in.CC), BCC: optString(in.BCC), Subject: in.Subject, Body: in.Body}
 		return m, api.sendMail(c, m)
 	})
 

@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"mtui/mail"
 	"mtui/types"
@@ -67,21 +68,26 @@ func (a *Api) isValidRecipient(recipient string) (bool, error) {
 	return auth_entry != nil, nil
 }
 
-type errInvalidRecipient string
+// errInvalidRecipient lists the recipients that don't exist
+type errInvalidRecipient []string
 
 func (e errInvalidRecipient) Error() string {
-	return fmt.Sprintf("invalid recipient: '%s'", string(e))
+	return fmt.Sprintf("invalid recipient: '%s'", strings.Join(e, "', '"))
 }
 
-func (a *Api) checkRecipient(recipient string) error {
-	v, err := a.isValidRecipient(recipient)
-	if err != nil {
-		return err
+// parsePlayerList splits a recipient field on commas and spaces and removes
+// case-insensitive duplicates, like mail.parse_player_list in the mail mod
+func parsePlayerList(field string) []string {
+	seen := map[string]bool{}
+	list := []string{}
+	for _, name := range strings.FieldsFunc(field, func(r rune) bool { return r == ',' || r == ' ' }) {
+		lower := strings.ToLower(name)
+		if !seen[lower] {
+			seen[lower] = true
+			list = append(list, name)
+		}
 	}
-	if !v {
-		return errInvalidRecipient(recipient)
-	}
-	return nil
+	return list
 }
 
 func (a *Api) SendMail(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
@@ -100,24 +106,57 @@ func (a *Api) SendMail(w http.ResponseWriter, r *http.Request, claims *types.Cla
 	Send(w, m, err)
 }
 
-// sendMail validates the recipients and delivers the message from the user to the recipient
+// sendMail validates the recipients and delivers the message from the user to every
+// recipient in to, cc and bcc (same storage layout as mail.send in the mail mod)
 func (a *Api) sendMail(claims *types.Claims, m *mail.Message) error {
 	// populate fixed fields
 	m.ID = uuid.NewString()
 	m.From = claims.Username
 	m.Time = float64(time.Now().Unix())
 
-	recipients := []string{m.To}
-	if m.CC != nil {
-		recipients = append(recipients, strings.Split(*m.CC, ",")...)
+	// normalize the recipient fields and collect the unique recipients
+	recipients := []string{}
+	seen := map[string]bool{}
+	normalize := func(field string) string {
+		list := parsePlayerList(field)
+		for _, name := range list {
+			if !seen[name] {
+				seen[name] = true
+				recipients = append(recipients, name)
+			}
+		}
+		return strings.Join(list, ", ")
 	}
-	if m.BCC != nil {
-		recipients = append(recipients, strings.Split(*m.BCC, ",")...)
+	normalizeOptional := func(field *string) *string {
+		if field == nil {
+			return nil
+		}
+		v := normalize(*field)
+		if v == "" {
+			return nil
+		}
+		return &v
 	}
+	m.To = normalize(m.To)
+	m.CC = normalizeOptional(m.CC)
+	m.BCC = normalizeOptional(m.BCC)
+
+	if len(recipients) == 0 {
+		return errors.New("no recipient")
+	}
+
+	undeliverable := errInvalidRecipient{}
 	for _, rcpt := range recipients {
-		if err := a.checkRecipient(rcpt); err != nil {
+		valid, err := a.isValidRecipient(rcpt)
+		if err != nil {
 			return err
 		}
+		if !valid {
+			undeliverable = append(undeliverable, rcpt)
+		}
+	}
+	if len(undeliverable) > 0 {
+		return undeliverable
 	}
 
 	// insert into senders outbox
@@ -131,13 +170,19 @@ func (a *Api) sendMail(claims *types.Claims, m *mail.Message) error {
 		return err
 	}
 
-	// insert into receivers inbox
-	e, err = a.app.Mail.GetEntry(m.To)
-	if err != nil {
-		return err
+	// insert into every receivers inbox
+	for _, rcpt := range recipients {
+		e, err = a.app.Mail.GetEntry(rcpt)
+		if err != nil {
+			return err
+		}
+		e.Inbox = append(e.Inbox, m)
+		err = a.app.Mail.SetEntry(rcpt, e)
+		if err != nil {
+			return err
+		}
 	}
-	e.Inbox = append(e.Inbox, m)
-	return a.app.Mail.SetEntry(m.To, e)
+	return nil
 }
 
 func (a *Api) DeleteMail(w http.ResponseWriter, r *http.Request, claims *types.Claims) {

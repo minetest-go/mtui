@@ -47,3 +47,11 @@ func TestValidateSettingValue(t *testing.T) {
 	assert.Error(t, validateSettingValue(st("enum"), "c"))
 	assert.Error(t, validateSettingValue(st("v3f"), "(1,2,3)"))
 }
+
+func TestParsePlayerList(t *testing.T) {
+	assert.Equal(t, []string{}, parsePlayerList(""))
+	assert.Equal(t, []string{}, parsePlayerList(" , ,"))
+	assert.Equal(t, []string{"alice"}, parsePlayerList("alice"))
+	assert.Equal(t, []string{"alice", "bob", "carol"}, parsePlayerList("alice, bob,carol  "))
+	assert.Equal(t, []string{"alice", "bob"}, parsePlayerList("alice bob Alice ALICE"))
+}
