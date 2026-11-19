@@ -275,7 +275,10 @@ export default {
                       </router-link>
                   </td>
                   <td>{{ format_time(log.timestamp/1000) }}</td>
-                  <td>{{log.message}}</td>
+                  <td>
+                      <pre v-if="log.message && log.message.includes('\n')" class="mb-0" style="white-space: pre-wrap; word-break: break-word;">{{log.message}}</pre>
+                      <span v-else>{{log.message}}</span>
+                  </td>
                   <td>
                       <i class="fa fa-magnifying-glass" v-if="log.nodename" v-on:click="search_specific('nodename', log.nodename)"></i>
                       &nbsp;
