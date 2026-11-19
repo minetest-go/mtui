@@ -168,8 +168,8 @@ func TestMCPWriteTools(t *testing.T) {
 	for _, tool := range tools.Tools {
 		byName[tool.Name] = tool
 	}
-	for _, name := range []string{"send_chat", "ban_player", "unban_player", "list_inbox", "send_mail", "search_contentdb",
-		"resolve_contentdb_dependencies", "install_contentdb_package", "install_git_mod", "update_mod_version",
+	for _, name := range []string{"send_chat", "ban_player", "unban_player", "list_inbox", "send_mail",
+		"install_git_mod", "update_mod_version",
 		"set_luanti_setting", "delete_luanti_setting", "execute_chatcommand"} {
 		tool := byName[name]
 		if assert.NotNil(t, tool, name) {

@@ -439,7 +439,7 @@ func (api *Api) registerMCPTools(s *mcp.Server, claims *types.Claims) {
 
 	addMCPTool(api, s, claims, modGuard, &mcp.Tool{
 		Name:        "list_mods",
-		Description: "Mods managed by the ui: name, author, source (git/contentdb), installed and latest known version, status.",
+		Description: "Mods managed by the ui: name, author, source (git/manual), installed and latest known version, status.",
 		Annotations: mcpReadOnly,
 	}, func(ctx context.Context, c *types.Claims, in mcpEmpty) (any, error) {
 		return api.app.Repos.ModRepo.GetAll()

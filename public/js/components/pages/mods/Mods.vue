@@ -156,24 +156,6 @@ export default {
   					</feedback-button>
   				</td>
   			</tr>
-  			<tr>
-  				<td>
-  					<span class="badge bg-success">
-  						<i class="fa-solid fa-box-open"></i>
-  						ContentDB
-  					</span>
-  				</td>
-  				<td></td>
-  				<td></td>
-  				<td></td>
-  				<td></td>
-  				<td>
-  					<router-link to="/cdb/browse" class="btn btn-success">
-  						<i class="fa-solid fa-box-open"></i>
-  						Add from ContentDB
-  					</router-link>
-  				</td>
-  			</tr>
   			<tr v-if="games.length > 0" class="table-secondary">
   				<td colspan="8">
   					<h4>Game</h4>

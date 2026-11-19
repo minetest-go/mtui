@@ -172,13 +172,6 @@ func Setup(a *app.App) error {
 	modsapi.HandleFunc("/{id}/update/{version}", api.Secure(api.UpdateModVersion)).Methods(http.MethodPost)
 	modsapi.HandleFunc("/{id}", api.Secure(api.DeleteMod)).Methods(http.MethodDelete)
 
-	cdbapi := apir.PathPrefix("/cdb").Subrouter()
-	cdbapi.Use(SecureHandler(api.FeatureCheck(types.FEATURE_MODMANAGEMENT), api.PrivCheck("server")))
-	cdbapi.HandleFunc("/search", api.Secure(api.SearchCDBPackages)).Methods(http.MethodPost)
-	cdbapi.HandleFunc("/resolve", api.Secure(api.ResolveCDBPackageDependencies)).Methods(http.MethodPost)
-	cdbapi.HandleFunc("/detail/{author}/{name}", api.Secure(api.GetCDBPackage)).Methods(http.MethodGet)
-	cdbapi.HandleFunc("/detail/{author}/{name}/dependencies", api.Secure(api.GetCDBPackageDependencies)).Methods(http.MethodGet)
-
 	cfgr := apir.PathPrefix("/mtconfig").Subrouter()
 	cfgr.Use(SecureHandler(api.FeatureCheck(types.FEATURE_LUANTI_CONFIG)))
 	cfgr.HandleFunc("/settingtypes", api.SecurePriv(types.PRIV_SERVER, api.GetSettingTypes))

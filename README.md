@@ -19,7 +19,7 @@ Luanti web ui
 * XBan management
 * Mediaserver (remote_media)
 * Event logging
-* Mod/game/texturepack configuration and updates (cdb, git)
+* Mod/game/texturepack configuration and updates (git)
 * File browser
 * Luanti config management
 

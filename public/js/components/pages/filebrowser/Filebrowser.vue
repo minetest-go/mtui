@@ -2,12 +2,10 @@
 import DefaultLayout from "../../layouts/DefaultLayout.vue";
 import { START, FILEBROWSER } from "../../../util/breadcrumbs.js";
 import ConfirmationPrompt from "../../ConfirmationPrompt.vue";
-import CDBPackageLink from "../../CDBPackageLink.vue";
 
 import { browse, get_download_url, mkdir, remove, rename } from "../../../api/filebrowser.js";
 
 import { upload_chunked } from "../../../service/uploader.js";
-import { get_mod_by_name, get_txp_by_name, get_game } from "../../../service/mods.js";
 import format_size from "../../../util/format_size.js";
 import format_time from "../../../util/format_time.js";
 import { can_edit } from "./common.js";
@@ -16,7 +14,6 @@ export default {
     props: ["pathMatch"],
     components: {
         "default-layout": DefaultLayout,
-        "cdb-package-link": CDBPackageLink,
         "confirmation-prompt": ConfirmationPrompt
     },
     data: function() {
@@ -32,9 +29,6 @@ export default {
     methods: {
         format_size,
         format_time,
-        get_mod_by_name,
-        get_txp_by_name,
-        get_game,
         get_download_url,
         mkdir: function() {
             mkdir(this.result.dir + "/" + this.mkdir_name)
@@ -200,15 +194,6 @@ export default {
                       <span v-if="!item.is_dir">
                           <i v-bind:class="get_icon_class(item)"></i>
                           {{item.name}}
-                      </span>
-                      <span v-if="result.dir == '' && item.name == 'game'" v-for="mod in [get_game()]" class="float-end">
-                          <cdb-package-link v-if="mod && mod.source_type == 'cdb'" :author="mod.author" :name="mod.name"/>
-                      </span>
-                      <span v-if="result.dir == '/worldmods' && item.is_dir" v-for="mod in [get_mod_by_name(item.name)]" class="float-end">
-                          <cdb-package-link v-if="mod && mod.source_type == 'cdb'" :author="mod.author" :name="mod.name"/>
-                      </span>
-                      <span v-if="result.dir == '/textures' && item.is_dir" v-for="mod in [get_txp_by_name(item.name)]" class="float-end">
-                          <cdb-package-link v-if="mod && mod.source_type == 'cdb'" :author="mod.author" :name="mod.name"/>
                       </span>
                   </td>
                   <td>

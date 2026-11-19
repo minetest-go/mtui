@@ -12,7 +12,6 @@ const (
 type SourceType string
 
 const (
-	SourceTypeCDB    SourceType = "cdb"
 	SourceTypeGIT    SourceType = "git"
 	SourceTypeManual SourceType = "manual"
 )

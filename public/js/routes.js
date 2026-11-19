@@ -26,9 +26,6 @@ import ProfilerView from './components/pages/ProfilerView.vue';
 import PrivEditor from './components/pages/PrivEditor.vue';
 
 import Mods from './components/pages/mods/Mods.vue';
-import ContentBrowse from './components/pages/cdb/Browse.vue';
-import ContentdbDetail from './components/pages/cdb/Detail.vue';
-import InstallCDB from './components/pages/cdb/Install.vue';
 import Chat from './components/pages/Chat.vue';
 import Mesecons from './components/pages/Mesecons.vue';
 import Luacontroller from './components/pages/Luacontroller.vue';
@@ -91,15 +88,6 @@ export default [{
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/mods", component: Mods,
-	meta: { requiredPriv: "server" }
-}, {
-	path: "/cdb/browse", component: ContentBrowse,
-	meta: { requiredPriv: "server" }
-}, {
-	path: "/cdb/detail/:author/:name", component: ContentdbDetail, props: true,
-	meta: { requiredPriv: "server" }
-}, {
-	path: "/cdb/install/:author/:name", component: InstallCDB, props: true,
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/mediaserver", component: Mediaserver,

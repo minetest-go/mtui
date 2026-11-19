@@ -1,11 +1,9 @@
 <script>
 import { remove, update_mod, update_mod_version } from '../../../service/mods.js';
-import CDBPackageLink from '../../CDBPackageLink.vue';
 
 export default {
 	props: ["mod"],
 	components: {
-		"cdb-package-link": CDBPackageLink
 	},
 	methods: {
 		remove,
@@ -20,15 +18,11 @@ export default {
   	<span class="badge bg-secondary">{{mod.mod_type}}</span>
   </td>
   <td>
-  	<cdb-package-link v-if="mod.source_type == 'cdb'" :author="mod.author" :name="mod.name"/>
-  	<span v-else>{{mod.name}}</span>
+  	<span>{{mod.name}}</span>
   </td>
   <td>
   	<a :href="mod.url" v-if="mod.source_type == 'git'">{{mod.url}}</a>
-  	<span class="badge bg-success" v-if="mod.source_type == 'cdb'">
-  		<i class="fa-solid fa-box-open"></i>
-  		ContentDB
-  	</span>
+  	<span class="badge bg-secondary" v-if="mod.source_type == 'manual'">manual</span>
   	<div v-if="mod.mod_status == 'error'" class="badge bg-danger">
   		{{mod.message}}
   	</div>

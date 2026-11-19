@@ -4,13 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"mtui/api/cdb"
 	"mtui/luanticonfig"
-	"mtui/luanticonfig/depanalyzer"
 	"mtui/mail"
 	"mtui/types"
 	"mtui/types/command"
-	"path"
 	"slices"
 	"strconv"
 	"strings"
@@ -29,8 +26,6 @@ func mcpWrite(destructive, idempotent, openWorld bool) *mcp.ToolAnnotations {
 		OpenWorldHint:   &openWorld,
 	}
 }
-
-var mcpCDBRead = &mcp.ToolAnnotations{ReadOnlyHint: true, OpenWorldHint: &mcpTrue}
 
 var mcpTrue = true
 
@@ -105,20 +100,6 @@ type mcpSendMailInput struct {
 	Body    string `json:"body"`
 }
 
-type mcpCDBSearchInput struct {
-	Query  string `json:"query,omitempty" jsonschema:"search text"`
-	Author string `json:"author,omitempty"`
-	Type   string `json:"type,omitempty" jsonschema:"package type: 'mod' (default), 'game' or 'txp'"`
-	Sort   string `json:"sort,omitempty" jsonschema:"'score' (default), 'downloads', 'reviews' or 'last_release'"`
-	Limit  int    `json:"limit,omitempty" jsonschema:"max number of results (default 20, max 100)"`
-}
-
-type mcpCDBPackageInput struct {
-	Author           string   `json:"author" jsonschema:"package author on ContentDB"`
-	Name             string   `json:"name" jsonschema:"package name on ContentDB"`
-	SelectedPackages []string `json:"selected_packages,omitempty" jsonschema:"preferred 'author/name' packages for dependencies with multiple choices"`
-}
-
 type mcpGitModInput struct {
 	Name    string `json:"name" jsonschema:"mod name (directory name, must match the mod's mod.conf name)"`
 	URL     string `json:"url" jsonschema:"git repository url"`
@@ -128,7 +109,7 @@ type mcpGitModInput struct {
 
 type mcpModVersionInput struct {
 	ID      string `json:"id" jsonschema:"mod id, see list_mods"`
-	Version string `json:"version" jsonschema:"target version: git commit hash or ContentDB release id, see 'latest_version' in list_mods"`
+	Version string `json:"version" jsonschema:"target version: git commit hash, tag or branch, see 'latest_version' in list_mods"`
 }
 
 type mcpSetSettingInput struct {
@@ -241,93 +222,6 @@ func (api *Api) registerMCPWriteTools(s *mcp.Server, claims *types.Claims) {
 	modGuard := mcpGuard{Priv: types.PRIV_SERVER, Feature: types.FEATURE_MODMANAGEMENT}
 
 	addMCPTool(api, s, claims, modGuard, &mcp.Tool{
-		Name:        "search_contentdb",
-		Description: "Searches packages on ContentDB (content.luanti.org).",
-		Annotations: mcpCDBRead,
-	}, func(ctx context.Context, c *types.Claims, in mcpCDBSearchInput) (any, error) {
-		q := &cdb.PackageQuery{
-			Query:  in.Query,
-			Author: in.Author,
-			Type:   []cdb.PackageType{cdb.PackageTypeMod},
-			Limit:  clampLimit(in.Limit, 20, 100),
-			Sort:   cdb.PackageSortScore,
-			Order:  cdb.PackageSortOrderDescending,
-		}
-		if in.Type != "" {
-			q.Type = []cdb.PackageType{cdb.PackageType(in.Type)}
-		}
-		if in.Sort != "" {
-			q.Sort = cdb.PackageSortType(in.Sort)
-		}
-		return cached_cdbcli.SearchPackages(q)
-	})
-
-	addMCPTool(api, s, claims, modGuard, &mcp.Tool{
-		Name:        "resolve_contentdb_dependencies",
-		Description: "Resolves the dependency tree of a ContentDB package against the installed mods: per dependency the installation candidates, the selected one and whether it is already installed.",
-		Annotations: mcpCDBRead,
-	}, func(ctx context.Context, c *types.Claims, in mcpCDBPackageInput) (any, error) {
-		return api.resolveCDBDeps(in)
-	})
-
-	addMCPTool(api, s, claims, modGuard, &mcp.Tool{
-		Name: "install_contentdb_package",
-		Description: "Installs a ContentDB package with all missing dependencies (blocks until done). " +
-			"Fails without installing anything if a dependency has no installation candidate. Use resolve_contentdb_dependencies first to review the plan.",
-		Annotations: mcpWrite(false, false, true),
-	}, func(ctx context.Context, c *types.Claims, in mcpCDBPackageInput) (any, error) {
-		existing, err := api.app.Repos.ModRepo.GetByName(in.Name)
-		if err != nil {
-			return nil, err
-		}
-		if existing != nil {
-			return nil, fmt.Errorf("'%s' is already installed (id: %s)", in.Name, existing.ID)
-		}
-
-		pkg, err := cached_cdbcli.GetDetails(in.Author, in.Name)
-		if err != nil {
-			return nil, fmt.Errorf("package lookup: %v", err)
-		}
-		if pkg == nil || pkg.Package == nil {
-			return nil, fmt.Errorf("package '%s/%s' not found", in.Author, in.Name)
-		}
-
-		deps, err := api.resolveCDBDeps(in)
-		if err != nil {
-			return nil, err
-		}
-
-		// collect what needs to be installed, root package last
-		todo := []*types.Mod{}
-		missing := []string{}
-		for _, d := range deps {
-			if d.Installed {
-				continue
-			}
-			parts := strings.SplitN(d.Selected, "/", 2)
-			if len(d.Choices) == 0 || len(parts) != 2 {
-				missing = append(missing, d.Name)
-				continue
-			}
-			todo = append(todo, &types.Mod{Author: parts[0], Name: parts[1], ModType: types.ModTypeMod, SourceType: types.SourceTypeCDB})
-		}
-		if len(missing) > 0 {
-			return nil, fmt.Errorf("no installation candidate for: %s", strings.Join(missing, ", "))
-		}
-		todo = append(todo, &types.Mod{Author: pkg.Author, Name: pkg.Name, ModType: types.ModType(pkg.Type), SourceType: types.SourceTypeCDB})
-
-		installed := []*types.Mod{}
-		for _, m := range todo {
-			api.logModCreate(c, m, nil)
-			if err := api.createMod(m); err != nil {
-				return map[string]any{"installed": installed, "failed": m, "error": err.Error()}, fmt.Errorf("installing '%s/%s' failed after %d packages: %v", m.Author, m.Name, len(installed), err)
-			}
-			installed = append(installed, m)
-		}
-		return map[string]any{"installed": installed}, nil
-	})
-
-	addMCPTool(api, s, claims, modGuard, &mcp.Tool{
 		Name:        "install_git_mod",
 		Description: "Installs a mod, game or texturepack from a git repository (blocks until done). Dependencies are not resolved, check with validate_mods afterwards.",
 		Annotations: mcpWrite(false, false, true),
@@ -419,18 +313,4 @@ func (api *Api) registerMCPWriteTools(s *mcp.Server, claims *types.Claims) {
 		}
 		return api.executeChatcommand(c, cmd, nil)
 	})
-}
-
-func (api *Api) resolveCDBDeps(in mcpCDBPackageInput) ([]*cdb.ResolvedDependency, error) {
-	if in.Author == "" || in.Name == "" {
-		return nil, errors.New("author and name are required")
-	}
-	ad, err := depanalyzer.AnalyzeDeps(
-		path.Join(api.app.WorldDir, "worldmods"),
-		path.Join(api.app.WorldDir, "game/mods"),
-	)
-	if err != nil {
-		return nil, err
-	}
-	return cdb.ResolveDependencies(cached_cdbcli, in.Author+"/"+in.Name, in.SelectedPackages, ad.Installed)
 }
