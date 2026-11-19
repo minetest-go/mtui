@@ -1,7 +1,7 @@
 import globals from "globals";
 import pluginJs from "@eslint/js";
 import pluginVue from "eslint-plugin-vue";
-import stylisticJs from '@stylistic/eslint-plugin-js';
+import stylistic from '@stylistic/eslint-plugin';
 
 export default [
   {
@@ -19,10 +19,10 @@ export default [
   },
   {
     plugins: {
-      '@stylistic/js': stylisticJs
+      '@stylistic': stylistic
     },
     rules: {
-      '@stylistic/js/semi': "error",
+      '@stylistic/semi': "error",
     }
   },
   pluginJs.configs.recommended,
