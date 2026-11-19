@@ -32,6 +32,7 @@ services:
    ENABLE_FEATURES: "api,shell,luashell,minetest_config,modmanagement,signup,chat,minetest_web"
    PROVISION_GAME: "https://github.com/luanti-org/minetest_game"
    INSTALL_MTUI_MOD: "true"
+   TAIL_ENGINE_LOGFILE: "/world/debug.txt"
   depends_on:
     ui_webapp:
       condition: service_healthy
