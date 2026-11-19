@@ -1,8 +1,7 @@
 <script>
-import { START, FILEBROWSER } from "../../../util/breadcrumbs.js";
-
 import DefaultLayout from "../../layouts/DefaultLayout.vue";
 import FileEditor from "./FileEditor.vue";
+import { filebrowser_breadcrumb } from "./common.js";
 
 export default {
     props: ["pathMatch"],
@@ -12,31 +11,7 @@ export default {
     },
     computed: {
         breadcrumb: function() {
-            const bc = [START, FILEBROWSER];
-            const parts = this.pathMatch.split("/");
-
-            let path = "";
-            parts
-            .filter(p => p != "")
-            .forEach(p => {
-                if (path == "") {
-                    path = p;
-                } else {
-                    path = path + "/" + p;
-                }
-
-                bc.push({
-                    name: p,
-                    icon: "folder-open",
-                    link: "/filebrowser/" + path
-                });
-            });
-
-            const lastitem = bc[bc.length-1];
-            lastitem.icon = "file";
-            lastitem.link = null;
-
-            return bc;
+            return filebrowser_breadcrumb(this.pathMatch, true);
         }
     }
 };

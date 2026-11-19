@@ -2,6 +2,7 @@ package modmanager_test
 
 import (
 	"mtui/modmanager"
+	"mtui/testutil"
 	"mtui/types"
 	"os"
 	"path"
@@ -11,7 +12,7 @@ import (
 )
 
 func TestManualMod(t *testing.T) {
-	app := CreateTestApp(t)
+	app := testutil.NewApp(t)
 	mm := modmanager.New(app.WorldDir, app.Repos.ModRepo)
 
 	dir := path.Join(app.WorldDir, "worldmods", "legacy")

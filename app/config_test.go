@@ -1,6 +1,7 @@
 package app_test
 
 import (
+	"mtui/testutil"
 	"os"
 	"path"
 	"testing"
@@ -9,7 +10,7 @@ import (
 )
 
 func TestReadMTConfigCreatesReadableFile(t *testing.T) {
-	a := NewApp(t)
+	a := testutil.NewApp(t)
 	a.Config.LuantiConfig = path.Join(a.WorldDir, "minetest.conf")
 
 	s, err := a.ReadMTConfig(nil)
@@ -22,7 +23,7 @@ func TestReadMTConfigCreatesReadableFile(t *testing.T) {
 }
 
 func TestReadMTConfigRepairsPermissions(t *testing.T) {
-	a := NewApp(t)
+	a := testutil.NewApp(t)
 	a.Config.LuantiConfig = path.Join(a.WorldDir, "minetest.conf")
 
 	// file as created by earlier versions

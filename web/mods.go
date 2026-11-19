@@ -113,43 +113,27 @@ func (a *Api) notifyModsChanged() {
 	}
 }
 
-func (a *Api) CreateMTUIMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	m, err := a.app.CreateMTUIMod()
-	if err == nil && m != nil {
-		// create log entry
-		a.app.CreateUILogEntry(&types.Log{
-			Username: claims.Username,
-			Event:    "mods",
-			Message:  fmt.Sprintf("User '%s' creates the %s '%s' (%s) in version '%s'", claims.Username, m.ModType, m.Name, m.SourceType, m.Version),
-		}, r)
+// createPresetMod returns a handler that installs a preconfigured mod
+func (a *Api) createPresetMod(create func() (*types.Mod, error)) func(http.ResponseWriter, *http.Request, *types.Claims) {
+	return func(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+		m, err := create()
+		if err == nil && m != nil {
+			a.logModCreate(claims, m, r)
+		}
+		Send(w, m, err)
 	}
-	Send(w, m, nil)
+}
+
+func (a *Api) CreateMTUIMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
+	a.createPresetMod(a.app.CreateMTUIMod)(w, r, claims)
 }
 
 func (a *Api) CreateBeerchatMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	m, err := a.app.CreateBeerchatMod()
-	if err == nil && m != nil {
-		// create log entry
-		a.app.CreateUILogEntry(&types.Log{
-			Username: claims.Username,
-			Event:    "mods",
-			Message:  fmt.Sprintf("User '%s' creates the %s '%s' (%s) in version '%s'", claims.Username, m.ModType, m.Name, m.SourceType, m.Version),
-		}, r)
-	}
-	Send(w, m, nil)
+	a.createPresetMod(a.app.CreateBeerchatMod)(w, r, claims)
 }
 
 func (a *Api) CreateMapserverMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	m, err := a.app.CreateMapserverMod()
-	if err == nil && m != nil {
-		// create log entry
-		a.app.CreateUILogEntry(&types.Log{
-			Username: claims.Username,
-			Event:    "mods",
-			Message:  fmt.Sprintf("User '%s' creates the %s '%s' (%s) in version '%s'", claims.Username, m.ModType, m.Name, m.SourceType, m.Version),
-		}, r)
-	}
-	Send(w, m, nil)
+	a.createPresetMod(a.app.CreateMapserverMod)(w, r, claims)
 }
 
 func (a *Api) UpdateMod(w http.ResponseWriter, r *http.Request, claims *types.Claims) {

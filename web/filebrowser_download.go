@@ -59,11 +59,7 @@ func (a *Api) DownloadFile(w http.ResponseWriter, r *http.Request, claims *types
 		return
 	}
 
-	a.app.CreateUILogEntry(&types.Log{
-		Username: claims.Username,
-		Event:    "filebrowser",
-		Message:  fmt.Sprintf("User '%s' downloaded the file '%s' with %d bytes", claims.Username, rel_filename, count+int64(header_size)),
-	}, r)
+	a.logFilebrowser(r, claims, "downloaded the file '%s' with %d bytes", rel_filename, count+int64(header_size))
 }
 
 func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
@@ -86,9 +82,5 @@ func (a *Api) DownloadZip(w http.ResponseWriter, r *http.Request, claims *types.
 		return
 	}
 
-	a.app.CreateUILogEntry(&types.Log{
-		Username: claims.Username,
-		Event:    "filebrowser",
-		Message:  fmt.Sprintf("User '%s' downloaded the directory '%s' as zip with %d bytes (uncompressed)", claims.Username, reldir, count),
-	}, r)
+	a.logFilebrowser(r, claims, "downloaded the directory '%s' as zip with %d bytes (uncompressed)", reldir, count)
 }

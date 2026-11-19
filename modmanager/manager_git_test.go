@@ -2,6 +2,7 @@ package modmanager_test
 
 import (
 	"mtui/modmanager"
+	"mtui/testutil"
 	"mtui/types"
 	"testing"
 
@@ -9,7 +10,7 @@ import (
 )
 
 func TestCheckoutBranch(t *testing.T) {
-	app := CreateTestApp(t)
+	app := testutil.NewApp(t)
 	mm := modmanager.New(app.WorldDir, app.Repos.ModRepo)
 
 	// checkout master
@@ -30,7 +31,7 @@ func TestCheckoutBranch(t *testing.T) {
 }
 
 func TestCheckoutHash(t *testing.T) {
-	app := CreateTestApp(t)
+	app := testutil.NewApp(t)
 	mm := modmanager.New(app.WorldDir, app.Repos.ModRepo)
 
 	// checkout master branch on specified commit
@@ -88,7 +89,7 @@ func TestCheckoutHash(t *testing.T) {
 func TestCheckoutGame(t *testing.T) {
 	t.Skip() // slow test, enable on demand
 
-	app := CreateTestApp(t)
+	app := testutil.NewApp(t)
 	mm := modmanager.New(app.WorldDir, app.Repos.ModRepo)
 
 	// checkout master branch on specified commit

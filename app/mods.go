@@ -31,19 +31,22 @@ func (a *App) AddHTTPMod(modname string, cfg luanticonfig.Settings) {
 	}
 }
 
-func (a *App) CreateMTUIMod() (*types.Mod, error) {
-	m, err := a.Repos.ModRepo.GetByName("mtui")
+// ensureGitMod installs the git mod if missing and, if the luanti-config feature
+// is enabled, applies the config changes made by configure to the engine config
+func (a *App) ensureGitMod(name, url, branch string, configure func(cfg luanticonfig.Settings) error) (*types.Mod, error) {
+	m, err := a.Repos.ModRepo.GetByName(name)
 	if err != nil {
 		return nil, err
 	}
+
 	if m == nil {
 		// not installed yet
 		m = &types.Mod{
-			Name:       "mtui",
+			Name:       name,
 			ModType:    types.ModTypeMod,
 			SourceType: types.SourceTypeGIT,
-			URL:        "https://github.com/luanti-golang/mtui_mod.git",
-			Branch:     "master",
+			URL:        url,
+			Branch:     branch,
 		}
 		err = a.ModManager.Create(m)
 		if err != nil {
@@ -51,20 +54,12 @@ func (a *App) CreateMTUIMod() (*types.Mod, error) {
 		}
 	}
 
-	// determine hostname
-	hostname, err := os.Hostname()
+	feature, err := a.Repos.FeatureRepository.GetByName(types.FEATURE_LUANTI_CONFIG)
 	if err != nil {
-		return nil, fmt.Errorf("could not get hostname: %v", err)
+		return nil, fmt.Errorf("feature get error: %v", err)
 	}
-
-	for _, fname := range []types.FeatureName{types.FEATURE_LUANTI_CONFIG} {
-		feature, err := a.Repos.FeatureRepository.GetByName(fname)
-		if err != nil {
-			return nil, fmt.Errorf("feature get error: %v", err)
-		}
-		if !feature.Enabled {
-			return m, nil
-		}
+	if !feature.Enabled {
+		return m, nil
 	}
 
 	sts, err := a.GetSettingTypes()
@@ -77,14 +72,12 @@ func (a *App) CreateMTUIMod() (*types.Mod, error) {
 		return nil, fmt.Errorf("read config error: %v", err)
 	}
 
-	cfg["mtui.url"] = &luanticonfig.Setting{
-		Value: fmt.Sprintf("http://%s:8080", hostname),
-	}
-	cfg["mtui.key"] = &luanticonfig.Setting{
-		Value: a.Config.APIKey,
+	err = configure(cfg)
+	if err != nil {
+		return nil, err
 	}
 
-	a.AddHTTPMod("mtui", cfg)
+	a.AddHTTPMod(name, cfg)
 
 	err = a.WriteMTConfig(cfg, sts)
 	if err != nil {
@@ -92,119 +85,33 @@ func (a *App) CreateMTUIMod() (*types.Mod, error) {
 	}
 
 	return m, nil
+}
+
+func (a *App) CreateMTUIMod() (*types.Mod, error) {
+	return a.ensureGitMod("mtui", "https://github.com/luanti-golang/mtui_mod.git", "master", func(cfg luanticonfig.Settings) error {
+		hostname, err := os.Hostname()
+		if err != nil {
+			return fmt.Errorf("could not get hostname: %v", err)
+		}
+		cfg["mtui.url"] = &luanticonfig.Setting{Value: fmt.Sprintf("http://%s:8080", hostname)}
+		cfg["mtui.key"] = &luanticonfig.Setting{Value: a.Config.APIKey}
+		return nil
+	})
 }
 
 func (a *App) CreateBeerchatMod() (*types.Mod, error) {
-	m, err := a.Repos.ModRepo.GetByName("beerchat")
-	if err != nil {
-		return nil, err
-	}
-
-	if m == nil {
-		// create mod
-		m = &types.Mod{
-			Name:       "beerchat",
-			ModType:    types.ModTypeMod,
-			SourceType: types.SourceTypeGIT,
-			URL:        "https://github.com/mt-mods/beerchat.git",
-			Branch:     "refs/heads/master",
-		}
-		err = a.ModManager.Create(m)
-		if err != nil {
-			return nil, fmt.Errorf("error creating mod: %v", err)
-		}
-	}
-
-	for _, fname := range []types.FeatureName{types.FEATURE_LUANTI_CONFIG} {
-		feature, err := a.Repos.FeatureRepository.GetByName(fname)
-		if err != nil {
-			return nil, fmt.Errorf("feature get error: %v", err)
-		}
-		if !feature.Enabled {
-			return m, nil
-		}
-	}
-
-	sts, err := a.GetSettingTypes()
-	if err != nil {
-		return nil, fmt.Errorf("setting types error: %v", err)
-	}
-
-	cfg, err := a.ReadMTConfig(sts)
-	if err != nil {
-		return nil, fmt.Errorf("read config error: %v", err)
-	}
-
-	cfg["beerchat.matterbridge_url"] = &luanticonfig.Setting{
-		Value: "http://matterbridge:4242",
-	}
-	cfg["beerchat.matterbridge_token"] = &luanticonfig.Setting{
-		Value: "my-token",
-	}
-
-	a.AddHTTPMod("beerchat", cfg)
-
-	err = a.WriteMTConfig(cfg, sts)
-	if err != nil {
-		return nil, fmt.Errorf("write config error: %v", err)
-	}
-
-	return m, nil
+	return a.ensureGitMod("beerchat", "https://github.com/mt-mods/beerchat.git", "refs/heads/master", func(cfg luanticonfig.Settings) error {
+		cfg["beerchat.matterbridge_url"] = &luanticonfig.Setting{Value: "http://matterbridge:4242"}
+		cfg["beerchat.matterbridge_token"] = &luanticonfig.Setting{Value: "my-token"}
+		return nil
+	})
 }
 
 func (a *App) CreateMapserverMod() (*types.Mod, error) {
-	m, err := a.Repos.ModRepo.GetByName("mapserver")
-	if err != nil {
-		return nil, err
-	}
-
-	if m == nil {
-		// create mod
-		m = &types.Mod{
-			Name:       "mapserver",
-			ModType:    types.ModTypeMod,
-			SourceType: types.SourceTypeGIT,
-			URL:        "https://github.com/minetest-mapserver/mapserver_mod.git",
-			Branch:     "refs/heads/master",
-		}
-		err = a.ModManager.Create(m)
-		if err != nil {
-			return nil, fmt.Errorf("error creating mod: %v", err)
-		}
-	}
-
-	for _, fname := range []types.FeatureName{types.FEATURE_LUANTI_CONFIG} {
-		feature, err := a.Repos.FeatureRepository.GetByName(fname)
-		if err != nil {
-			return nil, fmt.Errorf("feature get error: %v", err)
-		}
-		if !feature.Enabled {
-			return m, nil
-		}
-	}
-
-	sts, err := a.GetSettingTypes()
-	if err != nil {
-		return nil, fmt.Errorf("setting types error: %v", err)
-	}
-
-	cfg, err := a.ReadMTConfig(sts)
-	if err != nil {
-		return nil, fmt.Errorf("read config error: %v", err)
-	}
-
-	cfg["mapserver.url"] = &luanticonfig.Setting{
-		Value: "http://mapserver:8080",
-	}
-
-	a.AddHTTPMod("mapserver", cfg)
-
-	err = a.WriteMTConfig(cfg, sts)
-	if err != nil {
-		return nil, fmt.Errorf("write config error: %v", err)
-	}
-
-	return m, nil
+	return a.ensureGitMod("mapserver", "https://github.com/minetest-mapserver/mapserver_mod.git", "refs/heads/master", func(cfg luanticonfig.Settings) error {
+		cfg["mapserver.url"] = &luanticonfig.Setting{Value: "http://mapserver:8080"}
+		return nil
+	})
 }
 
 // ProvisionGame installs the game from the given git url as mod "game".

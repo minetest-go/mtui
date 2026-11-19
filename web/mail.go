@@ -34,21 +34,30 @@ func (a *Api) GetDrafts(w http.ResponseWriter, r *http.Request, claims *types.Cl
 	Send(w, e.Drafts, err)
 }
 
-func (a *Api) markMail(w http.ResponseWriter, r *http.Request, claims *types.Claims, read bool) {
-	vars := mux.Vars(r)
-	id := vars["id"]
+// findMail loads the user's mail entry and the message with the id from the request.
+// On failure the error response is written and ok is false
+func (a *Api) findMail(w http.ResponseWriter, r *http.Request, claims *types.Claims) (e *mail.PlayerEntry, id string, m *mail.Message, ok bool) {
+	id = mux.Vars(r)["id"]
 	e, err := a.app.Mail.GetEntry(claims.Username)
 	if err != nil {
 		SendError(w, 500, err)
-		return
+		return nil, id, nil, false
 	}
-	m := e.FindMessage(id)
+	m = e.FindMessage(id)
 	if m == nil {
 		SendError(w, 404, fmt.Errorf("mail not found"))
+		return nil, id, nil, false
+	}
+	return e, id, m, true
+}
+
+func (a *Api) markMail(w http.ResponseWriter, r *http.Request, claims *types.Claims, read bool) {
+	e, _, m, ok := a.findMail(w, r, claims)
+	if !ok {
 		return
 	}
 	m.Read = read
-	err = a.app.Mail.SetEntry(claims.Username, e)
+	err := a.app.Mail.SetEntry(claims.Username, e)
 	Send(w, m, err)
 }
 
@@ -186,22 +195,13 @@ func (a *Api) sendMail(claims *types.Claims, m *mail.Message) error {
 }
 
 func (a *Api) DeleteMail(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
-	vars := mux.Vars(r)
-	id := vars["id"]
-	e, err := a.app.Mail.GetEntry(claims.Username)
-	if err != nil {
-		SendError(w, 500, err)
-		return
-	}
-	m := e.FindMessage(id)
-	if m == nil {
-		SendError(w, 404, fmt.Errorf("mail not found"))
+	e, id, m, ok := a.findMail(w, r, claims)
+	if !ok {
 		return
 	}
 	e.RemoveMessage(id)
-	err = a.app.Mail.SetEntry(claims.Username, e)
+	err := a.app.Mail.SetEntry(claims.Username, e)
 	Send(w, m, err)
-
 }
 
 func (a *Api) CheckValidRecipient(w http.ResponseWriter, r *http.Request, claims *types.Claims) {

@@ -1,6 +1,5 @@
 <script>
 import DefaultLayout from "../../layouts/DefaultLayout.vue";
-import { START, FILEBROWSER } from "../../../util/breadcrumbs.js";
 import ConfirmationPrompt from "../../ConfirmationPrompt.vue";
 
 import { browse, get_download_url, mkdir, remove, rename } from "../../../api/filebrowser.js";
@@ -8,7 +7,7 @@ import { browse, get_download_url, mkdir, remove, rename } from "../../../api/fi
 import { upload_chunked } from "../../../service/uploader.js";
 import format_size from "../../../util/format_size.js";
 import format_time from "../../../util/format_time.js";
-import { can_edit } from "./common.js";
+import { can_edit, filebrowser_breadcrumb } from "./common.js";
 
 export default {
     props: ["pathMatch"],
@@ -97,27 +96,7 @@ export default {
     },
     computed: {
         breadcrumb: function() {
-            const bc = [START, FILEBROWSER];
-            const parts = this.pathMatch.split("/");
-
-            let path = "";
-            parts
-            .filter(p => p != "")
-            .forEach(p => {
-                if (path == "") {
-                    path = p;
-                } else {
-                    path = path + "/" + p;
-                }
-
-                bc.push({
-                    name: p,
-                    icon: "folder-open",
-                    link: "/filebrowser/" + path
-                });
-            });
-
-            return bc;
+            return filebrowser_breadcrumb(this.pathMatch, false);
         }
     },
     mounted: function() {

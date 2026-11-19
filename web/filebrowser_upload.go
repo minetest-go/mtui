@@ -22,11 +22,7 @@ func (a *Api) UploadZip(w http.ResponseWriter, r *http.Request, claims *types.Cl
 		return
 	}
 
-	a.app.CreateUILogEntry(&types.Log{
-		Username: claims.Username,
-		Event:    "filebrowser",
-		Message:  fmt.Sprintf("User '%s' uploaded a zip to the directory '%s' with %d bytes (uncompressed)", claims.Username, reldir, count),
-	}, r)
+	a.logFilebrowser(r, claims, "uploaded a zip to the directory '%s' with %d bytes (uncompressed)", reldir, count)
 }
 
 func (a *Api) UploadFile(w http.ResponseWriter, r *http.Request, claims *types.Claims) {
@@ -42,11 +38,7 @@ func (a *Api) UploadFile(w http.ResponseWriter, r *http.Request, claims *types.C
 		return
 	}
 
-	a.app.CreateUILogEntry(&types.Log{
-		Username: claims.Username,
-		Event:    "filebrowser",
-		Message:  fmt.Sprintf("User '%s' uploaded the file '%s' with %d bytes", claims.Username, rel_filename, count),
-	}, r)
+	a.logFilebrowser(r, claims, "uploaded the file '%s' with %d bytes", rel_filename, count)
 }
 
 func (a *Api) AppendFile(w http.ResponseWriter, r *http.Request, claims *types.Claims) {

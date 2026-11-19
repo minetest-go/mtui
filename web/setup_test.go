@@ -1,6 +1,7 @@
 package web_test
 
 import (
+	"mtui/testutil"
 	"mtui/web"
 	"testing"
 
@@ -8,6 +9,6 @@ import (
 )
 
 func TestWebSetup(t *testing.T) {
-	app := CreateTestApp(t)
+	app := testutil.NewApp(t)
 	assert.NoError(t, web.Setup(app))
 }
