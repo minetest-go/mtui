@@ -23,6 +23,7 @@ type Config struct {
 	TailEngineLogfile      string
 	GeoIPAPI               string
 	WASMLuantiHost       string
+	ProvisionGame          string
 }
 
 func NewConfig(world_dir string) *Config {
@@ -43,5 +44,6 @@ func NewConfig(world_dir string) *Config {
 		TailEngineLogfile:      os.Getenv("TAIL_ENGINE_LOGFILE"),
 		GeoIPAPI:               os.Getenv("GEOIP_API"),
 		WASMLuantiHost:       os.Getenv("WASM_MINETEST_HOST"),
+		ProvisionGame:          os.Getenv("PROVISION_GAME"),
 	}
 }

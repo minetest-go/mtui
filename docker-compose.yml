@@ -2,6 +2,7 @@
 services:
  ui_webapp:
   image: node:22.22.3
+  user: "${UID:-1000}:${GID:-1000}"
   volumes:
    - "./:/app"
   working_dir: /app/public
@@ -29,6 +30,8 @@ services:
    MINETEST_CONFIG: "/world/minetest.conf"
    WASM_MINETEST_HOST: "luanti"
    ENABLE_FEATURES: "api,shell,luashell,minetest_config,modmanagement,signup,chat,minetest_web"
+   PROVISION_GAME: "https://github.com/luanti-org/minetest_game"
+   INSTALL_MTUI_MOD: "true"
   depends_on:
     ui_webapp:
       condition: service_healthy
@@ -40,8 +43,8 @@ services:
    - "./:/app"
    - "./world.mt:/world/world.mt"
    - "world_dir:/world"
-   - "./cache/go_dir:/go"
-   - "./cache/go_cache:/root/.cache"
+   - "go_dir:/go"
+   - "go_cache:/root/.cache"
   working_dir: /app
   command: ["go", "run", "."]
 
@@ -58,3 +61,5 @@ services:
 
 volumes:
   world_dir: {}
+  go_cache: {}
+  go_dir: {}

@@ -139,6 +139,14 @@ func Create(cfg *types.Config) (*App, error) {
 		}
 	}
 
+	// (re-)install game if specified
+	if cfg.ProvisionGame != "" {
+		err = app.ProvisionGame(cfg.ProvisionGame)
+		if err != nil {
+			return nil, fmt.Errorf("could not provision game: %v", err)
+		}
+	}
+
 	if Version == "" {
 		Version = "DEV"
 	}

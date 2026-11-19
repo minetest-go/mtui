@@ -206,3 +206,35 @@ func (a *App) CreateMapserverMod() (*types.Mod, error) {
 
 	return m, nil
 }
+
+// ProvisionGame installs the game from the given git url as mod "game".
+// Skipped if a "game" mod is already installed; a failed/incomplete one is replaced
+func (a *App) ProvisionGame(url string) error {
+	existing, err := a.Repos.ModRepo.GetByName("game")
+	if err != nil {
+		return err
+	}
+	if existing != nil {
+		if existing.Status == types.ModStatusInstalled {
+			// already installed, nothing to do
+			return nil
+		}
+		// failed or incomplete install, retry
+		err = a.ModManager.Remove(existing)
+		if err != nil {
+			return fmt.Errorf("error removing existing game: %v", err)
+		}
+	}
+
+	m := &types.Mod{
+		Name:       "game",
+		ModType:    types.ModTypeGame,
+		SourceType: types.SourceTypeGIT,
+		URL:        url,
+	}
+	err = a.ModManager.Create(m)
+	if err != nil {
+		return fmt.Errorf("error creating game: %v", err)
+	}
+	return nil
+}
