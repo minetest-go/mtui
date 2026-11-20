@@ -3,6 +3,7 @@
 import { get, upload, remove } from "../api/skin.js";
 import renderskin from "../util/renderskin.js";
 import { confirm } from "../store/confirm.js";
+import { success } from "../store/toast.js";
 
 export default {
     props: ["skin_id"],
@@ -43,7 +44,10 @@ export default {
                 return;
             }
             remove(this.skin_id)
-            .then(() => this.current_image = null);
+            .then(() => {
+                this.current_image = null;
+                success(`Skin #${this.skin_id} removed`);
+            });
         }
     }
 };

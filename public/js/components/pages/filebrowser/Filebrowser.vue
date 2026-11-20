@@ -9,6 +9,7 @@ import format_size from "../../../util/format_size.js";
 import format_time from "../../../util/format_time.js";
 import { can_edit, filebrowser_breadcrumb } from "./common.js";
 import { confirm } from "../../../store/confirm.js";
+import { success } from "../../../store/toast.js";
 
 export default {
     props: ["pathMatch"],
@@ -31,6 +32,7 @@ export default {
         get_download_url,
         mkdir: function() {
             mkdir(this.result.dir + "/" + this.mkdir_name)
+            .then(() => success(`Created directory ${this.mkdir_name}`))
             .then(() => this.browse_dir())
             .then(() => this.mkdir_name = "");
         },
@@ -45,6 +47,7 @@ export default {
                     };
                 }).then(() => {
                     delete this.upload_progress[file.name];
+                    success(`Uploaded ${file.name}`);
                     this.browse_dir();
                 });
             });
@@ -64,11 +67,13 @@ export default {
                 return;
             }
             remove(this.result.dir + "/" + item.name)
+            .then(() => success(`Deleted ${item.name}`))
             .then(() => this.browse_dir());
         },
         confirm_move: function() {
             rename(this.result.dir + "/" + this.move_name, this.result.dir + "/" + this.move_target)
             .then(() => {
+                success(`Renamed ${this.move_name} to ${this.move_target}`);
                 this.move_name = "";
                 this.move_target = "";
                 this.browse_dir();

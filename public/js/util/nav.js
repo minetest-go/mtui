@@ -76,9 +76,6 @@ export default [{
 	}, {
 		name: "Web UI features", icon: "fa-solid fa-toggle-on", link: "/features",
 		visible: () => has_priv("server")
-	}, {
-		name: "Help", icon: "fa-solid fa-circle-question", link: "/help",
-		visible: () => has_priv("server")
 	}]
 }];
 

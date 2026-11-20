@@ -1,6 +1,7 @@
 <script>
 import { set_feature, store } from '../../../service/features.js';
 import { confirm } from '../../../store/confirm.js';
+import { success } from '../../../store/toast.js';
 import DefaultLayout from '../../layouts/DefaultLayout.vue';
 import { START, ADMINISTRATION } from '../../../util/breadcrumbs.js';
 
@@ -38,7 +39,8 @@ export default {
                     return;
                 }
             }
-            set_feature(name, enabled);
+            await set_feature(name, enabled);
+            success(`Feature ${name} ${enabled ? "enabled" : "disabled"}`);
         },
         is_experimental: function(name) {
             const h = store[name];

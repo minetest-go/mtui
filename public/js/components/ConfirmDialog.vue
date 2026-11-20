@@ -12,6 +12,10 @@ export default {
         }
     },
     watch: {
+        "$route": function() {
+            // navigating away cancels a pending question
+            close(false);
+        },
         show: function(v) {
             if (v) {
                 // focus the safe option, so a stray "enter" doesn't confirm

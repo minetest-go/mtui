@@ -22,6 +22,6 @@ export default {
       heading="Onboarding"
       description="Create an initial admin account"
       button_label="Create admin account"
-      redirect="/help"
+      redirect="/"
       :submit="submit"/>
 </template>

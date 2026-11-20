@@ -7,6 +7,7 @@ import { get_claims } from '../../../service/login.js';
 import DefaultLayout from '../../layouts/DefaultLayout.vue';
 import { START, MAIL } from '../../../util/breadcrumbs.js';
 import { confirm } from '../../../store/confirm.js';
+import { success } from '../../../store/toast.js';
 
 export default {
     props: ["id"],
@@ -46,6 +47,7 @@ export default {
                 return;
             }
             remove(this.mail)
+            .then(() => success("Mail deleted"))
             .then(() => fetch_mails())
             .then(() => this.$router.push({ path:"/mail" }));
         }

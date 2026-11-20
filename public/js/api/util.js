@@ -1,21 +1,24 @@
-import error_toast_store from "../store/error_toast.js";
+import { error } from "../store/toast.js";
 
 export async function protected_fetch(url, opts) {
+    let r;
     try {
-        const r = await fetch(url, opts);
-        if (r.status == 200) {
-            return await r.json();
-         } else {
-            const msg = await r.text();
-            error_toast_store.title = "HTTP status error";
-            error_toast_store.url = url;
-            error_toast_store.message = msg;
-            throw new Error(msg);
-         }
+        r = await fetch(url, opts);
     } catch (e) {
-        error_toast_store.title = `HTTP fetch error`;
-        error_toast_store.url = url;
-        error_toast_store.message = e;
+        error("Connection error", "The server could not be reached", `URL: ${url}\n${e}`);
+        throw e;
+    }
+
+    if (r.status != 200) {
+        const msg = await r.text();
+        error("Request failed", msg || r.statusText, `URL: ${url}\nStatus: ${r.status}`);
+        throw new Error(msg);
+    }
+
+    try {
+        return await r.json();
+    } catch (e) {
+        error("Invalid response", "The server sent an unexpected response", `URL: ${url}\n${e}`);
         throw e;
     }
 }

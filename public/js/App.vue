@@ -1,7 +1,7 @@
 <script>
 import Sidebar from './components/Sidebar.vue';
 import TopBar from './components/TopBar.vue';
-import ErrorToast from './components/ErrorToast.vue';
+import Toasts from './components/Toasts.vue';
 import ConfirmDialog from './components/ConfirmDialog.vue';
 import { is_logged_in } from './service/login.js';
 
@@ -9,7 +9,7 @@ export default {
 	components: {
 		"side-bar": Sidebar,
 		"top-bar": TopBar,
-		"error-toast": ErrorToast,
+		"toasts": Toasts,
 		"confirm-dialog": ConfirmDialog
 	},
 	data: function() {
@@ -35,7 +35,7 @@ export default {
     <div class="app-sidebar-backdrop d-lg-none" v-if="is_logged_in && sidebar_open" v-on:click="sidebar_open = false"></div>
     <div class="app-main">
       <top-bar v-on:toggle-sidebar="sidebar_open = !sidebar_open"/>
-      <error-toast/>
+      <toasts/>
       <confirm-dialog/>
       <main class="container-fluid py-3">
         <router-view></router-view>

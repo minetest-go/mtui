@@ -1,6 +1,7 @@
 <script>
 import { remove, update_mod, update_mod_version } from '../../../service/mods.js';
 import { confirm } from '../../../store/confirm.js';
+import { success } from '../../../store/toast.js';
 
 export default {
 	props: ["mod"],
@@ -16,10 +17,17 @@ export default {
 			});
 			if (ok) {
 				await remove(mod.id);
+				success(`Removed ${mod.name}`);
 			}
 		},
-		update_mod_version,
-		update_mod
+		update_mod_version: async function(mod, version) {
+			await update_mod_version(mod, version);
+			success(`Updating ${mod.name} to ${version}`);
+		},
+		update_mod: async function(mod) {
+			await update_mod(mod);
+			success(`Auto-update ${mod.auto_update ? "enabled" : "disabled"} for ${mod.name}`);
+		}
 	}
 };
 </script>

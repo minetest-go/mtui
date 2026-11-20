@@ -8,6 +8,7 @@ import { get_priv_infos } from "../../api/uimod.js";
 import { execute_chatcommand } from "../../api/chatcommand.js";
 import { get_claims } from "../../service/login.js";
 import { confirm } from "../../store/confirm.js";
+import { success } from "../../store/toast.js";
 
 export default {
     props: ["name"],
@@ -47,15 +48,23 @@ export default {
                 return;
             }
             this.busy[priv] = true;
-            await execute_chatcommand(get_claims().username, `revoke ${this.name} ${priv}`);
-            await this.update();
-            this.busy[priv] = false;
+            try {
+                await execute_chatcommand(get_claims().username, `revoke ${this.name} ${priv}`);
+                await this.update();
+                success(`Revoked "${priv}" from ${this.name}`);
+            } finally {
+                this.busy[priv] = false;
+            }
         },
         grant_priv: async function(priv) {
             this.busy[priv] = true;
-            await execute_chatcommand(get_claims().username, `grant ${this.name} ${priv}`);
-            await this.update();
-            this.busy[priv] = false;
+            try {
+                await execute_chatcommand(get_claims().username, `grant ${this.name} ${priv}`);
+                await this.update();
+                success(`Granted "${priv}" to ${this.name}`);
+            } finally {
+                this.busy[priv] = false;
+            }
         }
     }
 };

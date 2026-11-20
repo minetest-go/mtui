@@ -3,6 +3,7 @@ import format_time from "../../util/format_time.js";
 import { set_mesecon, delete_mesecon } from "../../api/mesecons.js";
 import { node_image_mapping, switch_nodes, display_nodes } from "../../util/mesecon_nodes.js";
 import { confirm } from "../../store/confirm.js";
+import { success } from "../../store/toast.js";
 
 export default {
     props: ["mesecon"],
@@ -18,7 +19,10 @@ export default {
         format_time,
         save_name: function() {
             set_mesecon(Object.assign({}, this.mesecon, { name: this.name }))
-            .then(() => this.name_edit = false);
+            .then(() => {
+                this.name_edit = false;
+                success("Name saved");
+            });
         },
         set: function(state) {
             this.busy = true;
@@ -46,7 +50,10 @@ export default {
                 return;
             }
             delete_mesecon(this.mesecon.poskey)
-            .then(() => this.$emit("removed"));
+            .then(() => {
+                success(`Removed "${this.mesecon.name}"`);
+                this.$emit("removed");
+            });
         }
     },
     computed: {

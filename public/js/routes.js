@@ -21,7 +21,6 @@ import UISettings from './components/pages/administration/UISettings.vue';
 import Filebrowser from './components/pages/filebrowser/Filebrowser.vue';
 import FileEditPage from './components/pages/filebrowser/FileEditPage.vue';
 import Signup from './components/pages/Signup.vue';
-import Help from './components/pages/Help.vue';
 import ProfilerView from './components/pages/ProfilerView.vue';
 import PrivEditor from './components/pages/PrivEditor.vue';
 
@@ -36,9 +35,6 @@ export default [{
 	path: "/", component: Start
 }, {
 	path: "/restart-conditions", component: RestartConditions,
-	meta: { requiredPriv: "server" }
-}, {
-	path: "/help", component: Help,
 	meta: { requiredPriv: "server" }
 }, {
 	path: "/login", component: Login

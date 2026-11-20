@@ -1,6 +1,7 @@
 <script>
 import { save, unset } from '../../../service/mtconfig.js';
 import { confirm } from '../../../store/confirm.js';
+import { success } from '../../../store/toast.js';
 
 export default {
     props: ["setting"],
@@ -41,7 +42,9 @@ export default {
                 this.is_set = true;
                 Object.assign(this.old_setting, this.work_setting);
                 this.busy = false;
-            });
+                success(`Saved ${this.setting.key}`);
+            })
+            .catch(() => this.busy = false);
         },
         reset: function() {
             Object.assign(this.work_setting, this.old_setting);
@@ -63,7 +66,9 @@ export default {
                 Object.assign(this.old_setting, this.setting.default);
                 Object.assign(this.work_setting, this.setting.default);
                 this.busy = false;
-            });
+                success(`${this.setting.key} reset to its default value`);
+            })
+            .catch(() => this.busy = false);
         }
     }
 };

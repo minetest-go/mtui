@@ -1,3 +1,4 @@
+import { protected_fetch } from "./util.js";
 
 export const browse = dir => fetch(`api/filebrowser/browse?dir=${dir}`).then(r => r.json());
 
@@ -40,14 +41,14 @@ export const unzip = filename => fetch(`api/filebrowser/unzip?filename=${filenam
     method: "POST"
 });
 
-export const mkdir = dir => fetch(`api/filebrowser/mkdir?dir=${dir}`, {
+export const mkdir = dir => protected_fetch(`api/filebrowser/mkdir?dir=${dir}`, {
     method: "POST"
 });
 
-export const remove = filename => fetch(`api/filebrowser/file?filename=${filename}`, {
+export const remove = filename => protected_fetch(`api/filebrowser/file?filename=${filename}`, {
     method: "DELETE"
 });
 
-export const rename = (src, dst) => fetch(`api/filebrowser/rename?src=${src}&dst=${dst}`, {
+export const rename = (src, dst) => protected_fetch(`api/filebrowser/rename?src=${src}&dst=${dst}`, {
     method: "POST"
 });
