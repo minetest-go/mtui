@@ -1,12 +1,23 @@
 <script>
 import { remove, update_mod, update_mod_version } from '../../../service/mods.js';
+import { confirm } from '../../../store/confirm.js';
 
 export default {
 	props: ["mod"],
 	components: {
 	},
 	methods: {
-		remove,
+		remove: async function(mod) {
+			const ok = await confirm({
+				title: `Remove ${mod.name}?`,
+				message: `The ${mod.mod_type} "${mod.name}" and its files will be deleted from the server.`,
+				confirm_label: "Remove",
+				confirm_icon: "fa fa-trash"
+			});
+			if (ok) {
+				await remove(mod.id);
+			}
+		},
 		update_mod_version,
 		update_mod
 	}
@@ -43,7 +54,7 @@ export default {
   			<i class="fa fa-download"></i>
   			Update
   		</button>
-  		<button class="btn btn-danger" v-on:click="remove(mod.id)" v-if="mod.mod_status != 'processing'">
+  		<button class="btn btn-danger" v-on:click="remove(mod)" v-if="mod.mod_status != 'processing'">
   			<i class="fa fa-trash"></i>
   			Remove
   		</button>

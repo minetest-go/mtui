@@ -2,6 +2,7 @@
 
 import { get, upload, remove } from "../api/skin.js";
 import renderskin from "../util/renderskin.js";
+import { confirm } from "../store/confirm.js";
 
 export default {
     props: ["skin_id"],
@@ -32,7 +33,15 @@ export default {
             .then(() => this.update())
             .then(() => this.success = true);
         },
-        remove: function(){
+        remove: async function(){
+            const ok = await confirm({
+                title: `Remove skin #${this.skin_id}?`,
+                message: "The uploaded skin image will be deleted.",
+                confirm_label: "Remove"
+            });
+            if (!ok) {
+                return;
+            }
             remove(this.skin_id)
             .then(() => this.current_image = null);
         }

@@ -3,6 +3,7 @@ import { reactive } from "vue";
 import { fetch_mails } from '../../../service/mail.js';
 import { remove } from '../../../api/mail.js';
 import format_time from '../../../util/format_time.js';
+import { confirm } from '../../../store/confirm.js';
 
 const store = reactive({
     sortfield: "time",
@@ -23,7 +24,16 @@ export default {
     },
     methods: {
         format_time: format_time,
-        delete_mail: function(msg){
+        delete_mail: async function(msg){
+            const ok = await confirm({
+                title: "Delete mail?",
+                message: `"${msg.subject}" will be deleted permanently.`,
+                confirm_label: "Delete",
+                confirm_icon: "fa fa-trash"
+            });
+            if (!ok) {
+                return;
+            }
             remove(msg)
             .then(() => fetch_mails())
             .then(() => this.sort(this.sortfield, this.sortdirection));

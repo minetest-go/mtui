@@ -1,22 +1,45 @@
 <script>
-import NavBar from './components/NavBar.vue';
+import Sidebar from './components/Sidebar.vue';
+import TopBar from './components/TopBar.vue';
 import ErrorToast from './components/ErrorToast.vue';
+import ConfirmDialog from './components/ConfirmDialog.vue';
+import { is_logged_in } from './service/login.js';
 
 export default {
 	components: {
-		"nav-bar": NavBar,
-		"error-toast": ErrorToast
+		"side-bar": Sidebar,
+		"top-bar": TopBar,
+		"error-toast": ErrorToast,
+		"confirm-dialog": ConfirmDialog
+	},
+	data: function() {
+		return {
+			sidebar_open: false
+		};
+	},
+	computed: {
+		is_logged_in
+	},
+	watch: {
+		"$route": function() {
+			// close the mobile menu after navigating
+			this.sidebar_open = false;
+		}
 	}
 };
 </script>
 
 <template>
-  <div>
-    <nav-bar/>
-    <error-toast/>
-    <div class="container-fluid">
-      <br>
-      <router-view></router-view>
+  <div class="app-shell">
+    <side-bar v-if="is_logged_in" :open="sidebar_open" v-on:close="sidebar_open = false"/>
+    <div class="app-sidebar-backdrop d-lg-none" v-if="is_logged_in && sidebar_open" v-on:click="sidebar_open = false"></div>
+    <div class="app-main">
+      <top-bar v-on:toggle-sidebar="sidebar_open = !sidebar_open"/>
+      <error-toast/>
+      <confirm-dialog/>
+      <main class="container-fluid py-3">
+        <router-view></router-view>
+      </main>
     </div>
   </div>
 </template>

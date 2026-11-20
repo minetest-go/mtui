@@ -18,10 +18,10 @@ export default {
               <slot></slot>
           </div>
           <div class="modal-footer">
-              <button type="button" class="btn btn-success" v-on:click="$emit('abort')">
-                  Abort
+              <button type="button" class="btn btn-outline-secondary" v-on:click="$emit('abort')">
+                  Cancel
               </button>
-              <button type="button" class="btn btn-danger" v-on:click="$emit('confirm')" :disabled="confirm_disabled">
+              <button type="button" class="btn btn-primary" v-on:click="$emit('confirm')" :disabled="confirm_disabled">
                   <slot name="confirm_button">
                       Confirm
                   </slot>

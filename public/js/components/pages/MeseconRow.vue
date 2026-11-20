@@ -2,6 +2,7 @@
 import format_time from "../../util/format_time.js";
 import { set_mesecon, delete_mesecon } from "../../api/mesecons.js";
 import { node_image_mapping, switch_nodes, display_nodes } from "../../util/mesecon_nodes.js";
+import { confirm } from "../../store/confirm.js";
 
 export default {
     props: ["mesecon"],
@@ -35,7 +36,15 @@ export default {
                 this.busy = false;
             });
         },
-        remove: function() {
+        remove: async function() {
+            const ok = await confirm({
+                title: `Remove "${this.mesecon.name}"?`,
+                message: "It is removed from this list, the block in the world stays untouched.",
+                confirm_label: "Remove"
+            });
+            if (!ok) {
+                return;
+            }
             delete_mesecon(this.mesecon.poskey)
             .then(() => this.$emit("removed"));
         }

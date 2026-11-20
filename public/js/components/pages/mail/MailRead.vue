@@ -6,6 +6,7 @@ import { fetch_mails, get_mail } from '../../../service/mail.js';
 import { get_claims } from '../../../service/login.js';
 import DefaultLayout from '../../layouts/DefaultLayout.vue';
 import { START, MAIL } from '../../../util/breadcrumbs.js';
+import { confirm } from '../../../store/confirm.js';
 
 export default {
     props: ["id"],
@@ -34,7 +35,16 @@ export default {
             mail_compose_store.body = "\n---- Original message ----\n" + this.mail.body;
             this.$router.push({ path:"/mail/compose" });
         },
-        remove: function() {
+        remove: async function() {
+            const ok = await confirm({
+                title: "Delete mail?",
+                message: `"${this.mail.subject}" will be deleted permanently.`,
+                confirm_label: "Delete",
+                confirm_icon: "fa fa-trash"
+            });
+            if (!ok) {
+                return;
+            }
             remove(this.mail)
             .then(() => fetch_mails())
             .then(() => this.$router.push({ path:"/mail" }));

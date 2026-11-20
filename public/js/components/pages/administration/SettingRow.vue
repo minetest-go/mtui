@@ -1,5 +1,6 @@
 <script>
 import { save, unset } from '../../../service/mtconfig.js';
+import { confirm } from '../../../store/confirm.js';
 
 export default {
     props: ["setting"],
@@ -45,12 +46,22 @@ export default {
         reset: function() {
             Object.assign(this.work_setting, this.old_setting);
         },
-        unset: function() {
+        unset: async function() {
+            const ok = await confirm({
+                title: `Unset ${this.setting.key}?`,
+                message: "The setting is removed from minetest.conf and falls back to its default value.",
+                confirm_label: "Unset",
+                confirm_icon: "fa fa-trash"
+            });
+            if (!ok) {
+                return;
+            }
             this.busy = true;
             unset(this.setting.key)
             .then(() => {
                 this.is_set = false;
-                Object.apply(this.work_setting, this.setting.default);
+                Object.assign(this.old_setting, this.setting.default);
+                Object.assign(this.work_setting, this.setting.default);
                 this.busy = false;
             });
         }

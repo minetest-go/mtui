@@ -43,7 +43,7 @@ export default {
   		</span>
   		<hr/>
   		<router-link to="/shell" class="btn btn-primary" v-if="has_priv('interact')">
-  			<i class="fa-solid fa-terminal"></i> Shell
+  			<i class="fa-solid fa-terminal"></i> Commands
   		</router-link>
   		&nbsp;
   		<router-link to="/profile" class="btn btn-primary" v-if="is_logged_in">

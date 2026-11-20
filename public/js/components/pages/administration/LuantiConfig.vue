@@ -18,7 +18,7 @@ export default {
             search: "",
             only_configured: true,
             breadcrumb: [START, ADMINISTRATION, {
-                name: "Luanti config",
+                name: "Server settings",
                 icon: "cog",
                 link: "/minetest-config"
             }]
