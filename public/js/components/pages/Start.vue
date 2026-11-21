@@ -166,9 +166,6 @@ export default {
 		},
 		quick_actions: function() {
 			return [{
-				name: "Play in browser", icon: "fa-solid fa-play", link: "/play",
-				visible: has_feature("minetest_web")
-			}, {
 				name: "Chat", icon: "fa-solid fa-comment", link: "/chat",
 				visible: has_priv("shout") && has_feature("chat")
 			}, {
@@ -282,11 +279,8 @@ export default {
   					<router-link to="/login" class="btn btn-primary me-2">
   						<i class="fa-solid fa-right-to-bracket"></i> Log in
   					</router-link>
-  					<router-link to="/signup" class="btn btn-outline-primary me-2" v-if="has_feature('signup')">
+  					<router-link to="/signup" class="btn btn-outline-primary" v-if="has_feature('signup')">
   						<i class="fa-solid fa-user-plus"></i> Create account
-  					</router-link>
-  					<router-link to="/play" class="btn btn-outline-primary" v-if="has_feature('minetest_web')">
-  						<i class="fa-solid fa-play"></i> Play in browser
   					</router-link>
   				</div>
   			</div>
