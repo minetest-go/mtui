@@ -23,7 +23,7 @@ export default {
 </script>
 
 <template>
-  <div class="toast-container position-fixed bottom-0 end-0 p-3" aria-live="polite">
+  <div class="toast-container app-toasts position-fixed end-0 p-3" aria-live="polite">
       <div
           class="toast show align-items-center"
           :class="'border-' + toast.type"
@@ -50,3 +50,10 @@ export default {
       </div>
   </div>
 </template>
+
+<style scoped>
+/* top right, below the top bar: keeps clear of sticky bars at the bottom (e.g. the settings save bar) */
+.app-toasts {
+    top: 3.5rem;
+}
+</style>

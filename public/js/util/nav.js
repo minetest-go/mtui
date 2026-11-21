@@ -83,5 +83,9 @@ export function is_active(item, path) {
 	if (item.exact) {
 		return path == item.link;
 	}
-	return (item.match || [item.link]).some(prefix => path.startsWith(prefix));
+	// match whole path segments only, so "/log" doesn't match "/login";
+	// a trailing slash ("/profile/") only matches paths below it
+	return (item.match || [item.link]).some(prefix => prefix.endsWith("/") ?
+		path.startsWith(prefix) :
+		path == prefix || path.startsWith(prefix + "/"));
 }

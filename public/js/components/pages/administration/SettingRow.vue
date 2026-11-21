@@ -1,57 +1,50 @@
 <script>
-import { save, unset } from '../../../service/mtconfig.js';
+import {
+    unset,
+    is_set,
+    is_pending,
+    working_setting,
+    set_pending,
+    discard_pending
+} from '../../../service/mtconfig.js';
 import { confirm } from '../../../store/confirm.js';
 import { success } from '../../../store/toast.js';
+import SettingInput from './SettingInput.vue';
 
 export default {
     props: ["setting"],
+    components: {
+        "setting-input": SettingInput
+    },
     data: function() {
         return {
-            old_setting: this.setting.current ? this.setting.current : this.setting.default,
-            work_setting: Object.assign({}, this.setting.current ? this.setting.current : this.setting.default),
-            busy: false,
-            is_set: this.setting.is_set
+            busy: false
         };
     },
     computed: {
-        is_changed: function() {
-            const w = this.work_setting;
-            const o = this.old_setting;
-            switch (this.setting.type) {
-                case "string":
-                case "int":
-                case "float":
-                case "bool":
-                case "enum":
-                    return w.value != o.value;
-                case "v3f":
-                    return w.x != o.x || w.y != o.y || w.z != o.z;
-                // TODO: flags, noise_params_2d, noise_params_3d
-                }
+        key: function() {
+            return this.setting.key;
+        },
+        is_set: function() {
+            return is_set(this.key);
+        },
+        is_pending: function() {
+            return is_pending(this.key);
+        },
+        working: function() {
+            return working_setting(this.key);
         }
     },
     methods: {
-        save: function() {
-            this.busy = true;
-            // ensure that the value field is of type "string"
-            if (this.work_setting.value) {
-                this.work_setting.value = "" + this.work_setting.value;
-            }
-            save(this.setting.key, this.work_setting)
-            .then(() => {
-                this.is_set = true;
-                Object.assign(this.old_setting, this.work_setting);
-                this.busy = false;
-                success(`Saved ${this.setting.key}`);
-            })
-            .catch(() => this.busy = false);
+        update: function(v) {
+            set_pending(this.key, v);
         },
-        reset: function() {
-            Object.assign(this.work_setting, this.old_setting);
+        undo: function() {
+            discard_pending(this.key);
         },
         unset: async function() {
             const ok = await confirm({
-                title: `Unset ${this.setting.key}?`,
+                title: `Unset ${this.key}?`,
                 message: "The setting is removed from minetest.conf and falls back to its default value.",
                 confirm_label: "Unset",
                 confirm_icon: "fa fa-trash"
@@ -60,110 +53,46 @@ export default {
                 return;
             }
             this.busy = true;
-            unset(this.setting.key)
-            .then(() => {
-                this.is_set = false;
-                Object.assign(this.old_setting, this.setting.default);
-                Object.assign(this.work_setting, this.setting.default);
-                this.busy = false;
-                success(`${this.setting.key} reset to its default value`);
-            })
-            .catch(() => this.busy = false);
+            unset(this.key)
+            .then(() => success(`${this.key} reset to its default value`))
+            .finally(() => this.busy = false);
         }
     }
 };
 </script>
 
 <template>
-  <td>
-      {{setting.key}}
-      <i class="fa fa-lg fa-square-check" style="color: green;" title="this setting is configured/set in the minetest.conf" v-if="is_set"></i>
+  <td :class="{'table-warning': is_pending}">
+      <label :for="'setting-' + key" class="text-break">{{key}}</label>
+      <span class="badge text-bg-success ms-1" v-if="is_set" title="Set in minetest.conf">set</span>
+      <span class="badge text-bg-warning ms-1" v-if="is_pending">unsaved</span>
   </td>
-  <td>
-      <span class="badge bg-info">{{setting.type}}</span>
+  <td :class="{'table-warning': is_pending}">
+      <span class="badge text-bg-info">{{setting.type}}</span>
   </td>
-  <td>
+  <td :class="{'table-warning': is_pending}">
       <details>
           <summary>{{setting.short_description}}</summary>
           {{setting.long_description}}
       </details>
   </td>
-  <td>
-      <div v-if="setting.type == 'string'">
-          <input type="text" class="form-control" v-model="work_setting.value"/>
-      </div>
-      <div v-if="setting.type == 'bool'">
-          <input type="checkbox" class="form-check-input" v-model="work_setting.value" true-value="true" false-value="false"/>
-      </div>
-      <div v-if="setting.type == 'int' || setting.type == 'float'">
-          <input type="number" class="form-control" v-model="work_setting.value" :min="setting.min" :max="setting.max"/>
-      </div>
-      <div v-if="setting.type == 'enum'">
-          <select class="form-control" v-model="work_setting.value">
-              <option v-for="choice in setting.choices">{{choice}}</option>
-          </select>
-      </div>
-      <div v-if="setting.type == 'flags'">
-          <details>
-              <summary>Flags setting</summary>
-              <ul>
-                  <li v-for="choice in setting.choices">
-                      <input type="checkbox" class="form-check-input"/>
-                      {{choice}}
-                  </li>
-              </ul>
-          </details>
-      </div>
-      <div v-if="setting.type == 'v3f'">
-          <details>
-              <summary>3D Vector setting</summary>
-              <label>X</label>
-              <input type="text" class="form-control" v-model.number="work_setting.x"/>
-              <label>Y</label>
-              <input type="text" class="form-control" v-model.number="work_setting.y"/>
-              <label>Z</label>
-              <input type="text" class="form-control" v-model.number="work_setting.z"/>
-          </details>
-      </div>
-      <div v-if="setting.type == 'noise_params_2d' || setting.type == 'noise_params_3d'">
-          <details>
-              <summary>Noise parameter setting</summary>
-              <label>Offset</label>
-              <input type="number" class="form-control" v-model.number="work_setting.offset"/>
-              <label>Scale</label>
-              <input type="number" class="form-control" v-model.number="work_setting.scale"/>
-              <label>Spread X</label>
-              <input type="number" class="form-control" v-model.number="work_setting.spread_x"/>
-              <label>Spread Y</label>
-              <input type="number" class="form-control" v-model.number="work_setting.spread_y"/>
-              <label>Spread Z</label>
-              <input type="number" class="form-control" v-model.number="work_setting.spread_z"/>
-              <label>Seed</label>
-              <input type="text" class="form-control" v-model="work_setting.seed"/>
-              <label>Octaves</label>
-              <input type="number" class="form-control" v-model.number="work_setting.octaves"/>
-              <label>Persistence</label>
-              <input type="number" class="form-control" v-model.number="work_setting.persistence"/>
-              <label>Lacunarity</label>
-              <input type="number" class="form-control" v-model.number="work_setting.lacunarity"/>
-          </details>
-      </div>
+  <td :class="{'table-warning': is_pending}">
+      <setting-input
+          :id="'setting-' + key"
+          :settingtype="setting"
+          :model-value="working"
+          :is_default="!is_set && !is_pending"
+          v-on:update:model-value="update"/>
   </td>
-  <td class="text-end">
-      <i class="fa fa-spinner fa-spin" v-if="busy"></i>
-      <div class="btn-group">
-          <button class="btn btn-success" v-on:click="save" :disabled="!is_changed">
-              <i class="fa fa-floppy-disk"></i>
-              Save
-          </button>
-          <button class="btn btn-primary" v-on:click="reset" :disabled="!is_changed">
-              <i class="fa-solid fa-arrow-rotate-left"></i>
-              Reset
-          </button>
-          <button class="btn btn-danger" v-on:click="unset" :disabled="!is_set">
-              <i class="fa fa-trash"></i>
-              Unset
-          </button>
-      </div>
+  <td class="text-end text-nowrap" :class="{'table-warning': is_pending}">
+      <i class="fa fa-spinner fa-spin me-1" v-if="busy"></i>
+      <button class="btn btn-sm btn-outline-secondary me-1" v-on:click="undo" v-if="is_pending" title="Discard the unsaved change">
+          <i class="fa-solid fa-arrow-rotate-left"></i>
+          Undo
+      </button>
+      <button class="btn btn-sm btn-outline-danger" v-on:click="unset" :disabled="!is_set || busy" title="Remove from minetest.conf, use the default">
+          <i class="fa fa-trash"></i>
+          Unset
+      </button>
   </td>
 </template>
