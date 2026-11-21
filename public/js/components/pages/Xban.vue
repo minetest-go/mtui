@@ -5,6 +5,7 @@ import { get_status, cleanup, get_records } from "../../api/xban.js";
 import format_time from "../../util/format_time.js";
 import DefaultLayout from "../layouts/DefaultLayout.vue";
 import { START, MODERATION } from "../../util/breadcrumbs.js";
+import { confirm } from "../../store/confirm.js";
 
 const store = reactive({
     status: null,
@@ -13,7 +14,7 @@ const store = reactive({
     banned_records: [],
     breadcrumb: [START, MODERATION, {
         icon: "ban",
-        name: "XBan",
+        name: "Bans",
         link: "/xban"
     }]
 });
@@ -38,7 +39,15 @@ export default {
             .then(r => this.banned_records = r)
             .then(() => this.busy = false);
         },
-        cleanup: function() {
+        cleanup: async function() {
+            const ok = await confirm({
+                title: "Remove unbanned entries?",
+                message: "All records of players that are not currently banned are deleted from the xban database, including their ban history.",
+                confirm_label: "Remove entries"
+            });
+            if (!ok) {
+                return;
+            }
             this.busy = true;
             this.cleanup_result = null;
             cleanup().then(r => {

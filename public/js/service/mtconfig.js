@@ -10,6 +10,8 @@ export const store = reactive({
     filtered_settings: {},
     filtered_count: 0,
     filtered_topics: [],
+    // unsaved edits: key -> setting
+    pending: {},
     ready: false
 });
 
@@ -24,7 +26,66 @@ export const is_ready = () => store.ready;
 
 export function unset(key) {
     return remove(key)
-    .then(() => delete store.settings[key]);
+    .then(() => {
+        delete store.settings[key];
+        delete store.pending[key];
+    });
+}
+
+// fields that make up the value of a setting, per type
+const value_fields = {
+    v3f: ["x", "y", "z"],
+    noise_params_2d: ["offset", "scale", "spread_x", "spread_y", "spread_z", "seed", "octaves", "persistence", "lacunarity"],
+    noise_params_3d: ["offset", "scale", "spread_x", "spread_y", "spread_z", "seed", "octaves", "persistence", "lacunarity"]
+};
+
+export function same_setting(type, a, b) {
+    return (value_fields[type] || ["value"])
+        .every(f => String((a && a[f]) ?? "") == String((b && b[f]) ?? ""));
+}
+
+export const is_set = key => store.settings[key] != undefined;
+
+// the saved value, or the default if not configured
+export function saved_setting(key) {
+    const st = store.settingtypes[key];
+    return store.settings[key] || (st && st.default) || { value: "" };
+}
+
+// the value to show in the editor: unsaved edit or saved value
+export const working_setting = key => store.pending[key] || saved_setting(key);
+
+export const is_pending = key => store.pending[key] != undefined;
+
+export function set_pending(key, setting) {
+    const st = store.settingtypes[key];
+    if (same_setting(st ? st.type : "string", setting, saved_setting(key))) {
+        delete store.pending[key];
+    } else {
+        store.pending[key] = setting;
+    }
+}
+
+export const discard_pending = key => delete store.pending[key];
+
+export function discard_all_pending() {
+    Object.keys(store.pending).forEach(key => delete store.pending[key]);
+}
+
+export const pending_keys = () => Object.keys(store.pending);
+
+// saves all unsaved edits one after another (the backend rewrites the whole config file on each save)
+export async function save_all_pending() {
+    const keys = pending_keys();
+    for (const key of keys) {
+        const setting = Object.assign({}, store.pending[key]);
+        if (setting.value != null) {
+            setting.value = "" + setting.value;
+        }
+        await save(key, setting);
+        delete store.pending[key];
+    }
+    return keys.length;
 }
 
 export function apply_filter(filter) {

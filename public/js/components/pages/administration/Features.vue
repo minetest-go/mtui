@@ -1,5 +1,7 @@
 <script>
 import { set_feature, store } from '../../../service/features.js';
+import { confirm } from '../../../store/confirm.js';
+import { success } from '../../../store/toast.js';
 import DefaultLayout from '../../layouts/DefaultLayout.vue';
 import { START, ADMINISTRATION } from '../../../util/breadcrumbs.js';
 
@@ -11,7 +13,7 @@ export default {
         return {
             features: store,
             breadcrumb: [START, ADMINISTRATION, {
-                name: "Features",
+                name: "Web UI features",
                 icon: "tags",
                 link: "/features"
             }]
@@ -26,8 +28,19 @@ export default {
             const h = store[name];
             return h.mods || [];
         },
-        set_feature: function(name, enabled) {
-            set_feature(name, enabled);
+        set_feature: async function(name, enabled) {
+            if (!enabled) {
+                const ok = await confirm({
+                    title: `Disable ${name}?`,
+                    message: "Pages and functions that depend on this feature will be unavailable until it is enabled again.",
+                    confirm_label: "Disable"
+                });
+                if (!ok) {
+                    return;
+                }
+            }
+            await set_feature(name, enabled);
+            success(`Feature ${name} ${enabled ? "enabled" : "disabled"}`);
         },
         is_experimental: function(name) {
             const h = store[name];

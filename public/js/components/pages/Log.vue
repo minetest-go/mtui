@@ -153,6 +153,21 @@ export default {
         "ip_address": "update_count"
     },
     mounted: function() {
+        // prefilled search from a link, e.g. #/log?category=minetest&event=logfile-error&since=86400
+        const q = this.$route.query;
+        if (q.category || q.event || q.username || q.since) {
+            Object.assign(store, {
+                category: q.category || "minetest",
+                event: q.event || "",
+                username: q.username || "",
+                nodename: "", posx: "", posy: "", posz: "", geo_asn: "", ip_address: ""
+            });
+            if (q.since) {
+                store.from = new Date(Date.now() - parseInt(q.since) * 1000);
+                store.to = new Date(Date.now() + 3600 * 1000);
+            }
+            this.search();
+        }
         this.update_count();
     }
 };

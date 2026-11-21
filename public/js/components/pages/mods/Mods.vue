@@ -5,7 +5,8 @@ import {
 	get_git_mod,
 	check_updates,
 	add_mtui,
-	update
+	update,
+	get_all
 } from '../../../service/mods.js';
 import { update_settings } from '../../../service/mtconfig.js';
 
@@ -14,6 +15,7 @@ import DefaultLayout from '../../layouts/DefaultLayout.vue';
 import { START, ADMINISTRATION, MODS } from '../../../util/breadcrumbs.js';
 import { has_feature } from '../../../service/features.js';
 import ModRow from "./ModRow.vue";
+import { success } from '../../../store/toast.js';
 
 const modname_regex = /^[a-zA-Z0-9_]*$/;
 
@@ -51,6 +53,7 @@ export default {
 				branch: "",
 				version: this.add_version
 			});
+			success(`Added ${this.add_name}`);
 			this.add_name = "";
 			this.add_url = "";
 			this.add_version = "";
@@ -60,12 +63,18 @@ export default {
 			if (has_feature("minetest_config")) {
 				await update_settings();
 			}
+			success("Installed the mtui mod");
 		},
 		get_git_mod,
 		check_updates: async function() {
 			this.busy = true;
-			await check_updates();
-			this.busy = false;
+			try {
+				await check_updates();
+				const count = get_all().filter(m => m.latest_version && m.latest_version != m.version).length;
+				success(count > 0 ? `${count} update(s) available` : "All mods are up to date");
+			} finally {
+				this.busy = false;
+			}
 		}
 	},
 	computed: {

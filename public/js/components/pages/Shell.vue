@@ -14,7 +14,7 @@ const store = reactive({
     busy: false,
     message: "",
     delay: 0,
-    breadcrumb: [START, {icon: "terminal", name: "Shell", link: "/shell"}]
+    breadcrumb: [START, {icon: "terminal", name: "Commands", link: "/shell"}]
 });
 
 export default {

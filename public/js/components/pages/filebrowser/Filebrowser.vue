@@ -8,6 +8,8 @@ import { upload_chunked } from "../../../service/uploader.js";
 import format_size from "../../../util/format_size.js";
 import format_time from "../../../util/format_time.js";
 import { can_edit, filebrowser_breadcrumb } from "./common.js";
+import { confirm } from "../../../store/confirm.js";
+import { success } from "../../../store/toast.js";
 
 export default {
     props: ["pathMatch"],
@@ -21,7 +23,6 @@ export default {
             mkdir_name: "",
             move_name: "",
             move_target: "",
-            prepare_delete: null,
             upload_progress: {}
         };
     },
@@ -31,6 +32,7 @@ export default {
         get_download_url,
         mkdir: function() {
             mkdir(this.result.dir + "/" + this.mkdir_name)
+            .then(() => success(`Created directory ${this.mkdir_name}`))
             .then(() => this.browse_dir())
             .then(() => this.mkdir_name = "");
         },
@@ -45,20 +47,33 @@ export default {
                     };
                 }).then(() => {
                     delete this.upload_progress[file.name];
+                    success(`Uploaded ${file.name}`);
                     this.browse_dir();
                 });
             });
 
             this.$refs.input_upload.value = null;
         },
-        confirm_delete: function() {
-            remove(this.result.dir + "/" + this.prepare_delete)
-            .then(() => this.prepare_delete = null)
+        delete_item: async function(item) {
+            const ok = await confirm({
+                title: `Delete ${item.name}?`,
+                message: item.is_dir ?
+                    `The directory "${item.name}" and everything in it will be deleted permanently.` :
+                    `The file "${item.name}" will be deleted permanently.`,
+                confirm_label: "Delete",
+                confirm_icon: "fa fa-trash"
+            });
+            if (!ok) {
+                return;
+            }
+            remove(this.result.dir + "/" + item.name)
+            .then(() => success(`Deleted ${item.name}`))
             .then(() => this.browse_dir());
         },
         confirm_move: function() {
             rename(this.result.dir + "/" + this.move_name, this.result.dir + "/" + this.move_target)
             .then(() => {
+                success(`Renamed ${this.move_name} to ${this.move_target}`);
                 this.move_name = "";
                 this.move_target = "";
                 this.browse_dir();
@@ -199,7 +214,7 @@ export default {
                           <button class="btn btn-sm btn-warning" v-on:click="move_name = item.name; move_target = item.name">
                               <i class="fa fa-shuffle"></i>
                           </button>
-                          <button class="btn btn-sm btn-danger" v-on:click="prepare_delete = item.name">
+                          <button class="btn btn-sm btn-danger" v-on:click="delete_item(item)" title="Delete">
                               <i class="fa fa-trash"></i>
                           </button>
                       </div>
@@ -207,22 +222,6 @@ export default {
               </tr>
           </tbody>
       </table>
-      <confirmation-prompt
-          title="Confirm deletion"
-          :show="prepare_delete"
-          v-on:confirm="confirm_delete()"
-          v-on:abort="prepare_delete = null"
-          >
-          <template v-slot:default>
-              Confirm deletion of <i>{{prepare_delete}}</i>
-          </template>
-
-          <template v-slot:confirm_button>
-              <i class="fa fa-trash"></i>
-              Confirm deletion
-          </template>
-      </confirmation-prompt>
-
       <confirmation-prompt
           title="Rename file"
           :show="move_name"

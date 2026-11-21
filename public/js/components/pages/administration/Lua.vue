@@ -14,7 +14,7 @@ const store = reactive({
     message: "",
     delay: 0,
     breadcrumb: [START, ADMINISTRATION, {
-        name: "Lua",
+        name: "Lua console",
         icon: "terminal",
         link: "/lua"
     }]

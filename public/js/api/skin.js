@@ -1,3 +1,5 @@
+import { protected_fetch } from "./util.js";
+
 
 export const upload = (id, data) => fetch(`api/skin/${id}`, {
     method: "POST",
@@ -6,6 +8,6 @@ export const upload = (id, data) => fetch(`api/skin/${id}`, {
 
 export const get = id => fetch(`api/skin/${id}`).then(r => r.blob());
 
-export const remove = id => fetch(`api/skin/${id}`, {
+export const remove = id => protected_fetch(`api/skin/${id}`, {
     method: "DELETE"
 });

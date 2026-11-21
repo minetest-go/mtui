@@ -2,6 +2,7 @@
 import DefaultLayout from "../../layouts/DefaultLayout.vue";
 import { RESTART_CONDITIONS } from "../../../util/breadcrumbs.js";
 import { get_uimod_storage, set_uimod_storage } from "../../../api/uimod.js";
+import { success } from "../../../store/toast.js";
 
 export default {
     components: {
@@ -32,11 +33,15 @@ export default {
         },
         save: async function() {
             this.busy = true;
-            await set_uimod_storage("restart_condition_empty", this.condition_empty ? "1" : "0");
-            await set_uimod_storage("restart_condition_mods_changed", this.condition_mods_changed ? "1" : "0");
-            await set_uimod_storage("restart_condition_max_uptime", "" + this.max_uptime);
-            await set_uimod_storage("restart_method", this.restart_method);
-            this.busy = false;
+            try {
+                await set_uimod_storage("restart_condition_empty", this.condition_empty ? "1" : "0");
+                await set_uimod_storage("restart_condition_mods_changed", this.condition_mods_changed ? "1" : "0");
+                await set_uimod_storage("restart_condition_max_uptime", "" + this.max_uptime);
+                await set_uimod_storage("restart_method", this.restart_method);
+                success("Restart conditions saved");
+            } finally {
+                this.busy = false;
+            }
         }
     }
 };
